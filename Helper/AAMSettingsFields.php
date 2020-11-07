@@ -7,7 +7,6 @@ namespace Facebook\BusinessExtension\Helper;
 
 /**
   * Class that contains the keys used to identify each field in AAMSettings
-  * "em","fn","ln","ge","ph","ct","st","zp" are currently returned by the endpoint
 */
 abstract class AAMSettingsFields{
   const EMAIL = "em";
@@ -19,7 +18,8 @@ abstract class AAMSettingsFields{
   const STATE = "st";
   const ZIP_CODE = "zp";
   const DATE_OF_BIRTH = "db";
-  const COUNTRY = "cn";
+  const COUNTRY = "country";
+  const EXTERNAL_ID = "external_id";
   public static function getAllFields(){
     return array(
       self::EMAIL,
@@ -31,7 +31,8 @@ abstract class AAMSettingsFields{
       self::STATE,
       self::ZIP_CODE,
       self::DATE_OF_BIRTH,
-      self::COUNTRY
+      self::COUNTRY,
+      self::EXTERNAL_ID,
     );
   }
 }

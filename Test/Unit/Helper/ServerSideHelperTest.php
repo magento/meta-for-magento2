@@ -9,7 +9,7 @@ use \Facebook\BusinessExtension\Helper\ServerEventFactory;
 use \Facebook\BusinessExtension\Helper\AAMSettingsFields;
 
 use \FacebookAds\Object\ServerSide\AdsPixelSettings;
-
+use \FacebookAds\Object\ServerSide\Util;
 
 class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
 
@@ -49,6 +49,7 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
     $customer->setFirstname('Pedro');
     $customer->setLastname('Perez');
     $customer->setDob('2010-06-11');
+    $customer->setId('1');
 
     $this->magentoDataHelper->method('getCurrentCustomer')->willReturn($customer);
 
@@ -85,6 +86,7 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
     $this->assertNull($userData->getFirstName());
     $this->assertNull($userData->getLastName());
     $this->assertNull($userData->getDateOfBirth());
+    $this->assertNull($userData->getExternalId());
 
     $this->assertNull($userData->getCity());
     $this->assertNull($userData->getZipCode());
@@ -98,6 +100,7 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
     $this->assertEquals($userData->getFirstName(), $customer->getFirstname());
     $this->assertEquals($userData->getLastName(), $customer->getLastname());
     $this->assertEquals($userData->getDateOfBirth(), date("Ymd", strtotime($customer->getDob())) );
+    $this->assertEquals($userData->getExternalId(), Util::hash($customer->getId()));
   }
 
   private function assertEqualUserDataFromAddress($address, $userData){
@@ -216,6 +219,9 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
     }
     if($userData->getState()){
       $fieldsPresent[] = AAMSettingsFields::STATE;
+    }
+    if($userData->getExternalId()){
+      $fieldsPresent[] = AAMSettingsFields::EXTERNAL_ID;
     }
     sort($fieldsPresent);
     sort($fieldsSubset);

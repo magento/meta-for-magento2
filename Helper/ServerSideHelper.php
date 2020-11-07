@@ -86,6 +86,11 @@ class ServerSideHelper {
           $customer->getDob() ? date("Ymd", strtotime($customer->getDob())) : null
         );
       }
+      if(in_array(AAMSettingsFields::EXTERNAL_ID, $aamSettings->getEnabledAutomaticMatchingFields())){
+        $userData ->setExternalId(
+          Util::hash($customer->getId())
+        );
+      }
       if($address){
         if(in_array(AAMSettingsFields::PHONE, $aamSettings->getEnabledAutomaticMatchingFields())){
           $userData->setPhone(

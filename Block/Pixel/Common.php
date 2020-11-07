@@ -66,6 +66,9 @@ class Common extends \Magento\Framework\View\Element\Template {
         if(in_array(AAMSettingsFields::DATE_OF_BIRTH, $aamSettings->getEnabledAutomaticMatchingFields())){
           $userInfo['db'] = $customer->getDob() ? date("Ymd", strtotime($customer->getDob())) : null;
         }
+        if(in_array(AAMSettingsFields::EXTERNAL_ID, $aamSettings->getEnabledAutomaticMatchingFields())){
+          $userInfo['external_id'] = $customer->getId();
+        }
         if($address){
           if(in_array(AAMSettingsFields::PHONE, $aamSettings->getEnabledAutomaticMatchingFields())){
             $userInfo['ph'] = $address->getTelephone();
@@ -80,7 +83,7 @@ class Common extends \Magento\Framework\View\Element\Template {
             $userInfo['zp'] = $address->getPostcode();
           }
           if(in_array(AAMSettingsFields::COUNTRY, $aamSettings->getEnabledAutomaticMatchingFields())){
-            $userInfo['cn'] = $address->getCountryId(); //Added for upward compatibility
+            $userInfo['country'] = $address->getCountryId();
           }
         }
         return json_encode(array_filter($userInfo), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
