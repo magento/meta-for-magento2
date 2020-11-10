@@ -8,6 +8,7 @@ namespace Facebook\BusinessExtension\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Customer\Api\CustomerMetadataInterface;
 
 /**
  * Helper class to get data using Magento Platform methods.
@@ -34,18 +35,25 @@ class MagentoDataHelper extends AbstractHelper {
    */
   protected $_storeManager;
 
+  /**
+   * @var \Magento\Customer\Api\CustomerMetadataInterface
+   */
+  protected $_customerMetadata;
+
   public function __construct(
     Context $context,
     ObjectManagerInterface $objectManager,
     \Facebook\BusinessExtension\Logger\Logger $logger,
     \Magento\Catalog\Model\ProductFactory $productFactory,
-    \Magento\Store\Model\StoreManagerInterface $storeManager
+    \Magento\Store\Model\StoreManagerInterface $storeManager,
+    \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
     ) {
       parent::__construct($context);
       $this->_objectManager = $objectManager;
       $this->_logger = $logger;
       $this->_productFactory = $productFactory;
       $this->_storeManager = $storeManager;
+      $this->_customerMetadata = $customerMetadata;
   }
 
   /**
@@ -345,5 +353,78 @@ class MagentoDataHelper extends AbstractHelper {
     }
     return null;
   }
+
+  /**
+   * Returns all of the match keys that can be extracted from order information
+   * @return string[]
+  */
+  public function getUserDataFromOrder(){
+    $order = $this->_objectManager->get('\Magento\Checkout\Model\Session')->getLastRealOrder();
+    if (!$order) {
+      return null;
+    }
+
+    $userData = array();
+
+    $userData[AAMSettingsFields::EXTERNAL_ID] = $order->getCustomerId();
+    $userData[AAMSettingsFields::EMAIL] = $order->getCustomerEmail();
+    $userData[AAMSettingsFields::FIRST_NAME] = $order->getCustomerFirstname();
+    $userData[AAMSettingsFields::LAST_NAME] = $order->getCustomerLastname();
+    $userData[AAMSettingsFields::DATE_OF_BIRTH] = $order->getCustomerDob();
+    if($order->getCustomerGender()){
+      $genderId = $order->getCustomerGender();
+      $userData[AAMSettingsFields::GENDER] =
+        $this->_customerMetadata->getAttributeMetadata('gender')
+          ->getOptions()[$genderId]->getLabel();
+    }
+
+    $billingAddress = $order->getBillingAddress();
+    if($billingAddress){
+      $userData[AAMSettingsFields::ZIP_CODE] = $billingAddress->getPostcode();
+      $userData[AAMSettingsFields::CITY] = $billingAddress->getCity();
+      $userData[AAMSettingsFields::PHONE] = $billingAddress->getTelephone();
+      $userData[AAMSettingsFields::STATE] = $billingAddress->getRegionCode();
+      $userData[AAMSettingsFields::COUNTRY] = $billingAddress->getCountryId();
+    }
+
+    return array_filter($userData);
+  }
+
+  /**
+   * Returns all of the match keys that can be extracted from user session
+   * @return string[]
+  */
+  public function getUserDataFromSession(){
+    $customer = $this->getCurrentCustomer();
+    if (!$customer) {
+      return null;
+    }
+
+    $userData = array();
+
+    $userData[AAMSettingsFields::EXTERNAL_ID] = $customer->getId();
+    $userData[AAMSettingsFields::EMAIL] = $customer->getEmail();
+    $userData[AAMSettingsFields::FIRST_NAME] = $customer->getFirstname();
+    $userData[AAMSettingsFields::LAST_NAME] = $customer->getLastname();
+    $userData[AAMSettingsFields::DATE_OF_BIRTH] = $customer->getDob();
+    if($customer->getGender()){
+      $genderId = $customer->getGender();
+      $userData[AAMSettingsFields::GENDER] =
+        $this->_customerMetadata->getAttributeMetadata('gender')
+          ->getOptions()[$genderId]->getLabel();
+    }
+
+    $billingAddress = $this->getCustomerAddress($customer);
+    if($billingAddress){
+      $userData[AAMSettingsFields::ZIP_CODE] = $billingAddress->getPostcode();
+      $userData[AAMSettingsFields::CITY] = $billingAddress->getCity();
+      $userData[AAMSettingsFields::PHONE] = $billingAddress->getTelephone();
+      $userData[AAMSettingsFields::STATE] = $billingAddress->getRegionCode();
+      $userData[AAMSettingsFields::COUNTRY] = $billingAddress->getCountryId();
+    }
+
+    return array_filter($userData);
+  }
+
   // TODO Remaining user/custom data methods that can be obtained using Magento.
 }

@@ -54,80 +54,115 @@ class ServerSideHelper {
     $this->trackedEvents = array();
   }
 
-  // Captures user data from current session if the usePII flag is enabled
-  private function addUserDataFromSession( $event ){
+  public function setUserData( $event, $userDataArray ){
+    if(!$userDataArray){
+      return $event;
+    }
+
     $aamSettings = $this->_fbeHelper->getAAMSettings();
-    $customer = $this->_magentoDataHelper->getCurrentCustomer();
-    if( $aamSettings && $customer && $aamSettings->getEnableAutomaticMatching() ){
-      $userData = $event->getUserData();
-      $address = $this->_magentoDataHelper->getCustomerAddress($customer);
-      if(in_array(AAMSettingsFields::EMAIL, $aamSettings->getEnabledAutomaticMatchingFields())){
-        $userData ->setEmail(
-          $customer->getEmail()
-        );
+
+    if( !$aamSettings || !$aamSettings->getEnableAutomaticMatching() ){
+      return $event;
+    }
+
+    //Removing fields not enabled in AAM settings
+    foreach ($userDataArray as $key => $value) {
+      if(!in_array($key, $aamSettings->getEnabledAutomaticMatchingFields())){
+        unset($userDataArray[$key]);
       }
-      if(in_array(AAMSettingsFields::FIRST_NAME, $aamSettings->getEnabledAutomaticMatchingFields())){
-        $userData->setFirstName(
-          $customer->getFirstname()
-        );
-      }
-      if(in_array(AAMSettingsFields::LAST_NAME, $aamSettings->getEnabledAutomaticMatchingFields())){
-        $userData->setLastName(
-          $customer->getLastname()
-        );
-      }
-      if(in_array(AAMSettingsFields::GENDER, $aamSettings->getEnabledAutomaticMatchingFields())){
-        $userData->setGender(
-          $this->_magentoDataHelper->getGenderAsString($customer)
-        );
-      }
-      if(in_array(AAMSettingsFields::DATE_OF_BIRTH, $aamSettings->getEnabledAutomaticMatchingFields())){
-        $userData->setDateOfBirth(
-          $customer->getDob() ? date("Ymd", strtotime($customer->getDob())) : null
-        );
-      }
-      if(in_array(AAMSettingsFields::EXTERNAL_ID, $aamSettings->getEnabledAutomaticMatchingFields())){
-        $userData ->setExternalId(
-          Util::hash($customer->getId())
-        );
-      }
-      if($address){
-        if(in_array(AAMSettingsFields::PHONE, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userData->setPhone(
-            $address->getTelephone()
-          );
-        }
-        if(in_array(AAMSettingsFields::CITY, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userData ->setCity(
-            $address->getCity()
-          );
-        }
-        if(in_array(AAMSettingsFields::STATE, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userData->setState(
-            $this->_magentoDataHelper->getRegionCodeForAddress($address)
-          );
-        }
-        if(in_array(AAMSettingsFields::ZIP_CODE, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userData->setZipCode(
-            $address->getPostcode()
-          );
-        }
-        if(in_array(AAMSettingsFields::COUNTRY, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userData->setCountryCode(
-            $address->getCountryId()
-          );
-        }
-      }
+    }
+
+    $userData = $event->getUserData();
+    if(
+      array_key_exists(AAMSettingsFields::EMAIL, $userDataArray)
+    ){
+      $userData->setEmail(
+        $userDataArray[AAMSettingsFields::EMAIL]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::FIRST_NAME, $userDataArray)
+    ){
+      $userData->setFirstName(
+        $userDataArray[AAMSettingsFields::FIRST_NAME]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::LAST_NAME, $userDataArray)
+    ){
+      $userData->setLastName(
+        $userDataArray[AAMSettingsFields::LAST_NAME]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::GENDER, $userDataArray)
+    ){
+      $userData->setGender(
+        $userDataArray[AAMSettingsFields::GENDER][0]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::DATE_OF_BIRTH, $userDataArray)
+    ){
+      $userData->setDateOfBirth(
+        date("Ymd", strtotime($userDataArray[AAMSettingsFields::DATE_OF_BIRTH]))
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::EXTERNAL_ID, $userDataArray)
+    ){
+      $userData->setExternalId(
+        Util::hash($userDataArray[AAMSettingsFields::EXTERNAL_ID])
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::PHONE, $userDataArray)
+    ){
+      $userData->setPhone(
+        $userDataArray[AAMSettingsFields::PHONE]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::CITY, $userDataArray)
+    ){
+      $userData->setCity(
+        $userDataArray[AAMSettingsFields::CITY]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::STATE, $userDataArray)
+    ){
+      $userData->setState(
+        $userDataArray[AAMSettingsFields::STATE]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::ZIP_CODE, $userDataArray)
+    ){
+      $userData->setZipCode(
+        $userDataArray[AAMSettingsFields::ZIP_CODE]
+      );
+    }
+    if(
+      array_key_exists(AAMSettingsFields::COUNTRY, $userDataArray)
+    ){
+      $userData->setCountryCode(
+        $userDataArray[AAMSettingsFields::COUNTRY]
+      );
     }
     return $event;
   }
 
-  public function sendEvent($event) {
+  public function sendEvent($event, $userDataArray = null) {
     try
     {
       $api = Api::init(null, null, $this->_fbeHelper->getAccessToken());
 
-      $event = $this->addUserDataFromSession($event);
+      if(!$userDataArray){
+        $userDataArray = $this->_magentoDataHelper->getUserDataFromSession();
+      }
+
+      $event = $this->setUserData($event, $userDataArray);
 
       $this->trackedEvents[] = $event;
 

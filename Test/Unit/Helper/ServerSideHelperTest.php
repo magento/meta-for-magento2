@@ -41,43 +41,39 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
     $this->objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
     $this->fbeHelper->method('getAccessToken')->willReturn('abc');
     $this->fbeHelper->method('getPixelID')->willReturn('123');
+    $this->createDummyUserData();
   }
 
-  public function createDummyCustomer(){
-    $customer = $this->objectManager->getObject( '\Magento\Customer\Model\Customer' );
-    $customer->setEmail('abc@mail.com');
-    $customer->setFirstname('Pedro');
-    $customer->setLastname('Perez');
-    $customer->setDob('2010-06-11');
-    $customer->setId('1');
+  public function createDummyUserData(){
+    $userData1 = array(
+      AAMSettingsFields::EMAIL => 'abc@mail.com',
+      AAMSettingsFields::LAST_NAME => 'Perez',
+      AAMSettingsFields::FIRST_NAME => 'Pedro',
+      AAMSettingsFields::PHONE => '567891234',
+      AAMSettingsFields::GENDER => 'Male',
+      AAMSettingsFields::EXTERNAL_ID => '1',
+      AAMSettingsFields::COUNTRY => 'US',
+      AAMSettingsFields::CITY => 'Seattle',
+      AAMSettingsFields::STATE => 'WA',
+      AAMSettingsFields::ZIP_CODE => '12345',
+      AAMSettingsFields::DATE_OF_BIRTH => '2010-06-11',
+    );
+    $userData2 = array(
+      AAMSettingsFields::EMAIL => 'def@mail.com',
+      AAMSettingsFields::LAST_NAME => 'Homer',
+      AAMSettingsFields::FIRST_NAME => 'Simpson',
+      AAMSettingsFields::PHONE => '12345678',
+      AAMSettingsFields::GENDER => 'Male',
+      AAMSettingsFields::EXTERNAL_ID => '2',
+      AAMSettingsFields::COUNTRY => 'US',
+      AAMSettingsFields::CITY => 'Springfield',
+      AAMSettingsFields::STATE => 'OH',
+      AAMSettingsFields::ZIP_CODE => '12345',
+      AAMSettingsFields::DATE_OF_BIRTH => '1982-06-11',
+    );
 
-    $this->magentoDataHelper->method('getCurrentCustomer')->willReturn($customer);
-
-    return $customer;
-  }
-
-  public function createDummyAddress(){
-    $address = $this->objectManager->getObject( '\Magento\Customer\Model\Address' );
-    $address->setCity('Seattle');
-    $address->setPostcode('98109');
-    $address->setCountryId('US');
-    $address->setTelephone('567891234');
-
-    $this->magentoDataHelper->method('getCustomerAddress')->willReturn($address);
-
-    return $address;
-  }
-
-  public function createDummyRegionCode(){
-    $code = 'WA';
-    $this->magentoDataHelper->method('getRegionCodeForAddress')->willReturn($code);
-    return $code;
-  }
-
-  public function createDummyGender(){
-    $gender = 'Male';
-    $this->magentoDataHelper->method('getGenderAsString')->willReturn($gender);
-    return $gender;
+    $this->magentoDataHelper->method('getUserDataFromSession')->willReturn($userData1);
+    $this->magentoDataHelper->method('getUserDataFromOrder')->willReturn($userData2);
   }
 
   private function assertUserDataNull($userData){
@@ -95,36 +91,8 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
     $this->assertNull($userData->getPhone());
   }
 
-  private function assertEqualUserDataFromCustomer($customer, $userData){
-    $this->assertEquals($userData->getEmail(), $customer->getEmail());
-    $this->assertEquals($userData->getFirstName(), $customer->getFirstname());
-    $this->assertEquals($userData->getLastName(), $customer->getLastname());
-    $this->assertEquals($userData->getDateOfBirth(), date("Ymd", strtotime($customer->getDob())) );
-    $this->assertEquals($userData->getExternalId(), Util::hash($customer->getId()));
-  }
-
-  private function assertEqualUserDataFromAddress($address, $userData){
-    $this->assertEquals($userData->getCity(), $address->getCity());
-    $this->assertEquals($userData->getZipCode(), $address->getPostcode());
-    $this->assertEquals($userData->getCountryCode(), $address->getCountryId());
-    $this->assertEquals($userData->getPhone(), $address->getTelephone());
-  }
-
-  private function assertEqualUserDataFromRegion($regionCode, $userData){
-    $this->assertEquals($regionCode, $userData->getState());
-  }
-
-  private function assertEqualUserDataFromGender($gender, $userData){
-    $this->assertEquals($gender, $userData->getGender());
-  }
-
   public function testEventWithoutUserDataWhenAamSettingsNotFound(){
     $this->fbeHelper->method('getAAMSettings')->willReturn(null);
-
-    $customer = $this->createDummyCustomer();
-    $address = $this->createDummyAddress();
-    $regionCode = $this->createDummyRegionCode();
-    $gender = $this->createDummyGender();
 
     $event = ServerEventFactory::createEvent('ViewContent', array());
     $this->serverSideHelper->sendEvent($event);
@@ -139,17 +107,26 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
     $settings->setEnableAutomaticMatching(false);
     $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
 
-    $customer = $this->createDummyCustomer();
-    $address = $this->createDummyAddress();
-    $regionCode = $this->createDummyRegionCode();
-    $gender = $this->createDummyGender();
-
     $event = ServerEventFactory::createEvent('ViewContent', array());
     $this->serverSideHelper->sendEvent($event);
     $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
     $event = $this->serverSideHelper->getTrackedEvents()[0];
 
     $this->assertUserDataNull($event->getUserData());
+  }
+
+  public function assertEqualUserData($userData, $userDataArray){
+    $this->assertEquals($userData->getEmail(), $userDataArray[AAMSettingsFields::EMAIL]);
+    $this->assertEquals($userData->getFirstName(), $userDataArray[AAMSettingsFields::FIRST_NAME]);
+    $this->assertEquals($userData->getLastName(), $userDataArray[AAMSettingsFields::LAST_NAME]);
+    $this->assertEquals($userData->getDateOfBirth(), date("Ymd", strtotime($userDataArray[AAMSettingsFields::DATE_OF_BIRTH])));
+    $this->assertEquals($userData->getGender(), $userDataArray[AAMSettingsFields::GENDER][0]);
+    $this->assertEquals($userData->getExternalId(), Util::hash($userDataArray[AAMSettingsFields::EXTERNAL_ID]));
+    $this->assertEquals($userData->getCity(), $userDataArray[AAMSettingsFields::CITY]);
+    $this->assertEquals($userData->getZipCode(), $userDataArray[AAMSettingsFields::ZIP_CODE]);
+    $this->assertEquals($userData->getCountryCode(), $userDataArray[AAMSettingsFields::COUNTRY]);
+    $this->assertEquals($userData->getPhone(), $userDataArray[AAMSettingsFields::PHONE]);
+    $this->assertEquals($userData->getState(), $userDataArray[AAMSettingsFields::STATE]);
   }
 
   public function testEventWithUserDataWhenAamEnabled(){
@@ -161,22 +138,39 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
 
     $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
 
-    $customer = $this->createDummyCustomer();
-    $address = $this->createDummyAddress();
-    $regionCode = $this->createDummyRegionCode();
-    $gender = $this->createDummyGender();
-
     $event = ServerEventFactory::createEvent('ViewContent', array());
     $this->serverSideHelper->sendEvent($event);
     $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
 
     $event = $this->serverSideHelper->getTrackedEvents()[0];
     $userData = $event->getUserData();
-    $this->assertEqualUserDataFromCustomer($customer, $userData);
-    $this->assertEqualUserDataFromAddress($address, $userData);
-    $this->assertEqualUserDataFromGender($gender, $userData);
-    $this->assertEqualUserDataFromRegion($regionCode, $userData);
+
+    $userDataFromSession = $this->magentoDataHelper->getUserDataFromSession();
+
+    $this->assertEqualUserData($userData, $userDataFromSession);
   }
+
+  public function testEventWithPassedUserDataWhenAamEnabled(){
+    $settings = new AdsPixelSettings();
+    $settings->setEnableAutomaticMatching(true);
+    $settings->setEnabledAutomaticMatchingFields(
+      AAMSettingsFields::getAllFields()
+    );
+
+    $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
+
+    $userDataFromOrder = $this->magentoDataHelper->getUserDataFromOrder();
+
+    $event = ServerEventFactory::createEvent('ViewContent', array());
+    $this->serverSideHelper->sendEvent($event, $userDataFromOrder);
+    $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
+
+    $event = $this->serverSideHelper->getTrackedEvents()[0];
+    $userData = $event->getUserData();
+
+    $this->assertEqualUserData($userData, $userDataFromOrder);
+  }
+
 
   private function createSubset($fields){
     shuffle($fields);
@@ -230,10 +224,6 @@ class ServerSideHelperTest extends \PHPUnit\Framework\TestCase{
 
   public function testEventWithRequestedUserDataWhenAamEnabled(){
     $possibleFields = AAMSettingsFields::getAllFields();
-    $customer = $this->createDummyCustomer();
-    $address = $this->createDummyAddress();
-    $regionCode = $this->createDummyRegionCode();
-    $gender = $this->createDummyGender();
     $settings = new AdsPixelSettings();
     $settings->setEnableAutomaticMatching(true);
     $this->fbeHelper->method('getAAMSettings')->willReturn($settings);

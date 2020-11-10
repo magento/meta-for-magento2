@@ -68,11 +68,13 @@ class Purchase implements ObserverInterface {
         'order_id' => strval($this->_magentoDataHelper->getOrderId())
       ];
       $event = ServerEventFactory::createEvent('Purchase', array_filter($customData), $eventId );
-      $this->_serverSideHelper->sendEvent($event);
+      $userDataFromOrder = $this->_magentoDataHelper->getUserDataFromOrder();
+      $this->_serverSideHelper->sendEvent($event, $userDataFromOrder);
     }
     catch( Exception $e ){
       $this->_fbeHelper->log(json_encode($e));
     }
     return $this;
   }
+
 }
