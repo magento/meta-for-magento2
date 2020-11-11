@@ -6,4 +6,10 @@
     <event name="catalog_product_save_after">
         <observer name="custom_save_product" instance="Facebook\BusinessExtension\Observer\ProcessProductAfterSaveEventObserver" />
     </event>
+    <event name="catalog_category_save_after">
+        <observer name="custom_save_category" instance="Facebook\BusinessExtension\Observer\ProcessCategoryAfterSaveEventObserver" />
+    </event>
+    <event name="catalog_category_delete_after">
+        <observer name="custom_delete_category" instance="Facebook\BusinessExtension\Observer\ProcessCategoryAfterDeleteEventObserver" />
+    </event>
 </config>

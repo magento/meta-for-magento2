@@ -5,6 +5,7 @@
 
 namespace Facebook\BusinessExtension\Helper;
 
+use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\ObjectManagerInterface;
@@ -177,6 +178,16 @@ class FBEHelper extends AbstractHelper {
     }
   }
 
+  public function deleteConfig($configKey)
+  {
+      try{
+          $config_row = $this->_configFactory->create()->load($configKey);
+          $config_row->delete();
+      } catch (\Exception $e){
+          $this->logException($e);
+      }
+  }
+
   public function getCurrentStorefrontLocaleCode() {
     return $this->_objectManager->get('\Magento\Store\Api\Data\StoreInterface')->getLocaleCode();
   }
@@ -337,37 +348,41 @@ class FBEHelper extends AbstractHelper {
     return $this->_directoryList->getPath($type);
   }
 
-  public function getAPIVersion($access_token) {
-    $api_version = null;
-    try {
-      $config_row = $this->_configFactory->create()->load('fb/api/version');
-      $api_version = $config_row ? $config_row->getConfigValue() : null;
-      $this->log("Current api version : ".$api_version);
+  public function getAPIVersion() {
+      $access_token = $this->getAccessToken();
+      if ($access_token == null)
+      {
+          $this->_fbeHelper->log("can't find access token, won't get api update version ");
+          return;
+      }
+      $api_version = null;
+      try {
 
-      $version_last_update = $config_row ? $config_row->getUpdateTime() : null;
-      $this->log("Version last update: ".$version_last_update);
+          $config_row = $this->_configFactory->create()->load('fb/api/version');
+          $api_version = $config_row ? $config_row->getConfigValue() : null;
+          //$this->log("Current api version : ".$api_version);
+          $version_last_update = $config_row ? $config_row->getUpdateTime() : null;
+          //$this->log("Version last update: ".$version_last_update);
+          $is_updated_version = $this->isUpdatedVersion($version_last_update);
+          if ($api_version && $is_updated_version) {
+              //$this->log("Returning the version already stored in db : ".$api_version);
+              return $api_version;
+          }
+          $this->_curl->addHeader("Authorization", "Bearer " . $access_token);
+          $this->_curl->get(self::FB_GRAPH_BASE_URL.'api_version');
+          //$this->log("The API call: ".self::FB_GRAPH_BASE_URL.'api_version');
+          $response = $this->_curl->getBody();
+          //$this->log("The API reponse : ".json_encode($response));
+          $decode_response = json_decode($response);
+          $api_version = $decode_response->api_version;
+          //$this->log("The version fetched via API call: ".$api_version);
+          $this->saveConfig('fb/api/version', $api_version);
 
-      $is_updated_version = $this->isUpdatedVersion($version_last_update);
-      if ($api_version && $is_updated_version) {
-        $this->log("Returning the version already stored in db : ".$api_version);
-        return $api_version;
+      }catch(\Exception $e) {
+          $this->log("Failed to fetch latest api version with error ".$e->getMessage());
       }
 
-      $this->_curl->addHeader("Authorization", "Bearer " . $access_token);
-      $this->_curl->get(self::FB_GRAPH_BASE_URL.'api_version');
-      $this->log("The API call: ".self::FB_GRAPH_BASE_URL.'api_version');
-
-      $response = $this->_curl->getBody();
-      $this->log("The API reponse : ".json_encode($response));
-      $decode_response = json_decode($response);
-      $api_version = $decode_response->api_version;
-      $this->log("The version fetched via API call: ".$api_version);
-
-      $this->saveConfig('fb/api/version', $api_version);
-    }catch(\Exception $e) {
-      $this->log("Failed to fetch latest api version with error ".$e->getMessage());
-    }
-    return $api_version ? $api_version : self::CURRENT_API_VERSION;
+      return $api_version ? $api_version : self::CURRENT_API_VERSION;
   }
 
   public function logPixelEvent($pixel_id, $pixel_event) {
@@ -380,7 +395,7 @@ class FBEHelper extends AbstractHelper {
     try {
       $connection= $this->_resourceConnection->getConnection();
       $facebook_config = $this->_resourceConnection->getTableName('facebook_business_extension_config');
-      $sql = "DELETE  FROM $facebook_config";
+      $sql = "DELETE  FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' ";
       $connection->query($sql);
       $response['success'] = true;
       $response['message'] = self::DELETE_SUCCESS_MESSAGE;
@@ -478,4 +493,31 @@ class FBEHelper extends AbstractHelper {
     }
     return null;
   }
+
+    // Generates a map of the form : 4 => "Root > Mens > Shoes"
+    public function generateCategoryNameMap()
+    {
+        $categories = $this->getObject(CategoryCollection::class)
+            ->addAttributeToSelect('name')
+            ->addAttributeToSelect('path')
+            ->addAttributeToSelect('is_active')
+            ->addAttributeToFilter('is_active', 1);
+        $name = [];
+        $breadcrumb = [];
+        foreach ($categories as $category) {
+            $entity_id = $category->getId();
+            $name[$entity_id] = $category->getName();
+            $breadcrumb[$entity_id] = $category->getPath();
+        }
+        // Converts the product category paths to human readable form.
+        // e.g.  "1/2/3" => "Root > Mens > Shoes"
+        foreach ($name as $id => $value) {
+            $breadcrumb[$id] = implode(" > ", array_filter(array_map(
+                function ($inner_id) use (&$name) {
+                    return isset($name[$inner_id]) ? $name[$inner_id] : null;
+                },
+                explode("/", $breadcrumb[$id]))));
+        }
+        return $breadcrumb;
+    }
 }

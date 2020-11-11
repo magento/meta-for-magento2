@@ -10,7 +10,11 @@
         <schedule>*/20 * * * *</schedule>
 
     </job>
+    <job name="facebook_business_extension_category_sync_cronjob" instance="Facebook\BusinessExtension\Cron\CategorySyncCron" method="execute">
+        <!-- daily at 0:0-->
+        <schedule>0 0 * * *</schedule>
 
+    </job>
 </group>
 
 </config>

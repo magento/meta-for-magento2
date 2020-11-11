@@ -6,10 +6,10 @@ namespace Facebook\BusinessExtension\Model\Feed;
 
 use Exception;
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Model\Feed\EnhancedCatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\CatalogInventory\Model\Stock\Item;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
@@ -54,13 +54,16 @@ class ProductFeed
 
     protected $current_currency;
 
+    protected $enhanced_catalog_helper;
+
     /**
      * Constructor
      * @param FBEHelper $helper
      */
-    public function __construct(FBEHelper $helper)
+    public function __construct(FBEHelper $helper, EnhancedCatalogHelper $enhanced_catalog_helper)
     {
         $this->_fbeHelper = $helper;
+        $this->enhanced_catalog_helper = $enhanced_catalog_helper;
     }
 
     protected function isValidCondition($condition)
@@ -298,34 +301,6 @@ class ProductFeed
         return implode(" | ", $category_names);
     }
 
-    // Generates a map of the form : 4 => "Root > Mens > Shoes"
-    private function generateCategoryNameMap()
-    {
-        $categories = $this->_fbeHelper
-            ->getObject(CategoryCollection::class)
-            ->addAttributeToSelect('name')
-            ->addAttributeToSelect('path')
-            ->addAttributeToSelect('is_active')
-            ->addAttributeToFilter('is_active', 1);
-        $name = [];
-        $breadcrumb = [];
-        foreach ($categories as $category) {
-            $entity_id = $category->getId();
-            $name[$entity_id] = $category->getName();
-            $breadcrumb[$entity_id] = $category->getPath();
-        }
-        // Converts the product category paths to human readable form.
-        // e.g.  "1/2/3" => "Root > Mens > Shoes"
-        foreach ($name as $id => $value) {
-            $breadcrumb[$id] = implode(" > ", array_filter(array_map(
-                function ($inner_id) use (&$name) {
-                    return isset($name[$inner_id]) ? $name[$inner_id] : null;
-                },
-                explode("/", $breadcrumb[$id]))));
-        }
-        return $breadcrumb;
-    }
-
     protected function buildProductAttrText(
         $attr_name,
         $attr_value,
@@ -406,7 +381,7 @@ class ProductFeed
         $this->store_url = $this->_fbeHelper->getBaseUrl();
         $this->store_id = $this->_fbeHelper->getDefaultStoreId();
         $this->currency_strip_needed = true;
-        $this->categoryNameMap = $this->generateCategoryNameMap();
+        $this->categoryNameMap = $this->_fbeHelper->generateCategoryNameMap();
 
         $request = [];
         /** @var Item $stock */
@@ -492,8 +467,8 @@ class ProductFeed
             }
         }
 
+        $this->enhanced_catalog_helper->AssignECAttribute($product, $request_data);
         $request[self::ATTR_DATA] = $request_data;
-
         return $request;
     }
 

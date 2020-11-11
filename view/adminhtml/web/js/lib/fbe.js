@@ -41,6 +41,17 @@ var ajaxParam = function (params) {
 
 var FBEFlowContainer = React.createClass({
 
+    getDefaultProps: function() {
+        console.log("init props installed "+window.facebookBusinessExtensionConfig.installed);
+        return {
+            installed: window.facebookBusinessExtensionConfig.installed
+        };
+    },
+    getInitialState: function() {
+        console.log("change state");
+        return {installed: this.props.installed};
+    },
+
   bindMessageEvents: function bindMessageEvents() {
     var _this = this;
     if (FBUtils.isIE() && window.MessageChannel) {
@@ -72,13 +83,14 @@ var FBEFlowContainer = React.createClass({
         if(action != null && action === 'delete') {
           // Delete asset ids stored in db instance.
           _this.consoleLog("Successfully uninstalled FBE");
-          _this.deleteFBAssets();
+            _this.deleteFBAssets();
         }else if(action != null && action === 'create') {
           _this.savePixelId(pixelId);
           _this.saveAccessToken(accessToken);
           _this.saveProfilesData(profiles);
-          _this.pushFeed(accessToken, catalogId);
           _this.saveAAMSettings(pixelId);
+          _this.pushFeed(accessToken, catalogId);
+          _this.setState({installed: 'true'});
         }
       }else {
         _this.consoleLog("No response received after setup");
@@ -94,6 +106,7 @@ var FBEFlowContainer = React.createClass({
     jQuery.ajax({
       type: 'post',
       url: ajaxify(window.facebookBusinessExtensionConfig.setPixelId),
+      async : false,
       data: ajaxParam({
         pixelId: pixelId,
       }),
@@ -107,7 +120,6 @@ var FBEFlowContainer = React.createClass({
           msg = "There was a problem saving the pixel. Please try again";
         }
         _this.consoleLog(msg);
-        location.reload();
       },
       error: function () {
         console.error('There was a problem saving the pixel with id', pixelId);
@@ -123,7 +135,8 @@ var FBEFlowContainer = React.createClass({
     jQuery.ajax({
       type: 'post',
       url: ajaxify(window.facebookBusinessExtensionConfig.setAccessToken),
-      data: ajaxParam({
+        async : false,
+        data: ajaxParam({
         accessToken: accessToken,
       }),
       success: function onSuccess(data, _textStatus, _jqXHR) {
@@ -143,7 +156,8 @@ var FBEFlowContainer = React.createClass({
     jQuery.ajax({
       type: 'post',
       url: ajaxify(window.facebookBusinessExtensionConfig.setProfilesData),
-      data: ajaxParam({
+        async : false,
+        data: ajaxParam({
         profiles: JSON.stringify(profiles),
       }),
       success: function onSuccess(data, _textStatus, _jqXHR) {
@@ -156,9 +170,10 @@ var FBEFlowContainer = React.createClass({
   },
   saveAAMSettings: function saveAAMSettings(pixelId){
     var _this = this;
-    jQuery.ajax({
+      jQuery.ajax({
       'type': 'post',
       url: ajaxify(window.facebookBusinessExtensionConfig.setAAMSettings),
+      async : false,
       data: ajaxParam({
         pixelId: pixelId,
       }),
@@ -177,14 +192,15 @@ var FBEFlowContainer = React.createClass({
   },
   pushFeed: function pushFeed(accessToken, catalogId) {
     var _this = this;
-    if (!accessToken) {
+      if (!accessToken) {
       console.error('Facebook Business Extension Error: got no access token to push product feed');
       return;
     }
     jQuery.ajax({
       type: 'post',
       url: ajaxify(window.facebookBusinessExtensionConfig.setFeedPush),
-      data: ajaxParam({
+        async : false,
+        data: ajaxParam({
         accessToken: accessToken,
         externalBusinessId: window.facebookBusinessExtensionConfig.externalBusinessId,
         catalogId: catalogId,
@@ -201,7 +217,7 @@ var FBEFlowContainer = React.createClass({
   },
   deleteFBAssets: function deleteFBAssets() {
     var _this = this;
-    jQuery.ajax({
+      jQuery.ajax({
       type: 'delete',
       url: ajaxify(window.facebookBusinessExtensionConfig.deleteConfigKeys),
       success: function onSuccess(data, _textStatus, _jqXHR) {
@@ -212,7 +228,7 @@ var FBEFlowContainer = React.createClass({
           msg = data.error_message;
         }
         _this.consoleLog(msg);
-        location.reload();
+        _this.setState({installed: 'false'});
       },
       error: function() {
         console.error('There was a problem deleting the connection, Please try again.');
@@ -231,7 +247,7 @@ var FBEFlowContainer = React.createClass({
     return 'app_id='+window.facebookBusinessExtensionConfig.appId +
             '&timezone='+window.facebookBusinessExtensionConfig.timeZone+
             '&external_business_id='+window.facebookBusinessExtensionConfig.externalBusinessId+
-            '&installed='+window.facebookBusinessExtensionConfig.installed+
+            '&installed='+this.state.installed+
             '&system_user_name='+window.facebookBusinessExtensionConfig.systemUserName+
             '&business_vertical='+window.facebookBusinessExtensionConfig.businessVertical+
             '&version='+window.facebookBusinessExtensionConfig.version+

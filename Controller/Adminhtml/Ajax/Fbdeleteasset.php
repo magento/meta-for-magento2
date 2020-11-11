@@ -7,7 +7,7 @@ namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 
 
 class Fbdeleteasset extends AbstractAjax {
-
+    
   public function __construct(
     \Magento\Backend\App\Action\Context $context,
     \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
@@ -16,6 +16,6 @@ class Fbdeleteasset extends AbstractAjax {
   }
 
   public function executeForJson() {
-    return $this->_fbeHelper->deleteConfigKeys();
+      return $this->_fbeHelper->deleteConfigKeys();
   }
 }
