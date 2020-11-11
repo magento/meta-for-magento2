@@ -4,7 +4,7 @@
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  */
 
-namespace Facebook\BusinessExtension\Model\Configs\Attributes;
+namespace Facebook\BusinessExtension\Model\Config\Source\Product;
 
 class DecorStyle extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
 {

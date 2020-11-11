@@ -3,9 +3,9 @@
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  */
 
-namespace Facebook\BusinessExtension\Model\Configs\Attributes;
+namespace Facebook\BusinessExtension\Model\Config;
 
-class Config
+class ProductAttributes
 {
     protected $all_attributes;
     protected $category_attributes;
@@ -28,7 +28,7 @@ class Config
         $this->attributes_config = array(
             'facebook_age_group' => [
                 'label' => 'Age Group',
-                'source' => 'Facebook\BusinessExtension\Model\Configs\Attributes\AgeGroup',
+                'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\AgeGroup',
                 'code' => 'facebook_age_group',
                 'input' => 'select',
                 'type' => 'text',
@@ -37,7 +37,7 @@ class Config
             ],
             'facebook_gender' => [
                 'label' => 'Gender',
-                'source' => 'Facebook\BusinessExtension\Model\Configs\Attributes\Gender',
+                'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\Gender',
                 'code' => 'facebook_gender',
                 'input' => 'select',
                 'type' => 'text',
@@ -46,7 +46,7 @@ class Config
             ],
             'facebook_pattern' => [
                 'label' => 'Pattern',
-                'source' => 'Facebook\BusinessExtension\Model\Configs\Attributes\Pattern',
+                'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\Pattern',
                 'code' => 'facebook_pattern',
                 'input' => 'select',
                 'type' => 'text',
@@ -55,7 +55,7 @@ class Config
             ],
             'facebook_decor_style' => [
                 'label' => 'Decor Style',
-                'source' => 'Facebook\BusinessExtension\Model\Configs\Attributes\DecorStyle',
+                'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\DecorStyle',
                 'code' => 'facebook_decor_style',
                 'input' => 'select',
                 'type' => 'text',
@@ -235,7 +235,7 @@ class Config
             ],
             'facebook_is_assembly_required' => [
                 'label' => 'Is Assembly Required',
-                'source' => 'Facebook\BusinessExtension\Model\Configs\Attributes\Assembly',
+                'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\Assembly',
                 'code' => 'facebook_is_assembly_required',
                 'input' => 'select',
                 'type' => 'text',

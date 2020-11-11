@@ -3,9 +3,9 @@
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  */
 
-namespace Facebook\BusinessExtension\Model\Configs\Attributes;
+namespace Facebook\BusinessExtension\Model\Config\Source\Product;
 
-class Assembly extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
+class Gender extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
 {
     /**
      * Get all options
@@ -17,8 +17,9 @@ class Assembly extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
         if ($this->_options === null) {
             $this->_options = [
                 ['value' => '', 'label' => __('Please Select')],
-                ['value' => 'yes', 'label' => __('Yes')],
-                ['value' => 'no', 'label' => __('No')],
+                ['value' => 'Male', 'label' => __('Male')],
+                ['value' => 'Female', 'label' => __('Female')],
+                ['value' => 'Unisex', 'label' => __('Unisex')],
             ];
         }
         return $this->_options;

@@ -14,7 +14,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
-use Facebook\BusinessExtension\Model\Configs\Attributes\Config;
+use Facebook\BusinessExtension\Model\Config\ProductAttributes;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use \Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
@@ -45,7 +45,7 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * contains fb attribute config
      *
-     * @var Config
+     * @var ProductAttributes
      */
     private $attributeConfig;
 
@@ -62,14 +62,14 @@ class UpgradeData implements UpgradeDataInterface
      * @param EavSetupFactory $eavSetupFactory
      * @param CategorySetupFactory $categorySetupFactory
      * @param SetFactory $attributeSetFactory
-     * @param Config $attributeConfig
+     * @param ProductAttributes $attributeConfig
      * @param FBEHelper $helper
      */
     public function __construct(
         EavSetupFactory $eavSetupFactory,
         CategorySetupFactory $categorySetupFactory,
         SetFactory $attributeSetFactory,
-        Config $attributeConfig,
+        ProductAttributes $attributeConfig,
         FBEHelper $helper
     )
     {
