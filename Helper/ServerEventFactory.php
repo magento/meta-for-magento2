@@ -19,7 +19,7 @@ class ServerEventFactory {
   public static function newEvent( $eventName , $eventId = null){
     // Capture default user-data parameters passed down from the client browser.
     $userData = (new UserData())
-                  ->setClientIpAddress(Util::getIpAddress())
+                  ->setClientIpAddress(self::getIpAddress())
                   ->setClientUserAgent(Util::getHttpUserAgent())
                   ->setFbp(Util::getFbp())
                   ->setFbc(Util::getFbc());
@@ -39,6 +39,41 @@ class ServerEventFactory {
     }
 
     return $event;
+  }
+
+  // Gets the ip address from the $_SERVER variable
+  private static function getIpAddress() {
+    $HEADERS_TO_SCAN = array(
+      'HTTP_CLIENT_IP',
+      'HTTP_X_FORWARDED_FOR',
+      'HTTP_X_FORWARDED',
+      'HTTP_X_CLUSTER_CLIENT_IP',
+      'HTTP_FORWARDED_FOR',
+      'HTTP_FORWARDED',
+      'REMOTE_ADDR'
+    );
+    foreach ($HEADERS_TO_SCAN as $header) {
+      if (array_key_exists($header, $_SERVER)) {
+        $ipList = explode(',', $_SERVER[$header]);
+        foreach($ipList as $ip) {
+          $trimmedIp = trim($ip);
+          if (self::isValidIpAddress($trimmedIp)) {
+            return $trimmedIp;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  // Checks if the given ip address is valid
+  private static function isValidIpAddress($ipAddress) {
+    return filter_var($ipAddress,
+                      FILTER_VALIDATE_IP,
+                      FILTER_FLAG_IPV4
+                      | FILTER_FLAG_IPV6
+                      | FILTER_FLAG_NO_PRIV_RANGE
+                      | FILTER_FLAG_NO_RES_RANGE);
   }
 
   // Fills customData member of $event with array $data

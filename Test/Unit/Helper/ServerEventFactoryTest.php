@@ -47,10 +47,25 @@ class ServerEventFactoryTest extends \PHPUnit\Framework\TestCase{
     $this->assertEquals('ViewContent', $event->getEventName());
   }
 
-  public function testNewEventHasIpAddress(){
-    $_SERVER['HTTP_CLIENT_IP'] = '192.168.0.1';
+  public function testNewEventHasIpAddressFromPublicIp(){
+    $_SERVER['HTTP_CLIENT_IP'] = '173.10.20.30';
+    $_SERVER['HTTP_X_FORWARDED_FOR'] = null;
     $event =  ServerEventFactory::newEvent('ViewContent');
-    $this->assertEquals($event->getUserData()->getClientIpAddress(), '192.168.0.1');
+    $this->assertEquals($event->getUserData()->getClientIpAddress(), '173.10.20.30');
+  }
+
+  public function testNewEventHasIpAddressFromIpList(){
+    $_SERVER['HTTP_CLIENT_IP'] = null;
+    $_SERVER['HTTP_X_FORWARDED_FOR'] = '173.10.20.30, 192.168.0.1';
+    $event =  ServerEventFactory::newEvent('ViewContent');
+    $this->assertEquals($event->getUserData()->getClientIpAddress(), '173.10.20.30');
+  }
+
+  public function testNewEventHasNoIpAddressFromPrivateIP(){
+    $_SERVER['HTTP_CLIENT_IP'] = null;
+    $_SERVER['HTTP_X_FORWARDED_FOR'] = '192.168.0.1';
+    $event =  ServerEventFactory::newEvent('ViewContent');
+    $this->assertNull($event->getUserData()->getClientIpAddress());
   }
 
   public function testNewEventHasUserAgent() {
