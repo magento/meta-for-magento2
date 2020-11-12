@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="facebook" translate="label" sortOrder="1000">
+            <label>Facebook</label>
+        </tab>
+        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Business Extension</label>
+            <tab>facebook</tab>
+            <resource>Facebook_BusinessExtension::system_config</resource>
+            <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Catalog Management</label>
+                <field id="collections_sync" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Collections Sync</label>
+                    <config_path>facebook/catalog_management/collections_sync</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Activates synchronization of Magento product categories to Facebook collections</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
