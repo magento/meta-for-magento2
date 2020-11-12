@@ -12,13 +12,15 @@ use Magento\Framework\ObjectManagerInterface;
 use FacebookAds\Api;
 use FacebookAds\Logger\CurlLogger;
 use FacebookAds\Object\ServerSide\Event;
-use FacebookAds\Object\ServerSide\EventRequest;
+use FacebookAds\Object\ServerSide\EventRequestAsync;
 use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\CustomData;
 use FacebookAds\Object\ServerSide\Content;
 use FacebookAds\Object\ServerSide\Util;
 use FacebookAds\Exception\Exception;
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
+
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * Helper to fire ServerSide Event.
@@ -169,14 +171,19 @@ class ServerSideHelper {
       $events = array();
       array_push($events, $event);
 
-      $request = (new EventRequest($this->_fbeHelper->getPixelID()))
+      $request = (new EventRequestAsync($this->_fbeHelper->getPixelID()))
           ->setEvents($events)
           ->setPartnerAgent($this->_fbeHelper->getPartnerAgent());
 
       $this->_fbeHelper->log('Sending event '.$event->getEventId());
 
-      $response = $request->execute();
-
+      $request->execute()
+        ->then(
+          null,
+          function (RequestException $e) {
+            $this->_fbeHelper->log("RequestException: ".$e->getMessage());
+          }
+        );
     } catch (Exception $e) {
       $this->_fbeHelper->log(json_encode($e));
     }
