@@ -5,13 +5,6 @@
 
 namespace Facebook\BusinessExtension\Observer;
 
-use FacebookAds\Api;
-use FacebookAds\Logger\CurlLogger;
-use FacebookAds\Object\ServerSide\Event;
-use FacebookAds\Object\ServerSide\EventRequest;
-use FacebookAds\Object\ServerSide\UserData;
-use FacebookAds\Object\ServerSide\CustomData;
-
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
