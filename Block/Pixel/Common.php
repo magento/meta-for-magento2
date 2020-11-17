@@ -7,7 +7,6 @@ namespace Facebook\BusinessExtension\Block\Pixel;
 
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\ObjectManagerInterface;
-use \Facebook\BusinessExtension\Helper\AAMSettingsFields;
 
 class Common extends \Magento\Framework\View\Element\Template {
   /**
@@ -42,57 +41,6 @@ class Common extends \Magento\Framework\View\Element\Template {
 
   public function getFacebookPixelID() {
     return $this->_fbeHelper->getPixelID();
-  }
-
-  public function getPixelInitCode(){
-    $aamSettings = $this->_fbeHelper->getAAMSettings();
-    $customer = $this->_magentoDataHelper->getCurrentCustomer();
-    if($customer && $aamSettings && $aamSettings->getEnableAutomaticMatching()){
-      try{
-        $address = $this->_magentoDataHelper->getCustomerAddress($customer);
-        $userInfo = array();
-        if(in_array(AAMSettingsFields::EMAIL, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userInfo['em'] = $customer->getEmail();
-        }
-        if(in_array(AAMSettingsFields::FIRST_NAME, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userInfo['fn'] = $customer->getFirstname();
-        }
-        if(in_array(AAMSettingsFields::LAST_NAME, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userInfo['ln'] = $customer->getLastname();
-        }
-        if(in_array(AAMSettingsFields::GENDER, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userInfo['ge'] = $this->_magentoDataHelper->getGenderAsString($customer);
-        }
-        if(in_array(AAMSettingsFields::DATE_OF_BIRTH, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userInfo['db'] = $customer->getDob() ? date("Ymd", strtotime($customer->getDob())) : null;
-        }
-        if(in_array(AAMSettingsFields::EXTERNAL_ID, $aamSettings->getEnabledAutomaticMatchingFields())){
-          $userInfo['external_id'] = $customer->getId();
-        }
-        if($address){
-          if(in_array(AAMSettingsFields::PHONE, $aamSettings->getEnabledAutomaticMatchingFields())){
-            $userInfo['ph'] = $address->getTelephone();
-          }
-          if(in_array(AAMSettingsFields::CITY, $aamSettings->getEnabledAutomaticMatchingFields())){
-            $userInfo['ct'] = $address->getCity();
-          }
-          if(in_array(AAMSettingsFields::STATE, $aamSettings->getEnabledAutomaticMatchingFields())){
-            $userInfo['st'] = $this->_magentoDataHelper->getRegionCodeForAddress($address);
-          }
-          if(in_array(AAMSettingsFields::ZIP_CODE, $aamSettings->getEnabledAutomaticMatchingFields())){
-            $userInfo['zp'] = $address->getPostcode();
-          }
-          if(in_array(AAMSettingsFields::COUNTRY, $aamSettings->getEnabledAutomaticMatchingFields())){
-            $userInfo['country'] = $address->getCountryId();
-          }
-        }
-        return json_encode(array_filter($userInfo), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
-      }
-      catch(Exception $e) {
-        $this->fbeHelper->logException($e);
-      }
-    }
-    return '{}';
   }
 
   public function getSource() {

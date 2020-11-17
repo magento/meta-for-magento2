@@ -15,6 +15,8 @@ abstract class CommonTest extends \PHPUnit\Framework\TestCase{
 
   protected $serverSideHelper;
 
+  protected  $aamFieldsExtractorHelper;
+
   /**
     * Used to reset or change values after running a test
     *
@@ -32,7 +34,8 @@ abstract class CommonTest extends \PHPUnit\Framework\TestCase{
     $this->fbeHelper = $this->createMock(\Facebook\BusinessExtension\Helper\FBEHelper::class);
     $this->magentoDataHelper = $this->createMock(\Facebook\BusinessExtension\Helper\MagentoDataHelper::class);
     $this->objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-    $this->serverSideHelper = new \Facebook\BusinessExtension\Helper\ServerSideHelper($this->fbeHelper, $this->magentoDataHelper);
+    $this->aamFieldsExtractorHelper = new \Facebook\BusinessExtension\Helper\AAMFieldsExtractorHelper($this->magentoDataHelper, $this->fbeHelper);
+    $this->serverSideHelper = new \Facebook\BusinessExtension\Helper\ServerSideHelper($this->fbeHelper, $this->aamFieldsExtractorHelper);
     $this->fbeHelper->method('getAccessToken')->willReturn('');
     $this->fbeHelper->method('getPixelId')->willReturn('123');
     $this->magentoDataHelper->method('getCurrency')->willReturn('USD');
