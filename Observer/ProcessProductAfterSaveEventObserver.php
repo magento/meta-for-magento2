@@ -5,7 +5,8 @@
 
 namespace Facebook\BusinessExtension\Observer;
 
-use Facebook\BusinessExtension\Model\Feed\ProductFeed;
+use Exception;
+use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
@@ -19,13 +20,22 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
     protected $_fbeHelper;
 
     /**
+     * @var BatchApi
+     */
+    protected $batchApi;
+
+    /**
      * Constructor
      * @param \Facebook\BusinessExtension\Helper\FBEHelper $helper
+     * @param BatchApi $batchApi
      */
     public function __construct(
-        \Facebook\BusinessExtension\Helper\FBEHelper $helper)
+        \Facebook\BusinessExtension\Helper\FBEHelper $helper,
+        BatchApi $batchApi
+    )
     {
         $this->_fbeHelper = $helper;
+        $this->batchApi = $batchApi;
     }
 
     /**
@@ -37,13 +47,17 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         $product = $observer->getEvent()->getProduct();
-        if ($product->getId()) {
-            /** @var ProductFeed $feedObj */
-            $feedObj = $this->_fbeHelper->getObject(ProductFeed::class);
-            $requestData = $feedObj->buildProductRequest($product);
+        if (!$product->getId()) {
+            return;
+        }
+
+        try {
+            $requestData = $this->batchApi->buildProductRequest($product);
             $requestParams = [];
             $requestParams[0] = $requestData;
             $response = $this->_fbeHelper->makeHttpRequest($requestParams, null);
+        } catch (Exception $e) {
+            $this->_fbeHelper->logException($e);
         }
     }
 }

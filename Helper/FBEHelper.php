@@ -352,7 +352,7 @@ class FBEHelper extends AbstractHelper {
       $access_token = $this->getAccessToken();
       if ($access_token == null)
       {
-          $this->_fbeHelper->log("can't find access token, won't get api update version ");
+          $this->log("can't find access token, won't get api update version ");
           return;
       }
       $api_version = null;

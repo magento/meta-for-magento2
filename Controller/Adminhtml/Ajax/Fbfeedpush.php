@@ -5,16 +5,23 @@
 
 namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 
+use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi;
+
 class Fbfeedpush extends AbstractAjax {
+
+    /**
+     * @var BatchApi
+     */
+    protected $batchApi;
 
   public function __construct (
     \Magento\Backend\App\Action\Context $context,
     \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
     \Facebook\BusinessExtension\Helper\FBEHelper $helper,
-    \Magento\Customer\Model\Session $customerSession
+    BatchApi $batchApi
   ) {
     parent::__construct($context, $resultJsonFactory, $helper);
-    $this->_customerSession = $customerSession;
+    $this->batchApi = $batchApi;
   }
 
   public function executeForJson() {
@@ -32,10 +39,9 @@ class Fbfeedpush extends AbstractAjax {
       $catalog_id = $this->getRequest()->getParam('catalogId');
       $this->saveCatalogId($catalog_id);
       if($access_token) {
-        $feed_obj = $this->_fbeHelper->getObject('Facebook\BusinessExtension\Model\Feed\ProductFeed');
-        $feed_push_response = $feed_obj->generateProductRequestData($access_token);
+        $feed_push_response = $this->batchApi->generateProductRequestData($access_token);
         $response['success'] = true;
-        $response['$feed_push_response'] = $feed_push_response;
+        $response['feed_push_response'] = $feed_push_response;
         $this->saveExternalBusinessId($external_business_id);
         return $response;
       }
