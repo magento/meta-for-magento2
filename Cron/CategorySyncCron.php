@@ -33,7 +33,8 @@ class CategorySyncCron{
         if($this->_system_config->isActiveCollectionsSync() == true){
             $this->_fbeHelper->log('start category sync cron job ' );
             $this->_category_collection->pushAllCategoriesToFbCollections();
+            return true;
         }
-        return null;
+        return false;
     }
 }
