@@ -342,7 +342,7 @@ class Builder
         $imageUrl = $this->trimAttribute(self::ATTR_IMAGE_URL, $images['main_image']);
 
         $entry = [
-            self::ATTR_RETAILER_ID          => $this->trimAttribute(self::ATTR_RETAILER_ID, $product->getSku()),
+            self::ATTR_RETAILER_ID          => $this->trimAttribute(self::ATTR_RETAILER_ID, $product->getId()),
             self::ATTR_ITEM_GROUP_ID        => $this->getItemGroupId($product),
             self::ATTR_NAME                 => $productTitle,
             self::ATTR_DESCRIPTION          => $this->getDescription($product),

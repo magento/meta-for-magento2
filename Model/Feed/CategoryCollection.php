@@ -299,12 +299,12 @@ class CategoryCollection
         $product_collection->getSelect()->limit(10000);
         $this->_fbeHelper->log("collection count:".(string)count($product_collection));
 
-        $skus = [];
+        $ids = [];
         foreach ($product_collection as $product)
         {
-            array_push($skus, "'".$product->getSku()."'");
+            array_push($ids, "'".$product->getId()."'");
         }
-        $filter = sprintf("{'retailer_id': {'is_any': [%s]}}", implode(',', $skus));
+        $filter = sprintf("{'retailer_id': {'is_any': [%s]}}", implode(',', $ids));
 //        $this->_fbeHelper->log("filter:".$filter);
 
         return $filter;

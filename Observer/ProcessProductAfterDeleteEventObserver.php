@@ -39,7 +39,7 @@ class ProcessProductAfterDeleteEventObserver implements ObserverInterface
         if ($product->getId()) {
             $requestData = [];
             $requestData['method'] = 'DELETE';
-            $requestData['retailer_id'] = $product->getSku();
+            $requestData['retailer_id'] = $product->getId();
             $requestParams = [];
             $requestParams[0] = $requestData;
             $response = $this->_fbeHelper->makeHttpRequest($requestParams, null);
