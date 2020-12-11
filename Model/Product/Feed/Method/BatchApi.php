@@ -98,7 +98,7 @@ class BatchApi
                         $exceptions++;
                         // Don't overload the logs, log the first 3 exceptions
                         if ($exceptions <= 3) {
-                            $this->_fbeHelper->logException($e);
+                            $this->fbeHelper->logException($e);
                         }
                         // If it looks like a systemic failure : stop feed generation
                         if ($exceptions > 100) {
