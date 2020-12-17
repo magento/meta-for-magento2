@@ -18,6 +18,7 @@ use Facebook\BusinessExtension\Model\Config\ProductAttributes;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use \Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
+use \Magento\Catalog\Model\Product;
 
 class UpgradeData implements UpgradeDataInterface
 {
@@ -117,19 +118,44 @@ class UpgradeData implements UpgradeDataInterface
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
         $categorySetup = $this->categorySetupFactory->create(['setup' => $setup]);
 
-        $this->helper->log("getVersion". $context->getVersion());
+        $this->helper->log("getVersion" . $context->getVersion());
+
+        // introducing google product category in 1.2.2
+        if (version_compare($context->getVersion(), '1.2.2') < 0) {
+            $attrCode = 'google_product_category';
+            try {
+                $eavSetup->addAttribute(Product::ENTITY, $attrCode, [
+                    'group' => 'General',
+                    'type' => 'varchar',
+                    'label' => 'Google Product Category',
+                    'input' => 'select',
+                    'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\GoogleProductCategory',
+                    'required' => false,
+                    'sort_order' => 10,
+                    'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
+                    'is_used_in_grid' => true,
+                    'is_visible_in_grid' => true,
+                    'is_filterable_in_grid' => true,
+                    'visible' => true,
+                    'is_html_allowed_on_front' => false,
+                    'visible_on_front' => false
+                ]);
+            } catch (Exception $e) {
+                $this->logger->critical($e);
+            }
+        }
+
         if (version_compare($context->getVersion(), '1.2.0') < 0) {
             $attributeConfig = $this->attributeConfig->getAttributesConfig();
             foreach ($attributeConfig as $attrCode => $config) {
                 // verify if already installed before
-                if(!$eavSetup->getAttributeId(\Magento\Catalog\Model\Product::ENTITY, $attrCode)) {
+                if (!$eavSetup->getAttributeId(Product::ENTITY, $attrCode)) {
                     //Create the attribute
-                    $this->helper->log($attrCode. " not exist before, process it" );
+                    $this->helper->log($attrCode . " not exist before, process it");
                     //  attribute does not exist
                     // add a new attribute
                     // and assign it to the "FacebookAttributeSet" attribute set
-                    $eavSetup->addAttribute(
-                        \Magento\Catalog\Model\Product::ENTITY,
+                    $eavSetup->addAttribute(Product::ENTITY,
                         $attrCode,
                         [
                             'type' => $config['type'],
@@ -154,9 +180,8 @@ class UpgradeData implements UpgradeDataInterface
                             'attribute_set' => 'FacebookAttributeSet' // assigning the attribute to the attribute set "FacebookAttributeSet"
                         ]
                     );
-                }
-                else{
-                    $this->helper->log($attrCode. " already installed, skip");
+                } else {
+                    $this->helper->log($attrCode . " already installed, skip");
                 }
             }
 
@@ -168,7 +193,7 @@ class UpgradeData implements UpgradeDataInterface
             $attributeGroupName = $this->attributeConfig->getAttributeGroupName();
 
             // get the catalog_product entity type id/code
-            $entityTypeId = $categorySetup->getEntityTypeId(\Magento\Catalog\Model\Product::ENTITY);
+            $entityTypeId = $categorySetup->getEntityTypeId(Product::ENTITY);
 
             // get the attribute set ids of all the attribute sets present in your Magento store
             $attributeSetIds = $eavSetup->getAllAttributeSetIds($entityTypeId);
