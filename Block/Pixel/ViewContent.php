@@ -5,6 +5,8 @@
 
 namespace Facebook\BusinessExtension\Block\Pixel;
 
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+
 class ViewContent extends Common {
 
   public function getContentIDs() {
@@ -23,6 +25,11 @@ class ViewContent extends Common {
     } else {
       return null;
     }
+  }
+
+  public function getContentType() {
+    $product = $this->_registry->registry('current_product');
+    return ($product->getTypeId() == Configurable::TYPE_CODE) ? 'product_group' : 'product';
   }
 
   public function getContentCategory() {

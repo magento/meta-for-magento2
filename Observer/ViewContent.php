@@ -5,6 +5,7 @@
 
 namespace Facebook\BusinessExtension\Observer;
 
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
@@ -47,8 +48,7 @@ class ViewContent implements ObserverInterface {
     try{
       $eventId = $observer->getData('eventId');
       $customData = [
-        'currency' => $this->_magentoDataHelper->getCurrency(),
-        'content_type' => 'product'
+        'currency' => $this->_magentoDataHelper->getCurrency()
       ];
       $product = $this->_registry->registry('current_product');
       if ($product && $product->getId()) {
@@ -62,6 +62,7 @@ class ViewContent implements ObserverInterface {
             'item_price' => $this->_magentoDataHelper->getValueForProduct($product)
           )
         ];
+        $customData['content_type'] = ($product->getTypeId() == Configurable::TYPE_CODE) ? 'product_group' : 'product';
       }
       $event = ServerEventFactory::createEvent('ViewContent', array_filter($customData), $eventId );
       $this->_serverSideHelper->sendEvent($event);
