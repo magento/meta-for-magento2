@@ -1,0 +1,44 @@
+<?php /* @var $block \Facebook\BusinessExtension\Block\Adminhtml\System\Config\ProductFeed */ ?>
+
+<script>
+    require([
+        'jquery',
+        'prototype'
+    ], function (jQuery) {
+        const resultBlock = jQuery('#fb_feed_upload_result');
+        jQuery('#fb_feed_upload_btn').click(function () {
+            const params = {};
+            new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+                parameters: params,
+                loaderArea: false,
+                asynchronous: true,
+                onCreate: function () {
+                    resultBlock.find('.fb-feed-upload-finished').hide();
+                    resultBlock.find('.fb-feed-upload-processing').show();
+                    jQuery('#fb_feed_upload_result_text').text('');
+                },
+                onSuccess: function (response) {
+                    resultBlock.find('.fb-feed-upload-processing').hide();
+
+                    let resultText = '';
+                    if (response.status > 200) {
+                        resultText = response.statusText;
+                    } else {
+                        resultText = 'Finished';
+                        resultBlock.find('.fb-feed-upload-finished').show();
+                    }
+                    jQuery('#fb_feed_upload_result_text').text(resultText);
+                    const json = response.responseJSON;
+                }
+            });
+        });
+
+    });
+</script>
+
+<?php echo $block->getButtonHtml() ?>
+<span id="fb_feed_upload_result">
+    <img class="fb-feed-upload-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src="<?php echo $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
+    <img class="fb-feed-upload-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <span id="fb_feed_upload_result_text"></span>
+</span>

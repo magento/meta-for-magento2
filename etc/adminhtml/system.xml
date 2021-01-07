@@ -11,6 +11,10 @@
             <resource>Facebook_BusinessExtension::system_config</resource>
             <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Catalog Management</label>
+                <field id="product_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Push Products</label>
+                    <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
+                </field>
                 <field id="collections_sync" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Collections Sync</label>
                     <config_path>facebook/catalog_management/collections_sync</config_path>
