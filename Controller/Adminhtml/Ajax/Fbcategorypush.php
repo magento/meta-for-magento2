@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ */
 namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 use  Facebook\BusinessExtension\Model\Feed\CategoryCollection;
 
