@@ -27,7 +27,7 @@ class FBEHelper extends AbstractHelper
     const DELETE_FAILURE_MESSAGE = "There was a problem deleting the connection.
       Please try again.";
 
-    const CURRENT_API_VERSION = "v6.0";
+    const CURRENT_API_VERSION = "v8.0";
 
     const MODULE_NAME = "Facebook_BusinessExtension";
 
