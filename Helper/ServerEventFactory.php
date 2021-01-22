@@ -28,6 +28,7 @@ class ServerEventFactory {
               ->setEventName($eventName)
               ->setEventTime(time())
               ->setEventSourceUrl(Util::getRequestUri())
+              ->setActionSource('website')
               ->setUserData($userData)
               ->setCustomData(new CustomData());
 

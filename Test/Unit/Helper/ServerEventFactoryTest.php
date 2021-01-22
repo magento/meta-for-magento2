@@ -47,6 +47,11 @@ class ServerEventFactoryTest extends \PHPUnit\Framework\TestCase{
     $this->assertEquals('ViewContent', $event->getEventName());
   }
 
+  public function testNewEventHasActionSource() {
+    $event =  ServerEventFactory::newEvent('ViewContent');
+    $this->assertEquals('website', $event->getActionSource());
+  }
+
   public function testNewEventHasIpAddressFromPublicIp(){
     $_SERVER['HTTP_CLIENT_IP'] = '173.10.20.30';
     $_SERVER['HTTP_X_FORWARDED_FOR'] = null;
