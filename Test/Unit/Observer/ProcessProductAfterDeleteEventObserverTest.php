@@ -33,8 +33,8 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest{
     public function setUp() {
         parent::setUp();
         $this->_product = $this->createMock(\Magento\Catalog\Model\Product::class);
-        $this->_product->expects($this->once())->method('getId')->will($this->returnValue("1234"));
-        $this->_product->expects($this->atLeastOnce())->method('getSku')->will($this->returnValue("testSku"));
+        $this->_product->expects($this->atLeastOnce())->method('getId')->will($this->returnValue("1234"));
+        $this->_product->expects($this->never())->method('getSku');
 
         $event = $this->createPartialMock(\Magento\Framework\Event::class, ['getProduct']);
         $event->expects($this->once())->method('getProduct')->will($this->returnValue($this->_product));
