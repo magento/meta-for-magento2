@@ -34,15 +34,17 @@ class Fbfeedpush extends AbstractAjax {
       return $response;
     }
     try {
+        /* even the rest code failed, we should store external business id and catalog id,
+        because user can push feed sync button in configuration*/
       $access_token = $this->getRequest()->getParam('accessToken');
       $external_business_id = $this->getRequest()->getParam('externalBusinessId');
+      $this->saveExternalBusinessId($external_business_id);
       $catalog_id = $this->getRequest()->getParam('catalogId');
       $this->saveCatalogId($catalog_id);
       if($access_token) {
         $feed_push_response = $this->batchApi->generateProductRequestData($access_token);
         $response['success'] = true;
         $response['feed_push_response'] = $feed_push_response;
-        $this->saveExternalBusinessId($external_business_id);
         return $response;
       }
     }catch (\Exception $e) {

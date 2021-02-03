@@ -358,6 +358,38 @@ class FBEHelper extends AbstractHelper
         return $api_version ? $api_version : self::CURRENT_API_VERSION;
     }
 
+    /*
+     * TODO decide which ids we want to return for commerce feature
+     * This function queries FBE assets and other commerce related assets. We have stored most of them during FBE setup,
+     * such as BM, Pixel, catalog, profiles, ad_account_id. We might want to store or query ig_profiles,
+     * commerce_merchant_settings_id, pages in the future.
+     * API dev doc https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features
+     * Here is one example response, we would expect commerce_merchant_settings_id as well in commerce flow
+     * {"data":[{"business_manager_id":"12345","onsite_eligible":false,"pixel_id":"12333","profiles":["112","111"],
+     * "ad_account_id":"111","catalog_id":"111","pages":["111"],"instagram_profiles":["111"]}]}
+     *  usage: $_bm = $_assets['business_manager_ids'];
+     */
+    public function QueryFBEInstalls($external_business_id=null)
+    {
+        if($external_business_id == null){
+            $external_business_id = $this->getFBEExternalBusinessId();
+        }
+        $accessToken = $this->getAccessToken();
+        $url_suffix = "/fbe_business/fbe_installs?fbe_external_business_id=".$external_business_id;
+        $url = $this::FB_GRAPH_BASE_URL.$this->getAPIVersion().$url_suffix;
+        $this->log($url);
+        try {
+            $this->_curl->addHeader("Authorization", "Bearer " . $accessToken);
+            $this->_curl->get($url);
+            $response = $this->_curl->getBody();
+            $this->log("The FBE Install reponse : ".json_encode($response));
+            $decode_response = json_decode($response, true);
+            $_assets = $decode_response['data'][0];
+        }catch (\Exception $e) {
+            $this->log("Failed to query FBEInstalls" . $e->getMessage());
+        }
+    }
+
     public function logPixelEvent($pixel_id, $pixel_event)
     {
         $this->log($pixel_event . " event fired for Pixel id : " . $pixel_id);

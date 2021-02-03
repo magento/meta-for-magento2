@@ -388,7 +388,7 @@ var FBEFlowContainer = React.createClass({
             '&installed='+this.state.installed+
             '&system_user_name='+window.facebookBusinessExtensionConfig.systemUserName+
             '&business_vertical='+window.facebookBusinessExtensionConfig.businessVertical+
-            '&version='+window.facebookBusinessExtensionConfig.version+
+            '&channel='+window.facebookBusinessExtensionConfig.channel+
             '&currency='+ window.facebookBusinessExtensionConfig.currency +
             '&business_name='+ window.facebookBusinessExtensionConfig.businessName;
   },
