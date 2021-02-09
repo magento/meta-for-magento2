@@ -11,7 +11,7 @@
     {
       "type": "github",
       "url": "https://github.com/facebookincubator/facebook-for-magento2"
-    },
+    }
   ],
   "autoload": {
     "files": [ "registration.php" ],
