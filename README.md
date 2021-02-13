@@ -53,73 +53,63 @@ WAS INSTALLED CORRECTLY BEFORE SHIPPING THE CODE TO PRODUCTION
 
 Before installing, verify your Magento cron job is up and running, read more about it on [this](https://devdocs.magento.com/guides/v2.3/config-guide/cli/config-cli-subcommands-cron.html) page.
 
-1. Login to your server instance.
+Login to your server instance.
 
-2. Execute command `cd /var/www/Magento/app/code` or
- `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.
+### INSTALLATION
+#### Composer Installation
+* Go to your magento root path
+* Execute command `cd /var/www/Magento` or
+ `cd /var/www/html/Magento` based on your server Centos or Ubuntu.
+* run composer command: `composer require facebook/facebook-for-magento2`
 
-3. Make sure you have correct read/write permissions on your Magento root directory.
-    Read about them [here](https://magento.stackexchange.com/questions/91870/magento-2-folder-file-permissions).
+#### Manual Installation
+* extract files from an archive.  
+* Execute command `cd /var/www/Magento/app/code` or
+ `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.  
+* Move files into Magento2 folder `app/code/Facebook/BusinessExtension`. If you downloaded zip file on github, you need to
+create directory `app/code/Facebook/BusinessExtension`. If you downloaded zip from facebook, those two folders are included.
 
-4. Move the Facebook subfolder into the `/app/code` directory of your server.
 
-5. Move to magento root folder by executing command `cd ../../`
+### ENABLE EXTENSION
+* Make sure you have correct read/write permissions on your Magento root directory.
+    Read about them [here](https://magento.stackexchange.com/questions/91870/magento-2-folder-file-permissions).  
+* Move to magento root folder by executing command `cd ../../`
 
-You can install the extension with a bash script in step 6 or by pasting Magento 2 commands in step 7.
-
-6. Execute the install-facebook-business-extension.sh script.
-
-  - Copy the install-facebook-business-extension.sh script to your Magento root folder.
-
-  - Give it execute permission with `chmod +x install-facebook-business-extension.sh` (you may have to log in as root user to do it).
-
-  - Switch to Magento files owner user and run: `./install-facebook-business-extension.sh`.
-
-  - You should read `Installation finished` when the script is done.
-
-  - Optional. If you don't switch to Magento files owner user run:
-	  `chmod -R 755 ./`
-	  `chmod -R 777 var/`
-	  `chmod -R 777 pub/`
-	  `chmod -R 777 app/etc`
-	  `chmod -R 777 generated`
-
+####  Enable Extension By Running Script
+You can install the extension with a bash script.  
+- Copy the install-facebook-business-extension.sh script to your Magento root folder.
+- Give it execute permission with `chmod +x install-facebook-business-extension.sh` (you may have to log in as root user to do it).
+- Switch to Magento files owner user and run: `./install-facebook-business-extension.sh`.
+- You should read `Installation finished` when the script is done.
+- Optional. If you don't switch to Magento files owner user run:
+	  `chmod -R 755 ./`  
+	  `chmod -R 777 var/`  
+	  `chmod -R 777 pub/`    
+	  `chmod -R 777 app/etc`     
+	  `chmod -R 777 generated`  
+####  Enable Extension By Running Commands Manually
 7. Execute the following commands to manually install Facebook Business Extension.
-
-  - Install the Facebook Business SDK for PHP: `composer require facebook/php-business-sdk`. This dependency is used by the extension.
-
-  - You will see a message similar to: `Installing facebook/php-business-sdk (8.0.0): Downloading (100%)`
-
-  - Execute `php bin/magento module:status`
-
-  - You must see Facebook_BusinessExtension in the list of disabled modules.
-
-  - To enable module execute `php bin/magento module:enable Facebook_BusinessExtension`
-
-  - Execute `php bin/magento setup:upgrade`
-
-  - Optional `php bin/magento setup:static-content:deploy`
-
-  - Execute `php bin/magento setup:di:compile`
-
-  - Execute `php bin/magento cache:clean`
-
-  - Execute `php bin/magento cron:run` three times
-
-  - Optional. If you are not the owner of Magento files:
-	  `chmod -R 755 ./`
-	  `chmod -R 777 var/`
-	  `chmod -R 777 pub/`
-	  `chmod -R 777 app/etc`
-	  `chmod -R 777 generated`
-
-8. Upon successful installation, login to your Magento Admin panel.
-
-9. Click the Stores icon in the main menu.
-
-10. There should be a section named Facebook -> Setup
-
-11. Click on 'Setup' to go to the Extension Installation Page.
+- Install the Facebook Business SDK for PHP: `composer require facebook/php-business-sdk`. This dependency is used by the extension.
+- You will see a message similar to: `Installing facebook/php-business-sdk (8.0.0): Downloading (100%)`
+- Execute `php bin/magento module:status`
+- You must see Facebook_BusinessExtension in the list of disabled modules.
+- To enable module execute `php bin/magento module:enable Facebook_BusinessExtension`
+- Execute `php bin/magento setup:upgrade`
+- Optional `php bin/magento setup:static-content:deploy`
+- Execute `php bin/magento setup:di:compile`
+- Execute `php bin/magento cache:clean`
+- Execute `php bin/magento cron:run` three times
+- Optional. If you are not the owner of Magento files:
+	  `chmod -R 755 ./`  
+	  `chmod -R 777 var/`  
+	  `chmod -R 777 pub/`    
+	  `chmod -R 777 app/etc`     
+	  `chmod -R 777 generated`   
+### Verify Installation
+- Upon successful installation, login to your Magento Admin panel.
+- Click the Stores icon in the main menu.
+- There should be a section named Facebook -> Setup
+- Click on 'Setup' to go to the Extension Installation Page.
 
 ## Testing before installing
 
