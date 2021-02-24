@@ -287,10 +287,10 @@ class ProductAttributes
                 'sort_order' => 29,
                 'note' => 'Type of platform on which video game software is capable of running. Sample values: Xbox 360, Nintendo Wii, PC.',
             ],
-            'facebook_software_system_requirements' => [
+            'facebook_system_requirements' => [
                 'label' => 'Software System Requirements',
                 'source' => '',
-                'code' => 'facebook_software_system_requirements',
+                'code' => 'facebook_system_requirements',
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 30,

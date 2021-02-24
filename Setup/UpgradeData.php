@@ -222,6 +222,22 @@ class UpgradeData implements UpgradeDataInterface
                 }
             }
         }
+        // change attribute code facebook_software_system_requirements -> facebook_system_requirements due to 30 length limit
+        if (version_compare($context->getVersion(), '1.2.5') < 0) {
+            $oldAttrCode = 'facebook_software_system_requirements';
+            $newAttrCode = 'facebook_system_requirements';
+
+            $oldAttrId = $eavSetup->getAttributeId(Product::ENTITY, $oldAttrCode);
+            if ($oldAttrId){
+                $eavSetup->updateAttribute(
+                    \Magento\Catalog\Model\Product::ENTITY,
+                    $oldAttrId,
+                    [
+                        'attribute_code' => $newAttrCode,
+                    ]
+                );
+            }
+        }
 
         $setup->endSetup();
     }
