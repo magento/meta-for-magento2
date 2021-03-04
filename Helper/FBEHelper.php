@@ -5,13 +5,21 @@
 
 namespace Facebook\BusinessExtension\Helper;
 
+use Facebook\BusinessExtension\Logger\Logger;
+use Facebook\BusinessExtension\Model\ConfigFactory;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\UrlInterface;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
+use Magento\Store\Model\StoreManagerInterface;
 
 class FBEHelper extends AbstractHelper
 {
@@ -36,46 +44,45 @@ class FBEHelper extends AbstractHelper
      */
     protected $_objectManager;
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     protected $_storeManager;
     /**
-     * @var \Facebook\BusinessExtension\Model\ConfigFactory
+     * @var ConfigFactory
      */
     protected $_configFactory;
     /**
-     * @var \Facebook\BusinessExtension\Logger\Logger
+     * @var Logger
      */
     protected $_logger;
     /**
-     * @var \Magento\Framework\App\Filesystem\DirectoryList
+     * @var DirectoryList
      */
     protected $_directoryList;
     /**
-     * @var \Magento\Framework\HTTP\Client\Curl
+     * @var Curl
      */
     protected $_curl;
     /**
-     * @var \Magento\Framework\App\ResourceConnection
+     * @var ResourceConnection
      */
     protected $_resourceConnection;
     /**
-     * @var \Magento\Framework\Module\ModuleListInterface
+     * @var ModuleListInterface
      */
     protected $_moduleList;
 
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
-        \Facebook\BusinessExtension\Model\ConfigFactory $configFactory,
-        \Facebook\BusinessExtension\Logger\Logger $logger,
-        \Magento\Framework\App\Filesystem\DirectoryList $directorylist,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\HTTP\Client\Curl $curl,
-        \Magento\Framework\App\ResourceConnection $resourceConnection,
-        \Magento\Framework\Module\ModuleListInterface $moduleList
-    )
-    {
+        ConfigFactory $configFactory,
+        Logger $logger,
+        DirectoryList $directorylist,
+        StoreManagerInterface $storeManager,
+        Curl $curl,
+        ResourceConnection $resourceConnection,
+        ModuleListInterface $moduleList
+    ) {
         parent::__construct($context);
         $this->_objectManager = $objectManager;
         $this->_storeManager = $storeManager;
@@ -99,7 +106,7 @@ class FBEHelper extends AbstractHelper
 
     public function getMagentoVersion()
     {
-        return $this->_objectManager->get('Magento\Framework\App\ProductMetadataInterface')->getVersion();
+        return $this->_objectManager->get(ProductMetadataInterface::class)->getVersion();
     }
 
     public function getPluginVersion()
@@ -124,7 +131,7 @@ class FBEHelper extends AbstractHelper
 
     public function getUrl($partialURL)
     {
-        $urlInterface = $this->getObject('\Magento\Backend\Model\UrlInterface');
+        $urlInterface = $this->getObject(\Magento\Backend\Model\UrlInterface::class);
         return $urlInterface->getUrl($partialURL);
     }
 
@@ -132,7 +139,8 @@ class FBEHelper extends AbstractHelper
     {
         return $this->_storeManager->getStore()->getBaseUrl(
             UrlInterface::URL_TYPE_MEDIA,
-            $this->maybeUseHTTPS());
+            $this->maybeUseHTTPS()
+        );
     }
 
     private function maybeUseHTTPS()
@@ -165,7 +173,8 @@ class FBEHelper extends AbstractHelper
         // Use this function to get a base url respect to host protocol
         return $this->getStore()->getBaseUrl(
             UrlInterface::URL_TYPE_WEB,
-            $this->maybeUseHTTPS());
+            $this->maybeUseHTTPS()
+        );
     }
 
     public function saveConfig($configKey, $configValue)
@@ -293,7 +302,7 @@ class FBEHelper extends AbstractHelper
         }
         $defaultStoreId = $this->getDefaultStoreID();
         $defaultStoreName = $this->getStore($defaultStoreId)->getGroup()->getName();
-        $escapeStrings = array('\r', '\n', '&nbsp;', '\t');
+        $escapeStrings = ['\r', '\n', '&nbsp;', '\t'];
         $defaultStoreName =
             trim(str_replace($escapeStrings, ' ', $defaultStoreName));
         if (!$defaultStoreName) {
@@ -369,9 +378,9 @@ class FBEHelper extends AbstractHelper
      * "ad_account_id":"111","catalog_id":"111","pages":["111"],"instagram_profiles":["111"]}]}
      *  usage: $_bm = $_assets['business_manager_ids'];
      */
-    public function QueryFBEInstalls($external_business_id=null)
+    public function queryFBEInstalls($external_business_id = null)
     {
-        if($external_business_id == null){
+        if ($external_business_id == null) {
             $external_business_id = $this->getFBEExternalBusinessId();
         }
         $accessToken = $this->getAccessToken();
@@ -385,7 +394,7 @@ class FBEHelper extends AbstractHelper
             $this->log("The FBE Install reponse : ".json_encode($response));
             $decode_response = json_decode($response, true);
             $_assets = $decode_response['data'][0];
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log("Failed to query FBEInstalls" . $e->getMessage());
         }
     }
@@ -397,7 +406,7 @@ class FBEHelper extends AbstractHelper
 
     public function deleteConfigKeys()
     {
-        $response = array();
+        $response = [];
         $response['success'] = false;
         try {
             $connection = $this->_resourceConnection->getConnection();
@@ -489,11 +498,11 @@ class FBEHelper extends AbstractHelper
 
     private function saveAAMSettings($settings)
     {
-        $settingsAsArray = array(
+        $settingsAsArray = [
             'enableAutomaticMatching' => $settings->getEnableAutomaticMatching(),
             'enabledAutomaticMatchingFields' => $settings->getEnabledAutomaticMatchingFields(),
             'pixelId' => $settings->getPixelId(),
-        );
+        ];
         $settingsAsString = json_encode($settingsAsArray);
         $this->saveConfig('fbpixel/aam_settings', $settingsAsString);
         return $settingsAsString;
@@ -530,7 +539,8 @@ class FBEHelper extends AbstractHelper
                 function ($inner_id) use (&$name) {
                     return isset($name[$inner_id]) ? $name[$inner_id] : null;
                 },
-                explode("/", $breadcrumb[$id]))));
+                explode("/", $breadcrumb[$id])
+            )));
         }
         return $breadcrumb;
     }

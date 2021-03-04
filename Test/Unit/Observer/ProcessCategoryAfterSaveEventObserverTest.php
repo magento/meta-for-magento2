@@ -5,7 +5,8 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
-class ProcessCategoryAfterSaveEventObserverTest extends CommonTest{
+class ProcessCategoryAfterSaveEventObserverTest extends CommonTest
+{
 
     protected $processCategoryAfterSaveEventObserver;
     /**
@@ -22,7 +23,8 @@ class ProcessCategoryAfterSaveEventObserverTest extends CommonTest{
      *
      * @return void
      */
-    public function tearDown() {
+    public function tearDown()
+    {
     }
 
     /**
@@ -30,23 +32,26 @@ class ProcessCategoryAfterSaveEventObserverTest extends CommonTest{
      *
      * @return void
      */
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         $this->_category = $this->createMock(\Magento\Catalog\Model\Category::class);
         $event = $this->createPartialMock(\Magento\Framework\Event::class, ['getCategory']);
         $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->_category));
         $this->_eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
-        $this->processCategoryAfterSaveEventObserver = new \Facebook\BusinessExtension\Observer\ProcessCategoryAfterSaveEventObserver( $this->fbeHelper);
+        $this->processCategoryAfterSaveEventObserver =
+            new \Facebook\BusinessExtension\Observer\ProcessCategoryAfterSaveEventObserver($this->fbeHelper);
     }
 
-    public function testExcution(){
+    public function testExcution()
+    {
         $categoryObj = $this->createMock(\Facebook\BusinessExtension\Model\Feed\CategoryCollection::class);
         $this->fbeHelper->expects($this->once())->method('getObject')->willReturn($categoryObj);
         $this->fbeHelper->expects($this->once())->method('log');
 
         $categoryObj->expects($this->once())->method('makeHttpRequestAfterCategorySave')->willReturn('good');
         $res = $this->processCategoryAfterSaveEventObserver->execute($this->_eventObserverMock);
-        $this->assertNull($res);
+        $this->assertNotNull($res);
     }
 }

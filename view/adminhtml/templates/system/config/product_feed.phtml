@@ -8,7 +8,7 @@
         const resultBlock = jQuery('#fb_feed_upload_result');
         jQuery('#fb_feed_upload_btn').click(function () {
             const params = {};
-            new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+            new Ajax.Request('<?= $block->getAjaxUrl() ?>', {
                 parameters: params,
                 loaderArea: false,
                 asynchronous: true,
@@ -36,9 +36,9 @@
     });
 </script>
 
-<?php echo $block->getButtonHtml() ?>
+<?= $block->getButtonHtml() ?>
 <span id="fb_feed_upload_result">
-    <img class="fb-feed-upload-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src="<?php echo $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
-    <img class="fb-feed-upload-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <img class="fb-feed-upload-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src="<?= $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
+    <img class="fb-feed-upload-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src="<?= $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
     <span id="fb_feed_upload_result_text"></span>
 </span>

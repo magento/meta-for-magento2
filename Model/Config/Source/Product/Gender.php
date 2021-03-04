@@ -5,7 +5,9 @@
 
 namespace Facebook\BusinessExtension\Model\Config\Source\Product;
 
-class Gender extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
+use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
+
+class Gender extends AbstractSource
 {
     /**
      * Get all options

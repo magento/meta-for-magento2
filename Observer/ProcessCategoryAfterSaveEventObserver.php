@@ -24,8 +24,8 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
      * @param FBEHelper $helper
      */
     public function __construct(
-        FBEHelper $helper)
-    {
+        FBEHelper $helper
+    ) {
         $this->_fbeHelper = $helper;
     }
 
@@ -42,5 +42,6 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
 
         $categoryObj = $this->_fbeHelper->getObject(CategoryCollection::class);
         $reponse = $categoryObj->makeHttpRequestAfterCategorySave($category);
+        return $reponse;
     }
 }

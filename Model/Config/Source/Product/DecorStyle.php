@@ -6,7 +6,9 @@
 
 namespace Facebook\BusinessExtension\Model\Config\Source\Product;
 
-class DecorStyle extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
+use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
+
+class DecorStyle extends AbstractSource
 {
     /**
      * Get all options

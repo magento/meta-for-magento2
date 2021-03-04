@@ -5,15 +5,22 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
-class ProcessProductAfterDeleteEventObserverTest extends CommonTest{
+use Facebook\BusinessExtension\Observer\ProcessProductAfterDeleteEventObserver;
+use Magento\Catalog\Model\Product;
+use Magento\Framework\Event;
+use Magento\Framework\Event\Observer;
+use PHPUnit\Framework\MockObject\MockObject;
+
+class ProcessProductAfterDeleteEventObserverTest extends CommonTest
+{
 
     protected $processProductAfterDeleteEventObserver;
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $_eventObserverMock;
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $_product;
 
@@ -22,7 +29,8 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest{
      *
      * @return void
      */
-    public function tearDown() {
+    public function tearDown()
+    {
     }
 
     /**
@@ -30,22 +38,24 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest{
      *
      * @return void
      */
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
-        $this->_product = $this->createMock(\Magento\Catalog\Model\Product::class);
+        $this->_product = $this->createMock(Product::class);
         $this->_product->expects($this->atLeastOnce())->method('getId')->will($this->returnValue("1234"));
         $this->_product->expects($this->never())->method('getSku');
 
-        $event = $this->createPartialMock(\Magento\Framework\Event::class, ['getProduct']);
+        $event = $this->createPartialMock(Event::class, ['getProduct']);
         $event->expects($this->once())->method('getProduct')->will($this->returnValue($this->_product));
-        $this->_eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
+        $this->_eventObserverMock = $this->createMock(Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
-        $this->processProductAfterDeleteEventObserver = new \Facebook\BusinessExtension\Observer\ProcessProductAfterDeleteEventObserver($this->fbeHelper);
+        $this->processProductAfterDeleteEventObserver =
+            new ProcessProductAfterDeleteEventObserver($this->fbeHelper);
     }
 
-    public function testExcution(){
+    public function testExcution()
+    {
         $this->fbeHelper->expects($this->atLeastOnce())->method('makeHttpRequest');
-        $res = $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);
-        $this->assertNull($res);
+        $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);
     }
 }

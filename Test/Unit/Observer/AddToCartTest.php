@@ -5,59 +5,72 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
-class AddToCartTest extends CommonTest{
+use Facebook\BusinessExtension\Observer\AddToCart;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Event\Observer;
 
-  protected $request;
+class AddToCartTest extends CommonTest
+{
 
-  protected $addToCartObserver;
+    protected $request;
 
-  /**
-    * Used to reset or change values after running a test
-    *
-    * @return void
-  */
-  public function tearDown() {
-  }
+    protected $addToCartObserver;
 
   /**
-    * Used to set the values before running a test
-    *
-    * @return void
-  */
-  public function setUp() {
-    parent::setUp();
-    $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
-    $this->addToCartObserver = new \Facebook\BusinessExtension\Observer\AddToCart( $this->fbeHelper, $this->magentoDataHelper, $this->serverSideHelper, $this->request );
-  }
+   * Used to reset or change values after running a test
+   *
+   * @return void
+   */
+    public function tearDown()
+    {
+    }
 
-  public function testAddToCartEventCreated(){
-    $this->magentoDataHelper->method('getValueForProduct')->willReturn(12.99);
-    $this->magentoDataHelper->method('getCategoriesForProduct')->willReturn('Electronics');
-    $product = $this->objectManager->getObject( '\Magento\Catalog\Model\Product' );
-    $product->setId(123);
-    $product->setName('Earphones');
-    $this->request->method('getParam')->willReturn('123');
-    $this->magentoDataHelper->method('getProductWithSku')->willReturn($product);
+  /**
+   * Used to set the values before running a test
+   *
+   * @return void
+   */
+    public function setUp()
+    {
+        parent::setUp();
+        $this->request = $this->createMock(RequestInterface::class);
+        $this->addToCartObserver = new AddToCart(
+            $this->fbeHelper,
+            $this->magentoDataHelper,
+            $this->serverSideHelper,
+            $this->request
+        );
+    }
 
-    $observer = new \Magento\Framework\Event\Observer(['eventId' => '1234']);
+    public function testAddToCartEventCreated()
+    {
+        $this->magentoDataHelper->method('getValueForProduct')->willReturn(12.99);
+        $this->magentoDataHelper->method('getCategoriesForProduct')->willReturn('Electronics');
+        $product = $this->objectManager->getObject('\Magento\Catalog\Model\Product');
+        $product->setId(123);
+        $product->setName('Earphones');
+        $this->request->method('getParam')->willReturn('123');
+        $this->magentoDataHelper->method('getProductWithSku')->willReturn($product);
 
-    $this->addToCartObserver->execute($observer);
+        $observer = new Observer(['eventId' => '1234']);
 
-    $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
+        $this->addToCartObserver->execute($observer);
 
-    $event = $this->serverSideHelper->getTrackedEvents()[0];
+        $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
 
-    $this->assertEquals('1234', $event->getEventId());
+        $event = $this->serverSideHelper->getTrackedEvents()[0];
 
-    $customDataArray = array(
-      'currency' => 'USD',
-      'value' => 12.99,
-      'content_type' => 'product',
-      'content_ids' => array(123),
-      'content_category' => 'Electronics',
-      'content_name' => 'Earphones'
-    );
+        $this->assertEquals('1234', $event->getEventId());
 
-    $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
-  }
+        $customDataArray = [
+        'currency' => 'USD',
+        'value' => 12.99,
+        'content_type' => 'product',
+        'content_ids' => [123],
+        'content_category' => 'Electronics',
+        'content_name' => 'Earphones'
+        ];
+
+        $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+    }
 }

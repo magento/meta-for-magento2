@@ -72,8 +72,7 @@ class UpgradeData implements UpgradeDataInterface
         SetFactory $attributeSetFactory,
         ProductAttributes $attributeConfig,
         FBEHelper $helper
-    )
-    {
+    ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->categorySetupFactory = $categorySetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
@@ -82,7 +81,7 @@ class UpgradeData implements UpgradeDataInterface
     }
 
     /**
-     * Retrieve the min Attribute Group Sort order, and plus one, we want to put facebook attribute group the second place.
+     * Retrieve the min Attribute Group Sort order, and plus one, we want to put fb attribute group the second place.
      * method stealled from Magento\Eav\Setup\EavSetup :: getAttributeGroupSortOrder
      * @param EavSetup $eavSetup
      * @param int|string $entityTypeId
@@ -111,8 +110,7 @@ class UpgradeData implements UpgradeDataInterface
     public function upgrade(
         ModuleDataSetupInterface $setup,
         ModuleContextInterface $context
-    )
-    {
+    ) {
         $setup->startSetup();
 
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
@@ -155,7 +153,8 @@ class UpgradeData implements UpgradeDataInterface
                     //  attribute does not exist
                     // add a new attribute
                     // and assign it to the "FacebookAttributeSet" attribute set
-                    $eavSetup->addAttribute(Product::ENTITY,
+                    $eavSetup->addAttribute(
+                        Product::ENTITY,
                         $attrCode,
                         [
                             'type' => $config['type'],
@@ -177,14 +176,13 @@ class UpgradeData implements UpgradeDataInterface
                             'visible_on_front' => false,
                             'used_in_product_listing' => true,
                             'unique' => false,
-                            'attribute_set' => 'FacebookAttributeSet' // assigning the attribute to the attribute set "FacebookAttributeSet"
+                            'attribute_set' => 'FacebookAttributeSet'
                         ]
                     );
                 } else {
                     $this->helper->log($attrCode . " already installed, skip");
                 }
             }
-
 
             /**
              * Create a custom attribute group in all attribute sets
@@ -199,7 +197,11 @@ class UpgradeData implements UpgradeDataInterface
             $attributeSetIds = $eavSetup->getAllAttributeSetIds($entityTypeId);
 
             foreach ($attributeSetIds as $attributeSetId) {
-                $attr_group_sort_order = $this->getMinAttributeGroupSortOrder($eavSetup, $entityTypeId, $attributeSetId);
+                $attr_group_sort_order = $this->getMinAttributeGroupSortOrder(
+                    $eavSetup,
+                    $entityTypeId,
+                    $attributeSetId
+                );
                 $eavSetup->addAttributeGroup(
                     $entityTypeId,
                     $attributeSetId,
@@ -209,7 +211,11 @@ class UpgradeData implements UpgradeDataInterface
 
                 foreach ($attributeConfig as $attributeCode => $config) {
                     // get the newly create attribute group id
-                    $attributeGroupId = $eavSetup->getAttributeGroupId($entityTypeId, $attributeSetId, $attributeGroupName);
+                    $attributeGroupId = $eavSetup->getAttributeGroupId(
+                        $entityTypeId,
+                        $attributeSetId,
+                        $attributeGroupName
+                    );
 
                     // add attribute to group
                     $categorySetup->addAttributeToGroup(
@@ -222,13 +228,14 @@ class UpgradeData implements UpgradeDataInterface
                 }
             }
         }
-        // change attribute code facebook_software_system_requirements -> facebook_system_requirements due to 30 length limit
+        // change attribute code facebook_software_system_requirements -> facebook_system_requirements
+        // due to 30 length limit
         if (version_compare($context->getVersion(), '1.2.5') < 0) {
             $oldAttrCode = 'facebook_software_system_requirements';
             $newAttrCode = 'facebook_system_requirements';
 
             $oldAttrId = $eavSetup->getAttributeId(Product::ENTITY, $oldAttrCode);
-            if ($oldAttrId){
+            if ($oldAttrId) {
                 $eavSetup->updateAttribute(
                     \Magento\Catalog\Model\Product::ENTITY,
                     $oldAttrId,

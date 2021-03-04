@@ -46,8 +46,7 @@ class Config
         ScopeConfigInterface $scopeConfig,
         ResourceConfig $resourceConfig,
         TypeListInterface $cacheTypeList
-    )
-    {
+    ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;

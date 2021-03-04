@@ -5,7 +5,9 @@
 
 namespace Facebook\BusinessExtension\Model\Config\Source\Product;
 
-class Pattern extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
+use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
+
+class Pattern extends AbstractSource
 {
     /**
      * Get all options

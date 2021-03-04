@@ -46,8 +46,8 @@ class BatchApi
         FBEHelper $helper,
         SimpleProductRetriever $simpleProductRetriever,
         ConfigurableProductRetriever $configurableProductRetriever,
-        Builder $builder)
-    {
+        Builder $builder
+    ) {
         $this->fbeHelper = $helper;
         $this->productRetrievers = [
             $simpleProductRetriever,
@@ -107,7 +107,9 @@ class BatchApi
                     }
 
                     if (count($requests) === self::BATCH_MAX) {
-                        $this->fbeHelper->log(sprintf('Pushing batch %d with %d products', $currentBatch, count($requests)));
+                        $this->fbeHelper->log(
+                            sprintf('Pushing batch %d with %d products', $currentBatch, count($requests))
+                        );
                         $response = $this->fbeHelper->makeHttpRequest($requests, $accessToken);
                         $this->fbeHelper->log('Product push response ' . json_encode($response));
                         $responses[] = $response;

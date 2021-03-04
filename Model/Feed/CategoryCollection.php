@@ -4,9 +4,11 @@
  */
 
 namespace Facebook\BusinessExtension\Model\Feed;
+
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\HttpClient;
 use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Framework\HTTP\Client\Curl;
 
@@ -46,8 +48,7 @@ class CategoryCollection
         FBEHelper $helper,
         Curl $curl,
         HttpClient $httpClient
-    )
-    {
+    ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->_fbeHelper = $helper;
         $this->_curl = $curl;
@@ -65,19 +66,16 @@ class CategoryCollection
     {
         $set_id = $this->getFBProductSetID($category);
         $this->_fbeHelper->log("setid for it is:". (string)$set_id);
-        if ($set_id)
-        {
+        if ($set_id) {
             $response = $this->updateCategoryWithFB($category, $set_id);
             return $response;
         }
-        if(!$category->hasChildren())
-        {
+        if (!$category->hasChildren()) {
             $response = $this->pushNewCategoryToFB($category);
             return $response;
         }
-        $this->_fbeHelper->log("category is neither leaf nor used to be leaf (no existing set id found), won't update with fb");
-
-        return;
+        $this->_fbeHelper->log("category is neither leaf nor"
+                                ." used to be leaf (no existing set id found), won't update with fb");
     }
 
     /**
@@ -86,7 +84,7 @@ class CategoryCollection
      */
     public function getCatelogID()
     {
-        if($this->catalog_id == null){
+        if ($this->catalog_id == null) {
             $this->catalog_id = $this->_fbeHelper->getConfigValue('fbe/catalog/id');
         }
         return $this->catalog_id;
@@ -97,7 +95,8 @@ class CategoryCollection
      * this method try to get fb product set id from Magento DB, return null if not exist
      * @return string|null
      */
-    public function getFBProductSetID(Category $category){
+    public function getFBProductSetID(Category $category)
+    {
         $key = $this->getCategoryKey($category);
         return $this->_fbeHelper->getConfigValue($key);
     }
@@ -120,8 +119,7 @@ class CategoryCollection
     public function getCategoryPathName(Category $category)
     {
         $id = (string)$category->getId();
-        if(array_key_exists($id, $this->_category_map))
-        {
+        if (array_key_exists($id, $this->_category_map)) {
             return $this->_category_map[$id];
         }
         return $category->getName();
@@ -145,15 +143,17 @@ class CategoryCollection
      */
     public function getRootCategory(Category $category)
     {
-        $this->_fbeHelper->log("searching root category for ". $category->getName(). ' level:'.$category->getLevel());
-        if($category->getLevel() == 1){
+        $this->_fbeHelper->log(
+            "searching root category for ". $category->getName(). ' level:'.$category->getLevel()
+        );
+        if ($category->getLevel() == 1) {
             return $category;
         }
         $parentCategory = $category->getParentCategory();
-        while ($parentCategory->getLevel() && $parentCategory->getLevel()>1){
+        while ($parentCategory->getLevel() && $parentCategory->getLevel()>1) {
             $parentCategory = $parentCategory->getParentCategory();
         }
-        $this->_fbeHelper->log("root category being returned". $parentCategory->getName(), ' level:'.$parentCategory->getLevel());
+        $this->_fbeHelper->log("root category being returned".$parentCategory->getName());
         return $parentCategory;
     }
 
@@ -164,20 +164,24 @@ class CategoryCollection
      */
     public function getBottomChildrenCategories(Category $category)
     {
-        $this->_fbeHelper->log("searching bottom category for ". $category->getName(). ' level:'.$category->getLevel());
-        if( !$category->hasChildren())
-        {
+        $this->_fbeHelper->log(
+            "searching bottom category for ". $category->getName(). ' level:'.$category->getLevel()
+        );
+        if (!$category->hasChildren()) {
             $this->_fbeHelper->log("no child category for ". $category->getName());
-            return array($category);
+            return [$category];
         }
         $leaf_categories = [];
         $child_categories = $category->getChildrenCategories();
-        foreach ($child_categories as $child_category)
-        {
+        foreach ($child_categories as $child_category) {
             $sub_leaf_categories = $this->getBottomChildrenCategories($child_category);
-            $leaf_categories = array_merge($leaf_categories, $sub_leaf_categories);
+            foreach ($sub_leaf_categories as $category) {
+                $leaf_categories[] = $category;
+            }
         }
-        $this->_fbeHelper->log("number of leaf category being returned for ". $category->getName(). ": ".count($leaf_categories));
+        $this->_fbeHelper->log(
+            "number of leaf category being returned for ". $category->getName() . ": ".count($leaf_categories)
+        );
         return $leaf_categories;
     }
 
@@ -192,10 +196,11 @@ class CategoryCollection
         $all_children_categories = []; // including not only direct child, but also child's child....
         array_push($all_children_categories, $category);
         $children_categories = $category->getChildrenCategories(); // direct children only
-        foreach ($children_categories as $children_category)
-        {
+        foreach ($children_categories as $children_category) {
             $sub_children_categories = $this->getAllChildrenCategories($children_category);
-            $all_children_categories = array_merge($all_children_categories, $sub_children_categories);
+            foreach ($sub_children_categories as $category) {
+                $all_children_categories[] = $category;
+            }
         }
         return $all_children_categories;
     }
@@ -206,7 +211,7 @@ class CategoryCollection
     public function getAllActiveCategories()
     {
         $categories = $this->_fbeHelper
-            ->getObject(\Magento\Catalog\Model\ResourceModel\Category\Collection::class)
+            ->getObject(Collection::class)
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('is_active', 1);
         return $categories;
@@ -220,24 +225,20 @@ class CategoryCollection
     public function pushAllCategoriesToFbCollections()
     {
         $access_token = $this->_fbeHelper->getAccessToken();
-        if($access_token == null)
-        {
+        if ($access_token == null) {
             $this->_fbeHelper->log("can't find access token, abort pushAllCategoriesToFbCollections");
             return;
         }
         $this->_fbeHelper->log("pushing all categories to fb collections");
         $categories = $this->getAllActiveCategories();
-        foreach ($categories as $category)
-        {
+        foreach ($categories as $category) {
             $set_id = $this->getFBProductSetID($category);
             $this->_fbeHelper->log("setid for it is:". (string)$set_id);
-            if ($set_id)
-            {
+            if ($set_id) {
                 $response = $this->updateCategoryWithFB($category, $set_id);
                 continue;
             }
-            if(!$category->hasChildren())
-            {
+            if (!$category->hasChildren()) {
                 $this->pushNewCategoryToFB($category);
             }
         }
@@ -249,25 +250,25 @@ class CategoryCollection
      * https://developers.facebook.com/docs/marketing-api/reference/product-set/
      * @return string|null
      */
-    public function pushNewCategoryToFB(Category $category) {
+    public function pushNewCategoryToFB(Category $category)
+    {
         $this->_fbeHelper->log("pushing category to fb collections: ".$category->getName());
         $access_token = $this->_fbeHelper->getAccessToken();
-        if ($access_token == null)
-        {
+        if ($access_token == null) {
             $this->_fbeHelper->log("can't find access token, won't push new catalog category ");
             return;
         }
         $response = null;
         try {
             $url = $this->getCategoryCreateApi();
-            if( $url == null){
+            if ($url == null) {
                 return;
             }
-            $params = array(
+            $params = [
                 'access_token' => $access_token,
                 'name' => $this->getCategoryPathName($category),
                 'filter' => $this->getCategoryProductFilter($category),
-            );
+            ];
             $this->_curl->post($url, $params);
             $response = $this->_curl->getBody();
         } catch (\Exception $e) {
@@ -275,7 +276,7 @@ class CategoryCollection
         }
         $this->_fbeHelper->log("response from fb: ".$response);
         $response_obj = json_decode($response, true);
-        if(array_key_exists('id', $response_obj)){
+        if (array_key_exists('id', $response_obj)) {
             $set_id = $response_obj['id'];
             $this->saveFBProductSetID($category, $set_id);
             $this->_fbeHelper->log(sprintf("saving category %s and set_id %s", $category->getName(), $set_id));
@@ -288,7 +289,7 @@ class CategoryCollection
      * create filter params for product set api
      * https://developers.facebook.com/docs/marketing-api/reference/product-set/
      * e.g. {'retailer_id': {'is_any': ['10', '100']}}
-     * @return \array[]
+     * @return string
      */
     public function getCategoryProductFilter(Category $category)
     {
@@ -300,8 +301,7 @@ class CategoryCollection
         $this->_fbeHelper->log("collection count:".(string)count($product_collection));
 
         $ids = [];
-        foreach ($product_collection as $product)
-        {
+        foreach ($product_collection as $product) {
             array_push($ids, "'".$product->getId()."'");
         }
         $filter = sprintf("{'retailer_id': {'is_any': [%s]}}", implode(',', $ids));
@@ -315,11 +315,11 @@ class CategoryCollection
      * https://graph.facebook.com/v7.0/$CATALOG_ID/product_sets
      * @return string | null
      */
-    public function getCategoryCreateApi() {
+    public function getCategoryCreateApi()
+    {
         $catalog_id = $this->getCatelogID();
         if ($catalog_id == null) {
             $this->_fbeHelper->log("cant find catalog id, can't make category create api");
-            return;
         }
         $category_path = "/" . $catalog_id . "/product_sets";
 
@@ -336,7 +336,8 @@ class CategoryCollection
      * https://graph.facebook.com/v7.0/$CATALOG_ID/product_sets
      * @return string
      */
-    public function getCategoryUpdateApi(string $set_id) {
+    public function getCategoryUpdateApi(string $set_id)
+    {
         $set_path = "/" . $set_id ;
         $set_update_api = $this->_fbeHelper::FB_GRAPH_BASE_URL .
             $this->_fbeHelper->getAPIVersion() .
@@ -355,19 +356,17 @@ class CategoryCollection
     public function updateCategoryWithFB(Category $category, string $set_id)
     {
         $access_token = $this->_fbeHelper->getAccessToken();
-        if ($access_token == null)
-        {
+        if ($access_token == null) {
             $this->_fbeHelper->log("can't find access token, won't update category with fb ");
-            return;
         }
         $response = null;
         try {
             $url = $this->getCategoryUpdateApi($set_id);
-            $params = array(
+            $params = [
                 'access_token' => $access_token,
                 'name' => $this->getCategoryPathName($category),
                 'filter' => $this->getCategoryProductFilter($category),
-            );
+            ];
             $this->_curl->post($url, $params);
             $response = $this->_curl->getBody();
             $this->_fbeHelper->log("update category api response from fb:". $response);
@@ -384,11 +383,9 @@ class CategoryCollection
     public function deleteAllCategoryFromFB()
     {
         $categories = $this->getAllActiveCategories();
-        foreach ($categories as $category)
-        {
+        foreach ($categories as $category) {
             $this->deleteCategoryFromFB($category);
         }
-        return;
     }
 
     /**
@@ -402,11 +399,9 @@ class CategoryCollection
     public function deleteCategoryAndSubCategoryFromFB(Category $category)
     {
         $children_categories = $this->getAllChildrenCategories($category);
-        foreach ($children_categories as $children_category)
-        {
+        foreach ($children_categories as $children_category) {
             $this->deleteCategoryFromFB($children_category);
         }
-        return;
     }
 
     /**
@@ -419,15 +414,13 @@ class CategoryCollection
     public function deleteCategoryFromFB(Category $category)
     {
         $access_token = $this->_fbeHelper->getAccessToken();
-        if ($access_token == null)
-        {
+        if ($access_token == null) {
             $this->_fbeHelper->log("can't find access token, won't do category delete");
             return;
         }
         $this->_fbeHelper->log("category name:". $category->getName());
         $set_id = $this->getFBProductSetID($category);
-        if ($set_id == null)
-        {
+        if ($set_id == null) {
             $this->_fbeHelper->log("cant find product set id, won't make category delete api");
             return;
         }
@@ -441,12 +434,11 @@ class CategoryCollection
             $response_body = $this->_http_client->makeDeleteHttpCall($url);
             if (strpos($response_body, 'true') !== false) {
                 $configKey = $this->getCategoryKey($category);
-            } else{
+            } else {
                 $this->_fbeHelper->log("product set deletion failed!!! ");
             }
         } catch (\Exception $e) {
             $this->_fbeHelper->logException($e);
         }
-        return ;
     }
 }

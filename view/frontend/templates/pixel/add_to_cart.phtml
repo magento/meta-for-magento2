@@ -1,17 +1,17 @@
-<?php if ($this->getFacebookPixelID()) { ?>
+<?php if ($block->getFacebookPixelID()) { ?>
 <script>
 require([
   'jquery'
 ], function($) {
 
   function trackAddToCart(content_ids, content_name, content_category, value, eventId) {
-    fbq('set', 'agent', '<?php echo $this->getFacebookAgentVersion() ?>', '<?php echo $this->getFacebookPixelID() ?>');
+    fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
     fbq('track', 'AddToCart', {
-      source: "<?php echo $this->getSource() ?>",
-      version: "<?php echo $this->getMagentoVersion() ?>",
-      pluginVersion: "<?php echo $this->getPluginVersion() ?>",
-      content_type: "<?php echo $this->getContentType() ?>",
-      currency: "<?php echo $this->getCurrency() ?>",
+      source: "<?= $block->getSource() ?>",
+      version: "<?= $block->getMagentoVersion() ?>",
+      pluginVersion: "<?= $block->getPluginVersion() ?>",
+      content_type: "<?= $block->getContentType() ?>",
+      currency: "<?= $block->getCurrency() ?>",
       content_ids: content_ids,
       content_name: content_name,
       content_category: content_category,
@@ -23,7 +23,7 @@ require([
     );
   }
 
-  var product_info_url = '<?php echo $this->getProductInfoUrl() ?>';
+  var product_info_url = '<?= $block->getProductInfoUrl() ?>';
 
   $(document).on('ajax:addToCart', function(event, data) {
     var product_sku = data.sku;
@@ -49,5 +49,5 @@ require([
   });
 });
 </script>
-  <?php $this->logEvent($this->getFacebookPixelID(), 'AddToCart') ?>
+    <?php $block->logEvent($block->getFacebookPixelID(), 'AddToCart') ?>
 <?php } ?>

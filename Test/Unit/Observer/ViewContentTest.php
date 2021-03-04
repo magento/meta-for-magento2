@@ -5,58 +5,72 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
-class ViewContentTest extends CommonTest{
+use Facebook\BusinessExtension\Observer\ViewContent;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Registry;
 
-  protected $registry;
+class ViewContentTest extends CommonTest
+{
 
-  protected $viewContentObserver;
+    protected $registry;
 
-  /**
-    * Used to reset or change values after running a test
-    *
-    * @return void
-  */
-  public function tearDown() {
-  }
+    protected $viewContentObserver;
 
   /**
-    * Used to set the values before running a test
-    *
-    * @return void
-  */
-  public function setUp() {
-    parent::setUp();
-    $this->registry = $this->createMock(\Magento\Framework\Registry::class);
-    $this->viewContentObserver = new \Facebook\BusinessExtension\Observer\ViewContent( $this->fbeHelper, $this->serverSideHelper, $this->magentoDataHelper, $this->registry );
-  }
+   * Used to reset or change values after running a test
+   *
+   * @return void
+   */
+    public function tearDown()
+    {
+    }
 
-  public function testViewContentEventCreated(){
-    $this->magentoDataHelper->method('getValueForProduct')->willReturn(12.99);
-    $this->magentoDataHelper->method('getCategoriesForProduct')->willReturn('Electronics');
-    $product = $this->objectManager->getObject( '\Magento\Catalog\Model\Product' );
-    $product->setId(123);
-    $product->setName('Earphones');
-    $this->registry->method('registry')->willReturn($product);
+  /**
+   * Used to set the values before running a test
+   *
+   * @return void
+   */
+    public function setUp()
+    {
+        parent::setUp();
+        $this->registry = $this->createMock(Registry::class);
+        $this->viewContentObserver =
+            new ViewContent(
+                $this->fbeHelper,
+                $this->serverSideHelper,
+                $this->magentoDataHelper,
+                $this->registry
+            );
+    }
 
-    $observer = new \Magento\Framework\Event\Observer(['eventId' => '1234']);
+    public function testViewContentEventCreated()
+    {
+        $this->magentoDataHelper->method('getValueForProduct')->willReturn(12.99);
+        $this->magentoDataHelper->method('getCategoriesForProduct')->willReturn('Electronics');
+        $product = $this->objectManager->getObject('\Magento\Catalog\Model\Product');
+        $product->setId(123);
+        $product->setName('Earphones');
+        $this->registry->method('registry')->willReturn($product);
 
-    $this->viewContentObserver->execute($observer);
+        $observer = new Observer(['eventId' => '1234']);
 
-    $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
+        $this->viewContentObserver->execute($observer);
 
-    $event = $this->serverSideHelper->getTrackedEvents()[0];
+        $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
 
-    $this->assertEquals('1234', $event->getEventId());
+        $event = $this->serverSideHelper->getTrackedEvents()[0];
 
-    $customDataArray = array(
-      'currency' => 'USD',
-      'value' => 12.99,
-      'content_type' => 'product',
-      'content_ids' => array(123),
-      'content_category' => 'Electronics',
-      'content_name' => 'Earphones'
-    );
+        $this->assertEquals('1234', $event->getEventId());
 
-    $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
-  }
+        $customDataArray = [
+        'currency' => 'USD',
+        'value' => 12.99,
+        'content_type' => 'product',
+        'content_ids' => [123],
+        'content_category' => 'Electronics',
+        'content_name' => 'Earphones'
+        ];
+
+        $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+    }
 }

@@ -7,7 +7,8 @@ namespace Facebook\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 
-class FbpixelTest extends \PHPUnit\Framework\TestCase{
+class FbpixelTest extends \PHPUnit\Framework\TestCase
+{
 
     protected $fbeHelper;
 
@@ -24,7 +25,8 @@ class FbpixelTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function tearDown() {
+    public function tearDown()
+    {
     }
 
     /**
@@ -32,7 +34,8 @@ class FbpixelTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function setUp() {
+    public function setUp()
+    {
         $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
         $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
         $this->fbeHelper = $this->createMock(\Facebook\BusinessExtension\Helper\FBEHelper::class);
@@ -49,7 +52,8 @@ class FbpixelTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function testExecuteForJsonNoPixel() {
+    public function testExecuteForJsonNoPixel()
+    {
         $pixelId = '1234';
         $this->request->method('getParam')
             ->willReturn(null);
@@ -60,5 +64,4 @@ class FbpixelTest extends \PHPUnit\Framework\TestCase{
         $this->assertFalse($result['success']);
         $this->assertEquals($pixelId, $result['pixelId']);
     }
-
 }

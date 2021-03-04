@@ -5,6 +5,7 @@
 
 namespace Facebook\BusinessExtension\Observer;
 
+use Facebook\BusinessExtension\Helper\FBEHelper;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\App\Helper\Context;
@@ -12,17 +13,17 @@ use Magento\Framework\App\Helper\Context;
 class ProcessProductAfterDeleteEventObserver implements ObserverInterface
 {
     /**
-     * @var \Facebook\BusinessExtension\Helper\FBEHelper
+     * @var FBEHelper
      */
     protected $_fbeHelper;
 
     /**
      * Constructor
-     * @param \Facebook\BusinessExtension\Helper\FBEHelper $helper
+     * @param FBEHelper $helper
      */
     public function __construct(
-        \Facebook\BusinessExtension\Helper\FBEHelper $helper)
-    {
+        FBEHelper $helper
+    ) {
         $this->_fbeHelper = $helper;
     }
 

@@ -5,48 +5,57 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
-class SearchTest extends CommonTest{
+use Facebook\BusinessExtension\Observer\Search;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Event\Observer;
 
-  protected $request;
+class SearchTest extends CommonTest
+{
 
-  protected $searchObserver;
+    protected $request;
 
-  /**
-    * Used to reset or change values after running a test
-    *
-    * @return void
-  */
-  public function tearDown() {
-  }
+    protected $searchObserver;
 
   /**
-    * Used to set the values before running a test
-    *
-    * @return void
-  */
-  public function setUp() {
-    parent::setUp();
-    $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
-    $this->searchObserver = new \Facebook\BusinessExtension\Observer\Search( $this->fbeHelper, $this->serverSideHelper, $this->request );
-  }
+   * Used to reset or change values after running a test
+   *
+   * @return void
+   */
+    public function tearDown()
+    {
+    }
 
-  public function testSearchEventCreated(){
-    $this->request->method('getParam')->willReturn('Door');
+  /**
+   * Used to set the values before running a test
+   *
+   * @return void
+   */
+    public function setUp()
+    {
+        parent::setUp();
+        $this->request = $this->createMock(RequestInterface::class);
+        $this->searchObserver =
+            new Search($this->fbeHelper, $this->serverSideHelper, $this->request);
+    }
 
-    $observer = new \Magento\Framework\Event\Observer(['eventId' => '1234']);
+    public function testSearchEventCreated()
+    {
+        $this->request->method('getParam')->willReturn('Door');
 
-    $this->searchObserver->execute($observer);
+        $observer = new Observer(['eventId' => '1234']);
 
-    $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
+        $this->searchObserver->execute($observer);
 
-    $event = $this->serverSideHelper->getTrackedEvents()[0];
+        $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
 
-    $this->assertEquals('1234', $event->getEventId());
+        $event = $this->serverSideHelper->getTrackedEvents()[0];
 
-    $customDataArray = array(
-      'search_string' => 'Door'
-    );
+        $this->assertEquals('1234', $event->getEventId());
 
-    $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
-  }
+        $customDataArray = [
+        'search_string' => 'Door'
+        ];
+
+        $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+    }
 }

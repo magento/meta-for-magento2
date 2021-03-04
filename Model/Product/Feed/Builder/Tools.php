@@ -57,7 +57,8 @@ class Tools
     public function formatPrice($price)
     {
         try {
-            return sprintf('%s %s',
+            return sprintf(
+                '%s %s',
                 $this->priceCurrency->getCurrency()->formatTxt($price, ['display' => Currency::NO_SYMBOL]),
                 $this->priceCurrency->getCurrency()->getCode()
             );

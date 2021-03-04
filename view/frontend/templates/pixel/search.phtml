@@ -1,20 +1,20 @@
 <?php
-if ($this->getFacebookPixelID()) {
-  $eventId = \Facebook\BusinessExtension\Helper\EventIdGenerator::guidv4();
-  $this->trackServerEvent($eventId);
-?>
+if ($block->getFacebookPixelID()) {
+    $eventId = \Facebook\BusinessExtension\Helper\EventIdGenerator::guidv4();
+    $block->trackServerEvent($eventId);
+    ?>
 <script>
-fbq('set', 'agent', '<?php echo $this->getFacebookAgentVersion() ?>', '<?php echo $this->getFacebookPixelID() ?>');
+fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
 fbq('track', 'Search', {
-    source: "<?php echo $this->getSource() ?>",
-    version: "<?php echo $this->getMagentoVersion() ?>",
-    pluginVersion: "<?php echo $this->getPluginVersion() ?>",
-    search_string: "<?php echo $this->getSearchQuery() ?>"
+    source: "<?= $block->getSource() ?>",
+    version: "<?= $block->getMagentoVersion() ?>",
+    pluginVersion: "<?= $block->getPluginVersion() ?>",
+    search_string: "<?= $block->getSearchQuery() ?>"
   }
   ,{
-    eventID:  "<?php echo $eventId ?>"
+    eventID:  "<?= $eventId ?>"
   }
 );
 </script>
-  <?php $this->logEvent($this->getFacebookPixelID(), 'Search') ?>
+    <?php $block->logEvent($block->getFacebookPixelID(), 'Search') ?>
 <?php } ?>

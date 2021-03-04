@@ -7,7 +7,8 @@ namespace Facebook\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 
-class FbdeleteassetTest extends \PHPUnit\Framework\TestCase{
+class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
+{
 
     protected $fbeHelper;
 
@@ -24,7 +25,8 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function tearDown() {
+    public function tearDown()
+    {
     }
 
     /**
@@ -32,7 +34,8 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function setUp() {
+    public function setUp()
+    {
         $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
         $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
         $this->fbeHelper = $this->createMock(\Facebook\BusinessExtension\Helper\FBEHelper::class);
@@ -49,7 +52,8 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function testExecuteForJsonNull() {
+    public function testExecuteForJsonNull()
+    {
         $this->fbeHelper->method('deleteConfigKeys')
             ->willReturn(null);
         $result = $this->fbdeleteasset->executeForJson();
@@ -60,11 +64,12 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function testExecuteForJsonNotNull() {
-        $expected = array(
+    public function testExecuteForJsonNotNull()
+    {
+        $expected = [
             'success' => true,
             'message' => 'dummy',
-        );
+        ];
         $this->fbeHelper->method('deleteConfigKeys')
             ->willReturn($expected);
         $result = $this->fbdeleteasset->executeForJson();

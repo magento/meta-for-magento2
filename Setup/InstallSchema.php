@@ -9,10 +9,12 @@ use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
-class InstallSchema implements InstallSchemaInterface {
+class InstallSchema implements InstallSchemaInterface
+{
     const FBE_CONFIG_TABLE_NAME = "facebook_business_extension_config";
 
-    public function install(SchemaSetupInterface $installer, ModuleContextInterface $context) {
+    public function install(SchemaSetupInterface $installer, ModuleContextInterface $context)
+    {
         $installer->startSetup();
         $installer->getConnection()->dropTable($installer->getTable(self::FBE_CONFIG_TABLE_NAME));
         $table = $installer->getConnection()->newTable(
@@ -33,15 +35,15 @@ class InstallSchema implements InstallSchemaInterface {
             'creation_time',
             \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
             null,
-            array (
-            ),
+            [
+            ],
             'Creation Time'
         )->addColumn(
             'update_time',
             \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
             null,
-            array (
-            ),
+            [
+            ],
             'Modification Time'
         );
         $installer->getConnection()->createTable($table);

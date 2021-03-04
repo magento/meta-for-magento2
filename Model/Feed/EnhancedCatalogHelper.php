@@ -3,6 +3,7 @@
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  */
 namespace Facebook\BusinessExtension\Model\Feed;
+
 use Facebook\BusinessExtension\Model\Config\ProductAttributes;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Magento\Catalog\Model\Product;
@@ -24,14 +25,12 @@ class EnhancedCatalogHelper
      * @throws Zend_Locale_Exception
      * @return null
      */
-    public function AssignECAttribute(Product $product, array &$requests)
+    public function assignECAttribute(Product $product, array &$requests)
     {
         $attr_config = $this->attribute_config->getAttributesConfig();
-        foreach ($attr_config as $attrCode => $config)
-        {
+        foreach ($attr_config as $attrCode => $config) {
             $data = $product->getData($attrCode);
-            if($data)
-            {
+            if ($data) {
                 // facebook_capacity -> capacity
                 $trimedAttrCode = substr($attrCode, 9);
                 $requests[$trimedAttrCode] = $data;

@@ -5,50 +5,63 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
-class ViewCategoryTest extends CommonTest{
+use Facebook\BusinessExtension\Observer\ViewCategory;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Registry;
 
-  protected $registry;
+class ViewCategoryTest extends CommonTest
+{
 
-  protected $viewCategoryObserver;
+    protected $registry;
 
-  /**
-    * Used to reset or change values after running a test
-    *
-    * @return void
-  */
-  public function tearDown() {
-  }
+    protected $viewCategoryObserver;
 
   /**
-    * Used to set the values before running a test
-    *
-    * @return void
-  */
-  public function setUp() {
-    parent::setUp();
-    $this->registry = $this->createMock(\Magento\Framework\Registry::class);
-    $this->viewCategoryObserver = new \Facebook\BusinessExtension\Observer\ViewCategory( $this->fbeHelper, $this->serverSideHelper, $this->registry );
-  }
+   * Used to reset or change values after running a test
+   *
+   * @return void
+   */
+    public function tearDown()
+    {
+    }
 
-  public function testViewCategoryEventCreated(){
-    $category = $this->objectManager->getObject('Magento\Catalog\Model\Category');
-    $category->setName('Electronics');
-    $this->registry->method('registry')->willReturn($category);
+  /**
+   * Used to set the values before running a test
+   *
+   * @return void
+   */
+    public function setUp()
+    {
+        parent::setUp();
+        $this->registry = $this->createMock(Registry::class);
+        $this->viewCategoryObserver =
+            new ViewCategory(
+                $this->fbeHelper,
+                $this->serverSideHelper,
+                $this->registry
+            );
+    }
 
-    $observer = new \Magento\Framework\Event\Observer(['eventId' => '1234']);
+    public function testViewCategoryEventCreated()
+    {
+        $category = $this->objectManager->getObject('Magento\Catalog\Model\Category');
+        $category->setName('Electronics');
+        $this->registry->method('registry')->willReturn($category);
 
-    $this->viewCategoryObserver->execute($observer);
+        $observer = new Observer(['eventId' => '1234']);
 
-    $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
+        $this->viewCategoryObserver->execute($observer);
 
-    $event = $this->serverSideHelper->getTrackedEvents()[0];
+        $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
 
-    $this->assertEquals('1234', $event->getEventId());
+        $event = $this->serverSideHelper->getTrackedEvents()[0];
 
-    $customDataArray = array(
-      'content_category' => 'Electronics'
-    );
+        $this->assertEquals('1234', $event->getEventId());
 
-    $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
-  }
+        $customDataArray = [
+        'content_category' => 'Electronics'
+        ];
+
+        $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+    }
 }

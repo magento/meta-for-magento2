@@ -37,8 +37,7 @@ class Inventory
         StockItemRepositoryInterface $stockItemRepository,
         StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory,
         StockConfigurationInterface $stockConfigurationInterface
-    )
-    {
+    ) {
         $this->stockItemRepository = $stockItemRepository;
         $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
         $this->stockConfigurationInterface = $stockConfigurationInterface;

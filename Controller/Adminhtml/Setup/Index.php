@@ -5,32 +5,38 @@
 
 namespace Facebook\BusinessExtension\Controller\Adminhtml\Setup;
 
-class Index extends \Magento\Backend\App\Action {
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\View\Result\Page;
+use Magento\Framework\View\Result\PageFactory;
+
+class Index extends \Magento\Backend\App\Action
+{
   /**
-   * @var \Magento\Framework\View\Result\PageFactory
+   * @var PageFactory
    */
-  protected $resultPageFactory;
+    protected $resultPageFactory;
 
   /**
    * Constructor
    *
-   * @param \Magento\Backend\App\Action\Context $context
-   * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+   * @param Context $context
+   * @param PageFactory $resultPageFactory
    */
-  public function __construct(
-    \Magento\Backend\App\Action\Context $context,
-    \Magento\Framework\View\Result\PageFactory $resultPageFactory) {
-    parent::__construct($context);
-    $this->resultPageFactory = $resultPageFactory;
-  }
+    public function __construct(
+        Context $context,
+        PageFactory $resultPageFactory
+    ) {
+        parent::__construct($context);
+        $this->resultPageFactory = $resultPageFactory;
+    }
 
   /**
    * Load the page defined in view/adminhtml/layout/fbeadmin_setup_index.xml
    *
-   * @return \Magento\Framework\View\Result\Page
+   * @return Page
    */
-  public function execute() {
-    return $resultPage = $this->resultPageFactory->create();
-  }
+    public function execute()
+    {
+        return $resultPage = $this->resultPageFactory->create();
+    }
 }
-?>

@@ -5,10 +5,11 @@
 
 namespace Facebook\BusinessExtension\Block\Pixel;
 
-class AddToCart extends Common {
+class AddToCart extends Common
+{
 
-  public function getProductInfoUrl() {
-    return sprintf('%sfbe/Pixel/ProductInfoForAddToCart', $this->_fbeHelper->getBaseUrl());
-  }
-
+    public function getProductInfoUrl()
+    {
+        return sprintf('%sfbe/Pixel/ProductInfoForAddToCart', $this->_fbeHelper->getBaseUrl());
+    }
 }

@@ -13,7 +13,8 @@ use Zend\Http\Client;
 /**
  * Helper class to handle api request.
  */
-class HttpClient {
+class HttpClient
+{
     /**
      * @var FBEHelper
      */
@@ -25,8 +26,7 @@ class HttpClient {
      */
     public function __construct(
         FBEHelper $helper
-    )
-    {
+    ) {
         $this->_fbeHelper = $helper;
     }
 
@@ -36,7 +36,8 @@ class HttpClient {
      * https://devdocs.magento.com/guides/v2.3/get-started/gs-web-api-request.html
      * @return string|null
      */
-    public function makeDeleteHttpCall(string $uri){
+    public function makeDeleteHttpCall(string $uri)
+    {
         $httpHeaders = new Headers();
         $httpHeaders->addHeaders([
             'Accept' => 'application/json',

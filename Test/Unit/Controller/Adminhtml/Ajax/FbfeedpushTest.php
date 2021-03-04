@@ -7,7 +7,8 @@ namespace Facebook\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 
-class FbfeedpushTest extends \PHPUnit\Framework\TestCase{
+class FbfeedpushTest extends \PHPUnit\Framework\TestCase
+{
 
     protected $fbeHelper;
 
@@ -28,7 +29,8 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function tearDown() {
+    public function tearDown()
+    {
     }
 
     /**
@@ -36,7 +38,8 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function setUp() {
+    public function setUp()
+    {
         $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
         $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
         $this->fbeHelper = $this->createMock(\Facebook\BusinessExtension\Helper\FBEHelper::class);
@@ -58,7 +61,8 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function testExternalBizIdExists() {
+    public function testExternalBizIdExists()
+    {
         $this->fbeHelper->method('getConfigValue')->willReturn('bizID');
         $result = $this->fbFeedPush->executeForJson();
         $this->assertFalse($result['success']);
@@ -71,7 +75,8 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase{
      *
      * @return void
      */
-    public function testExternalBizIdNotExists() {
+    public function testExternalBizIdNotExists()
+    {
         $this->fbeHelper->method('getConfigValue')->willReturn(null);
         $this->request->method('getParam')->willReturn('randomStr');
         $this->fbeHelper->method('saveConfig')->willReturn(null);
@@ -81,5 +86,4 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase{
         $this->assertNotNull($result['feed_push_response']);
         $this->assertEquals('feed push successfully', $result['feed_push_response']);
     }
-
 }

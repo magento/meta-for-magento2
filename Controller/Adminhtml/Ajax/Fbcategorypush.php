@@ -3,11 +3,15 @@
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  */
 namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
-use  Facebook\BusinessExtension\Model\Feed\CategoryCollection;
 
-class Fbcategorypush extends AbstractAjax {
+use Facebook\BusinessExtension\Model\Feed\CategoryCollection;
 
-    public function __construct (
+class Fbcategorypush extends AbstractAjax
+{
+
+    private $_customerSession;
+
+    public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Facebook\BusinessExtension\Helper\FBEHelper $helper,
@@ -17,8 +21,9 @@ class Fbcategorypush extends AbstractAjax {
         $this->_customerSession = $customerSession;
     }
 
-    public function executeForJson() {
-        $response = array();
+    public function executeForJson()
+    {
+        $response = [];
         try {
             $catalog_id = $this->getRequest()->getParam('catalogId');
             $category_obj = $this->_fbeHelper->getObject(CategoryCollection::class);
@@ -26,12 +31,11 @@ class Fbcategorypush extends AbstractAjax {
             $category_obj->pushAllCategoriesToFbCollections();
             $response['success'] = true;
             return $response;
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
             $this->_fbeHelper->logException($e);
             return $response;
         }
     }
-
 }

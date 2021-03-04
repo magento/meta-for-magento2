@@ -79,8 +79,7 @@ class Builder
         BuilderTools $builderTools,
         Inventory $inventory,
         EnhancedCatalogHelper $enhancedCatalogHelper
-    )
-    {
+    ) {
         $this->fbeHelper = $fbeHelper;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->builderTools = $builderTools;
@@ -109,7 +108,9 @@ class Builder
         $additionalImages = [];
 
         foreach ($product->getMediaGalleryImages() as $img) {
-            if ($img['file'] === $mainImage) continue;
+            if ($img['file'] === $mainImage) {
+                continue;
+            }
             $additionalImages[] = $this->builderTools->replaceLocalUrlWithDummyUrl($img['url']);
         }
 
@@ -203,7 +204,8 @@ class Builder
             case self::ATTR_PRODUCT_TYPE:
                 // product_type max size: 750
                 if ($attrValue) {
-                    return mb_strlen($attrValue) > 750 ? mb_substr($attrValue, mb_strlen($attrValue) - 750, 750) : $attrValue;
+                    return mb_strlen($attrValue) > 750 ?
+                        mb_substr($attrValue, mb_strlen($attrValue) - 750, 750) : $attrValue;
                 }
                 break;
         }
@@ -221,11 +223,13 @@ class Builder
         // Try using the short description and title if it doesn't exist.
         $description = $this->trimAttribute(
             self::ATTR_DESCRIPTION,
-            $product->getDescription());
+            $product->getDescription()
+        );
         if (!$description) {
             $description = $this->trimAttribute(
                 self::ATTR_DESCRIPTION,
-                $product->getShortDescription());
+                $product->getShortDescription()
+            );
         }
 
         $title = $product->getName();
@@ -361,7 +365,7 @@ class Builder
             self::ATTR_ADDITIONAL_IMAGE_URL => implode($images['additional_images'], ','),
         ];
 
-        $this->enhancedCatalogHelper->AssignECAttribute($product, $entry);
+        $this->enhancedCatalogHelper->assignECAttribute($product, $entry);
 
         return $entry;
     }

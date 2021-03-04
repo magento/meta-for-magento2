@@ -23,8 +23,7 @@ class ProductFeedUpload extends AbstractAjax
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         Uploader $uploader
-    )
-    {
+    ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->uploader = $uploader;
     }

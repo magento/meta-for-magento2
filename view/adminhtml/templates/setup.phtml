@@ -5,25 +5,25 @@
 
 <script>
     window.facebookBusinessExtensionConfig = {
-      pixelId: '<?php echo $this->fetchPixelId() ?>'
+      pixelId: '<?= $block->fetchPixelId() ?>'
       ,popupOrigin: "https://business.facebook.com"
-      ,setPixelId: '<?php echo $this->getPixelAjaxRoute() ?>'
-      ,setAccessToken: '<?php echo $this->getAccessTokenAjaxRoute() ?>'
-      ,setProfilesData: '<?php echo $this->getProfilesAjaxRoute()?>'
-      ,setFeedPush: '<?php echo $this->getFeedPushAjaxRoute() ?>'
-      ,externalBusinessId: '<?php echo $this->getExternalBusinessId()?>'
+      ,setPixelId: '<?= $block->getPixelAjaxRoute() ?>'
+      ,setAccessToken: '<?= $block->getAccessTokenAjaxRoute() ?>'
+      ,setProfilesData: '<?= $block->getProfilesAjaxRoute()?>'
+      ,setFeedPush: '<?= $block->getFeedPushAjaxRoute() ?>'
+      ,externalBusinessId: '<?= $block->getExternalBusinessId()?>'
       ,fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?"
-      ,deleteConfigKeys: '<?php echo $this->getDeleteAssetIdsAjaxRoute() ?>'
+      ,deleteConfigKeys: '<?= $block->getDeleteAssetIdsAjaxRoute() ?>'
       ,appId: '195311308289826'
       ,timeZone: 'America/Los_Angeles'
-      ,installed: '<?php echo $this->isFBEInstalled() ?>'
-      ,systemUserName: '<?php echo $this->getExternalBusinessId() ?>' + '_system_user'
+      ,installed: '<?= $block->isFBEInstalled() ?>'
+      ,systemUserName: '<?= $block->getExternalBusinessId() ?>' + '_system_user'
       ,businessVertical: 'ECOMMERCE'
       ,channel: 'COMMERCE_OFFSITE'
-      ,currency: '<?php echo $this->getCurrencyCode() ?>'
+      ,currency: '<?= $block->getCurrencyCode() ?>'
       ,businessName: 'Magento'
       ,debug: true
-      ,setAAMSettings: '<?php echo $this->getAAMSettingsRoute() ?>'
+      ,setAAMSettings: '<?= $block->getAAMSettingsRoute() ?>'
     };
 </script>
 <script>

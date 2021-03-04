@@ -6,6 +6,7 @@
 namespace Facebook\BusinessExtension\Observer;
 
 use Exception;
+use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -15,7 +16,7 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
     const ATTR_CREATE = 'CREATE';
 
     /**
-     * @var \Facebook\BusinessExtension\Helper\FBEHelper
+     * @var FBEHelper
      */
     protected $_fbeHelper;
 
@@ -26,14 +27,13 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
 
     /**
      * Constructor
-     * @param \Facebook\BusinessExtension\Helper\FBEHelper $helper
+     * @param FBEHelper $helper
      * @param BatchApi $batchApi
      */
     public function __construct(
-        \Facebook\BusinessExtension\Helper\FBEHelper $helper,
+        FBEHelper $helper,
         BatchApi $batchApi
-    )
-    {
+    ) {
         $this->_fbeHelper = $helper;
         $this->batchApi = $batchApi;
     }

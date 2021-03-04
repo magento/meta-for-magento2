@@ -5,63 +5,75 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
-class PurchaseTest extends CommonTest{
+use Facebook\BusinessExtension\Observer\Purchase;
+use Magento\Framework\Event\Observer;
 
-  protected $purchaseObserver;
+class PurchaseTest extends CommonTest
+{
 
-  /**
-    * Used to reset or change values after running a test
-    *
-    * @return void
-  */
-  public function tearDown() {
-  }
+    protected $purchaseObserver;
 
   /**
-    * Used to set the values before running a test
-    *
-    * @return void
-  */
-  public function setUp() {
-    parent::setUp();
-    $this->purchaseObserver = new \Facebook\BusinessExtension\Observer\Purchase($this->fbeHelper, $this->magentoDataHelper, $this->serverSideHelper);
-  }
+   * Used to reset or change values after running a test
+   *
+   * @return void
+   */
+    public function tearDown()
+    {
+    }
 
-  public function testPurchaseEventCreated(){
-    $this->magentoDataHelper->method('getOrderTotal')->willReturn(170);
-    $this->magentoDataHelper->method('getOrderContentIds')->willReturn(
-      array(1, 2)
-    );
-    $this->magentoDataHelper->method('getOrderContents')->willReturn(
-      array(
-        array( 'product_id'=>1, 'quantity'=>1, 'item_price' =>20 ),
-        array( 'product_id'=>2, 'quantity'=>3, 'item_price' =>50 )
-      )
-    );
-    $this->magentoDataHelper->method('getOrderId')->willReturn(1);
+  /**
+   * Used to set the values before running a test
+   *
+   * @return void
+   */
+    public function setUp()
+    {
+        parent::setUp();
+        $this->purchaseObserver =
+            new Purchase(
+                $this->fbeHelper,
+                $this->magentoDataHelper,
+                $this->serverSideHelper
+            );
+    }
 
-    $observer = new \Magento\Framework\Event\Observer(['eventId' => '1234']);
+    public function testPurchaseEventCreated()
+    {
+        $this->magentoDataHelper->method('getOrderTotal')->willReturn(170);
+        $this->magentoDataHelper->method('getOrderContentIds')->willReturn(
+            [1, 2]
+        );
+        $this->magentoDataHelper->method('getOrderContents')->willReturn(
+            [
+            [ 'product_id'=>1, 'quantity'=>1, 'item_price' =>20 ],
+            [ 'product_id'=>2, 'quantity'=>3, 'item_price' =>50 ]
+            ]
+        );
+        $this->magentoDataHelper->method('getOrderId')->willReturn(1);
 
-    $this->purchaseObserver->execute($observer);
+        $observer = new Observer(['eventId' => '1234']);
 
-    $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
+        $this->purchaseObserver->execute($observer);
 
-    $event = $this->serverSideHelper->getTrackedEvents()[0];
+        $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
 
-    $this->assertEquals('1234', $event->getEventId());
+        $event = $this->serverSideHelper->getTrackedEvents()[0];
 
-    $customDataArray = array(
-      'currency' => 'USD',
-      'value' => 170,
-      'content_type' => 'product',
-      'content_ids' => array(1, 2),
-      'contents' => array(
-        array( 'product_id'=>1, 'quantity'=>1, 'item_price' =>20 ),
-        array( 'product_id'=>2, 'quantity'=>3, 'item_price' =>50 )
-      ),
-      'order_id' => 1
-    );
+        $this->assertEquals('1234', $event->getEventId());
 
-    $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
-  }
+        $customDataArray = [
+        'currency' => 'USD',
+        'value' => 170,
+        'content_type' => 'product',
+        'content_ids' => [1, 2],
+        'contents' => [
+        [ 'product_id'=>1, 'quantity'=>1, 'item_price' =>20 ],
+        [ 'product_id'=>2, 'quantity'=>3, 'item_price' =>50 ]
+        ],
+        'order_id' => 1
+        ];
+
+        $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+    }
 }
