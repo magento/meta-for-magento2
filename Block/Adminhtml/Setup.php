@@ -6,69 +6,105 @@
 namespace Facebook\BusinessExtension\Block\Adminhtml;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
-use Magento\Backend\Block\Template\Context;
-use Magento\Framework\Registry;
 
-class Setup extends Common
+class Setup extends \Magento\Backend\Block\Template
 {
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
 
-    // phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod
+    /**
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param FBEHelper $fbeHelper
+     * @param array $data
+     */
     public function __construct(
-        Context $context,
-        Registry $registry,
+        \Magento\Backend\Block\Template\Context $context,
         FBEHelper $fbeHelper,
         array $data = []
     ) {
-        parent::__construct($context, $registry, $fbeHelper, $data);
+        $this->fbeHelper = $fbeHelper;
+        parent::__construct($context, $data);
     }
 
+    /**
+     * @return mixed
+     */
     public function getPixelAjaxRoute()
     {
-        return $this->_fbeHelper->getUrl('fbeadmin/ajax/fbpixel');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbpixel');
     }
 
+    /**
+     * @return mixed
+     */
     public function getAccessTokenAjaxRoute()
     {
-        return $this->_fbeHelper->getUrl('fbeadmin/ajax/fbtoken');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbtoken');
     }
 
+    /**
+     * @return mixed
+     */
     public function getProfilesAjaxRoute()
     {
-        return $this->_fbeHelper->getUrl('fbeadmin/ajax/fbprofiles');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbprofiles');
     }
 
+    /**
+     * @return mixed
+     */
     public function getAAMSettingsRoute()
     {
-        return $this->_fbeHelper->getUrl('fbeadmin/ajax/fbaamsettings');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbaamsettings');
     }
 
+    /**
+     * @return string|null
+     */
     public function fetchPixelId()
     {
-        return $this->_fbeHelper->getConfigValue('fbpixel/id');
+        return $this->fbeHelper->getConfigValue('fbpixel/id');
     }
 
+    /**
+     * @return string|null
+     */
     public function getExternalBusinessId()
     {
-        return $this->_fbeHelper->getFBEExternalBusinessId();
+        return $this->fbeHelper->getFBEExternalBusinessId();
     }
 
+    /**
+     * @return mixed
+     */
     public function getFeedPushAjaxRoute()
     {
-        return $this->_fbeHelper->getUrl('fbeadmin/ajax/fbfeedpush');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbfeedpush');
     }
 
+    /**
+     * @return mixed
+     */
     public function getDeleteAssetIdsAjaxRoute()
     {
-        return $this->_fbeHelper->getUrl('fbeadmin/ajax/fbdeleteasset');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbdeleteasset');
     }
 
+    /**
+     * @return mixed
+     */
     public function getCurrencyCode()
     {
-        return $this->_fbeHelper->getStoreCurrencyCode();
+        return $this->fbeHelper->getStoreCurrencyCode();
     }
 
+    /**
+     * @return string
+     */
     public function isFBEInstalled()
     {
-        return $this->_fbeHelper->isFBEInstalled();
+        return $this->fbeHelper->isFBEInstalled();
     }
 }
