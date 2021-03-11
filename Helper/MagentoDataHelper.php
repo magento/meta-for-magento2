@@ -14,32 +14,41 @@ use Magento\Framework\ObjectManagerInterface;
  */
 class MagentoDataHelper extends AbstractHelper
 {
-
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    protected $objectManager;
 
     /**
      * @var \Facebook\BusinessExtension\Logger\Logger
      */
-    protected $_logger;
+    protected $logger;
 
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    protected $productFactory;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
      * @var \Magento\Customer\Api\CustomerMetadataInterface
      */
-    protected $_customerMetadata;
+    protected $customerMetadata;
 
+    /**
+     * MagentoDataHelper constructor
+     *
+     * @param Context $context
+     * @param ObjectManagerInterface $objectManager
+     * @param \Facebook\BusinessExtension\Logger\Logger $logger
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
+     */
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
@@ -49,75 +58,77 @@ class MagentoDataHelper extends AbstractHelper
         \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
     ) {
         parent::__construct($context);
-        $this->_objectManager = $objectManager;
-        $this->_logger = $logger;
-        $this->_productFactory = $productFactory;
-        $this->_storeManager = $storeManager;
-        $this->_customerMetadata = $customerMetadata;
+        $this->objectManager = $objectManager;
+        $this->logger = $logger;
+        $this->productFactory = $productFactory;
+        $this->storeManager = $storeManager;
+        $this->customerMetadata = $customerMetadata;
     }
 
     /**
-     * Returns currently logged in users's email.
+     * Return currently logged in users's email.
      *
      * @return string
      */
     public function getEmail()
     {
 
-        $currentSession = $this->_objectManager->get(\Magento\Customer\Model\Session::class);
+        $currentSession = $this->objectManager->get(\Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getEmail();
     }
 
     /**
-     * Returns currently logged in users' First Name.
+     * Return currently logged in users' First Name.
      *
      * @return string
      */
     public function getFirstName()
     {
 
-        $currentSession = $this->_objectManager->get(\Magento\Customer\Model\Session::class);
+        $currentSession = $this->objectManager->get(\Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getFirstname();
     }
 
     /**
-     * Returns currently logged in users' Last Name.
+     * Return currently logged in users' Last Name.
      *
      * @return string
      */
     public function getLastName()
     {
 
-        $currentSession = $this->_objectManager->get(\Magento\Customer\Model\Session::class);
+        $currentSession = $this->objectManager->get(\Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getLastname();
     }
 
     /**
-     * Returns currently logged in users' Date of Birth.
+     * Return currently logged in users' Date of Birth.
      *
      * @return string
      */
     public function getDateOfBirth()
     {
 
-        $currentSession = $this->_objectManager->get(Magento\Customer\Model\Session::class);
+        $currentSession = $this->objectManager->get(Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getDob();
     }
 
     /**
-     * Returns the product with the given sku
+     * Return the product with the given sku
+     *
      * @param string $productSku
      * @return \Magento\Catalog\Model\Product
      */
     public function getProductWithSku($productSku)
     {
-        $product = $this->_productFactory->create();
+        $product = $this->productFactory->create();
         $product->load($product->getIdBySku($productSku));
         return $product;
     }
 
     /**
-     * Returns the categories for the given product
+     * Return the categories for the given product
+     *
      * @param \Magento\Catalog\Model\Product $product
      * @return string
      */
@@ -126,7 +137,7 @@ class MagentoDataHelper extends AbstractHelper
         $categoryIds = $product->getCategoryIds();
         if (count($categoryIds) > 0) {
             $categoryNames = [];
-            $categoryModel = $this->_objectManager->get(\Magento\Catalog\Model\Category::class);
+            $categoryModel = $this->objectManager->get(\Magento\Catalog\Model\Category::class);
             foreach ($categoryIds as $categoryId) {
                 $category = $categoryModel->load($categoryId);
                 $categoryNames[] = $category->getName();
@@ -138,39 +149,42 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the price for the given product
+     * Return the price for the given product
+     *
      * @param \Magento\Catalog\Model\Product $product
      * @return int
      */
     public function getValueForProduct($product)
     {
         $price = $product->getFinalPrice();
-        $priceHelper = $this->_objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         return $priceHelper->currency($price, false, false);
     }
 
     /**
-     * Returns the currency used in the store
+     * Return the currency used in the store
+     *
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getCurrency()
     {
-        return $this->_storeManager->getStore()->getCurrentCurrency()->getCode();
+        return $this->storeManager->getStore()->getCurrentCurrency()->getCode();
     }
 
     /**
-     * Returns the ids of the items added to the cart
+     * Return the ids of the items added to the cart
      * @return string[]
      */
     public function getCartContentIds()
     {
         $productIds = [];
-        $cart = $this->_objectManager->get(\Magento\Checkout\Model\Cart::class);
+        $cart = $this->objectManager->get(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return null;
         }
         $items = $cart->getQuote()->getAllVisibleItems();
-        $productModel = $this->_objectManager->get(\Magento\Catalog\Model\Product::class);
+        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
         foreach ($items as $item) {
             $product = $productModel->load($item->getProductId());
             $productIds[] = $product->getId();
@@ -179,18 +193,18 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the cart total value
+     * Return the cart total value
      * @return int
      */
     public function getCartTotal()
     {
-        $cart = $this->_objectManager->get(\Magento\Checkout\Model\Cart::class);
+        $cart = $this->objectManager->get(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return null;
         }
         $subtotal = $cart->getQuote()->getSubtotal();
         if ($subtotal) {
-            $priceHelper = $this->_objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+            $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
             return $priceHelper->currency($subtotal, false, false);
         } else {
             return null;
@@ -198,12 +212,12 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the amount of items in the cart
+     * Return the amount of items in the cart
      * @return int
      */
     public function getCartNumItems()
     {
-        $cart = $this->_objectManager->get(\Magento\Checkout\Model\Cart::class);
+        $cart = $this->objectManager->get(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return null;
         }
@@ -216,19 +230,19 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns information about the cart items
+     * Return information about the cart items
      * @return array
      */
     public function getCartContents()
     {
-        $cart = $this->_objectManager->get(\Magento\Checkout\Model\Cart::class);
+        $cart = $this->objectManager->get(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return null;
         }
         $contents = [];
         $items = $cart->getQuote()->getAllVisibleItems();
-        $productModel = $this->_objectManager->get(\Magento\Catalog\Model\Product::class);
-        $priceHelper = $this->_objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
+        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
             $product = $productModel->load($item->getProductId());
             $contents[] = [
@@ -241,18 +255,18 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the ids of the items in the last order
+     * Return the ids of the items in the last order
      * @return string[]
      */
     public function getOrderContentIds()
     {
-        $order = $this->_objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $order = $this->objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         if (!$order) {
             return null;
         }
         $productIds = [];
         $items = $order->getAllVisibleItems();
-        $productModel = $this->_objectManager->get(\Magento\Catalog\Model\Product::class);
+        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
         foreach ($items as $item) {
             $product = $productModel->load($item->getProductId());
             $productIds[] = $product->getId();
@@ -261,18 +275,18 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the last order total value
+     * Return the last order total value
      * @return string
      */
     public function getOrderTotal()
     {
-        $order = $this->_objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $order = $this->objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         if (!$order) {
             return null;
         }
         $subtotal = $order->getSubTotal();
         if ($subtotal) {
-            $priceHelper = $this->_objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+            $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
             return $priceHelper->currency($subtotal, false, false);
         } else {
             return null;
@@ -280,19 +294,20 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns information about the last order items
+     * Return information about the last order items
+     *
      * @return array
      */
     public function getOrderContents()
     {
-        $order = $this->_objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $order = $this->objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         if (!$order) {
             return null;
         }
         $contents = [];
         $items = $order->getAllVisibleItems();
-        $productModel = $this->_objectManager->get(\Magento\Catalog\Model\Product::class);
-        $priceHelper = $this->_objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
+        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
             $product = $productModel->load($item->getProductId());
             $contents[] = [
@@ -305,12 +320,13 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the id of the last order
+     * Return the id of the last order
+     *
      * @return int
      */
     public function getOrderId()
     {
-        $order = $this->_objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $order = $this->objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         if (!$order) {
             return null;
         } else {
@@ -319,12 +335,13 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns an object representing the current logged in customer
+     * Return an object representing the current logged in customer
+     *
      * @return \Magento\Customer\Model\Customer
      */
     public function getCurrentCustomer()
     {
-        $session = $this->_objectManager->create(\Magento\Customer\Model\Session::class);
+        $session = $this->objectManager->create(\Magento\Customer\Model\Session::class);
         if (!$session->isLoggedIn()) {
             return null;
         } else {
@@ -333,24 +350,26 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the address of a given customer
+     * Return the address of a given customer
+     *
      * @return \Magento\Customer\Model\Address
      */
     public function getCustomerAddress($customer)
     {
         $customerAddressId = $customer->getDefaultBilling();
-        $address = $this->_objectManager->get(\Magento\Customer\Model\Address::class);
+        $address = $this->objectManager->get(\Magento\Customer\Model\Address::class);
         $address->load($customerAddressId);
         return $address;
     }
 
     /**
-     * Returns the region's code for the given address
+     * Return the region's code for the given address
+     *
      * @return array
      */
     public function getRegionCodeForAddress($address)
     {
-        $region = $this ->_objectManager->get(\Magento\Directory\Model\Region::class)
+        $region = $this ->objectManager->get(\Magento\Directory\Model\Region::class)
             ->load($address->getRegionId());
         if ($region) {
             return $region->getCode();
@@ -360,7 +379,8 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns the string representation of the customer gender
+     * Return the string representation of the customer gender
+     *
      * @return string
      */
     public function getGenderAsString($customer)
@@ -372,12 +392,15 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns all of the match keys that can be extracted from order information
+     * Return all of the match keys that can be extracted from order information
+     *
      * @return string[]
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getUserDataFromOrder()
     {
-        $order = $this->_objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $order = $this->objectManager->get(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         if (!$order) {
             return null;
         }
@@ -392,7 +415,7 @@ class MagentoDataHelper extends AbstractHelper
         if ($order->getCustomerGender()) {
             $genderId = $order->getCustomerGender();
             $userData[AAMSettingsFields::GENDER] =
-                $this->_customerMetadata->getAttributeMetadata('gender')
+                $this->customerMetadata->getAttributeMetadata('gender')
                     ->getOptions()[$genderId]->getLabel();
         }
 
@@ -409,8 +432,11 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Returns all of the match keys that can be extracted from user session
+     * Return all of the match keys that can be extracted from user session
+     *
      * @return string[]
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getUserDataFromSession()
     {
@@ -429,7 +455,7 @@ class MagentoDataHelper extends AbstractHelper
         if ($customer->getGender()) {
             $genderId = $customer->getGender();
             $userData[AAMSettingsFields::GENDER] =
-                $this->_customerMetadata->getAttributeMetadata('gender')
+                $this->customerMetadata->getAttributeMetadata('gender')
                     ->getOptions()[$genderId]->getLabel();
         }
 

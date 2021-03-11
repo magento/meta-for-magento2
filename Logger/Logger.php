@@ -9,7 +9,11 @@ use Magento\Framework\ObjectManagerInterface;
 
 class Logger extends \Monolog\Logger
 {
-
+    /**
+     * Logger constructor
+     *
+     * @param ObjectManagerInterface $objectManager
+     */
     public function __construct(
         ObjectManagerInterface $objectManager
     ) {

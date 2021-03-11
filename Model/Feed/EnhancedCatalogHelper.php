@@ -10,30 +10,42 @@ use Magento\Catalog\Model\Product;
 
 class EnhancedCatalogHelper
 {
-    private $fbe_helper;
-    private $attribute_config;
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
 
-    public function __construct(FBEHelper $fbe_helper, ProductAttributes $attribute_config)
+    /**
+     * @var ProductAttributes
+     */
+    private $attributeConfig;
+
+    /**
+     * EnhancedCatalogHelper constructor
+     *
+     * @param FBEHelper $fbeHelper
+     * @param ProductAttributes $attributeConfig
+     */
+    public function __construct(FBEHelper $fbeHelper, ProductAttributes $attributeConfig)
     {
-        $this->attribute_config = $attribute_config;
-        $this->fbe_helper = $fbe_helper;
+        $this->attributeConfig = $attributeConfig;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
      * @param Product $product
      * @param array $requests
-     * @throws Zend_Locale_Exception
      * @return null
      */
     public function assignECAttribute(Product $product, array &$requests)
     {
-        $attr_config = $this->attribute_config->getAttributesConfig();
-        foreach ($attr_config as $attrCode => $config) {
+        $attrConfig = $this->attributeConfig->getAttributesConfig();
+        foreach ($attrConfig as $attrCode => $config) {
             $data = $product->getData($attrCode);
             if ($data) {
                 // facebook_capacity -> capacity
-                $trimedAttrCode = substr($attrCode, 9);
-                $requests[$trimedAttrCode] = $data;
+                $trimmedAttrCode = substr($attrCode, 9);
+                $requests[$trimmedAttrCode] = $data;
             }
         }
         return null;

@@ -12,8 +12,6 @@ use Magento\Framework\Event\ObserverInterface;
 
 class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
 {
-    const ATTR_CREATE = 'CREATE';
-
     /**
      * @var FBEHelper
      */
@@ -34,14 +32,16 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
      * after save category from Magento
      *
      * @param Observer $observer
+     * @return
      */
     public function execute(Observer $observer)
     {
         $category = $observer->getEvent()->getCategory();
         $this->_fbeHelper->log("save category: ".$category->getName());
 
+        /** @var CategoryCollection $categoryObj */
         $categoryObj = $this->_fbeHelper->getObject(CategoryCollection::class);
-        $reponse = $categoryObj->makeHttpRequestAfterCategorySave($category);
-        return $reponse;
+        $response = $categoryObj->makeHttpRequestAfterCategorySave($category);
+        return $response;
     }
 }

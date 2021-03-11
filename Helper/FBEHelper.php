@@ -42,36 +42,56 @@ class FBEHelper extends AbstractHelper
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    protected $objectManager;
+
     /**
      * @var StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
+
     /**
      * @var ConfigFactory
      */
-    protected $_configFactory;
+    protected $configFactory;
+
     /**
      * @var Logger
      */
-    protected $_logger;
+    protected $logger;
+
     /**
      * @var DirectoryList
      */
-    protected $_directoryList;
+    protected $directoryList;
+
     /**
      * @var Curl
      */
-    protected $_curl;
+    protected $curl;
+
     /**
      * @var ResourceConnection
      */
-    protected $_resourceConnection;
+    protected $resourceConnection;
+
     /**
      * @var ModuleListInterface
      */
-    protected $_moduleList;
+    protected $moduleList;
 
+    /**
+     * FBEHelper constructor
+     *
+     * @param Context $context
+     * @param ObjectManagerInterface $objectManager
+     * @param ConfigFactory $configFactory
+     * @param Logger $logger
+     * @param DirectoryList $directorylist
+     * @param StoreManagerInterface $storeManager
+     * @param Curl $curl
+     * @param ResourceConnection $resourceConnection
+     * @param ModuleListInterface $moduleList
+     */
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
@@ -84,14 +104,14 @@ class FBEHelper extends AbstractHelper
         ModuleListInterface $moduleList
     ) {
         parent::__construct($context);
-        $this->_objectManager = $objectManager;
-        $this->_storeManager = $storeManager;
-        $this->_configFactory = $configFactory;
-        $this->_logger = $logger;
-        $this->_directoryList = $directorylist;
-        $this->_curl = $curl;
-        $this->_resourceConnection = $resourceConnection;
-        $this->_moduleList = $moduleList;
+        $this->objectManager = $objectManager;
+        $this->storeManager = $storeManager;
+        $this->configFactory = $configFactory;
+        $this->logger = $logger;
+        $this->directoryList = $directorylist;
+        $this->curl = $curl;
+        $this->resourceConnection = $resourceConnection;
+        $this->moduleList = $moduleList;
     }
 
     public function getPixelID()
@@ -104,21 +124,33 @@ class FBEHelper extends AbstractHelper
         return $this->getConfigValue('fbaccess/token');
     }
 
+    /**
+     * @return mixed
+     */
     public function getMagentoVersion()
     {
-        return $this->_objectManager->get(ProductMetadataInterface::class)->getVersion();
+        return $this->objectManager->get(ProductMetadataInterface::class)->getVersion();
     }
 
+    /**
+     * @return mixed
+     */
     public function getPluginVersion()
     {
-        return $this->_moduleList->getOne(self::MODULE_NAME)['setup_version'];
+        return $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
     }
 
+    /**
+     * @return string
+     */
     public function getSource()
     {
         return 'magento2';
     }
 
+    /**
+     * @return string
+     */
     public function getPartnerAgent()
     {
         return sprintf(
@@ -129,45 +161,78 @@ class FBEHelper extends AbstractHelper
         );
     }
 
+    /**
+     * @param $partialURL
+     * @return mixed
+     */
     public function getUrl($partialURL)
     {
         $urlInterface = $this->getObject(\Magento\Backend\Model\UrlInterface::class);
         return $urlInterface->getUrl($partialURL);
     }
 
+    /**
+     * @return mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getBaseUrlMedia()
     {
-        return $this->_storeManager->getStore()->getBaseUrl(
+        return $this->storeManager->getStore()->getBaseUrl(
             UrlInterface::URL_TYPE_MEDIA,
             $this->maybeUseHTTPS()
         );
     }
 
+    /**
+     * @return bool
+     */
     private function maybeUseHTTPS()
     {
-        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
+        return isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
     }
 
+    /**
+     * @param $fullClassName
+     * @param array $arguments
+     * @return mixed
+     */
     public function createObject($fullClassName, array $arguments = [])
     {
-        return $this->_objectManager->create($fullClassName, $arguments);
+        return $this->objectManager->create($fullClassName, $arguments);
     }
 
+    /**
+     * @param $fullClassName
+     * @return mixed
+     */
     public function getObject($fullClassName)
     {
-        return $this->_objectManager->get($fullClassName);
+        return $this->objectManager->get($fullClassName);
     }
 
+    /**
+     * @param $id
+     * @return bool
+     */
     public static function isValidFBID($id)
     {
         return preg_match("/^\d{1,20}$/", $id) === 1;
     }
 
+    /**
+     * @param null $storeId
+     * @return \Magento\Store\Api\Data\StoreInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getStore($storeId = null)
     {
-        return $this->_storeManager->getStore($storeId);
+        return $this->storeManager->getStore($storeId);
     }
 
+    /**
+     * @return mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getBaseUrl()
     {
         // Use this function to get a base url respect to host protocol
@@ -177,10 +242,14 @@ class FBEHelper extends AbstractHelper
         );
     }
 
+    /**
+     * @param $configKey
+     * @param $configValue
+     */
     public function saveConfig($configKey, $configValue)
     {
         try {
-            $configRow = $this->_configFactory->create()->load($configKey);
+            $configRow = $this->configFactory->create()->load($configKey);
             if ($configRow->getData('config_key')) {
                 $configRow->setData('config_value', $configValue);
                 $configRow->setData('update_time', time());
@@ -197,16 +266,24 @@ class FBEHelper extends AbstractHelper
         }
     }
 
+    /**
+     * @param $configKey
+     */
     public function deleteConfig($configKey)
     {
         try {
-            $configRow = $this->_configFactory->create()->load($configKey);
+            $configRow = $this->configFactory->create()->load($configKey);
             $configRow->delete();
         } catch (\Exception $e) {
             $this->logException($e);
         }
     }
 
+    /**
+     * @param bool $validity_check
+     * @return int|string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getDefaultStoreID($validity_check = false)
     {
         $store_id = $this->getConfigValue('fbstore/id');
@@ -246,15 +323,24 @@ class FBEHelper extends AbstractHelper
         }
     }
 
+    /**
+     * @param bool $withDefault
+     * @param bool $codeKey
+     * @return \Magento\Store\Api\Data\StoreInterface[]
+     */
     public function getStores($withDefault = false, $codeKey = false)
     {
-        return $this->_storeManager->getStores($withDefault, $codeKey);
+        return $this->storeManager->getStores($withDefault, $codeKey);
     }
 
+    /**
+     * @param $configKey
+     * @return mixed|null
+     */
     public function getConfigValue($configKey)
     {
         try {
-            $configRow = $this->_configFactory->create()->load($configKey);
+            $configRow = $this->configFactory->create()->load($configKey);
         } catch (\Exception $e) {
             $this->logException($e);
             return null;
@@ -262,6 +348,11 @@ class FBEHelper extends AbstractHelper
         return $configRow ? $configRow->getConfigValue() : null;
     }
 
+    /**
+     * @param $requestParams
+     * @param null $accessToken
+     * @return string|null
+     */
     public function makeHttpRequest($requestParams, $accessToken = null)
     {
         $response = null;
@@ -275,25 +366,33 @@ class FBEHelper extends AbstractHelper
                 'requests' => json_encode($requestParams),
                 'item_type' => 'PRODUCT_ITEM',
             ];
-            $this->_curl->post($url, $params);
-            $response = $this->_curl->getBody();
+            $this->curl->post($url, $params);
+            $response = $this->curl->getBody();
         } catch (\Exception $e) {
             $this->logException($e);
         }
         return $response;
     }
 
+    /**
+     * @return mixed|string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getFBEExternalBusinessId()
     {
         $stored_external_id = $this->getConfigValue('fbe/external/id');
         if ($stored_external_id) {
             return $stored_external_id;
         }
-        $store_id = $this->_storeManager->getStore()->getId();
+        $store_id = $this->storeManager->getStore()->getId();
         $this->log("Store id---" . $store_id);
         return uniqid('fbe_magento_' . $store_id . '_');
     }
 
+    /**
+     * @return array|false|int|string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getStoreName()
     {
         $frontendName = $this->getStore()->getFrontendName();
@@ -318,18 +417,27 @@ class FBEHelper extends AbstractHelper
         return parse_url(self::getBaseUrl(), PHP_URL_HOST);
     }
 
+    /**
+     * @param $info
+     */
     public function log($info)
     {
-        $this->_logger->info($info);
+        $this->logger->info($info);
     }
 
+    /**
+     * @param \Exception $e
+     */
     public function logException(\Exception $e)
     {
-        $this->_logger->error($e->getMessage());
-        $this->_logger->error($e->getTraceAsString());
-        $this->_logger->error($e);
+        $this->logger->error($e->getMessage());
+        $this->logger->error($e->getTraceAsString());
+        $this->logger->error($e);
     }
 
+    /**
+     * @return string|void|null
+     */
     public function getAPIVersion()
     {
         $accessToken = $this->getAccessToken();
@@ -340,7 +448,7 @@ class FBEHelper extends AbstractHelper
         $api_version = null;
         try {
 
-            $configRow = $this->_configFactory->create()->load('fb/api/version');
+            $configRow = $this->configFactory->create()->load('fb/api/version');
             $api_version = $configRow ? $configRow->getConfigValue() : null;
             //$this->log("Current api version : ".$api_version);
             $versionLastUpdate = $configRow ? $configRow->getUpdateTime() : null;
@@ -350,13 +458,13 @@ class FBEHelper extends AbstractHelper
                 //$this->log("Returning the version already stored in db : ".$api_version);
                 return $api_version;
             }
-            $this->_curl->addHeader("Authorization", "Bearer " . $accessToken);
-            $this->_curl->get(self::FB_GRAPH_BASE_URL . 'api_version');
+            $this->curl->addHeader("Authorization", "Bearer " . $accessToken);
+            $this->curl->get(self::FB_GRAPH_BASE_URL . 'api_version');
             //$this->log("The API call: ".self::FB_GRAPH_BASE_URL.'api_version');
-            $response = $this->_curl->getBody();
+            $response = $this->curl->getBody();
             //$this->log("The API reponse : ".json_encode($response));
-            $decode_response = json_decode($response);
-            $api_version = $decode_response->api_version;
+            $decodeResponse = json_decode($response);
+            $api_version = $decodeResponse->api_version;
             //$this->log("The version fetched via API call: ".$api_version);
             $this->saveConfig('fb/api/version', $api_version);
 
@@ -384,33 +492,40 @@ class FBEHelper extends AbstractHelper
             $external_business_id = $this->getFBEExternalBusinessId();
         }
         $accessToken = $this->getAccessToken();
-        $url_suffix = "/fbe_business/fbe_installs?fbe_external_business_id=".$external_business_id;
-        $url = $this::FB_GRAPH_BASE_URL.$this->getAPIVersion().$url_suffix;
+        $urlSuffix = "/fbe_business/fbe_installs?fbe_external_business_id=" . $external_business_id;
+        $url = $this::FB_GRAPH_BASE_URL . $this->getAPIVersion() . $urlSuffix;
         $this->log($url);
         try {
-            $this->_curl->addHeader("Authorization", "Bearer " . $accessToken);
-            $this->_curl->get($url);
-            $response = $this->_curl->getBody();
-            $this->log("The FBE Install reponse : ".json_encode($response));
-            $decode_response = json_decode($response, true);
-            $_assets = $decode_response['data'][0];
+            $this->curl->addHeader("Authorization", "Bearer " . $accessToken);
+            $this->curl->get($url);
+            $response = $this->curl->getBody();
+            $this->log("The FBE Install reponse : " . json_encode($response));
+            $decodeResponse = json_decode($response, true);
+            $assets = $decodeResponse['data'][0];
         } catch (\Exception $e) {
             $this->log("Failed to query FBEInstalls" . $e->getMessage());
         }
     }
 
-    public function logPixelEvent($pixel_id, $pixel_event)
+    /**
+     * @param $pixelId
+     * @param $pixelEvent
+     */
+    public function logPixelEvent($pixelId, $pixelEvent)
     {
-        $this->log($pixel_event . " event fired for Pixel id : " . $pixel_id);
+        $this->log($pixelEvent . " event fired for Pixel id : " . $pixelId);
     }
 
+    /**
+     * @return array
+     */
     public function deleteConfigKeys()
     {
         $response = [];
         $response['success'] = false;
         try {
-            $connection = $this->_resourceConnection->getConnection();
-            $facebook_config = $this->_resourceConnection->getTableName('facebook_business_extension_config');
+            $connection = $this->resourceConnection->getConnection();
+            $facebook_config = $this->resourceConnection->getTableName('facebook_business_extension_config');
             $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' ";
             $connection->query($sql);
             $response['success'] = true;
@@ -422,6 +537,10 @@ class FBEHelper extends AbstractHelper
         return $response;
     }
 
+    /**
+     * @param $versionLastUpdate
+     * @return bool|null
+     */
     public function isUpdatedVersion($versionLastUpdate)
     {
         if (!$versionLastUpdate) {
@@ -443,6 +562,11 @@ class FBEHelper extends AbstractHelper
         return $monthsSinceLastUpdate <= 2;
     }
 
+    /**
+     * @param $accessToken
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getCatalogBatchAPI($accessToken)
     {
         $catalog_id = $this->getConfigValue('fbe/catalog/id');
@@ -460,12 +584,19 @@ class FBEHelper extends AbstractHelper
         return $catalog_batch_api;
     }
 
+    /**
+     * @return mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getStoreCurrencyCode()
     {
         $store_id = $this->getDefaultStoreID();
         return $this->getStore($store_id)->getCurrentCurrencyCode();
     }
 
+    /**
+     * @return string
+     */
     public function isFBEInstalled()
     {
         $isFbeInstalled = $this->getConfigValue('fbe/installed');
@@ -475,11 +606,18 @@ class FBEHelper extends AbstractHelper
         return 'false';
     }
 
+    /**
+     * @param $pixelId
+     * @return mixed
+     */
     private function fetchAAMSettings($pixelId)
     {
         return AdsPixelSettings::buildFromPixelId($pixelId);
     }
 
+    /**
+     * @return AdsPixelSettings|null
+     */
     public function getAAMSettings()
     {
         $settingsAsString = $this->getConfigValue('fbpixel/aam_settings');
@@ -496,6 +634,10 @@ class FBEHelper extends AbstractHelper
         return null;
     }
 
+    /**
+     * @param $settings
+     * @return false|string
+     */
     private function saveAAMSettings($settings)
     {
         $settingsAsArray = [
@@ -508,6 +650,10 @@ class FBEHelper extends AbstractHelper
         return $settingsAsString;
     }
 
+    /**
+     * @param $pixelId
+     * @return false|string|null
+     */
     public function fetchAndSaveAAMSettings($pixelId)
     {
         $settings = $this->fetchAAMSettings($pixelId);
@@ -517,7 +663,11 @@ class FBEHelper extends AbstractHelper
         return null;
     }
 
-    // Generates a map of the form : 4 => "Root > Mens > Shoes"
+    /**
+     * Generates a map of the form : 4 => "Root > Mens > Shoes"
+     *
+     * @return array
+     */
     public function generateCategoryNameMap()
     {
         $categories = $this->getObject(CategoryCollection::class)
@@ -536,8 +686,8 @@ class FBEHelper extends AbstractHelper
         // e.g.  "1/2/3" => "Root > Mens > Shoes"
         foreach ($name as $id => $value) {
             $breadcrumb[$id] = implode(" > ", array_filter(array_map(
-                function ($inner_id) use (&$name) {
-                    return isset($name[$inner_id]) ? $name[$inner_id] : null;
+                function ($innerId) use (&$name) {
+                    return isset($name[$innerId]) ? $name[$innerId] : null;
                 },
                 explode("/", $breadcrumb[$id])
             )));

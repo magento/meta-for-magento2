@@ -13,12 +13,10 @@ use Magento\Framework\Event\ObserverInterface;
 
 class ProcessProductAfterSaveEventObserver implements ObserverInterface
 {
-    const ATTR_CREATE = 'CREATE';
-
     /**
      * @var FBEHelper
      */
-    protected $_fbeHelper;
+    protected $fbeHelper;
 
     /**
      * @var BatchApi
@@ -34,7 +32,7 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
         FBEHelper $helper,
         BatchApi $batchApi
     ) {
-        $this->_fbeHelper = $helper;
+        $this->fbeHelper = $helper;
         $this->batchApi = $batchApi;
     }
 
@@ -55,9 +53,9 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
             $requestData = $this->batchApi->buildProductRequest($product);
             $requestParams = [];
             $requestParams[0] = $requestData;
-            $response = $this->_fbeHelper->makeHttpRequest($requestParams, null);
+            $response = $this->fbeHelper->makeHttpRequest($requestParams, null);
         } catch (Exception $e) {
-            $this->_fbeHelper->logException($e);
+            $this->fbeHelper->logException($e);
         }
     }
 }

@@ -14,29 +14,29 @@ use Facebook\BusinessExtension\Helper\ServerEventFactory;
 
 class ViewCategory implements ObserverInterface
 {
-  /**
-   * @var FBEHelper
-   */
-    protected $_fbeHelper;
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
 
-  /**
-   * @var ServerSideHelper
-   */
-    protected $_serverSideHelper;
+    /**
+     * @var ServerSideHelper
+     */
+    protected $serverSideHelper;
 
-  /**
-   * \Magento\Framework\Registry
-   */
-    protected $_registry;
+    /**
+     * \Magento\Framework\Registry
+     */
+    protected $registry;
 
     public function __construct(
         FBEHelper $fbeHelper,
         ServerSideHelper $serverSideHelper,
         \Magento\Framework\Registry $registry
     ) {
-        $this->_fbeHelper = $fbeHelper;
-        $this->_registry = $registry;
-        $this->_serverSideHelper = $serverSideHelper;
+        $this->fbeHelper = $fbeHelper;
+        $this->registry = $registry;
+        $this->serverSideHelper = $serverSideHelper;
     }
 
     public function execute(Observer $observer)
@@ -44,14 +44,14 @@ class ViewCategory implements ObserverInterface
         try {
             $eventId = $observer->getData('eventId');
             $customData = [];
-            $category = $this->_registry->registry('current_category');
+            $category = $this->registry->registry('current_category');
             if ($category) {
                 $customData['content_category'] = addslashes($category->getName());
             }
             $event = ServerEventFactory::createEvent('ViewCategory', $customData, $eventId);
-            $this->_serverSideHelper->sendEvent($event);
-        } catch (Exception $e) {
-            $this->_fbeHelper->log(json_encode($e));
+            $this->serverSideHelper->sendEvent($event);
+        } catch (\Exception $e) {
+            $this->fbeHelper->log(json_encode($e));
         }
         return $this;
     }

@@ -15,60 +15,60 @@ use Facebook\BusinessExtension\Helper\ServerEventFactory;
 
 class InitiateCheckout implements ObserverInterface
 {
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
 
-  /**
-   * @var FBEHelper
-   */
-    protected $_fbeHelper;
+    /**
+     * @var MagentoDataHelper
+     */
+    protected $magentoDataHelper;
 
-  /**
-   * @var MagentoDataHelper
-   */
-    protected $_magentoDataHelper;
+    /**
+     * @var ServerSideHelper
+     */
+    protected $serverSideHelper;
 
-  /**
-   * @var ServerSideHelper
-   */
-    protected $_serverSideHelper;
-
-  /**
-   * Constructor
-   * @param \Psr\Log\LoggerInterface $logger
-   * @param FBEHelper $helper
-   * @param MagentoDataHelper $helper
-   */
+    /**
+     * InitiateCheckout constructor
+     *
+     * @param FBEHelper $fbeHelper
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param ServerSideHelper $serverSideHelper
+     */
     public function __construct(
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         ServerSideHelper $serverSideHelper
     ) {
-        $this->_fbeHelper = $fbeHelper;
-        $this->_magentoDataHelper = $magentoDataHelper;
-        $this->_serverSideHelper = $serverSideHelper;
+        $this->fbeHelper = $fbeHelper;
+        $this->magentoDataHelper = $magentoDataHelper;
+        $this->serverSideHelper = $serverSideHelper;
     }
 
-  /**
-   * Execute action method for the Observer
-   *
-   * @param Observer $observer
-   * @return  $this
-   */
+    /**
+     * Execute action method for the Observer
+     *
+     * @param Observer $observer
+     * @return  $this
+     */
     public function execute(Observer $observer)
     {
         try {
             $eventId = $observer->getData('eventId');
             $customData = [
-            'currency' => $this->_magentoDataHelper->getCurrency(),
-            'value' => $this->_magentoDataHelper->getCartTotal(),
-            'content_type' => 'product',
-            'content_ids' => $this->_magentoDataHelper->getCartContentIds(),
-            'num_items' => $this->_magentoDataHelper->getCartNumItems(),
-            'contents' => $this->_magentoDataHelper->getCartContents()
+                'currency'     => $this->magentoDataHelper->getCurrency(),
+                'value'        => $this->magentoDataHelper->getCartTotal(),
+                'content_type' => 'product',
+                'content_ids'  => $this->magentoDataHelper->getCartContentIds(),
+                'num_items'    => $this->magentoDataHelper->getCartNumItems(),
+                'contents'     => $this->magentoDataHelper->getCartContents()
             ];
             $event = ServerEventFactory::createEvent('InitiateCheckout', array_filter($customData), $eventId);
-            $this->_serverSideHelper->sendEvent($event);
-        } catch (Exception $e) {
-            $this->_fbeHelper->log(json_encode($e));
+            $this->serverSideHelper->sendEvent($event);
+        } catch (\Exception $e) {
+            $this->fbeHelper->log(json_encode($e));
         }
         return $this;
     }

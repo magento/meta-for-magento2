@@ -13,16 +13,15 @@ use FacebookAds\Object\ServerSide\Util;
  */
 class AAMFieldsExtractorHelper
 {
+    /**
+     * @var MagentoDataHelper
+     */
+    protected $magentoDataHelper;
 
-  /**
-   * @var MagentoDataHelper
-   */
-    protected $_magentoDataHelper;
-
-  /**
-   * @var FBEHelper
-   */
-    protected $_fbeHelper;
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
 
     /**
      * Constructor
@@ -33,45 +32,45 @@ class AAMFieldsExtractorHelper
         MagentoDataHelper $magentoDataHelper,
         FBEHelper $fbeHelper
     ) {
-        $this->_magentoDataHelper = $magentoDataHelper;
-        $this->_fbeHelper = $fbeHelper;
+        $this->magentoDataHelper = $magentoDataHelper;
+        $this->fbeHelper = $fbeHelper;
     }
 
-  /**
-   * Filters user data according to AAM settings and normalizes the fields
-   * Reads user data from session when no user data was passed
-   * @param string[] $userDataArray
-   * @return string[]
-   */
+    /**
+     * Filters user data according to AAM settings and normalizes the fields
+     * Reads user data from session when no user data was passed
+     * @param string[] $userDataArray
+     * @return string[]
+     */
     public function getNormalizedUserData($userDataArray = null)
     {
         if (!$userDataArray) {
-            $userDataArray = $this->_magentoDataHelper->getUserDataFromSession();
+            $userDataArray = $this->magentoDataHelper->getUserDataFromSession();
         }
 
-        $aamSettings = $this->_fbeHelper->getAAMSettings();
+        $aamSettings = $this->fbeHelper->getAAMSettings();
 
         if (!$userDataArray || !$aamSettings || !$aamSettings->getEnableAutomaticMatching()) {
             return null;
         }
 
-      //Removing fields not enabled in AAM settings
+        //Removing fields not enabled in AAM settings
         foreach ($userDataArray as $key => $value) {
             if (!in_array($key, $aamSettings->getEnabledAutomaticMatchingFields())) {
                 unset($userDataArray[$key]);
             }
         }
 
-      // Normalizing gender and date of birth
-      // According to https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+        // Normalizing gender and date of birth
+        // According to https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
         if (array_key_exists(AAMSettingsFields::GENDER, $userDataArray)
-        && !empty($userDataArray[AAMSettingsFields::GENDER])
+            && !empty($userDataArray[AAMSettingsFields::GENDER])
         ) {
             $userDataArray[AAMSettingsFields::GENDER] = $userDataArray[AAMSettingsFields::GENDER][0];
         }
         if (array_key_exists(AAMSettingsFields::DATE_OF_BIRTH, $userDataArray)
         ) {
-          // strtotime() and date() return false for invalid parameters
+            // strtotime() and date() return false for invalid parameters
             $unixTimestamp = strtotime($userDataArray[AAMSettingsFields::DATE_OF_BIRTH]);
             if (!$unixTimestamp) {
                 unset($userDataArray[AAMSettingsFields::DATE_OF_BIRTH]);
@@ -84,12 +83,12 @@ class AAMFieldsExtractorHelper
                 }
             }
         }
-      // Given that the format of advanced matching fields is the same in
-      // the Pixel and the Conversions API,
-      // we can use the business sdk for normalization
-      // Compare the documentation:
-      // https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
-      // https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+        // Given that the format of advanced matching fields is the same in
+        // the Pixel and the Conversions API,
+        // we can use the business sdk for normalization
+        // Compare the documentation:
+        // https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
+        // https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
         foreach ($userDataArray as $field => $data) {
             try {
                 $normalizedValue = Normalizer::normalize($field, $data);
@@ -102,6 +101,11 @@ class AAMFieldsExtractorHelper
         return $userDataArray;
     }
 
+    /**
+     * @param $event
+     * @param null $userDataArray
+     * @return mixed
+     */
     public function setUserData($event, $userDataArray = null)
     {
         $userDataArray = self::getNormalizedUserData($userDataArray);

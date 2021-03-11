@@ -16,24 +16,24 @@ use Facebook\BusinessExtension\Helper\ServerEventFactory;
 
 class ViewContent implements ObserverInterface
 {
-  /**
-   * @var FBEHelper
-   */
-    protected $_fbeHelper;
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
 
-  /**
-   * @var ServerSideHelper
-   */
-    protected $_serverSideHelper;
+    /**
+     * @var ServerSideHelper
+     */
+    protected $serverSideHelper;
 
-  /**
-   * \Magento\Framework\Registry
-   */
-    protected $_registry;
+    /**
+     * \Magento\Framework\Registry
+     */
+    protected $registry;
 
-  /**
-   * @var MagentoDataHelper
-   */
+    /**
+     * @var MagentoDataHelper
+     */
     protected $_magentoDataHelper;
 
     public function __construct(
@@ -42,9 +42,9 @@ class ViewContent implements ObserverInterface
         MagentoDataHelper $magentoDataHelper,
         \Magento\Framework\Registry $registry
     ) {
-        $this->_fbeHelper = $fbeHelper;
-        $this->_registry = $registry;
-        $this->_serverSideHelper = $serverSideHelper;
+        $this->fbeHelper = $fbeHelper;
+        $this->registry = $registry;
+        $this->serverSideHelper = $serverSideHelper;
         $this->_magentoDataHelper = $magentoDataHelper;
     }
 
@@ -53,27 +53,27 @@ class ViewContent implements ObserverInterface
         try {
             $eventId = $observer->getData('eventId');
             $customData = [
-            'currency' => $this->_magentoDataHelper->getCurrency()
+                'currency' => $this->_magentoDataHelper->getCurrency()
             ];
-            $product = $this->_registry->registry('current_product');
+            $product = $this->registry->registry('current_product');
             if ($product && $product->getId()) {
                 $customData['value'] = $this->_magentoDataHelper->getValueForProduct($product);
-                $customData['content_ids'] = [ $product->getId() ];
+                $customData['content_ids'] = [$product->getId()];
                 $customData['content_category'] = $this->_magentoDataHelper->getCategoriesForProduct($product);
                 $customData['content_name'] = $product->getName();
                 $customData['contents'] = [
-                [
-                'product_id' => $product->getId(),
-                'item_price' => $this->_magentoDataHelper->getValueForProduct($product)
-                ]
+                    [
+                        'product_id' => $product->getId(),
+                        'item_price' => $this->_magentoDataHelper->getValueForProduct($product)
+                    ]
                 ];
                 $customData['content_type'] = ($product->getTypeId() == Configurable::TYPE_CODE) ?
                     'product_group' : 'product';
             }
             $event = ServerEventFactory::createEvent('ViewContent', array_filter($customData), $eventId);
-            $this->_serverSideHelper->sendEvent($event);
-        } catch (Exception $e) {
-            $this->_fbeHelper->log(json_encode($e));
+            $this->serverSideHelper->sendEvent($event);
+        } catch (\Exception $e) {
+            $this->fbeHelper->log(json_encode($e));
         }
         return $this;
     }

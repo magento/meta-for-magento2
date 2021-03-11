@@ -7,25 +7,30 @@ namespace Facebook\BusinessExtension\Model\Config;
 
 class ProductAttributes
 {
-    protected $all_attributes;
-    protected $category_attributes;
-    protected $attributes_config;
+    /**
+     * @var array
+     */
+    protected $attributesConfig = [];
 
+    /**
+     * ProductAttributes constructor
+     */
     public function __construct()
     {
         $this->setAttributesConfig();
     }
 
+    /**
+     * @return string
+     */
     public function getAttributeGroupName()
     {
-        return "Facebook Attribute Group";
+        return 'Facebook Attribute Group';
     }
-    /**
-     *
-     */
+
     public function setAttributesConfig()
     {
-        $this->attributes_config = [
+        $this->attributesConfig = [
             'facebook_age_group' => [
                 'label' => 'Age Group',
                 'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\AgeGroup',
@@ -436,10 +441,10 @@ class ProductAttributes
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getAttributesConfig()
     {
-        return $this->attributes_config;
+        return $this->attributesConfig;
     }
 }

@@ -10,32 +10,43 @@ use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 class CategorySyncCron
 {
+    /**
+     * @var \Facebook\BusinessExtension\Helper\FBEHelper
+     */
+    protected $fbeHelper;
 
-    protected $_fbeHelper;
     /**
      * @var CategoryCollection
      */
-    protected $_category_collection;
+    protected $categoryCollection;
+
     /**
      * @var SystemConfig
      */
-    protected $_system_config;
+    protected $systemConfig;
 
+    /**
+     * CategorySyncCron constructor
+     *
+     * @param \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
+     * @param CategoryCollection $categoryCollection
+     * @param SystemConfig $systemConfig
+     */
     public function __construct(
         \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper,
         CategoryCollection $categoryCollection,
         SystemConfig $systemConfig
     ) {
-        $this->_fbeHelper = $fbeHelper;
-        $this->_category_collection = $categoryCollection;
-        $this->_system_config = $systemConfig;
+        $this->fbeHelper = $fbeHelper;
+        $this->categoryCollection = $categoryCollection;
+        $this->systemConfig = $systemConfig;
     }
 
     public function execute()
     {
-        if ($this->_system_config->isActiveCollectionsSync() == true) {
-            $this->_fbeHelper->log('start category sync cron job ');
-            $this->_category_collection->pushAllCategoriesToFbCollections();
+        if ($this->systemConfig->isActiveCollectionsSync() == true) {
+            $this->fbeHelper->log('start category sync cron job ');
+            $this->categoryCollection->pushAllCategoriesToFbCollections();
             return true;
         }
         return false;

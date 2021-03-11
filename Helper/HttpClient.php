@@ -18,7 +18,7 @@ class HttpClient
     /**
      * @var FBEHelper
      */
-    private $_fbeHelper;
+    private $fbeHelper;
 
     /**
      * Constructor
@@ -27,7 +27,7 @@ class HttpClient
     public function __construct(
         FBEHelper $helper
     ) {
-        $this->_fbeHelper = $helper;
+        $this->fbeHelper = $helper;
     }
 
     /**
@@ -49,7 +49,7 @@ class HttpClient
         $client = new Client();
         $res = $client->send($request);
         $response = Response::fromString($res);
-        $this->_fbeHelper->log("response:", $response);
+        $this->fbeHelper->log("response:", $response);
         return $response->getBody();
     }
 }

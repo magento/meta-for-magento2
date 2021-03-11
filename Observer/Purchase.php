@@ -15,61 +15,61 @@ use Facebook\BusinessExtension\Helper\ServerEventFactory;
 
 class Purchase implements ObserverInterface
 {
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
 
-  /**
-   * @var FBEHelper
-   */
-    protected $_fbeHelper;
+    /**
+     * @var MagentoDataHelper
+     */
+    protected $magentoDataHelper;
 
-  /**
-   * @var MagentoDataHelper
-   */
-    protected $_magentoDataHelper;
+    /**
+     * @var ServerSideHelper
+     */
+    protected $serverSideHelper;
 
-  /**
-   * @var ServerSideHelper
-   */
-    protected $_serverSideHelper;
-
-  /**
-   * Constructor
-   * @param \Psr\Log\LoggerInterface $logger
-   * @param FBEHelper $helper
-   * @param MagentoDataHelper $helper
-   */
+    /**
+     * Purchase constructor
+     *
+     * @param FBEHelper $fbeHelper
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param ServerSideHelper $serverSideHelper
+     */
     public function __construct(
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         ServerSideHelper $serverSideHelper
     ) {
-        $this->_fbeHelper = $fbeHelper;
-        $this->_magentoDataHelper = $magentoDataHelper;
-        $this->_serverSideHelper = $serverSideHelper;
+        $this->fbeHelper = $fbeHelper;
+        $this->magentoDataHelper = $magentoDataHelper;
+        $this->serverSideHelper = $serverSideHelper;
     }
 
-  /**
-   * Execute action method for the Observer
-   *
-   * @param Observer $observer
-   * @return  $this
-   */
+    /**
+     * Execute action method for the Observer
+     *
+     * @param Observer $observer
+     * @return  $this
+     */
     public function execute(Observer $observer)
     {
         try {
             $eventId = $observer->getData('eventId');
             $customData = [
-            'currency' => $this->_magentoDataHelper->getCurrency(),
-            'value' => $this->_magentoDataHelper->getOrderTotal(),
-            'content_type' => 'product',
-            'content_ids' => $this->_magentoDataHelper->getOrderContentIds(),
-            'contents' => $this->_magentoDataHelper->getOrderContents(),
-            'order_id' => (string)$this->_magentoDataHelper->getOrderId()
+                'currency'     => $this->magentoDataHelper->getCurrency(),
+                'value'        => $this->magentoDataHelper->getOrderTotal(),
+                'content_type' => 'product',
+                'content_ids'  => $this->magentoDataHelper->getOrderContentIds(),
+                'contents'     => $this->magentoDataHelper->getOrderContents(),
+                'order_id'     => (string)$this->magentoDataHelper->getOrderId()
             ];
             $event = ServerEventFactory::createEvent('Purchase', array_filter($customData), $eventId);
-            $userDataFromOrder = $this->_magentoDataHelper->getUserDataFromOrder();
-            $this->_serverSideHelper->sendEvent($event, $userDataFromOrder);
-        } catch (Exception $e) {
-            $this->_fbeHelper->log(json_encode($e));
+            $userDataFromOrder = $this->magentoDataHelper->getUserDataFromOrder();
+            $this->serverSideHelper->sendEvent($event, $userDataFromOrder);
+        } catch (\Exception $e) {
+            $this->fbeHelper->log(json_encode($e));
         }
         return $this;
     }

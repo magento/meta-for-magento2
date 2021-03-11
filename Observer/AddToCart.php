@@ -16,72 +16,71 @@ use Facebook\BusinessExtension\Helper\ServerEventFactory;
 
 class AddToCart implements ObserverInterface
 {
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
 
-  /**
-   * @var FBEHelper
-   */
-    protected $_fbeHelper;
+    /**
+     * @var MagentoDataHelper
+     */
+    protected $magentoDataHelper;
 
-  /**
-   * @var MagentoDataHelper
-   */
-    protected $_magentoDataHelper;
+    /**
+     * @var ServerSideHelper
+     */
+    protected $serverSideHelper;
 
-  /**
-   * @var ServerSideHelper
-   */
-    protected $_serverSideHelper;
+    /**
+     * @var RequestInterface
+     */
+    protected $request;
 
-  /**
-   * @var RequestInterface
-   */
-    protected $_request;
-
-  /**
-   * Constructor
-   * @param FBEHelper $helper
-   * @param MagentoDataHelper $helper
-   * @param ServerSideHelper $serverSideHelper
-   * @param RequestInterface $request
-   */
+    /**
+     * Constructor
+     * @param FBEHelper $fbeHelper
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param ServerSideHelper $serverSideHelper
+     * @param RequestInterface $request
+     */
     public function __construct(
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         ServerSideHelper $serverSideHelper,
         RequestInterface $request
     ) {
-        $this->_fbeHelper = $fbeHelper;
-        $this->_magentoDataHelper = $magentoDataHelper;
-        $this->_serverSideHelper = $serverSideHelper;
-        $this->_request = $request;
+        $this->fbeHelper = $fbeHelper;
+        $this->magentoDataHelper = $magentoDataHelper;
+        $this->serverSideHelper = $serverSideHelper;
+        $this->request = $request;
     }
 
-  /**
-   * Execute action method for the Observer
-   *
-   * @param Observer $observer
-   * @return  $this
-   */
+    /**
+     * Execute action method for the Observer
+     *
+     * @param Observer $observer
+     * @return $this
+     */
     public function execute(Observer $observer)
     {
         try {
             $eventId = $observer->getData('eventId');
-            $productSku = $this->_request->getParam('product_sku', null);
-            $product = $this->_magentoDataHelper->getProductWithSku($productSku);
+            $productSku = $this->request->getParam('product_sku', null);
+            $product = $this->magentoDataHelper->getProductWithSku($productSku);
             if ($product->getId()) {
                 $customData = [
-                'currency' => $this->_magentoDataHelper->getCurrency(),
-                'value' => $this->_magentoDataHelper->getValueForProduct($product),
-                'content_type' => 'product',
-                'content_ids' => [$product->getId()],
-                'content_category' => $this->_magentoDataHelper->getCategoriesForProduct($product),
-                'content_name' => $product->getName()
+                    'currency'         => $this->magentoDataHelper->getCurrency(),
+                    'value'            => $this->magentoDataHelper->getValueForProduct($product),
+                    'content_type'     => 'product',
+                    'content_ids'      => [$product->getId()],
+                    'content_category' => $this->magentoDataHelper->getCategoriesForProduct($product),
+                    'content_name'     => $product->getName()
                 ];
                 $event = ServerEventFactory::createEvent('AddToCart', $customData, $eventId);
-                $this->_serverSideHelper->sendEvent($event);
+                $this->serverSideHelper->sendEvent($event);
             }
-        } catch (Exception $e) {
-            $this->_fbeHelper->log(json_encode($e));
+        } catch (\Exception $e) {
+            $this->fbeHelper->log(json_encode($e));
         }
         return $this;
     }

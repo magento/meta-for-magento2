@@ -15,7 +15,7 @@ class ProcessProductAfterDeleteEventObserver implements ObserverInterface
     /**
      * @var FBEHelper
      */
-    protected $_fbeHelper;
+    protected $fbeHelper;
 
     /**
      * Constructor
@@ -24,7 +24,7 @@ class ProcessProductAfterDeleteEventObserver implements ObserverInterface
     public function __construct(
         FBEHelper $helper
     ) {
-        $this->_fbeHelper = $helper;
+        $this->fbeHelper = $helper;
     }
 
     /**
@@ -43,7 +43,7 @@ class ProcessProductAfterDeleteEventObserver implements ObserverInterface
             $requestData['retailer_id'] = $product->getId();
             $requestParams = [];
             $requestParams[0] = $requestData;
-            $response = $this->_fbeHelper->makeHttpRequest($requestParams, null);
+            $response = $this->fbeHelper->makeHttpRequest($requestParams, null);
         }
     }
 }

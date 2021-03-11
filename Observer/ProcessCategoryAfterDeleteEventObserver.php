@@ -16,7 +16,7 @@ class ProcessCategoryAfterDeleteEventObserver implements ObserverInterface
     /**
      * @var FBEHelper
      */
-    protected $_fbeHelper;
+    protected $fbeHelper;
 
     /**
      * Constructor
@@ -25,7 +25,7 @@ class ProcessCategoryAfterDeleteEventObserver implements ObserverInterface
     public function __construct(
         FBEHelper $helper
     ) {
-        $this->_fbeHelper = $helper;
+        $this->fbeHelper = $helper;
     }
 
     /**
@@ -37,8 +37,9 @@ class ProcessCategoryAfterDeleteEventObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         $category = $observer->getEvent()->getCategory();
-        $this->_fbeHelper->log("delete category: ".$category->getName());
-        $categoryObj = $this->_fbeHelper->getObject(CategoryCollection::class);
+        $this->fbeHelper->log("delete category: ".$category->getName());
+        /** @var CategoryCollection $categoryObj */
+        $categoryObj = $this->fbeHelper->getObject(CategoryCollection::class);
         $categoryObj->deleteCategoryAndSubCategoryFromFB($category);
     }
 }

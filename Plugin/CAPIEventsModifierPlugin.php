@@ -10,7 +10,6 @@ use FacebookAds\Object\ServerSide\Event;
 
 class CAPIEventsModifierPlugin
 {
-
     /**
      * Updates the CAPI event if needed
      *

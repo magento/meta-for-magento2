@@ -7,9 +7,9 @@ namespace Facebook\BusinessExtension\Helper;
 
 class EventIdGenerator
 {
-  /**
-   * @return string A 36 character string containing dashes.
-   */
+    /**
+     * @return string A 36 character string containing dashes.
+     */
     public static function guidv4()
     {
         $data = openssl_random_pseudo_bytes(16);

@@ -17,6 +17,11 @@ use FacebookAds\Object\ServerSide\Util;
  */
 class ServerEventFactory
 {
+    /**
+     * @param $eventName
+     * @param null $eventId
+     * @return mixed
+     */
     public static function newEvent($eventName, $eventId = null)
     {
       // Capture default user-data parameters passed down from the client browser.
@@ -43,7 +48,11 @@ class ServerEventFactory
         return $event;
     }
 
-  // Gets the ip address from the $_SERVER variable
+    /**
+     * Get the IP address from the $_SERVER variable
+     *
+     * @return string|null
+     */
     private static function getIpAddress()
     {
         $HEADERS_TO_SCAN = [
@@ -69,7 +78,12 @@ class ServerEventFactory
         return null;
     }
 
-  // Checks if the given ip address is valid
+    /**
+     * Check if the given ip address is valid
+     *
+     * @param $ipAddress
+     * @return mixed
+     */
     private static function isValidIpAddress($ipAddress)
     {
         return filter_var(
@@ -82,7 +96,13 @@ class ServerEventFactory
         );
     }
 
-  // Fills customData member of $event with array $data
+    /**
+     * Fill customData member of $event with array $data
+     *
+     * @param $event
+     * @param $data
+     * @return mixed
+     */
     private static function addCustomData($event, $data)
     {
         $custom_data = $event->getCustomData();
@@ -134,7 +154,14 @@ class ServerEventFactory
         return $event;
     }
 
-  //Creates a server side event
+    /**
+     * Create a server side event
+     *
+     * @param $eventName
+     * @param $data
+     * @param null $eventId
+     * @return mixed
+     */
     public static function createEvent($eventName, $data, $eventId = null)
     {
         $event = self::newEvent($eventName, $eventId);
