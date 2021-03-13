@@ -19,6 +19,7 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\UrlInterface;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 class FBEHelper extends AbstractHelper
@@ -173,11 +174,10 @@ class FBEHelper extends AbstractHelper
 
     /**
      * @return mixed
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getBaseUrlMedia()
     {
-        return $this->storeManager->getStore()->getBaseUrl(
+        return $this->getStore()->getBaseUrl(
             UrlInterface::URL_TYPE_MEDIA,
             $this->maybeUseHTTPS()
         );
@@ -220,18 +220,15 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param null $storeId
-     * @return \Magento\Store\Api\Data\StoreInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return StoreInterface
      */
-    public function getStore($storeId = null)
+    public function getStore()
     {
-        return $this->storeManager->getStore($storeId);
+        return $this->storeManager->getDefaultStoreView();
     }
 
     /**
      * @return mixed
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getBaseUrl()
     {
@@ -280,60 +277,6 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param bool $validity_check
-     * @return int|string|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getDefaultStoreID($validity_check = false)
-    {
-        $store_id = $this->getConfigValue('fbstore/id');
-        if (!$validity_check && $store_id) {
-            return $store_id;
-        }
-
-        try {
-            $valid_store_id = false;
-            // Check that store_id is valid, if a store gets deleted, we should_log
-            // change the store back to the default store
-            if ($store_id) {
-                $stores = $this->getStores(true);
-
-                foreach ($stores as $store) {
-                    if ($store_id === $store->getId()) {
-                        $valid_store_id = true;
-                        break;
-                    }
-                }
-                // If the store id is invalid, save the default id
-                if (!$valid_store_id) {
-                    $store_id = $this->getStore()->getId();
-                    $this->saveConfig('fbstore/id', $store_id);
-                }
-            }
-
-            return is_numeric($store_id)
-                ? $store_id
-                : $this->getStore()->getId();
-        } catch (\Exception $e) {
-            $this->log('Failed getting store ID, returning default');
-            $this->logException($e);
-            return ($store_id)
-                ? $store_id
-                : $this->getStore()->getId();
-        }
-    }
-
-    /**
-     * @param bool $withDefault
-     * @param bool $codeKey
-     * @return \Magento\Store\Api\Data\StoreInterface[]
-     */
-    public function getStores($withDefault = false, $codeKey = false)
-    {
-        return $this->storeManager->getStores($withDefault, $codeKey);
-    }
-
-    /**
      * @param $configKey
      * @return mixed|null
      */
@@ -376,7 +319,6 @@ class FBEHelper extends AbstractHelper
 
     /**
      * @return mixed|string|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getFBEExternalBusinessId()
     {
@@ -384,14 +326,13 @@ class FBEHelper extends AbstractHelper
         if ($stored_external_id) {
             return $stored_external_id;
         }
-        $store_id = $this->storeManager->getStore()->getId();
-        $this->log("Store id---" . $store_id);
-        return uniqid('fbe_magento_' . $store_id . '_');
+        $storeId = $this->getStore()->getId();
+        $this->log("Store id---" . $storeId);
+        return uniqid('fbe_magento_' . $storeId . '_');
     }
 
     /**
      * @return array|false|int|string|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getStoreName()
     {
@@ -399,8 +340,7 @@ class FBEHelper extends AbstractHelper
         if ($frontendName !== 'Default') {
             return $frontendName;
         }
-        $defaultStoreId = $this->getDefaultStoreID();
-        $defaultStoreName = $this->getStore($defaultStoreId)->getGroup()->getName();
+        $defaultStoreName = $this->getStore()->getGroup()->getName();
         $escapeStrings = ['\r', '\n', '&nbsp;', '\t'];
         $defaultStoreName =
             trim(str_replace($escapeStrings, ' ', $defaultStoreName));
@@ -565,33 +505,30 @@ class FBEHelper extends AbstractHelper
     /**
      * @param $accessToken
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getCatalogBatchAPI($accessToken)
     {
-        $catalog_id = $this->getConfigValue('fbe/catalog/id');
+        $catalogId = $this->getConfigValue('fbe/catalog/id');
         $external_business_id = $this->getFBEExternalBusinessId();
-        if ($catalog_id != null) {
-            $catalog_path = "/" . $catalog_id . "/items_batch";
+        if ($catalogId != null) {
+            $catalog_path = "/" . $catalogId . "/items_batch";
         } else {
             $catalog_path = "/fbe_catalog/batch?fbe_external_business_id=" .
                 $external_business_id;
         }
-        $catalog_batch_api = self::FB_GRAPH_BASE_URL .
+        $catalogBatchApi = self::FB_GRAPH_BASE_URL .
             $this->getAPIVersion($accessToken) .
             $catalog_path;
-        $this->log("Catalog Batch API - " . $catalog_batch_api);
-        return $catalog_batch_api;
+        $this->log("Catalog Batch API - " . $catalogBatchApi);
+        return $catalogBatchApi;
     }
 
     /**
      * @return mixed
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getStoreCurrencyCode()
     {
-        $store_id = $this->getDefaultStoreID();
-        return $this->getStore($store_id)->getCurrentCurrencyCode();
+        return $this->getStore()->getCurrentCurrencyCode();
     }
 
     /**

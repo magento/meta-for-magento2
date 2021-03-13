@@ -4,6 +4,7 @@
  */
 namespace Facebook\BusinessExtension\Model\Product\Feed\ProductRetriever;
 
+use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Model\Product\Feed\ProductRetrieverInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
@@ -17,15 +18,22 @@ class Configurable implements ProductRetrieverInterface
     const LIMIT = 200;
 
     /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
+
+    /**
      * @var CollectionFactory
      */
     protected $productCollectionFactory;
 
     /**
+     * @param FBEHelper $fbeHelper
      * @param CollectionFactory $productCollectionFactory
      */
-    public function __construct(CollectionFactory $productCollectionFactory)
+    public function __construct(FBEHelper $fbeHelper, CollectionFactory $productCollectionFactory)
     {
+        $this->fbeHelper = $fbeHelper;
         $this->productCollectionFactory = $productCollectionFactory;
     }
 
@@ -43,17 +51,21 @@ class Configurable implements ProductRetrieverInterface
      */
     public function retrieve($offset = 1, $limit = self::LIMIT): array
     {
+        $storeId = $this->fbeHelper->getStore()->getId();
+
         $configurableCollection = $this->productCollectionFactory->create();
         $configurableCollection->addAttributeToSelect('*')
             ->addAttributeToFilter('status', Status::STATUS_ENABLED)
             ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
-            ->addAttributeToFilter('type_id', $this->getProductType());
+            ->addAttributeToFilter('type_id', $this->getProductType())
+            ->setStoreId($storeId);
 
         $configurableCollection->getSelect()->limit($limit, $offset);
 
         $simpleProducts = [];
 
         foreach ($configurableCollection as $product) {
+            /** @var Product $product */
             /** @var ConfigurableType $configurableType */
             $configurableType = $product->getTypeInstance();
             $configurableAttributes = $configurableType->getConfigurableAttributes($product);
@@ -69,6 +81,7 @@ class Configurable implements ProductRetrieverInterface
                     $configurableSettings[$attributeCode] = $attributeLabel;
                 }
                 $childProduct->setConfigurableSettings($configurableSettings);
+                $childProduct->setParentProductUrl($product->getProductUrl());
                 $simpleProducts[] = $childProduct;
             }
         }

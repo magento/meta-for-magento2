@@ -100,6 +100,18 @@ class Builder
 
     /**
      * @param Product $product
+     * @return string
+     */
+    protected function getProductUrl(Product $product)
+    {
+        $parentUrl = $product->getParentProductUrl();
+        // use parent product URL if a simple product has a parent and is not visible individually
+        $url = (!$product->isVisibleInSiteVisibility() && $parentUrl) ? $parentUrl : $product->getProductUrl();
+        return $this->builderTools->replaceLocalUrlWithDummyUrl($url);
+    }
+
+    /**
+     * @param Product $product
      * @return array
      */
     protected function getProductImages(Product $product)
@@ -340,8 +352,6 @@ class Builder
         $title = $product->getName();
         $productTitle = $this->trimAttribute(self::ATTR_NAME, $title);
 
-        $productUrl = $this->builderTools->replaceLocalUrlWithDummyUrl($product->getProductUrl());
-
         $images = $this->getProductImages($product);
         $imageUrl = $this->trimAttribute(self::ATTR_IMAGE_URL, $images['main_image']);
 
@@ -360,7 +370,7 @@ class Builder
             self::ATTR_SALE_PRICE           => $this->getProductSalePrice($product),
             self::ATTR_COLOR                => $this->getColor($product),
             self::ATTR_SIZE                 => $this->getSize($product),
-            self::ATTR_URL                  => $productUrl,
+            self::ATTR_URL                  => $this->getProductUrl($product),
             self::ATTR_IMAGE_URL            => $imageUrl,
             self::ATTR_ADDITIONAL_IMAGE_URL => implode(',', $images['additional_images']),
         ];
