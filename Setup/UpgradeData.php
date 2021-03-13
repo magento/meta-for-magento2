@@ -6,6 +6,7 @@
 
 namespace Facebook\BusinessExtension\Setup;
 
+use Exception;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Catalog\Setup\CategorySetupFactory;
@@ -14,9 +15,9 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+use Facebook\BusinessExtension\Logger\Logger;
 use Facebook\BusinessExtension\Model\Config\ProductAttributes;
 use Facebook\BusinessExtension\Helper\FBEHelper;
-use \Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use \Magento\Catalog\Model\Product;
 
@@ -51,11 +52,14 @@ class UpgradeData implements UpgradeDataInterface
     private $attributeConfig;
 
     /**
-     * contains fb attribute config
-     *
      * @var FBEHelper
      */
     private $helper;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * Constructor
@@ -65,24 +69,28 @@ class UpgradeData implements UpgradeDataInterface
      * @param SetFactory $attributeSetFactory
      * @param ProductAttributes $attributeConfig
      * @param FBEHelper $helper
+     * @param Logger $logger
      */
     public function __construct(
         EavSetupFactory $eavSetupFactory,
         CategorySetupFactory $categorySetupFactory,
         SetFactory $attributeSetFactory,
         ProductAttributes $attributeConfig,
-        FBEHelper $helper
+        FBEHelper $helper,
+        Logger $logger
     ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->categorySetupFactory = $categorySetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
         $this->attributeConfig = $attributeConfig;
         $this->helper = $helper;
+        $this->logger = $logger;
     }
 
     /**
      * Retrieve the min Attribute Group Sort order, and plus one, we want to put fb attribute group the second place.
-     * method stealled from Magento\Eav\Setup\EavSetup :: getAttributeGroupSortOrder
+     * method stolen from Magento\Eav\Setup\EavSetup::getAttributeGroupSortOrder()
+     *
      * @param EavSetup $eavSetup
      * @param int|string $entityTypeId
      * @param int|string $setId
@@ -91,7 +99,6 @@ class UpgradeData implements UpgradeDataInterface
      */
     private function getMinAttributeGroupSortOrder(EavSetup $eavSetup, $entityTypeId, $setId)
     {
-
         $bind = ['attribute_set_id' => $eavSetup->getAttributeSetId($entityTypeId, $setId)];
         $select = $eavSetup->getSetup()->getConnection()->select()->from(
             $eavSetup->getSetup()->getTable('eav_attribute_group'),
@@ -121,25 +128,27 @@ class UpgradeData implements UpgradeDataInterface
         // introducing google product category in 1.2.2
         if (version_compare($context->getVersion(), '1.2.2') < 0) {
             $attrCode = 'google_product_category';
-            try {
-                $eavSetup->addAttribute(Product::ENTITY, $attrCode, [
-                    'group' => 'General',
-                    'type' => 'varchar',
-                    'label' => 'Google Product Category',
-                    'input' => 'select',
-                    'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\GoogleProductCategory',
-                    'required' => false,
-                    'sort_order' => 10,
-                    'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
-                    'is_used_in_grid' => true,
-                    'is_visible_in_grid' => true,
-                    'is_filterable_in_grid' => true,
-                    'visible' => true,
-                    'is_html_allowed_on_front' => false,
-                    'visible_on_front' => false
-                ]);
-            } catch (Exception $e) {
-                $this->logger->critical($e);
+            if (!$eavSetup->getAttributeId(Product::ENTITY, $attrCode)) {
+                try {
+                    $eavSetup->addAttribute(Product::ENTITY, $attrCode, [
+                        'group' => 'General',
+                        'type' => 'varchar',
+                        'label' => 'Google Product Category',
+                        'input' => 'select',
+                        'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\GoogleProductCategory',
+                        'required' => false,
+                        'sort_order' => 10,
+                        'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
+                        'is_used_in_grid' => true,
+                        'is_visible_in_grid' => true,
+                        'is_filterable_in_grid' => true,
+                        'visible' => true,
+                        'is_html_allowed_on_front' => false,
+                        'visible_on_front' => false
+                    ]);
+                } catch (Exception $e) {
+                    $this->logger->critical($e);
+                }
             }
         }
 
