@@ -14,9 +14,22 @@ use Magento\Framework\View\Element\Template\Context;
 
 class Head extends Common
 {
+    /**
+     * @var AAMFieldsExtractorHelper
+     */
+    protected $aamFieldsExtractorHelper;
 
-    protected $_aamFieldsExtractorHelper;
-
+    /**
+     * Head constructor
+     *
+     * @param Context $context
+     * @param ObjectManagerInterface $objectManager
+     * @param Registry $registry
+     * @param FBEHelper $fbeHelper
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param AAMFieldsExtractorHelper $aamFieldsExtractorHelper
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
@@ -27,7 +40,7 @@ class Head extends Common
         array $data = []
     ) {
         parent::__construct($context, $objectManager, $registry, $fbeHelper, $magentoDataHelper, $data);
-        $this->_aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
+        $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
     }
 
     /**
@@ -36,7 +49,7 @@ class Head extends Common
      */
     public function getPixelInitCode()
     {
-        $userDataArray = $this->_aamFieldsExtractorHelper->getNormalizedUserData();
+        $userDataArray = $this->aamFieldsExtractorHelper->getNormalizedUserData();
 
         if ($userDataArray) {
             return json_encode(array_filter($userDataArray), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
@@ -52,7 +65,7 @@ class Head extends Common
      */
     public function getDataProcessingOptionsJSCode()
     {
-        return "";
+        return '';
     }
 
     /**
@@ -63,6 +76,6 @@ class Head extends Common
      */
     public function getDataProcessingOptionsImgTag()
     {
-        return "";
+        return '';
     }
 }

@@ -5,32 +5,40 @@
 
 namespace Facebook\BusinessExtension\Block\Pixel;
 
+use Magento\Catalog\Model\Product;
+use Magento\Sales\Model\Order;
+
 class Purchase extends Common
 {
-
+    /**
+     * @return string
+     */
     public function getContentIDs()
     {
-        $product_ids = [];
-        $order = $this->_fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $productIds = [];
+        /** @var Order $order */
+        $order = $this->fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         if ($order) {
             $items = $order->getItemsCollection();
-            $product_model = $this->_fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
+            $productModel = $this->fbeHelper->getObject(Product::class);
             foreach ($items as $item) {
-                $product = $product_model->load($item->getProductId());
-                $product_ids[] = $product->getId();
+                // @todo do not load product model in loop - this can be a performance killer, use product collection
+                $product = $productModel->load($item->getProductId());
+                $productIds[] = $product->getId();
             }
         }
-        return $this->arrayToCommaSeperatedStringValues($product_ids);
+        return $this->arrayToCommaSeparatedStringValues($productIds);
     }
 
     public function getValue()
     {
-        $order = $this->_fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $order = $this->fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        /** @var Order $order */
         if ($order) {
             $subtotal = $order->getSubTotal();
             if ($subtotal) {
-                $price_helper = $this->_fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
-                return $price_helper->currency($subtotal, false, false);
+                $priceHelper = $this->fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
+                return $priceHelper->currency($subtotal, false, false);
             }
         } else {
             return null;
@@ -40,13 +48,16 @@ class Purchase extends Common
     public function getContents()
     {
         $contents = [];
-        $order = $this->_fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        $order = $this->fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
+        /** @var Order $order */
         if ($order) {
-            $priceHelper = $this->_objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+            $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
             $items = $order->getItemsCollection();
-            $product_model = $this->_fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
+            $productModel = $this->fbeHelper->getObject(Product::class);
             foreach ($items as $item) {
-                $product = $product_model->load($item->getProductId());
+                /** @var Product $product */
+                // @todo reuse results from self::getContentIDs()
+                $product = $productModel->load($item->getProductId());
                 $price = $priceHelper->currency($product->getFinalPrice(), false, false);
                 $content = '{id:"' . $product->getId() . '",quantity:' . (int)$item->getQtyOrdered()
                         . ',item_price:' . $price . '}';
@@ -56,6 +67,9 @@ class Purchase extends Common
         return implode(',', $contents);
     }
 
+    /**
+     * @return string
+     */
     public function getEventToObserveName()
     {
         return 'facebook_businessextension_ssapi_purchase';

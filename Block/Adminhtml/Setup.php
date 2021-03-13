@@ -70,6 +70,7 @@ class Setup extends \Magento\Backend\Block\Template
 
     /**
      * @return string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getExternalBusinessId()
     {
@@ -94,6 +95,7 @@ class Setup extends \Magento\Backend\Block\Template
 
     /**
      * @return mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getCurrencyCode()
     {

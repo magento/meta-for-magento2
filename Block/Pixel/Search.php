@@ -7,7 +7,9 @@ namespace Facebook\BusinessExtension\Block\Pixel;
 
 class Search extends Common
 {
-
+    /**
+     * @return string
+     */
     public function getSearchQuery()
     {
         return htmlspecialchars(
@@ -17,6 +19,9 @@ class Search extends Common
         );
     }
 
+    /**
+     * @return string
+     */
     public function getEventToObserveName()
     {
         return 'facebook_businessextension_ssapi_search';

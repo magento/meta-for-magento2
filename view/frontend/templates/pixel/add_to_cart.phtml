@@ -1,53 +1,54 @@
+<?php /** @var \Facebook\BusinessExtension\Block\Pixel\AddToCart $block */ ?>
 <?php if ($block->getFacebookPixelID()) { ?>
-<script>
-require([
-  'jquery'
-], function($) {
+    <script>
+        require([
+            'jquery'
+        ], function ($) {
 
-  function trackAddToCart(content_ids, content_name, content_category, value, eventId) {
-    fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
-    fbq('track', 'AddToCart', {
-      source: "<?= $block->getSource() ?>",
-      version: "<?= $block->getMagentoVersion() ?>",
-      pluginVersion: "<?= $block->getPluginVersion() ?>",
-      content_type: "<?= $block->getContentType() ?>",
-      currency: "<?= $block->getCurrency() ?>",
-      content_ids: content_ids,
-      content_name: content_name,
-      content_category: content_category,
-      value: value
-      },
-      {
-        eventID: eventId
-      }
-    );
-  }
+            function trackAddToCart(content_ids, content_name, content_category, value, eventId) {
+                fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
+                fbq('track', 'AddToCart', {
+                        source: "<?= $block->getSource() ?>",
+                        version: "<?= $block->getMagentoVersion() ?>",
+                        pluginVersion: "<?= $block->getPluginVersion() ?>",
+                        content_type: "<?= $block->getContentType() ?>",
+                        currency: "<?= $block->getCurrency() ?>",
+                        content_ids: content_ids,
+                        content_name: content_name,
+                        content_category: content_category,
+                        value: value
+                    },
+                    {
+                        eventID: eventId
+                    }
+                );
+            }
 
-  var product_info_url = '<?= $block->getProductInfoUrl() ?>';
+            var product_info_url = '<?= $block->getProductInfoUrl() ?>';
 
-  $(document).on('ajax:addToCart', function(event, data) {
-    var product_sku = data.sku;
-    var form_key = jQuery("[name='form_key']").val();
-    $.ajax({
-      url: product_info_url,
-      data: {
-        product_sku: product_sku,
-        form_key: form_key
-      },
-      type: 'post',
-      dataType: 'json',
-      success: function(res) {
-        trackAddToCart(
-          [res.id],
-          res.name,
-          res.content_category,
-          res.value,
-          res.event_id
-        );
-      }
-    });
-  });
-});
-</script>
+            $(document).on('ajax:addToCart', function (event, data) {
+                var product_sku = data.sku;
+                var form_key = jQuery("[name='form_key']").val();
+                $.ajax({
+                    url: product_info_url,
+                    data: {
+                        product_sku: product_sku,
+                        form_key: form_key
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (res) {
+                        trackAddToCart(
+                            [res.id],
+                            res.name,
+                            res.content_category,
+                            res.value,
+                            res.event_id
+                        );
+                    }
+                });
+            });
+        });
+    </script>
     <?php $block->logEvent($block->getFacebookPixelID(), 'AddToCart') ?>
 <?php } ?>

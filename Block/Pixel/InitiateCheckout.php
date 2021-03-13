@@ -7,47 +7,52 @@ namespace Facebook\BusinessExtension\Block\Pixel;
 
 class InitiateCheckout extends Common
 {
-
+    /**
+     * @return string
+     */
     public function getContentIDs()
     {
-        $product_ids = [];
-        $cart = $this->_fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
+        $productIds = [];
+        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
         $items = $cart->getQuote()->getAllVisibleItems();
-        $product_model = $this->_fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
+        $productModel = $this->fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
         foreach ($items as $item) {
-            $product = $product_model->load($item->getProductId());
-            $product_ids[] = $product->getId();
+            $product = $productModel->load($item->getProductId());
+            $productIds[] = $product->getId();
         }
-        return $this->arrayToCommaSeperatedStringValues($product_ids);
+        return $this->arrayToCommaSeparatedStringValues($productIds);
     }
 
     public function getValue()
     {
-        $cart = $this->_fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
+        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return null;
         }
         $subtotal = $cart->getQuote()->getSubtotal();
         if ($subtotal) {
-            $price_helper = $this->_fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
-            return $price_helper->currency($subtotal, false, false);
+            $priceHelper = $this->fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
+            return $priceHelper->currency($subtotal, false, false);
         } else {
             return null;
         }
     }
 
+    /**
+     * @return string
+     */
     public function getContents()
     {
-        $cart = $this->_fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
+        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return '';
         }
         $contents = [];
         $items = $cart->getQuote()->getAllVisibleItems();
-        $product_model = $this->_fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
-        $priceHelper = $this->_objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+        $productModel = $this->fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
+        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
-            $product = $product_model->load($item->getProductId());
+            $product = $productModel->load($item->getProductId());
             $price = $priceHelper->currency($product->getFinalPrice(), false, false);
             $content = '{id:"' . $product->getId() . '",quantity:' . (int)$item->getQty()
                     . ',item_price:' . $price . "}";
@@ -56,9 +61,12 @@ class InitiateCheckout extends Common
         return implode(',', $contents);
     }
 
+    /**
+     * @return int|null
+     */
     public function getNumItems()
     {
-        $cart = $this->_fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
+        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return null;
         }
@@ -70,6 +78,9 @@ class InitiateCheckout extends Common
         return $numItems;
     }
 
+    /**
+     * @return string
+     */
     public function getEventToObserveName()
     {
         return 'facebook_businessextension_ssapi_initiate_checkout';
