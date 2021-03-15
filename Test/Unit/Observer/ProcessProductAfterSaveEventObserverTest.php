@@ -10,6 +10,7 @@ use Facebook\BusinessExtension\Observer\ProcessProductAfterSaveEventObserver;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event;
 use Magento\Framework\Event\Observer;
+use Magento\Store\Api\Data\StoreInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterSaveEventObserverTest extends CommonTest
@@ -24,6 +25,10 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
      * @var MockObject
      */
     private $_product;
+    /**
+     * @var MockObject
+     */
+    private $store;
     /**
      * @var MockObject
      */
@@ -46,6 +51,8 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
     public function setUp()
     {
         parent::setUp();
+        $this->store = $this->createMock(StoreInterface::class);
+        $this->fbeHelper->expects($this->once())->method('getStore')->will($this->returnValue($this->store));
         $this->_product = $this->createMock(Product::class);
         $this->_product->expects($this->once())->method('getId')->will($this->returnValue("1234"));
         $event = $this->createPartialMock(Event::class, ['getProduct']);
