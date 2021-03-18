@@ -5,13 +5,13 @@
 
 namespace Facebook\BusinessExtension\Model\Product\Feed;
 
-use Facebook\BusinessExtension\Model\Feed\EnhancedCatalogHelper;
-use Facebook\BusinessExtension\Model\Product\Feed\Builder\Tools as BuilderTools;
-use Facebook\BusinessExtension\Model\Product\Feed\Builder\Inventory;
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Model\Feed\EnhancedCatalogHelper;
+use Facebook\BusinessExtension\Model\Product\Feed\Builder\Inventory;
+use Facebook\BusinessExtension\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\CatalogInventory\Model\Stock\Item as StockItem;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -117,13 +117,15 @@ class Builder
     protected function getProductImages(Product $product)
     {
         $mainImage = $product->getImage();
-        $additionalImages = [];
 
-        foreach ($product->getMediaGalleryImages() as $img) {
-            if ($img['file'] === $mainImage) {
-                continue;
+        $additionalImages = [];
+        if (!empty($product->getMediaGalleryImages())) {
+            foreach ($product->getMediaGalleryImages() as $img) {
+                if ($img['file'] === $mainImage) {
+                    continue;
+                }
+                $additionalImages[] = $this->builderTools->replaceLocalUrlWithDummyUrl($img['url']);
             }
-            $additionalImages[] = $this->builderTools->replaceLocalUrlWithDummyUrl($img['url']);
         }
 
         return [

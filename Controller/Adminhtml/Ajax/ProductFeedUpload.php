@@ -32,6 +32,12 @@ class ProductFeedUpload extends AbstractAjax
     {
         $response = [];
 
+        if (!$this->_fbeHelper->getAccessToken()) {
+            $response['success'] = false;
+            $response['message'] = __('Set up the extension before uploading products.');
+            return $response;
+        }
+
         try {
             $feedPushResponse = $this->uploader->uploadFullCatalog();
             $response['success'] = true;
