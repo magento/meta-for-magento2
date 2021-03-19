@@ -14,6 +14,8 @@ class Config
 {
     const XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE = 'facebook/catalog_management/collections_sync';
 
+    const XML_PATH_FACEBOOK_INVENTORY_SOURCE = 'facebook/inventory_management/inventory_source';
+
     /**
      * @var StoreManagerInterface
      */
@@ -98,5 +100,13 @@ class Config
     public function isActiveCollectionsSync()
     {
         return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInventorySource()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_FACEBOOK_INVENTORY_SOURCE);
     }
 }

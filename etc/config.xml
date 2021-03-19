@@ -5,6 +5,9 @@
             <catalog_management>
                 <collections_sync>1</collections_sync>
             </catalog_management>
+            <inventory_management>
+                <inventory_source>default</inventory_source>
+            </inventory_management>
         </facebook>
     </default>
 </config>

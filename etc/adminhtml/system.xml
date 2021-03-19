@@ -22,6 +22,15 @@
                     <comment>Activates synchronization of Magento product categories to Facebook collections</comment>
                 </field>
             </group>
+            <group id="inventory_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Inventory Management</label>
+                <field id="inventory_source" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Inventory Source</label>
+                    <config_path>facebook/inventory_management/inventory_source</config_path>
+                    <source_model>Facebook\BusinessExtension\Model\Config\Source\Product\InventorySource</source_model>
+                    <comment>Use this inventory source for products on Facebook and Instagram</comment>
+                </field>
+            </group>
         </section>
     </system>
 </config>

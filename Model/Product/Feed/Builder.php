@@ -302,12 +302,6 @@ class Builder
         return $this->trimAttribute(self::ATTR_BRAND, $brand);
     }
 
-    protected function getAvailability($stockItem)
-    {
-        /** @var StockItem $stockItem */
-        return $stockItem && $stockItem->getIsInStock() ? 'in stock' : 'out of stock';
-    }
-
     /**
      * @param Product $product
      * @return string
@@ -345,9 +339,9 @@ class Builder
      */
     public function buildProductEntry(Product $product)
     {
-        // @todo implement multi source inventory
-        /** @var StockItem $stockItem */
-        $stockItem = $this->inventory->getStockItem($product);
+        $inventorySourceItem = $this->inventory->getSourceItem($product);
+        $availability = $inventorySourceItem && $inventorySourceItem->getStatus() ? 'in stock' : 'out of stock';
+        $inventory = $inventorySourceItem ? (int)$inventorySourceItem->getQuantity() : 0;
 
         $productType = $this->trimAttribute(self::ATTR_PRODUCT_TYPE, $this->getCategoryPath($product));
 
@@ -362,8 +356,8 @@ class Builder
             self::ATTR_ITEM_GROUP_ID        => $this->getItemGroupId($product),
             self::ATTR_NAME                 => $productTitle,
             self::ATTR_DESCRIPTION          => $this->getDescription($product),
-            self::ATTR_AVAILABILITY         => $this->getAvailability($stockItem),
-            self::ATTR_INVENTORY            => $stockItem ? (int)$stockItem->getQty() : 0,
+            self::ATTR_AVAILABILITY         => $availability,
+            self::ATTR_INVENTORY            => $inventory,
             self::ATTR_BRAND                => $this->getBrand($product),
             self::ATTR_PRODUCT_CATEGORY     => $product->getGoogleProductCategory() ?? '',
             self::ATTR_PRODUCT_TYPE         => $productType,
