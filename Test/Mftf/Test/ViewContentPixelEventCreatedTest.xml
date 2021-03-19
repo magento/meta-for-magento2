@@ -10,6 +10,9 @@
             <description value="The product page should contain a fbq call with a view content pixel event."/>
             <severity value="MAJOR"/>
             <group value="Pixel"/>
+            <skip>
+                <issueId value="PixelMustBeInstalled"/>
+            </skip>
         </annotations>
         <before>
             <!-- Create sample product -->

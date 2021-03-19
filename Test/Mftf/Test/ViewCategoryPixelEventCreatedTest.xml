@@ -10,6 +10,9 @@
             <description value="The page should contain a fbq call with a view category pixel event."/>
             <severity value="MAJOR"/>
             <group value="Pixel"/>
+            <skip>
+                <issueId value="PixelMustBeInstalled"/>
+            </skip>
         </annotations>
         <before>
             <!-- Create sample category -->
