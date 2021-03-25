@@ -6,13 +6,14 @@
 namespace Facebook\BusinessExtension\Model\Product\Feed;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Model\Feed\EnhancedCatalogHelper;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder\Inventory;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder\Tools as BuilderTools;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
-use Magento\CatalogInventory\Model\Stock\Item as StockItem;
 use Magento\Framework\Exception\LocalizedException;
 
 class Builder
@@ -42,6 +43,11 @@ class Builder
     protected $fbeHelper;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * @var string
      */
     protected $defaultBrand;
@@ -62,28 +68,39 @@ class Builder
     protected $inventory;
 
     /**
+     * @var ProductIdentifier
+     */
+    protected $productIdentifier;
+
+    /**
      * @var EnhancedCatalogHelper
      */
     protected $enhancedCatalogHelper;
 
     /**
      * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
      * @param Inventory $inventory
+     * @param ProductIdentifier $productIdentifier
      * @param EnhancedCatalogHelper $enhancedCatalogHelper
      */
     public function __construct(
         FBEHelper $fbeHelper,
+        SystemConfig $systemConfig,
         CategoryCollectionFactory $categoryCollectionFactory,
         BuilderTools $builderTools,
         Inventory $inventory,
+        ProductIdentifier $productIdentifier,
         EnhancedCatalogHelper $enhancedCatalogHelper
     ) {
         $this->fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->builderTools = $builderTools;
         $this->inventory = $inventory;
+        $this->productIdentifier = $productIdentifier;
         $this->enhancedCatalogHelper = $enhancedCatalogHelper;
     }
 
@@ -351,8 +368,10 @@ class Builder
         $images = $this->getProductImages($product);
         $imageUrl = $this->trimAttribute(self::ATTR_IMAGE_URL, $images['main_image']);
 
+        $retailerId = $this->productIdentifier->getMagentoProductRetailerId($product);
+
         $entry = [
-            self::ATTR_RETAILER_ID          => $this->trimAttribute(self::ATTR_RETAILER_ID, $product->getId()),
+            self::ATTR_RETAILER_ID          => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
             self::ATTR_ITEM_GROUP_ID        => $this->getItemGroupId($product),
             self::ATTR_NAME                 => $productTitle,
             self::ATTR_DESCRIPTION          => $this->getDescription($product),
@@ -374,5 +393,28 @@ class Builder
         $this->enhancedCatalogHelper->assignECAttribute($product, $entry);
 
         return $entry;
+    }
+
+    public function getHeaderFields()
+    {
+        return [
+            self::ATTR_RETAILER_ID,
+            self::ATTR_ITEM_GROUP_ID,
+            self::ATTR_NAME,
+            self::ATTR_DESCRIPTION,
+            self::ATTR_AVAILABILITY,
+            self::ATTR_INVENTORY,
+            self::ATTR_BRAND,
+            self::ATTR_PRODUCT_CATEGORY,
+            self::ATTR_PRODUCT_TYPE,
+            self::ATTR_CONDITION,
+            self::ATTR_PRICE,
+            self::ATTR_SALE_PRICE,
+            self::ATTR_COLOR,
+            self::ATTR_SIZE,
+            self::ATTR_URL,
+            self::ATTR_IMAGE_URL,
+            self::ATTR_ADDITIONAL_IMAGE_URL,
+        ];
     }
 }

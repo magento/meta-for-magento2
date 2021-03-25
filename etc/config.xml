@@ -2,12 +2,39 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <facebook>
+            <business_extension>
+                <onboarding_state>0</onboarding_state>
+                <active>1</active>
+            </business_extension>
             <catalog_management>
+                <daily_product_feed>0</daily_product_feed>
+                <feed_upload_method>feed_api</feed_upload_method>
+                <incremental_product_updates>0</incremental_product_updates>
+                <product_identifier>sku</product_identifier>
                 <collections_sync>1</collections_sync>
             </catalog_management>
             <inventory_management>
                 <inventory_source>default</inventory_source>
+                <out_of_stock_threshold>0</out_of_stock_threshold>
             </inventory_management>
+            <orders_sync>
+                <active>0</active>
+                <default_order_status>pending</default_order_status>
+            </orders_sync>
+            <debug>
+                <debug_mode>1</debug_mode>
+            </debug>
         </facebook>
+        <payment>
+            <facebook>
+                <active>1</active>
+                <model>Facebook\BusinessExtension\Model\PaymentMethod</model>
+                <order_status>processing</order_status>
+                <title>Paid on Facebook/Instagram</title>
+                <allowspecific>0</allowspecific>
+                <group>offline</group>
+                <email_customer>0</email_customer>
+            </facebook>
+        </payment>
     </default>
 </config>

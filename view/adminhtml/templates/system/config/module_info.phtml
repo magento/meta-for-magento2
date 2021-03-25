@@ -1,0 +1,14 @@
+<?php /* @var $block \Facebook\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo */ ?>
+
+<div>
+    <p>Version: <?= $block->getModuleVersion() ?></p>
+    <?php if ($block->getCommerceAccountId()) :  ?>
+        <p><a target="_blank" href="<?= $block->getCommerceManagerUrl() ?> "><?= __('Commerce Manager') ?></a></p>
+    <?php endif; ?>
+    <?php if ($block->getCatalogId()) :  ?>
+    <p><a target="_blank" href="<?= $block->getCatalogManagerUrl() ?> "><?= __('Catalog Manager') ?></a></p>
+    <?php endif; ?>
+    <?php if ($block->getCommerceAccountId()) :  ?>
+        <p><a target="_blank" href="<?= $block->getSupportUrl() ?> "><?= __('Contact Support') ?></a></p>
+    <?php endif; ?>
+</div>

@@ -1,20 +1,21 @@
 <?xml version="1.0"?>
-
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
-
-<group id="default">
-
-    <job name="facebook_business_extension_aam_settings_cronjob" instance="Facebook\BusinessExtension\Cron\AAMSettingsCron" method="execute">
-
-        <!--Check this document to read more about cron jobs in Magento: https://devdocs.magento.com/guides/v2.4/config-guide/cron/custom-cron-ref.html-->
-        <schedule>*/20 * * * *</schedule>
-
-    </job>
-    <job name="facebook_business_extension_category_sync_cronjob" instance="Facebook\BusinessExtension\Cron\CategorySyncCron" method="execute">
-        <!-- daily at 0:0-->
-        <schedule>0 0 * * *</schedule>
-
-    </job>
-</group>
-
+    <group id="facebook_automation">
+        <job name="facebook_automation_upload_product_feed" instance="Facebook\BusinessExtension\Cron\UploadProductFeed" method="execute">
+            <schedule>0 1 * * *</schedule>
+        </job>
+        <job name="facebook_automation_sync_orders" instance="Facebook\BusinessExtension\Cron\SyncOrders" method="execute">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+    </group>
+    <group id="facebook_automation">
+        <job name="facebook_business_extension_aam_settings_cronjob" instance="Facebook\BusinessExtension\Cron\AAMSettingsCron" method="execute">
+            <!--Check this document to read more about cron jobs in Magento: https://devdocs.magento.com/guides/v2.4/config-guide/cron/custom-cron-ref.html-->
+            <schedule>*/20 * * * *</schedule>
+        </job>
+<!--        <job name="facebook_business_extension_category_sync_cronjob" instance="Facebook\BusinessExtension\Cron\CategorySyncCron" method="execute">-->
+<!--            &lt;!&ndash; daily at 0:0&ndash;&gt;-->
+<!--            <schedule>0 0 * * *</schedule>-->
+<!--        </job>-->
+    </group>
 </config>

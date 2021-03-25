@@ -5,10 +5,12 @@
 namespace Facebook\BusinessExtension\Model\Product\Feed\Method;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Helper\GraphAPIAdapter;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder;
 use Facebook\BusinessExtension\Model\Product\Feed\ProductRetriever\Configurable as ConfigurableProductRetriever;
 use Facebook\BusinessExtension\Model\Product\Feed\ProductRetriever\Simple as SimpleProductRetriever;
 use Facebook\BusinessExtension\Model\Product\Feed\ProductRetrieverInterface;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -27,6 +29,16 @@ class BatchApi
     protected $fbeHelper;
 
     /**
+     * @var GraphAPIAdapter
+     */
+    protected $graphApiAdapter;
+
+    /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * @var ProductRetrieverInterface[]
      */
     protected $productRetrievers;
@@ -38,17 +50,23 @@ class BatchApi
 
     /**
      * @param FBEHelper $helper
+     * @param GraphAPIAdapter $graphApiAdapter
+     * @param SystemConfig $systemConfig
      * @param SimpleProductRetriever $simpleProductRetriever
      * @param ConfigurableProductRetriever $configurableProductRetriever
      * @param Builder $builder
      */
     public function __construct(
         FBEHelper $helper,
+        GraphAPIAdapter $graphApiAdapter,
+        SystemConfig $systemConfig,
         SimpleProductRetriever $simpleProductRetriever,
         ConfigurableProductRetriever $configurableProductRetriever,
         Builder $builder
     ) {
         $this->fbeHelper = $helper;
+        $this->graphApiAdapter = $graphApiAdapter;
+        $this->systemConfig = $systemConfig;
         $this->productRetrievers = [
             $simpleProductRetriever,
             $configurableProductRetriever
@@ -71,11 +89,10 @@ class BatchApi
     }
 
     /**
-     * @param null $accessToken
      * @return array
      * @throws \Exception
      */
-    public function generateProductRequestData($accessToken = null)
+    public function generateProductRequestData()
     {
         $currentBatch = 1;
         $requests = [];
@@ -110,7 +127,7 @@ class BatchApi
                         $this->fbeHelper->log(
                             sprintf('Pushing batch %d with %d products', $currentBatch, count($requests))
                         );
-                        $response = $this->fbeHelper->makeHttpRequest($requests, $accessToken);
+                        $response = $this->graphApiAdapter->catalogBatchRequest($requests);
                         $this->fbeHelper->log('Product push response ' . json_encode($response));
                         $responses[] = $response;
                         unset($requests);
@@ -122,7 +139,7 @@ class BatchApi
 
         if (!empty($requests)) {
             $this->fbeHelper->log(sprintf('Pushing batch %d with %d products', $currentBatch, count($requests)));
-            $response = $this->fbeHelper->makeHttpRequest($requests, $accessToken);
+            $response = $this->graphApiAdapter->catalogBatchRequest($requests);
             $this->fbeHelper->log('Product push response ' . json_encode($response));
             $responses[] = $response;
         }

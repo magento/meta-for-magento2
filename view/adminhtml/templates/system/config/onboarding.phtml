@@ -1,0 +1,146 @@
+<?php /* @var $block \Facebook\BusinessExtension\Block\Adminhtml\System\Config\Onboarding */ ?>
+
+<style>
+    #row_facebook_business_extension_business_extension_onboarding_state {
+        display: none;
+    }
+</style>
+
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v7.0&appId=<?= $block->getAppId() ?>&autoLogAppEvents=1" nonce="kLhUXZDc"></script>
+<script>
+    const FacebookOnboarding = {
+        skipShopCreation: function () {
+            console.log('Skipping shop creation');
+            new Ajax.Request('<?= $block->getSkipShopCreationUrl() ?>', {
+                onSuccess: function (response) {
+                    console.log('Done skipping shop creation');
+                    console.log(response);
+                    location.reload();
+                }
+            });
+        },
+        init: function() {
+            FB.init({
+                appId   : '<?= $block->getAppId() ?>',
+                cookie  : true,    // Enable cookies to allow the server to access the session.
+                xfbml   : true,    // Parse social plugins on this webpage.
+                version : 'v8.0'   // Use this Graph API version for this call.
+            });
+
+            FB.getLoginStatus(function(response) {   // Called after the JS SDK has been initialized.
+                FacebookOnboarding.statusChangeCallback(response);        // Returns the login status.
+            });
+        },
+        onLogin: function() {                      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
+            console.log('Welcome! Fetching your information.... ');
+            FB.api('/me', function(response) {
+                console.log(response);
+                console.log('Successful login for: ' + response.name);
+                document.getElementById('fb_status').innerHTML = '';
+
+                document.getElementById('fb_onboarding_step_2').style.color = 'grey';
+                document.getElementById('fb_onboarding_step_2_img').style.display = 'inline-block';
+                document.getElementById('fb_onboarding_step_3').style.display = 'inline-block';
+
+                document.getElementById('fb_button').style.display = 'none';
+                setTimeout(function(){ location.reload(); }, 5000);
+            });
+        },
+        statusChangeCallback: function (response) {  // Called with the results from FB.getLoginStatus().
+            console.log('statusChangeCallback');
+            console.log(response);                   // The current login status of the person.
+            if (response.status === 'connected') {   // Logged into your webpage and Facebook.
+                const accessToken = response.authResponse.accessToken;
+                FB.api('/me/accounts', function(response) {
+                    const token = response.data[0].access_token;
+                    console.log('Fetched page access token ' + token);
+                    FacebookOnboarding.persistPageAccessToken(token);
+                });
+                FacebookOnboarding.onLogin();
+            } else {   // Not logged into your webpage or we are unable to tell.
+                document.getElementById('fb_status').innerHTML = '';
+            }
+        },
+        persistPageAccessToken: function (access_token) {
+            new Ajax.Request('<?= $block->getPersistAccessTokenUrl() ?>', {
+                parameters: {access_token: access_token},
+                onSuccess: function (response) {
+                    console.log('Persisted access token');
+                    console.log(response);
+                }
+            });
+        },
+        resetSettings: function () {
+            if (confirm('Are you sure you want to reset all the settings?')) {
+                console.log('Resetting settings');
+                new Ajax.Request('<?= $block->getResetSettingsUrl() ?>', {
+                    onSuccess: function (response) {
+                        console.log('Done resetting');
+                        console.log(response);
+                        location.reload();
+                    }
+                });
+            } else {
+                // Do nothing!
+                console.log('Settings were not reset');
+            }
+        }
+    }
+</script>
+
+<?php if ($block->getOnboardingState() == \Facebook\BusinessExtension\Model\System\Config::ONBOARDING_STATE_PENDING): ?>
+<div id="commerce_manager_onboarding">
+    <p><b>Step 1. Set up a Facebook Shop</b></p>
+    <button><a href="<?= $block->getCommerceManagerOnboardingUrl() ?>;">Create a New Live Shop</a></button>
+    or
+    <button><a href="<?= $block->getCommerceManagerOnboardingUrl(true) ?>;">Create a New Test Shop</a></button>
+    <br/><br/>or
+    <button><a href="javascript:void(0);" onclick="FacebookOnboarding.skipShopCreation();">I Will Connect an Existing FB Shop</a></button>
+</div>
+<?php elseif (
+    $block->getOnboardingState() == \Facebook\BusinessExtension\Model\System\Config::ONBOARDING_STATE_IN_PROGRESS_NEW_SHOP ||
+    $block->getOnboardingState() == \Facebook\BusinessExtension\Model\System\Config::ONBOARDING_STATE_IN_PROGRESS_EXISTING_SHOP
+    ): ?>
+    <div id="fb-root"></div>
+    <p>(<a href="javascript:void(0);" onclick="FacebookOnboarding.resetSettings();">Reset settings</a>)</p>
+    <p style="color: grey;">
+        <img style="margin:-3px 5px -3px 0" src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+        <b>Step 1. Set up a Facebook Shop
+        <?php if ($block->getOnboardingState() == \Facebook\BusinessExtension\Model\System\Config::ONBOARDING_STATE_IN_PROGRESS_EXISTING_SHOP): ?>
+            (SKIPPED)
+        <?php endif; ?>
+        </b>
+    </p>
+    <p id="fb_onboarding_step_2">
+        <img style="margin:-3px 5px -3px 0; display: none;" id="fb_onboarding_step_2_img" src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+        <b>Step 2. Allow Facebook Commerce Extension to manage your Shop</b>
+    </p>
+    <p id="fb_onboarding_step_3" style="display: none;">
+        <img style="margin:-3px 5px -3px 0" id="fb_onboarding_step_3_img" src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+        <b>Success. You successfully connected your shop can now activate your integration.</b>
+    </p>
+
+    <script>
+        function checkLoginState() {               // Called when a person is finished with the Login Button.
+            FB.getLoginStatus(function(response) {   // See the onlogin handler
+                FacebookOnboarding.statusChangeCallback(response);
+            });
+        }
+        window.fbAsyncInit = FacebookOnboarding.init();
+    </script>
+
+    <div id="fb_button" class="fb-login-button"
+         data-size="large"
+         data-button-type="continue_with"
+         data-layout="default"
+         data-auto-logout-link="false"
+         data-use-continue-as="false"
+         data-width=""
+         data-scope="catalog_management,pages_read_engagement"
+         data-onlogin="checkLoginState"
+    >
+    </div>
+    <div id="fb_status"></div>
+<?php elseif ($block->getOnboardingState() == \Facebook\BusinessExtension\Model\System\Config::ONBOARDING_STATE_COMPLETED): ?>
+    <p>Completed (<a href="javascript:void(0);" onclick="FacebookOnboarding.resetSettings();">Reset settings</a>)</p>
+<?php endif; ?>

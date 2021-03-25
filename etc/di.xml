@@ -2,6 +2,44 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Facebook\BusinessExtension\Helper\ServerSideHelper">
-      <plugin name="capi_events_modifier_plugin" type="Facebook\BusinessExtension\Plugin\CAPIEventsModifierPlugin" sortOrder="1" disabled="false" />
+        <plugin name="capi_events_modifier_plugin" type="Facebook\BusinessExtension\Plugin\CAPIEventsModifierPlugin" sortOrder="1" disabled="false" />
     </type>
+    <virtualType name="Facebook\BusinessExtension\Model\Logger\ApiDebugger" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/facebook/api.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Facebook\BusinessExtension\Model\Logger\ApiLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Facebook\BusinessExtension\Model\Logger\ApiDebugger</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Facebook\BusinessExtension\Model\Logger\ProductFeedDebugger" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/facebook/product-feed.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Facebook\BusinessExtension\Model\Logger\ProductFeedLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Facebook\BusinessExtension\Model\Logger\ProductFeedDebugger</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Facebook\BusinessExtension\Helper\GraphAPIAdapter">
+        <arguments>
+            <argument name="logger" xsi:type="object">Facebook\BusinessExtension\Model\Logger\ApiLogger</argument>
+        </arguments>
+    </type>
+    <type name="Facebook\BusinessExtension\Model\Product\Feed\Method\FeedApi">
+        <arguments>
+            <argument name="logger" xsi:type="object">Facebook\BusinessExtension\Model\Logger\ProductFeedLogger</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="facebook_order_extension" type="Facebook\BusinessExtension\Plugin\OrderGet"/>
+    </type>
+    <preference for="Facebook\BusinessExtension\Api\Data\FacebookOrderInterface" type="Facebook\BusinessExtension\Model\FacebookOrder"/>
 </config>

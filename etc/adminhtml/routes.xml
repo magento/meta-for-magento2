@@ -4,5 +4,8 @@
         <route id="fbeadmin" frontName="fbeadmin">
             <module name="Facebook_BusinessExtension"/>
         </route>
+        <route id="sales">
+            <module name="Facebook_BusinessExtension"/>
+        </route>
     </router>
 </config>

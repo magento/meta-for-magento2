@@ -1,11 +1,26 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="catalog_product_delete_after_done">
-        <observer name="custom_delete_product" instance="Facebook\BusinessExtension\Observer\ProcessProductAfterDeleteEventObserver" />
+        <observer name="facebook_product_delete_after" instance="Facebook\BusinessExtension\Observer\Product\DeleteAfter" />
     </event>
     <event name="catalog_product_save_after">
-        <observer name="custom_save_product" instance="Facebook\BusinessExtension\Observer\ProcessProductAfterSaveEventObserver" />
+        <observer name="facebook_product_save_after" instance="Facebook\BusinessExtension\Observer\Product\SaveAfter" />
     </event>
+    <event name="sales_order_shipment_save_after">
+        <observer name="facebook_order_mark_as_shipped" instance="Facebook\BusinessExtension\Observer\Order\MarkAsShipped" />
+    </event>
+    <event name="order_cancel_after">
+        <observer name="facebook_order_cancel" instance="Facebook\BusinessExtension\Observer\Order\Cancel" />
+    </event>
+    <event name="sales_order_payment_refund">
+        <observer name="facebook_order_refund" instance="Facebook\BusinessExtension\Observer\Order\Refund" />
+    </event>
+<!--    <event name="catalog_product_delete_after_done">-->
+<!--        <observer name="custom_delete_product" instance="Facebook\BusinessExtension\Observer\ProcessProductAfterDeleteEventObserver" />-->
+<!--    </event>-->
+<!--    <event name="catalog_product_save_after">-->
+<!--        <observer name="custom_save_product" instance="Facebook\BusinessExtension\Observer\ProcessProductAfterSaveEventObserver" />-->
+<!--    </event>-->
     <event name="catalog_category_save_after">
         <observer name="custom_save_category" instance="Facebook\BusinessExtension\Observer\ProcessCategoryAfterSaveEventObserver" />
     </event>
