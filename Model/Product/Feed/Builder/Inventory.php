@@ -17,6 +17,10 @@ use Magento\InventorySourceDeductionApi\Model\GetSourceItemBySourceCodeAndSku;
 
 class Inventory
 {
+    const STATUS_IN_STOCK = 'in stock';
+
+    const STATUS_OUT_OF_STOCK = 'out of stock';
+
     /**
      * @var StockItemRepositoryInterface
      */
@@ -38,9 +42,14 @@ class Inventory
     private $getSourceItemBySourceCodeAndSku;
 
     /**
-     * @var mixed
+     * @var Product
      */
-    protected $sourceCode;
+    private $product;
+
+    /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
 
     /**
      * @var SourceItemInterface|null
@@ -65,7 +74,7 @@ class Inventory
         $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
         $this->stockConfigurationInterface = $stockConfigurationInterface;
         $this->getSourceItemBySourceCodeAndSku = $getSourceItemBySourceCodeAndSku;
-        $this->sourceCode = $systemConfig->getInventorySource();
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -88,9 +97,41 @@ class Inventory
     public function getSourceItem(Product $product)
     {
         try {
-            return $this->getSourceItemBySourceCodeAndSku->execute($this->sourceCode, $product->getSku());
+            return $this->getSourceItemBySourceCodeAndSku->execute(
+                $this->systemConfig->getInventorySource(),
+                $product->getSku()
+            );
         } catch (NoSuchEntityException $e) {
             return null;
         }
+    }
+
+    /**
+     * @param Product $product
+     * @return $this
+     */
+    public function initInventoryForProduct(Product $product)
+    {
+        $this->product = $product;
+        $this->sourceItem = $this->getSourceItem($product);
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAvailability()
+    {
+        return $this->product && $this->sourceItem && $this->sourceItem->getStatus()
+        && ($this->sourceItem->getQuantity() - $this->systemConfig->getOutOfStockThreshold() > 0)
+            ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInventory()
+    {
+        return $this->product && $this->sourceItem ? (int)$this->sourceItem->getQuantity() : 0;
     }
 }

@@ -361,9 +361,7 @@ class Builder
      */
     public function buildProductEntry(Product $product)
     {
-        $inventorySourceItem = $this->inventory->getSourceItem($product);
-        $availability = $inventorySourceItem && $inventorySourceItem->getStatus() ? 'in stock' : 'out of stock';
-        $inventory = $inventorySourceItem ? (int)$inventorySourceItem->getQuantity() : 0;
+        $this->inventory->initInventoryForProduct($product);
 
         $productType = $this->trimAttribute(self::ATTR_PRODUCT_TYPE, $this->getCategoryPath($product));
 
@@ -380,8 +378,8 @@ class Builder
             self::ATTR_ITEM_GROUP_ID        => $this->getItemGroupId($product),
             self::ATTR_NAME                 => $productTitle,
             self::ATTR_DESCRIPTION          => $this->getDescription($product),
-            self::ATTR_AVAILABILITY         => $availability,
-            self::ATTR_INVENTORY            => $inventory,
+            self::ATTR_AVAILABILITY         => $this->inventory->getAvailability(),
+            self::ATTR_INVENTORY            => $this->inventory->getInventory(),
             self::ATTR_BRAND                => $this->getBrand($product),
             self::ATTR_PRODUCT_CATEGORY     => $product->getGoogleProductCategory() ?? '',
             self::ATTR_PRODUCT_TYPE         => $productType,
