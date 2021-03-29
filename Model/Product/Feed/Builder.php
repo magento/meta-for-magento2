@@ -178,10 +178,15 @@ class Builder
      */
     protected function getCategoryPath(Product $product)
     {
+        $categoryIds = $product->getCategoryIds();
+        if (empty($categoryIds)) {
+            return '';
+        }
+
         $categoryNames = [];
         $categories = $this->categoryCollectionFactory->create()
             ->addAttributeToSelect('name')
-            ->addAttributeToFilter('entity_id', $product->getCategoryIds())
+            ->addAttributeToFilter('entity_id', $categoryIds)
             ->setOrder('position', 'ASC');
         /** @var CategoryInterface $category */
         foreach ($categories as $category) {
