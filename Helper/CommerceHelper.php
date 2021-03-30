@@ -4,10 +4,11 @@ namespace Facebook\BusinessExtension\Helper;
 
 use Exception;
 use Facebook\BusinessExtension\Api\Data\FacebookOrderInterfaceFactory;
+use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Model\Config\Source\DefaultOrderStatus;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
-use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -20,13 +21,13 @@ use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\InvoiceManagementInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item as OrderItem;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Sales\Model\Service\OrderService;
 use Magento\Store\Model\StoreManagerInterface;
 
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 class CommerceHelper extends AbstractHelper
@@ -95,6 +96,10 @@ class CommerceHelper extends AbstractHelper
      * @var ProductIdentifier
      */
     private $productIdentifier;
+
+    private $storeId;
+
+    private $pageId;
 
     private $orderIds = [];
 
@@ -166,7 +171,23 @@ class CommerceHelper extends AbstractHelper
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->facebookOrderFactory = $facebookOrderFactory;
         $this->productIdentifier = $productIdentifier;
+
+        $this->storeId = $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId();
+        $this->pageId = $this->systemConfig->getPageId();
         parent::__construct($context);
+    }
+
+    /**
+     * @param $storeId
+     * @return $this
+     */
+    public function setStoreId($storeId)
+    {
+        $this->storeId = $storeId;
+        $this->pageId = $this->systemConfig->getPageId($storeId);
+        $this->graphAPIAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+        return $this;
     }
 
     /**
@@ -221,10 +242,11 @@ class CommerceHelper extends AbstractHelper
      * @return Order
      * @throws LocalizedException
      * @throws NoSuchEntityException
+     * @throws GuzzleException
      */
     public function createOrder($data)
     {
-        $storeId = $this->systemConfig->getStoreId();
+        $storeId = $this->storeId ?? $this->systemConfig->getStoreId();
 
         $facebookOrderId = $data['id'];
         /** @var FacebookOrderInterfaceFactory $facebookOrder */
@@ -282,7 +304,7 @@ class CommerceHelper extends AbstractHelper
         if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PENDING) {
             $order->setState(Order::STATE_NEW)
                 ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_NEW));
-        } else if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING) {
+        } elseif ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING) {
             $order->setState(Order::STATE_PROCESSING)
                 ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
         }
@@ -354,10 +376,11 @@ class CommerceHelper extends AbstractHelper
 
     /**
      * @param false|string $cursorAfter
+     * @throws GuzzleException
      */
     public function pullOrders($cursorAfter = false)
     {
-        $ordersData = $this->graphAPIAdapter->getOrders($cursorAfter);
+        $ordersData = $this->graphAPIAdapter->getOrders($this->pageId, $cursorAfter);
         //var_export($ordersData);
 
         $this->ordersPulledTotal += count($ordersData['data']);
@@ -371,7 +394,7 @@ class CommerceHelper extends AbstractHelper
             }
         }
         if (!empty($this->orderIds)) {
-            $this->graphAPIAdapter->acknowledgeOrders($this->orderIds);
+            $this->graphAPIAdapter->acknowledgeOrders($this->pageId, $this->orderIds);
             $this->orderIds = [];
         }
 
@@ -382,6 +405,7 @@ class CommerceHelper extends AbstractHelper
 
     /**
      * @return array
+     * @throws GuzzleException
      */
     public function pullPendingOrders()
     {
@@ -396,16 +420,33 @@ class CommerceHelper extends AbstractHelper
         ];
     }
 
+    /**
+     * @param $fbOrderId
+     * @param $items
+     * @param $trackingInfo
+     * @throws GuzzleException
+     */
     public function markOrderAsShipped($fbOrderId, $items, $trackingInfo)
     {
         $this->graphAPIAdapter->markOrderAsShipped($fbOrderId, $items, $trackingInfo);
     }
 
+    /**
+     * @param $fbOrderId
+     * @throws GuzzleException
+     */
     public function cancelOrder($fbOrderId)
     {
         $this->graphAPIAdapter->cancelOrder($fbOrderId);
     }
 
+    /**
+     * @param $fbOrderId
+     * @param $items
+     * @param $shippingRefundAmount
+     * @param null $reasonText
+     * @throws GuzzleException
+     */
     public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $reasonText = null)
     {
         $this->graphAPIAdapter->refundOrder($fbOrderId, $items, $shippingRefundAmount, $reasonText = null);

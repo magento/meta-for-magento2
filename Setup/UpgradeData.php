@@ -7,19 +7,21 @@
 namespace Facebook\BusinessExtension\Setup;
 
 use Exception;
+
+use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Logger\Logger;
+use Facebook\BusinessExtension\Model\Config\ProductAttributes;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Catalog\Model\Product;
+use Magento\Catalog\Setup\CategorySetupFactory;
+use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+use Magento\Eav\Model\Entity\Attribute\SetFactory;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
-use Magento\Catalog\Setup\CategorySetupFactory;
-use Magento\Eav\Model\Entity\Attribute\SetFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
-use Facebook\BusinessExtension\Logger\Logger;
-use Facebook\BusinessExtension\Model\Config\ProductAttributes;
-use Facebook\BusinessExtension\Helper\FBEHelper;
 use Magento\Framework\Setup\UpgradeDataInterface;
-use \Magento\Catalog\Model\Product;
 
 class UpgradeData implements UpgradeDataInterface
 {
@@ -62,6 +64,11 @@ class UpgradeData implements UpgradeDataInterface
     private $logger;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * Constructor
      *
      * @param EavSetupFactory $eavSetupFactory
@@ -70,6 +77,7 @@ class UpgradeData implements UpgradeDataInterface
      * @param ProductAttributes $attributeConfig
      * @param FBEHelper $helper
      * @param Logger $logger
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         EavSetupFactory $eavSetupFactory,
@@ -77,7 +85,8 @@ class UpgradeData implements UpgradeDataInterface
         SetFactory $attributeSetFactory,
         ProductAttributes $attributeConfig,
         FBEHelper $helper,
-        Logger $logger
+        Logger $logger,
+        SystemConfig $systemConfig
     ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->categorySetupFactory = $categorySetupFactory;
@@ -85,6 +94,7 @@ class UpgradeData implements UpgradeDataInterface
         $this->attributeConfig = $attributeConfig;
         $this->helper = $helper;
         $this->logger = $logger;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -253,6 +263,11 @@ class UpgradeData implements UpgradeDataInterface
                     ]
                 );
             }
+        }
+
+        // disable the extension for non-default stores
+        if (version_compare($context->getVersion(), '1.3.0') < 0) {
+            $this->systemConfig->disableExtensionForNonDefaultStores();
         }
 
         $setup->endSetup();

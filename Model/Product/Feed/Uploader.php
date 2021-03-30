@@ -37,28 +37,29 @@ class Uploader
         SystemConfig $systemConfig,
         MethodBatchApi $methodBatchApi,
         MethodFeedApi $methodFeedApi
-    )
-    {
+    ) {
         $this->systemConfig = $systemConfig;
         $this->methodBatchApi = $methodBatchApi;
         $this->methodFeedApi = $methodFeedApi;
     }
 
     /**
+     * @param null $storeId
      * @return array
      * @throws LocalizedException
      */
-    public function uploadFullCatalog()
+    public function uploadFullCatalog($storeId = null)
     {
-        $uploadMethod = $this->systemConfig->getFeedUploadMethod();
+        $response = [];
+        $uploadMethod = $this->systemConfig->getFeedUploadMethod($storeId);
 
         if ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_CATALOG_BATCH_API) {
             try {
-                $response = $this->methodBatchApi->generateProductRequestData();
+                $response = $this->methodBatchApi->generateProductRequestData($storeId);
             } catch (\Exception $e) {
             }
-        } else if ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
-            $response = $this->methodFeedApi->execute();
+        } elseif ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
+            $response = $this->methodFeedApi->execute($storeId);
         } else {
             throw new LocalizedException(__('Unknown feed upload method'));
         }

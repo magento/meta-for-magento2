@@ -13,6 +13,7 @@ use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Store\Model\ScopeInterface;
 
 class SaveAfter implements ObserverInterface
 {
@@ -78,8 +79,10 @@ class SaveAfter implements ObserverInterface
         // @todo implement async call
 
         try {
+            $storeId = $product->getStoreId();
+            $catalogId = $this->systemConfig->getCatalogId($storeId);
             $requestData = $this->batchApi->buildProductRequest($product);
-            $this->graphApiAdapter->catalogBatchRequest([$requestData]);
+            $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
         } catch (Exception $e) {
             $this->fbeHelper->logException($e);
         }

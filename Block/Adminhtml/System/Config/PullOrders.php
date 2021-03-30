@@ -34,7 +34,7 @@ class PullOrders extends Field
      */
     public function getAjaxUrl()
     {
-        return $this->getUrl('fbeadmin/ajax/pullOrders');
+        return $this->getUrl('fbeadmin/ajax/pullOrders', ['store' => $this->getRequest()->getParam('store')]);
     }
 
     /**

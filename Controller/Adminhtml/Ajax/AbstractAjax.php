@@ -9,9 +9,9 @@ use Magento\Security\Model\AdminSessionsManager;
 
 abstract class AbstractAjax extends \Magento\Backend\App\Action
 {
-  /**
-   * @var \Magento\Framework\Controller\Result\JsonFactory
-   */
+    /**
+     * @var \Magento\Framework\Controller\Result\JsonFactory
+     */
     protected $_resultJsonFactory;
 
     protected $_fbeHelper;
@@ -31,7 +31,7 @@ abstract class AbstractAjax extends \Magento\Backend\App\Action
     public function execute()
     {
         $result = $this->_resultJsonFactory->create();
-      // TODO : Move all String objects to constants.
+        // TODO : Move all String objects to constants.
         $admin_session = $this->_fbeHelper
         ->createObject(AdminSessionsManager::class)
         ->getCurrentSession();
@@ -42,8 +42,8 @@ abstract class AbstractAjax extends \Magento\Backend\App\Action
                 $json = $this->executeForJson();
                 return $result->setData($json);
             } catch (\Exception $e) {
-              // Uncomment once the logger is added
-              // $this->_fbeHelper->logException($e);
+                // Uncomment once the logger is added
+                // $this->_fbeHelper->logException($e);
                 throw new Exception(
                     'Oops, there was error while processing your request.' .
                     ' Please contact admin for more details.'

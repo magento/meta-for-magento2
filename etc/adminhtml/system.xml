@@ -4,29 +4,29 @@
         <tab id="facebook" translate="label" sortOrder="1000">
             <label>Facebook</label>
         </tab>
-        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
             <class>separator-top</class>
             <label>Business Extension</label>
             <tab>facebook</tab>
             <resource>Facebook_BusinessExtension::system_config</resource>
-            <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Setup</label>
                 <attribute type="expanded">1</attribute>
-<!--                <field id="onboarding" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">-->
+<!--                <field id="onboarding" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">-->
 <!--                    <label>Onboarding</label>-->
 <!--                    <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\Onboarding</frontend_model>-->
 <!--                </field>-->
-<!--                <field id="onboarding_state" translate="label comment" type="hidden" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">-->
+<!--                <field id="onboarding_state" translate="label comment" type="hidden" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">-->
 <!--                    <label>Onboarding State</label>-->
 <!--                    <config_path>facebook/business_extension/onboarding_state</config_path>-->
 <!--                </field>-->
-                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Activate Integration</label>
 <!--                    <depends><field id="facebook_business_extension/business_extension/onboarding_state">4</field></depends>-->
                     <config_path>facebook/business_extension/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="page_id" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="page_id" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Page ID</label>
                     <depends>
 <!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
@@ -34,7 +34,7 @@
                     </depends>
                     <config_path>facebook/business_extension/page_id</config_path>
                 </field>
-                <field id="catalog_id" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="catalog_id" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Catalog ID</label>
                     <depends>
 <!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
@@ -43,7 +43,7 @@
                     <config_path>facebook/business_extension/catalog_id</config_path>
                     <backend_model>Facebook\BusinessExtension\Model\Config\Backend\Catalog</backend_model>
                 </field>
-                <field id="commerce_account_id" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="commerce_account_id" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Commerce Account ID</label>
                     <depends>
 <!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
@@ -51,7 +51,7 @@
                     </depends>
                     <config_path>facebook/business_extension/commerce_account_id</config_path>
                 </field>
-                <field id="access_token" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="access_token" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>API Access Token</label>
                     <depends>
 <!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
@@ -60,7 +60,7 @@
                     <config_path>facebook/business_extension/access_token</config_path>
                     <comment model="Facebook\BusinessExtension\Model\System\Comment\AccessToken" />
                 </field>
-                <field id="store" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="store" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Store</label>
                     <depends>
 <!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
@@ -70,7 +70,7 @@
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\Store</source_model>
                     <comment>Magento store used as a purchase point for FB/IG orders</comment>
                 </field>
-                <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Module Info</label>
                     <depends>
 <!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
@@ -79,117 +79,117 @@
                     <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo</frontend_model>
                 </field>
             </group>
-            <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Catalog Management</label>
                 <depends>
 <!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="daily_product_feed" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="daily_product_feed" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Daily Product Feed</label>
                     <config_path>facebook/catalog_management/daily_product_feed</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Scheduled full catalog upload</comment>
                 </field>
-                <field id="feed_upload_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="feed_upload_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Feed Upload Method</label>
                     <config_path>facebook/catalog_management/feed_upload_method</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\FeedUploadMethod</source_model>
                 </field>
-                <field id="product_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="product_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Push Products</label>
                     <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
                 </field>
-                <field id="incremental_product_updates" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="incremental_product_updates" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Incremental Product Updates</label>
                     <config_path>facebook/catalog_management/incremental_product_updates</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Synchronize changes with Facebook every time a product is saved or deleted</comment>
                 </field>
-                <field id="product_identifier" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="product_identifier" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Product Identifier</label>
                     <config_path>facebook/catalog_management/product_identifier</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\Product\Identifier</source_model>
                     <comment>Magento product attribute mapped to retailer_id on Facebook. Warning: use with caution, as changing this option after uploading products to FB might result in having duplicate products in your FB catalog</comment>
                 </field>
-                <field id="collections_sync" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="collections_sync" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Enable Collections Sync</label>
                     <config_path>facebook/catalog_management/collections_sync</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Activates synchronization of Magento product categories to Facebook collections</comment>
                 </field>
             </group>
-            <group id="inventory_management" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="inventory_management" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Inventory Management</label>
                 <depends>
 <!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="inventory_source" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="inventory_source" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Inventory Source</label>
                     <config_path>facebook/inventory_management/inventory_source</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\Product\InventorySource</source_model>
                     <comment>Use this inventory source for products on Facebook and Instagram</comment>
                 </field>
-                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Out-of-Stock Threshold</label>
                     <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>
                     <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
                 </field>
             </group>
-            <group id="orders_sync" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="orders_sync" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Orders Sync</label>
                 <depends>
 <!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Enable Orders Sync</label>
                     <config_path>facebook/orders_sync/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Orders are pulled from FB Commerce Account every 15 minutes by default (schedule can be edited in crontab.xml), order updates are sent from Magento to Facebook in real time</comment>
                 </field>
-                <field id="default_order_status" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="default_order_status" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Default Order Status</label>
                     <config_path>facebook/orders_sync/default_order_status</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\DefaultOrderStatus</source_model>
                     <comment>Invoice will be created automatically if Processing status is selected</comment>
                 </field>
-                <field id="pull_orders" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="pull_orders" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Pull Orders</label>
                     <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\PullOrders</frontend_model>
                     <comment>Pull orders awaiting acknowledgement from your FB Commerce Account</comment>
                 </field>
             </group>
-            <group id="shipping_methods" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="shipping_methods" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Shipping Methods Mapping</label>
                 <depends>
 <!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="standard" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="standard" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Standard</label>
                     <config_path>facebook/shipping_methods/standard</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\ActiveShippingMethods</source_model>
                 </field>
-                <field id="expedited" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="expedited" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Expedited</label>
                     <config_path>facebook/shipping_methods/expedited</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\ActiveShippingMethods</source_model>
                 </field>
-                <field id="rush" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="rush" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Rush</label>
                     <config_path>facebook/shipping_methods/rush</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\ActiveShippingMethods</source_model>
                 </field>
             </group>
-            <group id="debug" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="debug" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Debug</label>
                 <depends>
 <!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Enable Debug Mode</label>
                     <config_path>facebook/debug/debug_mode</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

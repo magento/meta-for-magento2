@@ -7,10 +7,9 @@ namespace Facebook\BusinessExtension\Helper;
 
 use CURLFile;
 use Facebook\BusinessExtension\Model\FacebookOrder;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
-
-use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Psr\Log\LoggerInterface;
 
 class GraphAPIAdapter
@@ -33,41 +32,50 @@ class GraphAPIAdapter
     private $graphAPIVersion = '9.0';
 
     /**
-     * @var string
-     */
-    private $pageId;
-
-    /**
      * @var Client
      */
     private $client;
-
-    /**
-     * @var string
-     */
-    private $commerceAccountId;
-
-    /**
-     * @var string
-     */
-    private $catalogId;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
 
+    /**
+     * @var bool
+     */
+    private $debugMode = false;
+
     public function __construct(SystemConfig $systemConfig, LoggerInterface $logger)
     {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->accessToken = $systemConfig->getAccessToken();
-        $this->pageId = $systemConfig->getPageId();
-        $this->commerceAccountId = $systemConfig->getCommerceAccountId();
         $this->client = new Client([
             'base_uri' => "https://graph.facebook.com/v{$this->graphAPIVersion}/",
             'timeout'  => 60,
         ]);
+        $this->debugMode = $systemConfig->isDebugMode();
+    }
+
+    /**
+     * @param $accessToken
+     * @return $this
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+        return $this;
+    }
+
+    /**
+     * @param $debugMode
+     * @return $this
+     */
+    public function setDebugMode($debugMode)
+    {
+        $this->debugMode = $debugMode;
+        return $this;
     }
 
     /**
@@ -79,28 +87,31 @@ class GraphAPIAdapter
     }
 
     /**
-     * @todo implement custom logger class, remove access token from logs
      * @param $method
      * @param $endpoint
      * @param $request
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @todo implement custom logger class, remove access token from logs
      */
     protected function callApi($method, $endpoint, $request)
     {
         try {
-            if ($this->systemConfig->isDebugMode()) {
+            if ($this->debugMode) {
                 $this->logger->debug(print_r([
                     'endpoint' => "/{$method} {$endpoint}",
                     'request' => $request,
                 ], true));
             }
             $response = $this->client->request($method, $endpoint, ['query' => $request]);
-            if ($this->systemConfig->isDebugMode()) {
+            if ($this->debugMode) {
                 $this->logger->debug(print_r([
                     'response' => [
                         'status_code' => $response->getStatusCode(),
                         'reason_phrase' => $response->getReasonPhrase(),
-                        'headers' => json_encode(array_map(function($a) {return $a[0];}, $response->getHeaders())),
+                        'headers' => json_encode(array_map(function ($a) {
+                            return $a[0];
+                        }, $response->getHeaders())),
                         'body' => (string)$response->getBody(),
                     ]
                 ], true));
@@ -119,6 +130,7 @@ class GraphAPIAdapter
     /**
      * @param $userToken
      * @return false|string
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getPageTokenFromUserToken($userToken)
     {
@@ -133,6 +145,7 @@ class GraphAPIAdapter
     /**
      * @param null|string $accessToken
      * @return false|string
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getPageMerchantSettingsId($accessToken = null)
     {
@@ -146,10 +159,11 @@ class GraphAPIAdapter
     }
 
     /**
-     * @todo check store setup status
      * @param $commerceAccountId
      * @param null $accessToken
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @todo check store setup status
      */
     public function getCommerceAccountData($commerceAccountId, $accessToken = null)
     {
@@ -166,6 +180,7 @@ class GraphAPIAdapter
      * @param $commerceAccountId
      * @param null $accessToken
      * @return array|mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function associateMerchantSettingsWithApp($commerceAccountId, $accessToken = null)
     {
@@ -178,9 +193,8 @@ class GraphAPIAdapter
         return $response;
     }
 
-    public function getCatalogFeeds()
+    public function getCatalogFeeds($catalogId)
     {
-        $catalogId = $this->systemConfig->getCatalogId();
         $response = $this->callApi('GET', "{$catalogId}/product_feeds", [
             'access_token' => $this->accessToken,
         ]);
@@ -197,9 +211,8 @@ class GraphAPIAdapter
         return $response;
     }
 
-    public function createEmptyFeed($name)
+    public function createEmptyFeed($catalogId, $name)
     {
-        $catalogId = $this->systemConfig->getCatalogId();
         $response = $this->callApi('POST', "{$catalogId}/product_feeds", [
             'access_token' => $this->accessToken,
             'name' => $name,
@@ -230,7 +243,7 @@ class GraphAPIAdapter
         }
         curl_close($ch);
 
-        if ($this->systemConfig->isDebugMode()) {
+        if ($this->debugMode) {
             $this->logger->debug(print_r([
                 'endpoint' => "POST {$endpoint}",
                 'file' => $feed,
@@ -241,9 +254,8 @@ class GraphAPIAdapter
         return json_decode($result);
     }
 
-    public function catalogBatchRequest($requests)
+    public function catalogBatchRequest($catalogId, $requests)
     {
-        $catalogId = $this->systemConfig->getCatalogId();
         $response = $this->callApi('POST', "{$catalogId}/items_batch", [
             'access_token' => $this->accessToken,
             'requests' => json_encode($requests),
@@ -254,10 +266,12 @@ class GraphAPIAdapter
     }
 
     /**
+     * @param $pageId
      * @param false|string $cursorAfter
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getOrders($cursorAfter = false)
+    public function getOrders($pageId, $cursorAfter = false)
     {
         $requestFields = [
             'id',
@@ -281,13 +295,14 @@ class GraphAPIAdapter
         if ($cursorAfter) {
             $request['after'] = $cursorAfter;
         }
-        $response = $this->callApi('GET', "{$this->pageId}/commerce_orders", $request);
+        $response = $this->callApi('GET', "{$pageId}/commerce_orders", $request);
         return json_decode($response->getBody(), true);
     }
 
     /**
      * @param $fbOrderId
      * @return array|mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getOrderItems($fbOrderId)
     {
@@ -305,13 +320,19 @@ class GraphAPIAdapter
         return json_decode($response->getBody(), true);
     }
 
-    public function acknowledgeOrders(array $orderIds)
+    /**
+     * @param $pageId
+     * @param array $orderIds
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function acknowledgeOrders($pageId, array $orderIds)
     {
         $request = [];
         foreach ($orderIds as $magentoOrderId => $fbOrderId) {
             $request[] = ['id' => $fbOrderId, 'merchant_order_reference' => $magentoOrderId];
         }
-        $response = $this->callApi('POST', "{$this->pageId}/acknowledge_orders", [
+        $response = $this->callApi('POST', "{$pageId}/acknowledge_orders", [
             'access_token' => $this->accessToken,
             'idempotency_key' => $this->getUniqId(),
             'orders' => json_encode($request),
@@ -319,6 +340,13 @@ class GraphAPIAdapter
         return json_decode($response->getBody(), true);
     }
 
+    /**
+     * @param $fbOrderId
+     * @param $items
+     * @param $trackingInfo
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function markOrderAsShipped($fbOrderId, $items, $trackingInfo)
     {
         $response = $this->callApi('POST', "{$fbOrderId}/shipments", [
@@ -331,6 +359,11 @@ class GraphAPIAdapter
         return $response;
     }
 
+    /**
+     * @param $fbOrderId
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function cancelOrder($fbOrderId)
     {
         // Magento doesn't support admin providing reason code or description for order cancellation
@@ -348,6 +381,14 @@ class GraphAPIAdapter
         return $response;
     }
 
+    /**
+     * @param $fbOrderId
+     * @param $items
+     * @param $shippingRefundAmount
+     * @param null $reasonText
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $reasonText = null)
     {
         $request = [

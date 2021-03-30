@@ -9,6 +9,12 @@ use Magento\Catalog\Api\Data\ProductInterface;
 interface ProductRetrieverInterface
 {
     /**
+     * @param $storeId
+     * @return ProductRetrieverInterface
+     */
+    public function setStoreId($storeId);
+
+    /**
      * @return string
      */
     public function getProductType();

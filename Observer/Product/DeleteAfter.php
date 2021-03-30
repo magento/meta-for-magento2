@@ -12,6 +12,7 @@ use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Store\Model\ScopeInterface;
 
 class DeleteAfter implements ObserverInterface
 {
@@ -67,7 +68,9 @@ class DeleteAfter implements ObserverInterface
         ];
 
         try {
-            $this->graphApiAdapter->catalogBatchRequest([$requestData]);
+            $storeId = $product->getStoreId();
+            $catalogId = $this->systemConfig->getCatalogId($storeId);
+            $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
         } catch (Exception $e) {
             $this->fbeHelper->logException($e);
         }

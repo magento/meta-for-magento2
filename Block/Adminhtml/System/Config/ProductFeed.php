@@ -8,6 +8,8 @@ namespace Facebook\BusinessExtension\Block\Adminhtml\System\Config;
 use Magento\Backend\Block\Widget\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class ProductFeed extends Field
 {
@@ -34,7 +36,18 @@ class ProductFeed extends Field
      */
     public function getAjaxUrl()
     {
-        return $this->getUrl('fbeadmin/ajax/productFeedUpload');
+        return $this->getUrl('fbeadmin/ajax/productFeedUpload', ['store' => $this->getRequest()->getParam('store')]);
+    }
+
+    /**
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getStoreNameForComment()
+    {
+        return $this->getRequest()->getParam('store')
+            ? $this->_storeManager->getStore($this->getRequest()->getParam('store'))->getName()
+            : $this->_storeManager->getDefaultStoreView()->getName();
     }
 
     /**
@@ -48,7 +61,7 @@ class ProductFeed extends Field
 
     /**
      * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getButtonHtml()
     {

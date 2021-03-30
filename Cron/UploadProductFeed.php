@@ -8,6 +8,7 @@ namespace Facebook\BusinessExtension\Cron;
 use Facebook\BusinessExtension\Model\Product\Feed\Uploader;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
+use Magento\Framework\Exception\LocalizedException;
 use Psr\Log\LoggerInterface;
 
 class UploadProductFeed
@@ -32,23 +33,35 @@ class UploadProductFeed
      * @param Uploader $uploader
      * @param LoggerInterface $logger
      */
-    public function __construct(SystemConfig $systemConfig, Uploader $uploader, $logger)
+    public function __construct(SystemConfig $systemConfig, Uploader $uploader, LoggerInterface $logger)
     {
         $this->systemConfig = $systemConfig;
         $this->uploader = $uploader;
         $this->logger = $logger;
     }
 
+    /**
+     * @param $storeId
+     * @return $this
+     * @throws LocalizedException
+     */
+    protected function uploadForStore($storeId)
+    {
+        if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->isActiveDailyProductFeed($storeId))) {
+            return $this;
+        }
+        $this->uploader->uploadFullCatalog($storeId);
+        return $this;
+    }
+
     public function execute()
     {
-        if (!($this->systemConfig->isActiveExtension() && $this->systemConfig->isActiveDailyProductFeed())) {
-            return;
-        }
-
-        try {
-            $this->uploader->uploadFullCatalog();
-        } catch (\Exception $e) {
-            $this->logger->critical($e);
+        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+            try {
+                $this->uploadForStore($store->getId());
+            } catch (\Exception $e) {
+                $this->logger->critical($e);
+            }
         }
     }
 }

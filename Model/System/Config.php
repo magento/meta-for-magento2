@@ -91,8 +91,7 @@ class Config
         ResourceConfig $resourceConfig,
         ModuleListInterface $moduleList,
         TypeListInterface $cacheTypeList
-    )
-    {
+    ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;
@@ -152,9 +151,17 @@ class Config
      * @param null $scope
      * @return bool
      */
-    public function isActiveExtension($scopeId = null, $scope = null)
+    public function isActiveExtension($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
+    }
+
+    /**
+     * @return StoreManagerInterface
+     */
+    public function getStoreManager()
+    {
+        return $this->storeManager;
     }
 
     /**
@@ -184,7 +191,7 @@ class Config
      */
     public function getInventorySource($scopeId = null, $scope = null)
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_FACEBOOK_INVENTORY_SOURCE, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_INVENTORY_SOURCE, $scopeId, $scope);
     }
 
     /**
@@ -241,11 +248,16 @@ class Config
     /**
      * @param $path
      * @param $value
+     * @param null $storeId
      * @return $this
      */
-    public function saveConfig($path, $value)
+    public function saveConfig($path, $value, $storeId = null)
     {
-        $this->resourceConfig->saveConfig($path, $value);
+        if ($storeId) {
+            $this->resourceConfig->saveConfig($path, $value, ScopeInterface::SCOPE_STORES, $storeId);
+        } else {
+            $this->resourceConfig->saveConfig($path, $value);
+        }
         return $this;
     }
 
@@ -269,11 +281,28 @@ class Config
     }
 
     /**
+     * @return $this
+     */
+    public function disableExtensionForNonDefaultStores()
+    {
+        $storeManager = $this->getStoreManager();
+        if (!$storeManager->isSingleStoreMode()) {
+            $defaultStoreId = $storeManager->getDefaultStoreView()->getId();
+            foreach ($storeManager->getStores() as $store) {
+                if ($store->getId() !== $defaultStoreId) {
+                    $this->saveConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, 0, $store->getId());
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
      * @param null $scopeId
-     * @param null $scope
+     * @param string $scope
      * @return mixed
      */
-    public function getAccessToken($scopeId = null, $scope = null)
+    public function getAccessToken($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $scopeId, $scope);
     }
@@ -290,10 +319,10 @@ class Config
 
     /**
      * @param null $scopeId
-     * @param null $scope
+     * @param string $scope
      * @return mixed
      */
-    public function getCatalogId($scopeId = null, $scope = null)
+    public function getCatalogId($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $scopeId, $scope);
     }
@@ -330,17 +359,17 @@ class Config
         ];
     }
 
-    public function isActiveDailyProductFeed($scopeId = null, $scope = null)
+    public function isActiveDailyProductFeed($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED, $scopeId, $scope);
     }
 
-    public function getFeedUploadMethod($scopeId = null, $scope = null)
+    public function getFeedUploadMethod($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_FEED_UPLOAD_METHOD, $scopeId, $scope);
     }
 
-    public function getFeedId($scopeId = null, $scope = null)
+    public function getFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $scopeId, $scope);
     }

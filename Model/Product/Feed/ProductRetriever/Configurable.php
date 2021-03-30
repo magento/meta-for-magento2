@@ -17,6 +17,8 @@ class Configurable implements ProductRetrieverInterface
 {
     const LIMIT = 200;
 
+    protected $storeId;
+
     /**
      * @var FBEHelper
      */
@@ -38,6 +40,16 @@ class Configurable implements ProductRetrieverInterface
     }
 
     /**
+     * @param $storeId
+     * @return ProductRetrieverInterface|void
+     */
+    public function setStoreId($storeId)
+    {
+        $this->storeId = $storeId;
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getProductType()
@@ -51,7 +63,7 @@ class Configurable implements ProductRetrieverInterface
      */
     public function retrieve($offset = 1, $limit = self::LIMIT): array
     {
-        $storeId = $this->fbeHelper->getStore()->getId();
+        $storeId = $this->storeId ?? $this->fbeHelper->getStore()->getId();
 
         $configurableCollection = $this->productCollectionFactory->create();
         $configurableCollection->addAttributeToSelect('*')

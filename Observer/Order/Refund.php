@@ -14,8 +14,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Api\Data\CreditmemoInterface;
 use Magento\Sales\Api\Data\CreditmemoItemInterface as CreditmemoItem;
-use Magento\Sales\Api\Data\OrderItemInterface;
-use Magento\Sales\Block\Order\Creditmemo;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
 use Psr\Log\LoggerInterface;
@@ -53,8 +51,7 @@ class Refund implements ObserverInterface
         LoggerInterface $logger,
         CommerceHelper $commerceHelper,
         FacebookOrderInterfaceFactory $facebookOrderFactory
-    )
-    {
+    ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->commerceHelper = $commerceHelper;
@@ -69,7 +66,7 @@ class Refund implements ObserverInterface
     {
         if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $creditmemoItem->getSku();
-        } else if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+        } elseif ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
             return $creditmemoItem->getProductId();
         }
         return false;
@@ -77,14 +74,15 @@ class Refund implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        if (!($this->systemConfig->isActiveExtension() && $this->systemConfig->isActiveOrderSync())) {
-            return;
-        }
-
         /** @var Payment $payment */
         $payment = $observer->getEvent()->getPayment();
         /** @var CreditmemoInterface $creditmemo */
         $creditmemo = $observer->getEvent()->getCreditmemo();
+        $storeId = $payment->getOrder()->getStoreId();
+
+        if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->isActiveOrderSync($storeId))) {
+            return;
+        }
 
         // @todo fix magento bug with incorrectly loading order in credit memo resulting in missing extension attributes
         // https://github.com/magento/magento2/issues/23345
@@ -114,7 +112,8 @@ class Refund implements ObserverInterface
         $shippingRefundAmount = $creditmemo->getBaseShippingAmount();
         $reasonText = $creditmemo->getCustomerNote();
 
-        $this->commerceHelper->refundOrder($facebookOrder->getFacebookOrderId(), $refundItems, $shippingRefundAmount, $reasonText);
+        $this->commerceHelper->setStoreId($storeId)
+            ->refundOrder($facebookOrder->getFacebookOrderId(), $refundItems, $shippingRefundAmount, $reasonText);
         $payment->getOrder()->addCommentToStatusHistory('Refunded order on Facebook');
     }
 }

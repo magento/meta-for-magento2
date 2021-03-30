@@ -8,7 +8,6 @@ namespace Facebook\BusinessExtension\Helper\Product;
 use Facebook\BusinessExtension\Model\Config\Source\Product\Identifier as IdentifierConfig;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -43,7 +42,7 @@ class Identifier
     {
         if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $product->getSku();
-        } else if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
             return $product->getId();
         }
         return false;
@@ -59,13 +58,16 @@ class Identifier
         try {
             if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
                 return $this->productRepository->get($retailerId);
-            } else if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
                 return $this->productRepository->getById($retailerId);
             }
             throw new LocalizedException(__('Invalid FB product identifier configuration'));
         } catch (NoSuchEntityException $e) {
-            throw new LocalizedException(__(sprintf('Product with %s %s does not exist in Magento catalog',
-                strtoupper($this->identifierAttr), $retailerId)));
+            throw new LocalizedException(__(sprintf(
+                'Product with %s %s does not exist in Magento catalog',
+                strtoupper($this->identifierAttr),
+                $retailerId
+            )));
         }
     }
 }

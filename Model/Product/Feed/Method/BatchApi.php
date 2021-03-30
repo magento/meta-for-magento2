@@ -13,6 +13,7 @@ use Facebook\BusinessExtension\Model\Product\Feed\ProductRetrieverInterface;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Store\Model\ScopeInterface;
 
 class BatchApi
 {
@@ -89,17 +90,24 @@ class BatchApi
     }
 
     /**
+     * @param null $storeId
      * @return array
      * @throws \Exception
      */
-    public function generateProductRequestData()
+    public function generateProductRequestData($storeId = null)
     {
+        $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+
+        $catalogId = $this->systemConfig->getCatalogId($storeId);
+
         $currentBatch = 1;
         $requests = [];
         $responses = [];
         $exceptions = 0;
         foreach ($this->productRetrievers as $productRetriever) {
             $offset = 0;
+            $productRetriever->setStoreId($storeId);
             $limit = $productRetriever->getLimit();
             do {
                 $products = $productRetriever->retrieve($offset);
@@ -127,7 +135,7 @@ class BatchApi
                         $this->fbeHelper->log(
                             sprintf('Pushing batch %d with %d products', $currentBatch, count($requests))
                         );
-                        $response = $this->graphApiAdapter->catalogBatchRequest($requests);
+                        $response = $this->graphApiAdapter->catalogBatchRequest($catalogId, $requests);
                         $this->fbeHelper->log('Product push response ' . json_encode($response));
                         $responses[] = $response;
                         unset($requests);
@@ -139,7 +147,7 @@ class BatchApi
 
         if (!empty($requests)) {
             $this->fbeHelper->log(sprintf('Pushing batch %d with %d products', $currentBatch, count($requests)));
-            $response = $this->graphApiAdapter->catalogBatchRequest($requests);
+            $response = $this->graphApiAdapter->catalogBatchRequest($catalogId, $requests);
             $this->fbeHelper->log('Product push response ' . json_encode($response));
             $responses[] = $response;
         }

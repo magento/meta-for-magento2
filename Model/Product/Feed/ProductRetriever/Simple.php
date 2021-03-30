@@ -15,6 +15,8 @@ class Simple implements ProductRetrieverInterface
 {
     const LIMIT = 2000;
 
+    protected $storeId;
+
     /**
      * @var FBEHelper
      */
@@ -36,6 +38,16 @@ class Simple implements ProductRetrieverInterface
     }
 
     /**
+     * @param $storeId
+     * @return ProductRetrieverInterface|void
+     */
+    public function setStoreId($storeId)
+    {
+        $this->storeId = $storeId;
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getProductType()
@@ -50,7 +62,7 @@ class Simple implements ProductRetrieverInterface
      */
     public function retrieve($offset = 1, $limit = self::LIMIT): array
     {
-        $storeId = $this->fbeHelper->getStore()->getId();
+        $storeId = $this->storeId ?? $this->fbeHelper->getStore()->getId();
 
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect('*')

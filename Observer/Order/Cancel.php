@@ -44,19 +44,22 @@ class Cancel implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        if (!($this->systemConfig->isActiveExtension() && $this->systemConfig->isActiveOrderSync())) {
+        /** @var Order $order */
+        $order = $observer->getEvent()->getOrder();
+        $storeId = $order->getStoreId();
+
+        if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->isActiveOrderSync($storeId))) {
             return;
         }
 
-        /** @var Order $order */
-        $order = $observer->getEvent()->getOrder();
 
         $facebookOrderId = $order->getExtensionAttributes()->getFacebookOrderId();
         if (!$facebookOrderId) {
             return;
         }
 
-        $this->commerceHelper->cancelOrder($facebookOrderId);
+        $this->commerceHelper->setStoreId($storeId)
+            ->cancelOrder($facebookOrderId);
         $order->addCommentToStatusHistory("Cancelled order on Facebook.");
     }
 }

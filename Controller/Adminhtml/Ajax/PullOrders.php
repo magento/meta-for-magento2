@@ -23,14 +23,24 @@ class PullOrders extends AbstractAjax
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         CommerceHelper $commerceHelper
-    )
-    {
+    ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->commerceHelper = $commerceHelper;
     }
 
     public function executeForJson()
     {
+        // get default store info
+        $storeId = $this->_fbeHelper->getStore()->getId();
+
+        // override store if user switched config scope to non-default
+        $storeParam = $this->getRequest()->getParam('store');
+        if ($storeParam) {
+            $storeId = $storeParam;
+        }
+
+        $this->commerceHelper->setStoreId($storeId);
+
         try {
             return ['success' => true, 'response' => $this->commerceHelper->pullPendingOrders()];
         } catch (Exception $e) {

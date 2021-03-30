@@ -9,6 +9,7 @@ use Facebook\BusinessExtension\Helper\CommerceHelper;
 
 use Facebook\BusinessExtension\Model\Config\Source\Product\Identifier as IdentifierConfig;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -54,7 +55,7 @@ class MarkAsShipped implements ObserverInterface
     {
         if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $orderItem->getSku();
-        } else if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+        } elseif ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
             return $orderItem->getProductId();
         }
         return false;
@@ -98,15 +99,17 @@ class MarkAsShipped implements ObserverInterface
     /**
      * @param Observer $observer
      * @throws LocalizedException
+     * @throws GuzzleException
      */
     public function execute(Observer $observer)
     {
-        if (!($this->systemConfig->isActiveExtension() && $this->systemConfig->isActiveOrderSync())) {
-            return;
-        }
-
         /** @var Shipment $shipment */
         $shipment = $observer->getEvent()->getShipment();
+        $storeId = $shipment->getOrder()->getStoreId();
+
+        if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->isActiveOrderSync($storeId))) {
+            return;
+        }
 
         if (!$shipment->getOrder()->getExtensionAttributes()->getFacebookOrderId()) {
             return;
@@ -138,7 +141,8 @@ class MarkAsShipped implements ObserverInterface
             'carrier' => $this->getCarrierCodeForFacebook($track),
         ];
 
-        $this->commerceHelper->markOrderAsShipped($fbOrderId, $itemsToShip, $trackingInfo);
+        $this->commerceHelper->setStoreId($storeId)
+            ->markOrderAsShipped($fbOrderId, $itemsToShip, $trackingInfo);
         $shipment->getOrder()->addCommentToStatusHistory("Marked order as shipped on Facebook with {$track->getTitle()}. Tracking #: {$track->getNumber()}.");
 
         // @todo Update order totals
