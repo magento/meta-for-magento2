@@ -1,0 +1,16 @@
+{
+    "facebook_sales_order": {
+        "column": {
+            "entity_id": true,
+            "magento_order_id": true,
+            "facebook_order_id": true,
+            "channel": true,
+            "extra_data": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FACEBOOK_SALES_ORDER_MAGENTO_ORDER_ID_SALES_ORDER_ENTITY_ID": true,
+            "FACEBOOK_SALES_ORDER_MAGENTO_ORDER_ID": true
+        }
+    }
+}

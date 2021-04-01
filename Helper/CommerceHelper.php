@@ -200,15 +200,11 @@ class CommerceHelper extends AbstractHelper
      */
     public function getShippingMethod($shippingOptionName, $shippingAddressData = [])
     {
-        $map = $this->systemConfig->getShippingMethodsMap();
-        if (stripos($shippingOptionName, 'standard') !== false && array_key_exists('standard', $map)) {
-            return $map['standard'];
-        }
-        if (stripos($shippingOptionName, 'expedited') !== false && array_key_exists('expedited', $map)) {
-            return $map['expedited'];
-        }
-        if (stripos($shippingOptionName, 'rush') !== false && array_key_exists('rush', $map)) {
-            return $map['rush'];
+        $map = $this->systemConfig->getShippingMethodsMap($this->storeId);
+        foreach (['standard', 'expedited', 'rush'] as $item) {
+            if (stripos($shippingOptionName, $item) !== false && isset($map[$item])) {
+                return $map[$item];
+            }
         }
         throw new LocalizedException(__('Cannot map shipping method. Make sure mapping is defined in system configuration.'));
     }

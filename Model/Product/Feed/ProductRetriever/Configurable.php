@@ -70,6 +70,7 @@ class Configurable implements ProductRetrieverInterface
             ->addAttributeToFilter('status', Status::STATUS_ENABLED)
             ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
             ->addAttributeToFilter('type_id', $this->getProductType())
+            ->addStoreFilter($storeId)
             ->setStoreId($storeId);
 
         $configurableCollection->getSelect()->limit($limit, $offset);
