@@ -193,6 +193,11 @@
                     <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>
                     <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
                 </field>
+                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Out-of-Stock Threshold</label>
+                    <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>
+                    <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
+                </field>
             </group>
         </section>
     </system>
