@@ -17,11 +17,9 @@ use Magento\Framework\DB\Transaction;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Quote\Model\QuoteFactory;
-use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\InvoiceManagementInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Api\OrderManagementInterface as OrderManagement;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item as OrderItem;
 use Magento\Sales\Model\Order\Payment;
@@ -43,19 +41,9 @@ class CommerceHelper extends AbstractHelper
     private $objectManager;
 
     /**
-     * @var QuoteFactory
+     * @var OrderManagement
      */
-    private $quote;
-
-    /**
-     * @var QuoteManagement
-     */
-    private $quoteManagement;
-
-    /**
-     * @var OrderRepositoryInterface
-     */
-    private $orderRepository;
+    private $orderManagement;
 
     /**
      * @var CustomerFactory
@@ -127,9 +115,7 @@ class CommerceHelper extends AbstractHelper
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
      * @param StoreManagerInterface $storeManager
-     * @param QuoteFactory $quote
-     * @param QuoteManagement $quoteManagement
-     * @param OrderRepositoryInterface $orderRepository
+     * @param OrderManagement $orderManagement
      * @param CustomerFactory $customerFactory
      * @param CustomerRepositoryInterface $customerRepository
      * @param GraphAPIAdapter $graphAPIAdapter
@@ -144,9 +130,7 @@ class CommerceHelper extends AbstractHelper
         Context $context,
         ObjectManagerInterface $objectManager,
         StoreManagerInterface $storeManager,
-        QuoteFactory $quote,
-        QuoteManagement $quoteManagement,
-        OrderRepositoryInterface $orderRepository,
+        OrderManagement $orderManagement,
         CustomerFactory $customerFactory,
         CustomerRepositoryInterface $customerRepository,
         GraphAPIAdapter $graphAPIAdapter,
@@ -159,9 +143,7 @@ class CommerceHelper extends AbstractHelper
     ) {
         $this->storeManager = $storeManager;
         $this->objectManager = $objectManager;
-        $this->quote = $quote;
-        $this->quoteManagement = $quoteManagement;
-        $this->orderRepository = $orderRepository;
+        $this->orderManagement = $orderManagement;
         $this->customerFactory = $customerFactory;
         $this->customerRepository = $customerRepository;
         $this->orderService = $orderService;
@@ -234,6 +216,8 @@ class CommerceHelper extends AbstractHelper
     }
 
     /**
+     * Create order without a quote to honor FB totals and tax calculations
+     *
      * @param $data
      * @return Order
      * @throws LocalizedException
@@ -342,7 +326,7 @@ class CommerceHelper extends AbstractHelper
         $order->addCommentToStatusHistory("Imported order #{$facebookOrderId} from {$channel}.");
         $order->setCanSendNewEmailFlag(false);
 
-        $this->orderRepository->save($order);
+        $this->orderManagement->place($order);
 
         if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING) {
             // create invoice
