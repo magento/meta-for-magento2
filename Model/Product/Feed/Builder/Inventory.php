@@ -11,9 +11,6 @@ use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\StockConfigurationInterface;
 use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
 use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\InventoryApi\Api\Data\SourceItemInterface;
-use Magento\InventorySourceDeductionApi\Model\GetSourceItemBySourceCodeAndSku;
 
 class Inventory
 {
@@ -37,11 +34,6 @@ class Inventory
     private $stockConfigurationInterface;
 
     /**
-     * @var GetSourceItemBySourceCodeAndSku
-     */
-    private $getSourceItemBySourceCodeAndSku;
-
-    /**
      * @var Product
      */
     private $product;
@@ -52,33 +44,29 @@ class Inventory
     protected $systemConfig;
 
     /**
-     * @var SourceItemInterface|null
+     * @var StockItemInterface
      */
-    protected $sourceItem;
+    protected $productStock;
 
     /**
      * @param StockItemRepositoryInterface $stockItemRepository
      * @param StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory
      * @param StockConfigurationInterface $stockConfigurationInterface
-     * @param GetSourceItemBySourceCodeAndSku $getSourceItemBySourceCodeAndSku
      * @param SystemConfig $systemConfig
      */
     public function __construct(
         StockItemRepositoryInterface $stockItemRepository,
         StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory,
         StockConfigurationInterface $stockConfigurationInterface,
-        GetSourceItemBySourceCodeAndSku $getSourceItemBySourceCodeAndSku,
         SystemConfig $systemConfig
     ) {
         $this->stockItemRepository = $stockItemRepository;
         $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
         $this->stockConfigurationInterface = $stockConfigurationInterface;
-        $this->getSourceItemBySourceCodeAndSku = $getSourceItemBySourceCodeAndSku;
         $this->systemConfig = $systemConfig;
     }
 
     /**
-     * @deprecated Replaced with multi-source inventory
      * @param Product $product
      * @return StockItemInterface|null
      */
@@ -92,28 +80,12 @@ class Inventory
 
     /**
      * @param Product $product
-     * @return SourceItemInterface|null
-     */
-    public function getSourceItem(Product $product)
-    {
-        try {
-            return $this->getSourceItemBySourceCodeAndSku->execute(
-                $this->systemConfig->getInventorySource(),
-                $product->getSku()
-            );
-        } catch (NoSuchEntityException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * @param Product $product
      * @return $this
      */
     public function initInventoryForProduct(Product $product)
     {
         $this->product = $product;
-        $this->sourceItem = $this->getSourceItem($product);
+        $this->productStock = $this->getStockItem($product);
         return $this;
     }
 
@@ -122,8 +94,8 @@ class Inventory
      */
     public function getAvailability()
     {
-        return $this->product && $this->sourceItem && $this->sourceItem->getStatus()
-        && ($this->sourceItem->getQuantity() - $this->systemConfig->getOutOfStockThreshold() > 0)
+        return $this->product && $this->productStock && $this->productStock->getIsInStock()
+        && ($this->productStock->getQty() - $this->systemConfig->getOutOfStockThreshold() > 0)
             ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 
@@ -132,6 +104,6 @@ class Inventory
      */
     public function getInventory()
     {
-        return $this->product && $this->sourceItem ? (int)$this->sourceItem->getQuantity() : 0;
+        return $this->product && $this->productStock ? (int)$this->productStock->getQty() : 0;
     }
 }

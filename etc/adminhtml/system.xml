@@ -125,12 +125,6 @@
 <!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="inventory_source" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Inventory Source</label>
-                    <config_path>facebook/inventory_management/inventory_source</config_path>
-                    <source_model>Facebook\BusinessExtension\Model\Config\Source\Product\InventorySource</source_model>
-                    <comment>Use this inventory source for products on Facebook and Instagram</comment>
-                </field>
                 <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Out-of-Stock Threshold</label>
                     <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>

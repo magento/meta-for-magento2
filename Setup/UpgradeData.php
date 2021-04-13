@@ -270,6 +270,31 @@ class UpgradeData implements UpgradeDataInterface
             $this->systemConfig->disableExtensionForNonDefaultStores();
         }
 
+        // remove FB attributes from products admin grid
+        if (version_compare($context->getVersion(), '1.3.1') < 0) {
+
+            $removeAttributeFromGrid = function ($attrCode) use ($eavSetup) {
+                $attrId = $eavSetup->getAttributeId(Product::ENTITY, $attrCode);
+                if ($attrId) {
+                    $eavSetup->updateAttribute(
+                        \Magento\Catalog\Model\Product::ENTITY,
+                        $attrId,
+                        [
+                            'is_used_in_grid' => false,
+                            'is_visible_in_grid' => false,
+                            'is_filterable_in_grid' => false,
+                        ]
+                    );
+                }
+            };
+
+            $attributeConfig = $this->attributeConfig->getAttributesConfig();
+            foreach ($attributeConfig as $attrCode => $config) {
+                $removeAttributeFromGrid($attrCode);
+            }
+            $removeAttributeFromGrid('google_product_category');
+        }
+
         $setup->endSetup();
     }
 }

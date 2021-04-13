@@ -44,7 +44,6 @@ class Config
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES = 'facebook/catalog_management/incremental_product_updates';
 
-    const XML_PATH_FACEBOOK_INVENTORY_SOURCE = 'facebook/inventory_management/inventory_source';
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD = 'facebook/inventory_management/out_of_stock_threshold';
 
     const XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE = 'facebook/orders_sync/active';
@@ -182,16 +181,6 @@ class Config
     public function isActiveIncrementalProductUpdates($scopeId = null, $scope = null)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES, $scopeId, $scope);
-    }
-
-    /**
-     * @param null $scopeId
-     * @param null $scope
-     * @return mixed
-     */
-    public function getInventorySource($scopeId = null, $scope = null)
-    {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_INVENTORY_SOURCE, $scopeId, $scope);
     }
 
     /**

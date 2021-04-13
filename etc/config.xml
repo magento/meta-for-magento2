@@ -14,7 +14,6 @@
                 <collections_sync>1</collections_sync>
             </catalog_management>
             <inventory_management>
-                <inventory_source>default</inventory_source>
                 <out_of_stock_threshold>0</out_of_stock_threshold>
             </inventory_management>
             <orders_sync>
