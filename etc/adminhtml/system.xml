@@ -147,11 +147,17 @@
                     <label>Default Order Status</label>
                     <config_path>facebook/orders_sync/default_order_status</config_path>
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\DefaultOrderStatus</source_model>
+                    <depends>
+                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                    </depends>
                     <comment>Invoice will be created automatically if Processing status is selected</comment>
                 </field>
                 <field id="pull_orders" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Pull Orders</label>
                     <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\PullOrders</frontend_model>
+                    <depends>
+                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                    </depends>
                     <comment>Pull orders awaiting acknowledgement from your FB Commerce Account</comment>
                 </field>
             </group>
