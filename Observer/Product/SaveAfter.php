@@ -60,6 +60,7 @@ class SaveAfter implements ObserverInterface
      * Call an API to product save from facebook catalog
      * after save product from Magento
      *
+     * @todo Take into consideration current store scope
      * @param Observer $observer
      */
     public function execute(Observer $observer)
@@ -74,17 +75,22 @@ class SaveAfter implements ObserverInterface
             return;
         }
 
+        $productStoreId = $product->getStoreId();
+        $storeId = $this->fbeHelper->getStore()->getId();
+        $product->setStoreId($storeId);
+
         // @todo implement error handling/logging for invalid access token and other non-happy path scenarios
         // @todo implement batch API status check
         // @todo implement async call
 
         try {
-            $storeId = $product->getStoreId();
             $catalogId = $this->systemConfig->getCatalogId($storeId);
             $requestData = $this->batchApi->buildProductRequest($product);
             $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
         } catch (Exception $e) {
             $this->fbeHelper->logException($e);
         }
+
+        $product->setStoreId($productStoreId);
     }
 }
