@@ -7,6 +7,7 @@ namespace Facebook\BusinessExtension\Observer\Order;
 
 use Facebook\BusinessExtension\Helper\CommerceHelper;
 
+use Facebook\BusinessExtension\Helper\ShippingHelper;
 use Facebook\BusinessExtension\Model\Config\Source\Product\Identifier as IdentifierConfig;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Exception\GuzzleException;
@@ -36,15 +37,26 @@ class MarkAsShipped implements ObserverInterface
     private $commerceHelper;
 
     /**
+     * @var ShippingHelper
+     */
+    private $shippingHelper;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param LoggerInterface $logger
      * @param CommerceHelper $commerceHelper
+     * @param ShippingHelper $shippingHelper
      */
-    public function __construct(SystemConfig $systemConfig, LoggerInterface $logger, CommerceHelper $commerceHelper)
-    {
+    public function __construct(
+        SystemConfig $systemConfig,
+        LoggerInterface $logger,
+        CommerceHelper $commerceHelper,
+        ShippingHelper $shippingHelper
+    ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->commerceHelper = $commerceHelper;
+        $this->shippingHelper = $shippingHelper;
     }
 
     /**
@@ -63,37 +75,43 @@ class MarkAsShipped implements ObserverInterface
 
     /**
      * @param Track $track
-     * @return mixed
-     * @throws LocalizedException
+     * @return string
      */
     public function getCarrierCodeForFacebook($track)
     {
-        // @todo Implement all carrier codes https://developers.facebook.com/docs/commerce-platform/order-management/carrier-codes
-        $carrierCodesMap = [
-            \Magento\Fedex\Model\Carrier::CODE => 'FEDEX',
-            \Magento\Ups\Model\Carrier::CODE   => 'UPS',
-            \Magento\Usps\Model\Carrier::CODE  => 'USPS',
-            \Magento\Dhl\Model\Carrier::CODE   => 'DHL',
-            'United Parcel Service'            => 'UPS',
-            'United States Postal Service'     => 'USPS',
-            'Federal Express'                  => 'FEDEX',
-        ];
+        $trackCarrierCode = strtoupper($track->getCarrierCode());
+        $trackCarrierTitle = $track->getTitle();
 
-        // Try to map using carrier title for custom carrier
-        if ($track->getCarrierCode() === 'custom') {
-            foreach ($carrierCodesMap as $magentoCarrierCode => $facebookCarrierCode) {
-                if (stripos($track->getTitle(), $magentoCarrierCode) !== false) {
-                    return $facebookCarrierCode;
+        $supportedCarriers = $this->shippingHelper->getFbSupportedShippingCarriers();
+
+        // First try to map Magento carrier code to FB carrier code
+        if (array_key_exists($trackCarrierCode, $supportedCarriers)) {
+            return $trackCarrierCode;
+        }
+
+        // Second try to map custom Magento carrier
+        if ($trackCarrierCode === 'CUSTOM') {
+            // Map Magento custom carrier title to FB carrier code and carrier title
+            foreach ($supportedCarriers as $code => $title) {
+                if (strcasecmp($trackCarrierTitle, $code) === 0 || strcasecmp($trackCarrierTitle, $title) === 0) {
+                    return $code;
                 }
             }
-            throw new LocalizedException(__(sprintf('Cannot map custom carrier. Create a plugin for Facebook\BusinessExtension\Observer\Order\MarkAsShipped::execute() for your custom mapping.')));
+            // Try to map some US standard carriers
+            $carriers = [
+                'UPS'   => 'United Parcel Service',
+                'USPS'  => 'United States Postal Service',
+                'FEDEX' => 'Federal Express',
+            ];
+            foreach ($carriers as $code => $title) {
+                if (stripos($trackCarrierTitle, $title) !== false) {
+                    return $code;
+                }
+            }
         }
 
-        if (!array_key_exists($track->getCarrierCode(), $carrierCodesMap)) {
-            throw new LocalizedException(__(sprintf('Carrier "%s" is not supported by Facebook.', $track->getCarrierCode())));
-        }
-
-        return $carrierCodesMap[$track->getCarrierCode()];
+        // Finally return OTHER if we're unable to map
+        return 'OTHER';
     }
 
     /**
