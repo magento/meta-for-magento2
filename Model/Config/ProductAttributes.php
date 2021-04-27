@@ -5,6 +5,8 @@
 
 namespace Facebook\BusinessExtension\Model\Config;
 
+use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+
 class ProductAttributes
 {
     /**
@@ -446,5 +448,44 @@ class ProductAttributes
     public function getAttributesConfig()
     {
         return $this->attributesConfig;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUnitPriceAttributesConfig()
+    {
+        return [
+            'per_unit_price_value' => [
+                'type' => 'decimal',
+                'label' => 'Price Per Unit',
+                'input' => 'price',
+                'backend' => \Magento\Catalog\Model\Product\Attribute\Backend\Price::class,
+                'required' => false,
+                'sort_order' => -2,
+                'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
+                'used_in_product_listing' => false,
+                'apply_to' => 'simple',
+                'group' => 'Facebook Attribute Group',
+                'is_used_in_grid' => false,
+                'is_visible_in_grid' => false,
+                'is_filterable_in_grid' => false,
+            ],
+            'per_unit_price_unit' => [
+                'type' => 'varchar',
+                'label' => 'Price Unit',
+                'input' => 'select',
+                'source' => 'Facebook\BusinessExtension\Model\Config\Source\Product\PriceUnit',
+                'required' => false,
+                'sort_order' => -2,
+                'global' => ScopedAttributeInterface::SCOPE_WEBSITE,
+                'used_in_product_listing' => false,
+                'apply_to' => 'simple',
+                'group' => 'Facebook Attribute Group',
+                'is_used_in_grid' => false,
+                'is_visible_in_grid' => false,
+                'is_filterable_in_grid' => false,
+            ],
+        ];
     }
 }

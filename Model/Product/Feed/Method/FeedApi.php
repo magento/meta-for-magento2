@@ -8,6 +8,7 @@ namespace Facebook\BusinessExtension\Model\Product\Feed\Method;
 use Exception;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\GraphAPIAdapter;
+use Facebook\BusinessExtension\Model\Config\Source\FeedUploadMethod;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder;
 use Facebook\BusinessExtension\Model\Product\Feed\ProductRetriever\Configurable as ConfigurableProductRetriever;
 use Facebook\BusinessExtension\Model\Product\Feed\ProductRetriever\Simple as SimpleProductRetriever;
@@ -110,6 +111,7 @@ class FeedApi
             $configurableProductRetriever
         ];
         $this->builder = $builder;
+        $this->builder->setUploadMethod(FeedUploadMethod::UPLOAD_METHOD_FEED_API);
         $this->logger = $logger;
     }
 
@@ -187,20 +189,29 @@ class FeedApi
     }
 
     /**
+     * Get file name with store code suffix for non-default store (no suffix for default one)
+     *
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    protected function getFeedFileName()
+    {
+        $defaultStoreId = $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId();
+        $storeCode = $this->systemConfig->getStoreManager()->getStore($this->storeId)->getCode();
+        return sprintf(
+            self::FEED_FILE_NAME,
+            ($this->storeId && $this->storeId !== $defaultStoreId) ? ('_' . $storeCode) : ''
+        );
+    }
+
+    /**
      * @return string
      * @throws FileSystemException
      * @throws NoSuchEntityException
      */
     protected function generateProductFeed()
     {
-        // add store code suffix for non-default store
-        if ($this->storeId && $this->storeId !== $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId()) {
-            $fileSuffix = '_' . $this->systemConfig->getStoreManager()->getStore($this->storeId)->getCode();
-        } else {
-            $fileSuffix = '';
-        }
-
-        $file = 'export/' . sprintf(self::FEED_FILE_NAME, $fileSuffix);
+        $file = 'export/' . $this->getFeedFileName();
         $directory = $this->fileSystem->getDirectoryWrite(DirectoryList::VAR_DIR);
         $directory->create('export');
 

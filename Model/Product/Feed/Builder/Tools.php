@@ -6,6 +6,7 @@
 namespace Facebook\BusinessExtension\Model\Product\Feed\Builder;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 
@@ -64,6 +65,31 @@ class Tools
                 '%s %s',
                 $currencyModel->formatTxt($amount, ['display' => Currency::NO_SYMBOL]),
                 $currencyModel->getCode()
+            );
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @return string
+     */
+    public function getUnitPrice(Product $product)
+    {
+        $value = $product->getPerUnitPriceValue();
+        $unit = $product->getPerUnitPriceUnit();
+
+        if (!($value && $unit)) {
+            return '';
+        }
+
+        try {
+            return sprintf(
+                "{'value':'%s','currency':'%s','unit':'%s'}",
+                $this->priceCurrency->getCurrency()->formatTxt($value, ['display' => Currency::NO_SYMBOL]),
+                $this->priceCurrency->getCurrency()->getCode(),
+                $unit
             );
         } catch (Exception $e) {
             return '';

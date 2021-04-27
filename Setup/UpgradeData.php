@@ -271,7 +271,7 @@ class UpgradeData implements UpgradeDataInterface
         }
 
         // remove FB attributes from products admin grid
-        if (version_compare($context->getVersion(), '1.3.1') < 0) {
+        if (version_compare($context->getVersion(), '1.3.2') < 0) {
 
             $removeAttributeFromGrid = function ($attrCode) use ($eavSetup) {
                 $attrId = $eavSetup->getAttributeId(Product::ENTITY, $attrCode);
@@ -293,6 +293,15 @@ class UpgradeData implements UpgradeDataInterface
                 $removeAttributeFromGrid($attrCode);
             }
             $removeAttributeFromGrid('google_product_category');
+        }
+
+        // install per unit pricing attributes
+        if (version_compare($context->getVersion(), '1.3.2') < 0) {
+            foreach ($this->attributeConfig->getUnitPriceAttributesConfig() as $attrCode => $config) {
+                if (!$eavSetup->getAttributeId(Product::ENTITY, $attrCode)) {
+                    $eavSetup->addAttribute(Product::ENTITY, $attrCode, $config);
+                }
+            }
         }
 
         $setup->endSetup();

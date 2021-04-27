@@ -7,6 +7,7 @@ namespace Facebook\BusinessExtension\Model\Product\Feed;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
+use Facebook\BusinessExtension\Model\Config\Source\FeedUploadMethod;
 use Facebook\BusinessExtension\Model\Feed\EnhancedCatalogHelper;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder\Inventory;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder\Tools as BuilderTools;
@@ -37,6 +38,7 @@ class Builder
     const ATTR_NAME                 = 'title';
     const ATTR_PRODUCT_TYPE         = 'product_type';
     const ATTR_PRODUCT_CATEGORY     = 'google_product_category';
+    const ATTR_UNIT_PRICE           = 'unit_price';
 
     /**
      * @var FBEHelper
@@ -83,6 +85,8 @@ class Builder
      */
     protected $catalogHelper;
 
+    private $uploadMethod;
+
     /**
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
@@ -111,6 +115,16 @@ class Builder
         $this->productIdentifier = $productIdentifier;
         $this->enhancedCatalogHelper = $enhancedCatalogHelper;
         $this->catalogHelper = $catalogHelper;
+    }
+
+    /**
+     * @param $uploadMethod
+     * @return Builder
+     */
+    public function setUploadMethod($uploadMethod)
+    {
+        $this->uploadMethod = $uploadMethod;
+        return $this;
     }
 
     /**
@@ -374,6 +388,15 @@ class Builder
     }
 
     /**
+     * @param $product
+     * @return string
+     */
+    public function getUnitPrice($product)
+    {
+        return $this->builderTools->getUnitPrice($product);
+    }
+
+    /**
      * @param Product $product
      * @return array
      * @throws LocalizedException
@@ -392,6 +415,12 @@ class Builder
 
         $retailerId = $this->productIdentifier->getMagentoProductRetailerId($product);
 
+        if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_CATALOG_BATCH_API) {
+            $additionalImages = $images['additional_images'];
+        } else {
+            $additionalImages = implode(',', $images['additional_images']);
+        }
+
         $entry = [
             self::ATTR_RETAILER_ID          => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
             self::ATTR_ITEM_GROUP_ID        => $this->getItemGroupId($product),
@@ -409,17 +438,24 @@ class Builder
             self::ATTR_SIZE                 => $this->getSize($product),
             self::ATTR_URL                  => $this->getProductUrl($product),
             self::ATTR_IMAGE_URL            => $imageUrl,
-            self::ATTR_ADDITIONAL_IMAGE_URL => $images['additional_images'],
+            self::ATTR_ADDITIONAL_IMAGE_URL => $additionalImages,
         ];
+
+        if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
+            $entry[self::ATTR_UNIT_PRICE] = $this->getUnitPrice($product);
+        }
 
         $this->enhancedCatalogHelper->assignECAttribute($product, $entry);
 
         return $entry;
     }
 
+    /**
+     * @return array
+     */
     public function getHeaderFields()
     {
-        return [
+        $headerFields = [
             self::ATTR_RETAILER_ID,
             self::ATTR_ITEM_GROUP_ID,
             self::ATTR_NAME,
@@ -438,5 +474,11 @@ class Builder
             self::ATTR_IMAGE_URL,
             self::ATTR_ADDITIONAL_IMAGE_URL,
         ];
+
+        if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
+            $headerFields[] = self::ATTR_UNIT_PRICE;
+        }
+
+        return $headerFields;
     }
 }
