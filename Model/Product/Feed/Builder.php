@@ -12,6 +12,7 @@ use Facebook\BusinessExtension\Model\Product\Feed\Builder\Inventory;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
@@ -78,6 +79,11 @@ class Builder
     protected $enhancedCatalogHelper;
 
     /**
+     * @var CatalogHelper
+     */
+    protected $catalogHelper;
+
+    /**
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
@@ -85,6 +91,7 @@ class Builder
      * @param Inventory $inventory
      * @param ProductIdentifier $productIdentifier
      * @param EnhancedCatalogHelper $enhancedCatalogHelper
+     * @param CatalogHelper $catalogHelper
      */
     public function __construct(
         FBEHelper $fbeHelper,
@@ -93,7 +100,8 @@ class Builder
         BuilderTools $builderTools,
         Inventory $inventory,
         ProductIdentifier $productIdentifier,
-        EnhancedCatalogHelper $enhancedCatalogHelper
+        EnhancedCatalogHelper $enhancedCatalogHelper,
+        CatalogHelper $catalogHelper
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
@@ -102,6 +110,7 @@ class Builder
         $this->inventory = $inventory;
         $this->productIdentifier = $productIdentifier;
         $this->enhancedCatalogHelper = $enhancedCatalogHelper;
+        $this->catalogHelper = $catalogHelper;
     }
 
     /**
@@ -159,7 +168,10 @@ class Builder
      */
     protected function getProductPrice(Product $product)
     {
-        return $this->builderTools->formatPrice($product->getPrice());
+        $price = $this->systemConfig->isPriceInclTax()
+            ? $this->catalogHelper->getTaxPrice($product, $product->getPrice(), true)
+            : $product->getPrice();
+        return $this->builderTools->formatPrice($price, $product->getStoreId());
     }
 
     /**
@@ -168,7 +180,14 @@ class Builder
      */
     protected function getProductSalePrice(Product $product)
     {
-        return $product->getSpecialPrice() ? $this->builderTools->formatPrice($product->getSpecialPrice()) : '';
+        if (!$product->getSpecialPrice()) {
+            return '';
+        }
+
+        $price = $this->systemConfig->isPriceInclTax()
+            ? $this->catalogHelper->getTaxPrice($product, $product->getSpecialPrice(), true)
+            : $product->getSpecialPrice();
+        return $this->builderTools->formatPrice($price, $product->getStoreId());
     }
 
     /**

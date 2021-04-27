@@ -52,15 +52,18 @@ class Tools
      * Return formatted price with currency code. Examples: "9.99 USD", "27.02 GBP"
      *
      * @param $price
+     * @param null $storeId
      * @return string
      */
-    public function formatPrice($price)
+    public function formatPrice($price, $storeId = null)
     {
+        $currencyModel = $this->priceCurrency->getCurrency($storeId);
+        $amount = $this->priceCurrency->convert($price, $storeId, $currencyModel);
         try {
             return sprintf(
                 '%s %s',
-                $this->priceCurrency->getCurrency()->formatTxt($price, ['display' => Currency::NO_SYMBOL]),
-                $this->priceCurrency->getCurrency()->getCode()
+                $currencyModel->formatTxt($amount, ['display' => Currency::NO_SYMBOL]),
+                $currencyModel->getCode()
             );
         } catch (Exception $e) {
             return '';

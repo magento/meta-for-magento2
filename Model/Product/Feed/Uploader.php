@@ -5,6 +5,7 @@
 
 namespace Facebook\BusinessExtension\Model\Product\Feed;
 
+use Exception;
 use Facebook\BusinessExtension\Model\Config\Source\FeedUploadMethod;
 use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi as MethodBatchApi;
 use Facebook\BusinessExtension\Model\Product\Feed\Method\FeedApi as MethodFeedApi;
@@ -47,6 +48,7 @@ class Uploader
      * @param null $storeId
      * @return array
      * @throws LocalizedException
+     * @throws Exception
      */
     public function uploadFullCatalog($storeId = null)
     {
@@ -56,7 +58,7 @@ class Uploader
         if ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_CATALOG_BATCH_API) {
             try {
                 $response = $this->methodBatchApi->generateProductRequestData($storeId);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
             }
         } elseif ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $response = $this->methodFeedApi->execute($storeId);

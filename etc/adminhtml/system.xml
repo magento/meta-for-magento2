@@ -112,6 +112,12 @@
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\Product\Identifier</source_model>
                     <comment>Magento product attribute mapped to retailer_id on Facebook. Warning: use with caution, as changing this option after uploading products to FB might result in having duplicate products in your FB catalog</comment>
                 </field>
+                <field id="price_incl_tax" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Price Including Tax</label>
+                    <config_path>facebook/catalog_management/price_incl_tax</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Use price including tax in feed. Should be "No" for the US and "Yes" for the UK. Note: only works if Sales -> Tax -> Price Display Settings -> Display Product Prices In Catalog is set to "Including Tax"</comment>
+                </field>
                 <field id="collections_sync" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Enable Collections Sync</label>
                     <config_path>facebook/catalog_management/collections_sync</config_path>
