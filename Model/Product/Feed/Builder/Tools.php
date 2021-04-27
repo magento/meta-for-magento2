@@ -84,11 +84,13 @@ class Tools
             return '';
         }
 
+        $currencyModel = $this->priceCurrency->getCurrency($product->getStoreId());
+
         try {
             return sprintf(
                 "{'value':'%s','currency':'%s','unit':'%s'}",
-                $this->priceCurrency->getCurrency()->formatTxt($value, ['display' => Currency::NO_SYMBOL]),
-                $this->priceCurrency->getCurrency()->getCode(),
+                $currencyModel->formatTxt($value, ['display' => Currency::NO_SYMBOL]),
+                $currencyModel->getCode(),
                 $unit
             );
         } catch (Exception $e) {
