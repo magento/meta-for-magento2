@@ -111,9 +111,10 @@ class Refund implements ObserverInterface
 
         $shippingRefundAmount = $creditmemo->getBaseShippingAmount();
         $reasonText = $creditmemo->getCustomerNote();
+        $currencyCode = $payment->getOrder()->getOrderCurrencyCode();
 
         $this->commerceHelper->setStoreId($storeId)
-            ->refundOrder($facebookOrder->getFacebookOrderId(), $refundItems, $shippingRefundAmount, $reasonText);
+            ->refundOrder($facebookOrder->getFacebookOrderId(), $refundItems, $shippingRefundAmount, $currencyCode, $reasonText);
         $payment->getOrder()->addCommentToStatusHistory('Refunded order on Facebook');
     }
 }

@@ -49,7 +49,7 @@ class Tools
     }
 
     /**
-     * Return formatted price with currency code. Example: "9.99 USD"
+     * Return formatted price with currency code. Examples: "9.99 USD", "27.02 GBP"
      *
      * @param $price
      * @return string

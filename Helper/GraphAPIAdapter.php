@@ -385,11 +385,12 @@ class GraphAPIAdapter
      * @param $fbOrderId
      * @param $items
      * @param $shippingRefundAmount
+     * @param string $currency Order's currency code. Examples: "USD", "GBP"
      * @param null $reasonText
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $reasonText = null)
+    public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $currency, $reasonText = null)
     {
         $request = [
             'access_token' => $this->accessToken,
@@ -397,7 +398,7 @@ class GraphAPIAdapter
             'reason_code' => 'REFUND_REASON_OTHER',
             'reason_text' => $reasonText,
             'items' => json_encode($items),
-            'shipping' => json_encode(['shipping_refund' => ['amount' => $shippingRefundAmount, 'currency' => 'USD']]),
+            'shipping' => json_encode(['shipping_refund' => ['amount' => $shippingRefundAmount, 'currency' => $currency]]),
         ];
         if ($reasonText) {
             $request['reason_text'] = $reasonText;

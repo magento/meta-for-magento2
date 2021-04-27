@@ -289,11 +289,13 @@ class CommerceHelper extends AbstractHelper
                 ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
         }
 
+        $currencyCode = $this->systemConfig->getStoreManager()->getStore($storeId)->getCurrentCurrencyCode();
+
         $order->setCustomerIsGuest(true)
-            ->setOrderCurrencyCode('USD')
-            ->setBaseCurrencyCode('USD')
-            ->setGlobalCurrencyCode('USD')
-            ->setStoreCurrencyCode('USD')
+            ->setOrderCurrencyCode($currencyCode)
+            ->setBaseCurrencyCode($currencyCode)
+            ->setGlobalCurrencyCode($currencyCode)
+            ->setStoreCurrencyCode($currencyCode)
             ->setSubtotal($orderSubtotalAmount)
             ->setTaxAmount($orderTaxAmount)
             ->setGrandTotal($orderTotalAmount)
@@ -424,11 +426,12 @@ class CommerceHelper extends AbstractHelper
      * @param $fbOrderId
      * @param $items
      * @param $shippingRefundAmount
+     * @param $currencyCode
      * @param null $reasonText
      * @throws GuzzleException
      */
-    public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $reasonText = null)
+    public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $currencyCode, $reasonText = null)
     {
-        $this->graphAPIAdapter->refundOrder($fbOrderId, $items, $shippingRefundAmount, $reasonText = null);
+        $this->graphAPIAdapter->refundOrder($fbOrderId, $items, $shippingRefundAmount, $currencyCode, $reasonText = null);
     }
 }
