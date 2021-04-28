@@ -4,6 +4,7 @@
  */
 namespace Facebook\BusinessExtension\Model\Product\Feed\Method;
 
+use Exception;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\GraphAPIAdapter;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder;
@@ -13,7 +14,6 @@ use Facebook\BusinessExtension\Model\Product\Feed\ProductRetrieverInterface;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Store\Model\ScopeInterface;
 
 class BatchApi
 {
@@ -91,13 +91,14 @@ class BatchApi
 
     /**
      * @param null $storeId
+     * @param null $accessToken
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function generateProductRequestData($storeId = null)
+    public function generateProductRequestData($storeId = null, $accessToken = null)
     {
         $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
-            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+            ->setAccessToken($accessToken ?? $this->systemConfig->getAccessToken($storeId));
 
         $catalogId = $this->systemConfig->getCatalogId($storeId);
 
@@ -119,7 +120,7 @@ class BatchApi
                 foreach ($products as $product) {
                     try {
                         $requests[] = $this->buildProductRequest($product);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $exceptions++;
                         // Don't overload the logs, log the first 3 exceptions
                         if ($exceptions <= 3) {

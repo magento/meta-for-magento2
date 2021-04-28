@@ -44,7 +44,7 @@ class Fbfeedpush extends AbstractAjax
             $catalog_id = $this->getRequest()->getParam('catalogId');
             $this->saveCatalogId($catalog_id);
             if ($access_token) {
-                $feed_push_response = $this->batchApi->generateProductRequestData($access_token);
+                $feed_push_response = $this->batchApi->generateProductRequestData(null, $access_token);
                 $response['success'] = true;
                 $response['feed_push_response'] = $feed_push_response;
                 return $response;
