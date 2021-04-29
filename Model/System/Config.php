@@ -253,11 +253,12 @@ class Config
 
     /**
      * @param $path
+     * @param null $storeId
      * @return $this
      */
-    public function deleteConfig($path)
+    public function deleteConfig($path, $storeId = null)
     {
-        $this->resourceConfig->deleteConfig($path);
+        $this->resourceConfig->deleteConfig($path, ScopeInterface::SCOPE_STORES, $storeId);
         return $this;
     }
 
