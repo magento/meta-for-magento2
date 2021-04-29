@@ -28,6 +28,8 @@ class Fbfeedpush extends AbstractAjax
     public function executeForJson()
     {
         $response = [];
+        // do not sync products after FBE is setup in this version
+        return $response;
         $external_business_id = $this->_fbeHelper->getConfigValue('fbe/external/id');
         $this->_fbeHelper->log("Existing external business id --- ". $external_business_id);
         if ($external_business_id) {
