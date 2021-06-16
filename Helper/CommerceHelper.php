@@ -244,8 +244,7 @@ class CommerceHelper extends AbstractHelper
 
         $objectManager = $this->objectManager;
         $addressData = [
-            'region' => $data['shipping_address']['state'],
-            //'region_id' => '12',
+            'region' => $data['shipping_address']['state'] ?? null,
             'postcode' => $data['shipping_address']['postal_code'],
             'firstname' => explode(' ', $data['shipping_address']['name'])[0],
             'lastname' => explode(' ', $data['shipping_address']['name'])[1],
