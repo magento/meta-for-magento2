@@ -279,14 +279,8 @@ class CommerceHelper extends AbstractHelper
         /** @var Order $order */
         $order = $objectManager->create(Order::class);
 
-        $defaultStatus = $this->systemConfig->getDefaultOrderStatus();
-        if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PENDING) {
-            $order->setState(Order::STATE_NEW)
-                ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_NEW));
-        } elseif ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING) {
-            $order->setState(Order::STATE_PROCESSING)
-                ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
-        }
+        $order->setState(Order::STATE_NEW)
+            ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_NEW));
 
         $currencyCode = $this->systemConfig->getStoreManager()->getStore($storeId)->getCurrentCurrencyCode();
 
@@ -329,7 +323,11 @@ class CommerceHelper extends AbstractHelper
 
         $this->orderManagement->place($order);
 
+        $defaultStatus = $this->systemConfig->getDefaultOrderStatus($this->storeId);
         if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING) {
+            $order->setState(Order::STATE_PROCESSING)
+                ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
+
             // create invoice
             $orderService = $this->objectManager->create(InvoiceManagementInterface::class);
             /** @var Order\Invoice $invoice */
