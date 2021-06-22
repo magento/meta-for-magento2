@@ -72,11 +72,19 @@ class ModuleInfo extends Field
     }
 
     /**
+     * @return mixed
+     */
+    protected function getStoreId()
+    {
+        return $this->getRequest()->getParam('store');
+    }
+
+    /**
      * @return string
      */
     public function getCommerceAccountId()
     {
-        return $this->systemConfig->getCommerceAccountId();
+        return $this->systemConfig->getCommerceAccountId($this->getStoreId());
     }
 
     /**
@@ -84,7 +92,7 @@ class ModuleInfo extends Field
      */
     public function getCatalogId()
     {
-        return $this->systemConfig->getCatalogId();
+        return $this->systemConfig->getCatalogId($this->getStoreId());
     }
 
     /**
@@ -92,7 +100,7 @@ class ModuleInfo extends Field
      */
     public function getCommerceManagerUrl()
     {
-        return $this->systemConfig->getCommerceManagerUrl();
+        return $this->systemConfig->getCommerceManagerUrl($this->getStoreId());
     }
 
     /**
@@ -100,7 +108,7 @@ class ModuleInfo extends Field
      */
     public function getCatalogManagerUrl()
     {
-        return $this->systemConfig->getCatalogManagerUrl();
+        return $this->systemConfig->getCatalogManagerUrl($this->getStoreId());
     }
 
     /**
@@ -108,6 +116,6 @@ class ModuleInfo extends Field
      */
     public function getSupportUrl()
     {
-        return $this->systemConfig->getSupportUrl();
+        return $this->systemConfig->getSupportUrl($this->getStoreId());
     }
 }

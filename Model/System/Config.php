@@ -112,19 +112,19 @@ class Config
         return $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
     }
 
-    public function getCommerceManagerUrl()
+    public function getCommerceManagerUrl($storeId = null)
     {
-        return sprintf('https://www.facebook.com/commerce_manager/%s', $this->getCommerceAccountId());
+        return sprintf('https://www.facebook.com/commerce_manager/%s', $this->getCommerceAccountId($storeId));
     }
 
-    public function getCatalogManagerUrl()
+    public function getCatalogManagerUrl($storeId = null)
     {
-        return sprintf('https://www.facebook.com/products/catalogs/%s/products', $this->getCatalogId());
+        return sprintf('https://www.facebook.com/products/catalogs/%s/products', $this->getCatalogId($storeId));
     }
 
-    public function getSupportUrl()
+    public function getSupportUrl($storeId = null)
     {
-        return sprintf('https://www.facebook.com/commerce_manager/%s/support/', $this->getCommerceAccountId());
+        return sprintf('https://www.facebook.com/commerce_manager/%s/support/', $this->getCommerceAccountId($storeId));
     }
 
     /**
