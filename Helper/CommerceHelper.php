@@ -251,8 +251,8 @@ class CommerceHelper extends AbstractHelper
             'street' => $street,
             'city' => $data['shipping_address']['city'],
             'email' => $data['buyer_details']['email'],
-            'telephone' => '0', //is required by magento
-            'country_id' => 'US'
+            'telephone' => '0', // is required by magento
+            'country_id' => $data['shipping_address']['country'] // maps 1:1
         ];
         $channel = ucfirst($data['channel']);
         $shippingOptionName = $data['selected_shipping_option']['name'];
