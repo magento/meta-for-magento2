@@ -40,6 +40,11 @@ class MagentoDataHelper extends AbstractHelper
     protected $customerMetadata;
 
     /**
+     * @var \Magento\Catalog\Api\ProductRepositoryInterface
+     */
+    protected $productRepository;
+
+    /**
      * MagentoDataHelper constructor
      *
      * @param Context $context
@@ -55,7 +60,8 @@ class MagentoDataHelper extends AbstractHelper
         \Facebook\BusinessExtension\Logger\Logger $logger,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
+        \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata,
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
     ) {
         parent::__construct($context);
         $this->objectManager = $objectManager;
@@ -63,6 +69,7 @@ class MagentoDataHelper extends AbstractHelper
         $this->productFactory = $productFactory;
         $this->storeManager = $storeManager;
         $this->customerMetadata = $customerMetadata;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -121,8 +128,7 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getProductWithSku($productSku)
     {
-        $product = $this->productFactory->create();
-        $product->load($product->getIdBySku($productSku));
+        $product = $this->productRepository->get($productSku);
         return $product;
     }
 
@@ -184,9 +190,8 @@ class MagentoDataHelper extends AbstractHelper
             return null;
         }
         $items = $cart->getQuote()->getAllVisibleItems();
-        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
         foreach ($items as $item) {
-            $product = $productModel->load($item->getProductId());
+            $product = $item->getProduct();
             $productIds[] = $product->getId();
         }
         return $productIds;
@@ -241,10 +246,9 @@ class MagentoDataHelper extends AbstractHelper
         }
         $contents = [];
         $items = $cart->getQuote()->getAllVisibleItems();
-        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
         $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
-            $product = $productModel->load($item->getProductId());
+            $product = $item->getProduct();
             $contents[] = [
                 'product_id' => $product->getId(),
                 'quantity' => $item->getQty(),
@@ -266,9 +270,8 @@ class MagentoDataHelper extends AbstractHelper
         }
         $productIds = [];
         $items = $order->getAllVisibleItems();
-        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
         foreach ($items as $item) {
-            $product = $productModel->load($item->getProductId());
+            $product = $item->getProduct();
             $productIds[] = $product->getId();
         }
         return $productIds;
@@ -306,10 +309,9 @@ class MagentoDataHelper extends AbstractHelper
         }
         $contents = [];
         $items = $order->getAllVisibleItems();
-        $productModel = $this->objectManager->get(\Magento\Catalog\Model\Product::class);
         $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
-            $product = $productModel->load($item->getProductId());
+            $product = $item->getProduct();
             $contents[] = [
                 'product_id' => $product->getId(),
                 'quantity' => (int)$item->getQtyOrdered(),

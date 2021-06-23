@@ -10,27 +10,26 @@ use Facebook\BusinessExtension\Helper\FBEHelper;
 
 class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
 {
-
     protected $_resultJsonFactory;
     protected $_productFactory;
     protected $_fbeHelper;
-    protected $_eventManager;
     protected $_formKeyValidator;
+    protected $_magentoDataHelper;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         FBEHelper $helper,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
+        \Facebook\BusinessExtension\Helper\MagentoDataHelper $magentoDataHelper
     ) {
         parent::__construct($context);
         $this->_resultJsonFactory = $resultJsonFactory;
         $this->_productFactory = $productFactory;
         $this->_fbeHelper = $helper;
-        $this->_eventManager = $eventManager;
         $this->_formKeyValidator = $formKeyValidator;
+        $this->_magentoDataHelper = $magentoDataHelper;
     }
 
     private function getCategory($product)
@@ -63,8 +62,7 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     private function getProductInfo($product_sku)
     {
         $response_data = [];
-        $product = $this->_productFactory->create();
-        $product->load($product->getIdBySku($product_sku));
+        $product = $this->_magentoDataHelper->getProductWithSku($product_sku);
         if ($product->getId()) {
             $response_data['id'] = $product->getId();
             $response_data['name'] = $product->getName();
@@ -79,9 +77,9 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
         $product_sku = $this->getRequest()->getParam('product_sku', null);
         if ($this->_formKeyValidator->validate($this->getRequest()) && $product_sku) {
             $response_data = $this->getProductInfo($product_sku);
-          // If the sku is valid
-          // The event id is added in the response
-          // And a CAPI event is created
+            // If the sku is valid
+            // The event id is added in the response
+            // And a CAPI event is created
             if (count($response_data) > 0) {
                 $event_id = EventIdGenerator::guidv4();
                 $response_data['event_id'] = $event_id;

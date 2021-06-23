@@ -15,9 +15,8 @@ class InitiateCheckout extends Common
         $productIds = [];
         $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
         $items = $cart->getQuote()->getAllVisibleItems();
-        $productModel = $this->fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
         foreach ($items as $item) {
-            $product = $productModel->load($item->getProductId());
+            $product = $item->getProduct();
             $productIds[] = $product->getId();
         }
         return $this->arrayToCommaSeparatedStringValues($productIds);
@@ -49,10 +48,9 @@ class InitiateCheckout extends Common
         }
         $contents = [];
         $items = $cart->getQuote()->getAllVisibleItems();
-        $productModel = $this->fbeHelper->getObject(\Magento\Catalog\Model\Product::class);
         $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
-            $product = $productModel->load($item->getProductId());
+            $product = $item->getProduct();
             $price = $priceHelper->currency($product->getFinalPrice(), false, false);
             $content = '{id:"' . $product->getId() . '",quantity:' . (int)$item->getQty()
                     . ',item_price:' . $price . "}";
