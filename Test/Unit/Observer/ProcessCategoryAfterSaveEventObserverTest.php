@@ -23,7 +23,7 @@ class ProcessCategoryAfterSaveEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 
@@ -32,7 +32,7 @@ class ProcessCategoryAfterSaveEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->_category = $this->createMock(\Magento\Catalog\Model\Category::class);

@@ -11,26 +11,25 @@ use Magento\Framework\Registry;
 
 class ViewCategoryTest extends CommonTest
 {
-
     protected $registry;
 
     protected $viewCategoryObserver;
 
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         parent::setUp();
         $this->registry = $this->createMock(Registry::class);

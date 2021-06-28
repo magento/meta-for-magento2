@@ -11,26 +11,25 @@ use Magento\Framework\Event\Observer;
 
 class AddToCartTest extends CommonTest
 {
-
     protected $request;
 
     protected $addToCartObserver;
 
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         parent::setUp();
         $this->request = $this->createMock(RequestInterface::class);
@@ -50,7 +49,7 @@ class AddToCartTest extends CommonTest
         $product->setId(123);
         $product->setName('Earphones');
         $this->request->method('getParam')->willReturn('123');
-        $this->magentoDataHelper->method('getProductWithSku')->willReturn($product);
+        $this->magentoDataHelper->method('getProductBySku')->willReturn($product);
 
         $observer = new Observer(['eventId' => '1234']);
 

@@ -5,11 +5,8 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
-use FacebookAds\Object\ServerSide\AdsPixelSettings;
-
 class FbaamsettingsTest extends \PHPUnit\Framework\TestCase
 {
-
     protected $fbeHelper;
 
     protected $context;
@@ -20,21 +17,21 @@ class FbaamsettingsTest extends \PHPUnit\Framework\TestCase
 
     protected $request;
 
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
         $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
@@ -55,11 +52,11 @@ class FbaamsettingsTest extends \PHPUnit\Framework\TestCase
         $this->fbeHelper->method('fetchAndSaveAAMSettings')->willReturn($settingsAsString);
     }
 
-  /**
-   * Test the success field in returned json is false when an invalid pixel id is sent
-   *
-   * @return void
-   */
+    /**
+     * Test the success field in returned json is false when an invalid pixel id is sent
+     *
+     * @return void
+     */
     public function testJsonNotSucessfullWhenInvalidPixelId()
     {
         $this->setupRequestAndSettings('1234', null);
@@ -68,12 +65,12 @@ class FbaamsettingsTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($result['settings']);
     }
 
-  /**
-   * Test the success field in returned json is true when a valid pixel id is sent
-   * and the response contains the json representation of the settings
-   *
-   * @return void
-   */
+    /**
+     * Test the success field in returned json is true when a valid pixel id is sent
+     * and the response contains the json representation of the settings
+     *
+     * @return void
+     */
     public function testJsonSucessfullWhenValidPixelId()
     {
         $pixelId = '1234';

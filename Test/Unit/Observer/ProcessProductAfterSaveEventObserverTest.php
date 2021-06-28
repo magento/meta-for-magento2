@@ -39,7 +39,7 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 
@@ -48,7 +48,7 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->store = $this->createMock(StoreInterface::class);

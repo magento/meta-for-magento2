@@ -6,30 +6,29 @@
 namespace Facebook\BusinessExtension\Test\Unit\Helper;
 
 use Facebook\BusinessExtension\Helper\AAMFieldsExtractorHelper;
+use Facebook\BusinessExtension\Helper\AAMSettingsFields;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\MagentoDataHelper;
-use FacebookAds\Object\ServerSide\Normalizer;
-use FacebookAds\Object\ServerSide\AdsPixelSettings;
+use Facebook\BusinessExtension\Helper\ServerEventFactory;
 
-use \Facebook\BusinessExtension\Helper\AAMSettingsFields;
-use \Facebook\BusinessExtension\Helper\ServerEventFactory;
+use FacebookAds\Object\ServerSide\AdsPixelSettings;
+use FacebookAds\Object\ServerSide\Normalizer;
 use PHPUnit\Framework\TestCase;
 
 class AAMFieldsExtractorHelperTest extends TestCase
 {
-
     protected $magentoDataHelper;
 
     protected $fbeHelper;
 
     protected $aamFieldsExtractorHelper;
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
@@ -89,7 +88,7 @@ class AAMFieldsExtractorHelperTest extends TestCase
 
     public function testReturnDataFromSessionWhenAAMEnabled()
     {
-      // Enabling all aam fields
+        // Enabling all aam fields
         $settings = new AdsPixelSettings();
         $settings->setEnableAutomaticMatching(true);
         $settings->setEnabledAutomaticMatchingFields(
@@ -100,7 +99,7 @@ class AAMFieldsExtractorHelperTest extends TestCase
 
         $userDataFromSession = $this->magentoDataHelper->getUserDataFromSession();
 
-      // Getting the default user data
+        // Getting the default user data
         $userData = $this->aamFieldsExtractorHelper->getNormalizedUserData();
 
         foreach (AAMSettingsFields::getAllFields() as $field) {
@@ -119,7 +118,7 @@ class AAMFieldsExtractorHelperTest extends TestCase
 
     public function testReturnUserDataFromArgumentWhenAAMEnabled()
     {
-      // Enabling all aam fields
+        // Enabling all aam fields
         $settings = new AdsPixelSettings();
         $settings->setEnableAutomaticMatching(true);
         $settings->setEnabledAutomaticMatchingFields(
@@ -129,7 +128,7 @@ class AAMFieldsExtractorHelperTest extends TestCase
         $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
 
         $userDataFromOrder = $this->magentoDataHelper->getUserDataFromOrder();
-      // Passing an argument to normalize and filter
+        // Passing an argument to normalize and filter
         $userData = $this->aamFieldsExtractorHelper->getNormalizedUserData($userDataFromOrder);
 
         foreach (AAMSettingsFields::getAllFields() as $field) {

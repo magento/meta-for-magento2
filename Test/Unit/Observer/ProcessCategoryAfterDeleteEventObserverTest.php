@@ -12,12 +12,13 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
 {
-
     protected $processCategoryAfterDeleteEventObserver;
+
     /**
      * @var MockObject
      */
     private $_eventObserverMock;
+
     /**
      * @var MockObject
      */
@@ -28,7 +29,7 @@ class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 
@@ -37,7 +38,7 @@ class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->_category = $this->createMock(Category::class);

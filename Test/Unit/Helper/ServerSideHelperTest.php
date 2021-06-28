@@ -7,34 +7,33 @@ namespace Facebook\BusinessExtension\Test\Unit\Helper;
 
 use Facebook\BusinessExtension\Helper\AAMFieldsExtractorHelper;
 use Facebook\BusinessExtension\Helper\FBEHelper;
-use \Facebook\BusinessExtension\Helper\ServerEventFactory;
+use Facebook\BusinessExtension\Helper\ServerEventFactory;
 use Facebook\BusinessExtension\Helper\ServerSideHelper;
 use PHPUnit\Framework\TestCase;
 
 class ServerSideHelperTest extends TestCase
 {
-
     protected $fbeHelper;
 
     protected $serverSideHelper;
 
     protected $aamFieldsExtractorHelper;
 
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->aamFieldsExtractorHelper =

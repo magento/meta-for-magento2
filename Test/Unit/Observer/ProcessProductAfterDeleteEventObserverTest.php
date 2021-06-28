@@ -29,7 +29,7 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 
@@ -38,7 +38,7 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->_product = $this->createMock(Product::class);

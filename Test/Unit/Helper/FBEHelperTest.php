@@ -20,7 +20,6 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class FBEHelperTest extends \PHPUnit\Framework\TestCase
 {
-
     protected $fbeHelper;
 
     protected $context;
@@ -41,21 +40,21 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
 
     protected $moduleList;
 
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->context = $this->createMock(Context::class);
         $this->objectManagerInterface = $this->createMock(ObjectManagerInterface::class);
@@ -95,11 +94,11 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         return $configRow;
     }
 
-  /**
-   * Test that the returned access token is null when there is no row in the database
-   *
-   * @return void
-   */
+    /**
+     * Test that the returned access token is null when there is no row in the database
+     *
+     * @return void
+     */
     public function testAccessTokenNullWhenNotPresentInDb()
     {
         $configRow = $this->createRowWithValue(null);
@@ -110,11 +109,11 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($this->fbeHelper->getAccessToken());
     }
 
-  /**
-   * Test that the returned access token is not null when there is a row in the database
-   *
-   * @return void
-   */
+    /**
+     * Test that the returned access token is not null when there is a row in the database
+     *
+     * @return void
+     */
     public function testAccessTokenNotNullWhenPresentInDb()
     {
         $dummyToken = '1234';
@@ -126,11 +125,11 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($dummyToken, $this->fbeHelper->getAccessToken());
     }
 
-  /**
-   * Test that the returned aam settings are null when there is no row in the database
-   *
-   * @return void
-   */
+    /**
+     * Test that the returned aam settings are null when there is no row in the database
+     *
+     * @return void
+     */
     public function testAAMSettingsNullWhenNotPresentInDb()
     {
         $configRow = $this->createRowWithValue(null);
@@ -141,11 +140,11 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($this->fbeHelper->getAAMSettings());
     }
 
-  /**
-   * Test that the returned aam settings are not null when there is a row in the database
-   *
-   * @return void
-   */
+    /**
+     * Test that the returned aam settings are not null when there is a row in the database
+     *
+     * @return void
+     */
     public function testAAMSettingsNotNullWhenPresentInDb()
     {
         $settingsAsArray = [
@@ -170,11 +169,11 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($settings->getPixelId(), $settingsAsArray['pixelId']);
     }
 
-  /**
-   * Test partner agent is correct
-   *
-   * @return void
-   */
+    /**
+     * Test partner agent is correct
+     *
+     * @return void
+     */
     public function testCorrectPartnerAgent()
     {
         $magentoVersion = '2.3.5';

@@ -5,42 +5,38 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Cron;
 
-use FacebookAds\Object\ServerSide\AdsPixelSettings;
-
-use \Facebook\BusinessExtension\Helper\FBEHelper;
-use \Facebook\BusinessExtension\Cron\AAMSettingsCron;
-
-class EventIdGeneratorTest extends \PHPUnit\Framework\TestCase
+/** Previously EventIdGeneratorTest */
+class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
 {
-
     protected $aamSettingsCron;
 
     protected $fbeHelper;
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(\Facebook\BusinessExtension\Helper\FBEHelper::class);
         $this->aamSettingsCron = new \Facebook\BusinessExtension\Cron\AAMSettingsCron($this->fbeHelper);
     }
 
-  /**
-   * Test that the settings returned by the cron object are null when there is no pixel in the db
-   *
-   * @return void
-   */
+    /**
+     * Test that the settings returned by the cron object are null when there is no pixel in the db
+     *
+     * @return void
+     */
     public function testNullSettingsWhenNoPixelPresent()
     {
         $pixelId = null;
@@ -52,11 +48,11 @@ class EventIdGeneratorTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($result);
     }
 
-  /**
-   * Test that the settings returned by the cron object are null when they cannot be fetched
-   *
-   * @return void
-   */
+    /**
+     * Test that the settings returned by the cron object are null when they cannot be fetched
+     *
+     * @return void
+     */
     public function testNullSettingsWhenAAMSettingsNotFetched()
     {
         $pixelId = '1234';
@@ -69,11 +65,11 @@ class EventIdGeneratorTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($result);
     }
 
-  /**
-   * Test that the settings returned by the cron object are not null when pixel and aam settings are valid
-   *
-   * @return void
-   */
+    /**
+     * Test that the settings returned by the cron object are not null when pixel and aam settings are valid
+     *
+     * @return void
+     */
     public function testSettingsNotNullWhenPixelAndAAMSettingsAreValid()
     {
         $pixelId = '1234';

@@ -10,20 +10,20 @@ use \Facebook\BusinessExtension\Cron\CategorySyncCron;
 use Facebook\BusinessExtension\Model\Feed\CategoryCollection;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
-class CronRunTest extends \PHPUnit\Framework\TestCase
+class CategorySyncCronTest extends \PHPUnit\Framework\TestCase
 {
-
     protected $categorySyncCron;
 
     protected $fbeHelper;
     protected $categoryCollection;
     protected $systemConfig;
+
     /**
      * Used to reset or change values after running a test
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 
@@ -32,7 +32,7 @@ class CronRunTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->categoryCollection = $this->createMock(CategoryCollection::class);

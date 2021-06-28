@@ -5,27 +5,26 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Helper;
 
-use \Facebook\BusinessExtension\Helper\ServerEventFactory;
+use Facebook\BusinessExtension\Helper\ServerEventFactory;
 use PHPUnit\Framework\TestCase;
 
 class ServerEventFactoryTest extends TestCase
 {
-
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
     }
 

@@ -5,11 +5,10 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Block\Pixel;
 
-use \Facebook\BusinessExtension\Helper\AAMSettingsFields;
+use Facebook\BusinessExtension\Helper\AAMSettingsFields;
 
 class HeadTest extends \PHPUnit\Framework\TestCase
 {
-
     protected $head;
 
     protected $context;
@@ -24,23 +23,22 @@ class HeadTest extends \PHPUnit\Framework\TestCase
 
     protected $aamFieldsExtractorHelper;
 
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    protected function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
-
         $this->context = $this->createMock(\Magento\Framework\View\Element\Template\Context::class);
         $this->objectManager = $this->createMock(\Magento\Framework\ObjectManagerInterface::class);
         $this->registry = $this->createMock(\Magento\Framework\Registry::class);
@@ -62,12 +60,12 @@ class HeadTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-  /**
-   * Test if the json string returned by the Head block
-   * is empty when the user is not logged in
-   *
-   * @return void
-   */
+    /**
+     * Test if the json string returned by the Head block
+     * is empty when the user is not logged in
+     *
+     * @return void
+     */
     public function testReturnEmptyJsonStringWhenUserIsNotLoggedIn()
     {
         $this->aamFieldsExtractorHelper->method('getNormalizedUserData')
@@ -76,12 +74,12 @@ class HeadTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('{}', $jsonString);
     }
 
-  /**
-   * Test if the json string returned by the Head block
-   * is not empty when the user is logged in
-   *
-   * @return void
-   */
+    /**
+     * Test if the json string returned by the Head block
+     * is not empty when the user is logged in
+     *
+     * @return void
+     */
     public function testReturnNonEmptyJsonStringWhenUserIsLoggedIn()
     {
         $userDataArray = [

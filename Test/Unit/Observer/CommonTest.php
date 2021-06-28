@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 abstract class CommonTest extends TestCase
 {
-
     protected $magentoDataHelper;
 
     protected $fbeHelper;
@@ -25,21 +24,21 @@ abstract class CommonTest extends TestCase
 
     protected $aamFieldsExtractorHelper;
 
-  /**
-   * Used to reset or change values after running a test
-   *
-   * @return void
-   */
-    public function tearDown()
+    /**
+     * Used to reset or change values after running a test
+     *
+     * @return void
+     */
+    public function tearDown(): void
     {
     }
 
-  /**
-   * Used to set the values before running a test
-   *
-   * @return void
-   */
-    public function setUp()
+    /**
+     * Used to set the values before running a test
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
