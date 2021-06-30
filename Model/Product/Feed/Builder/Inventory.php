@@ -8,16 +8,11 @@ namespace Facebook\BusinessExtension\Model\Product\Feed\Builder;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
-use Magento\CatalogInventory\Api\StockConfigurationInterface;
 use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
 use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
 
-class Inventory
+class Inventory implements InventoryInterface
 {
-    const STATUS_IN_STOCK = 'in stock';
-
-    const STATUS_OUT_OF_STOCK = 'out of stock';
-
     /**
      * @var StockItemRepositoryInterface
      */
@@ -27,11 +22,6 @@ class Inventory
      * @var StockItemCriteriaInterfaceFactory
      */
     private $stockItemCriteriaInterfaceFactory;
-
-    /**
-     * @var StockConfigurationInterface
-     */
-    private $stockConfigurationInterface;
 
     /**
      * @var Product
@@ -51,18 +41,15 @@ class Inventory
     /**
      * @param StockItemRepositoryInterface $stockItemRepository
      * @param StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory
-     * @param StockConfigurationInterface $stockConfigurationInterface
      * @param SystemConfig $systemConfig
      */
     public function __construct(
         StockItemRepositoryInterface $stockItemRepository,
         StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory,
-        StockConfigurationInterface $stockConfigurationInterface,
         SystemConfig $systemConfig
     ) {
         $this->stockItemRepository = $stockItemRepository;
         $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
-        $this->stockConfigurationInterface = $stockConfigurationInterface;
         $this->systemConfig = $systemConfig;
     }
 
@@ -90,20 +77,27 @@ class Inventory
     }
 
     /**
+     * Get product stock status
+     *
      * @return string
      */
     public function getAvailability()
     {
-        return $this->product && $this->productStock && $this->productStock->getIsInStock()
-        && ($this->productStock->getQty() - $this->systemConfig->getOutOfStockThreshold() > 0)
+        return $this->getInventory() && $this->productStock->getIsInStock()
             ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 
     /**
+     * Get available product qty
+     *
      * @return int
      */
     public function getInventory()
     {
-        return $this->product && $this->productStock ? (int)$this->productStock->getQty() : 0;
+        if (!($this->product && $this->productStock)) {
+            return 0;
+        }
+
+        return (int)max($this->productStock->getQty() - $this->systemConfig->getOutOfStockThreshold(), 0);
     }
 }

@@ -81,12 +81,24 @@ class BatchApi
      * @return array
      * @throws LocalizedException
      */
-    public function buildProductRequest(Product $product, $method = self::ATTR_UPDATE)
+    protected function buildProductRequest(Product $product, $method = self::ATTR_UPDATE)
     {
         return [
             self::ATTR_METHOD => $method,
             self::ATTR_DATA => $this->builder->buildProductEntry($product)
         ];
+    }
+
+    /**
+     * @param Product $product
+     * @param string $method
+     * @return array
+     * @throws LocalizedException
+     */
+    public function buildRequestForIndividualProduct(Product $product, $method = self::ATTR_UPDATE)
+    {
+        $this->builder->setStoreId($product->getStoreId());
+        return $this->buildProductRequest($product, $method);
     }
 
     /**
@@ -97,6 +109,7 @@ class BatchApi
      */
     public function generateProductRequestData($storeId = null, $accessToken = null)
     {
+        $this->builder->setStoreId($this->storeId);
         $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken ?? $this->systemConfig->getAccessToken($storeId));
 

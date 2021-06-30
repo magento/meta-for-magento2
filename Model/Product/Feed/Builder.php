@@ -10,6 +10,7 @@ use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Model\Config\Source\FeedUploadMethod;
 use Facebook\BusinessExtension\Model\Feed\EnhancedCatalogHelper;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder\Inventory;
+use Facebook\BusinessExtension\Model\Product\Feed\Builder\InventoryInterface;
 use Facebook\BusinessExtension\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Api\Data\CategoryInterface;
@@ -68,7 +69,7 @@ class Builder
     /**
      * @var Inventory
      */
-    protected $inventory;
+    protected $inventory = null;
 
     /**
      * @var ProductIdentifier
@@ -85,6 +86,8 @@ class Builder
      */
     protected $catalogHelper;
 
+    protected $storeId;
+
     private $uploadMethod;
 
     /**
@@ -92,7 +95,6 @@ class Builder
      * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
-     * @param Inventory $inventory
      * @param ProductIdentifier $productIdentifier
      * @param EnhancedCatalogHelper $enhancedCatalogHelper
      * @param CatalogHelper $catalogHelper
@@ -102,7 +104,6 @@ class Builder
         SystemConfig $systemConfig,
         CategoryCollectionFactory $categoryCollectionFactory,
         BuilderTools $builderTools,
-        Inventory $inventory,
         ProductIdentifier $productIdentifier,
         EnhancedCatalogHelper $enhancedCatalogHelper,
         CatalogHelper $catalogHelper
@@ -111,10 +112,19 @@ class Builder
         $this->systemConfig = $systemConfig;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->builderTools = $builderTools;
-        $this->inventory = $inventory;
         $this->productIdentifier = $productIdentifier;
         $this->enhancedCatalogHelper = $enhancedCatalogHelper;
         $this->catalogHelper = $catalogHelper;
+    }
+
+    /**
+     * @param $storeId
+     * @return $this
+     */
+    public function setStoreId($storeId)
+    {
+        $this->storeId = $storeId;
+        return $this;
     }
 
     /**
@@ -398,12 +408,26 @@ class Builder
 
     /**
      * @param Product $product
+     * @return InventoryInterface
+     */
+    protected function getInventory(Product $product)
+    {
+        if ($this->inventory === null) {
+            $useMultiSource = $this->systemConfig->useMultiSourceInventory($this->storeId);
+            $this->inventory = $this->builderTools->getInventoryObject($useMultiSource);
+        }
+        $this->inventory->initInventoryForProduct($product);
+        return $this->inventory;
+    }
+
+    /**
+     * @param Product $product
      * @return array
      * @throws LocalizedException
      */
     public function buildProductEntry(Product $product)
     {
-        $this->inventory->initInventoryForProduct($product);
+        $inventory = $this->getInventory($product);
 
         $productType = $this->trimAttribute(self::ATTR_PRODUCT_TYPE, $this->getCategoryPath($product));
 
@@ -426,8 +450,8 @@ class Builder
             self::ATTR_ITEM_GROUP_ID        => $this->getItemGroupId($product),
             self::ATTR_NAME                 => $productTitle,
             self::ATTR_DESCRIPTION          => $this->getDescription($product),
-            self::ATTR_AVAILABILITY         => $this->inventory->getAvailability(),
-            self::ATTR_INVENTORY            => $this->inventory->getInventory(),
+            self::ATTR_AVAILABILITY         => $inventory->getAvailability(),
+            self::ATTR_INVENTORY            => $inventory->getInventory(),
             self::ATTR_BRAND                => $this->getBrand($product),
             self::ATTR_PRODUCT_CATEGORY     => $product->getGoogleProductCategory() ?? '',
             self::ATTR_PRODUCT_TYPE         => $productType,

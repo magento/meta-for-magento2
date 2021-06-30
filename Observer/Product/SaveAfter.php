@@ -85,7 +85,7 @@ class SaveAfter implements ObserverInterface
 
         try {
             $catalogId = $this->systemConfig->getCatalogId($storeId);
-            $requestData = $this->batchApi->buildProductRequest($product);
+            $requestData = $this->batchApi->buildRequestForIndividualProduct($product);
             $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
         } catch (Exception $e) {
             $this->fbeHelper->logException($e);

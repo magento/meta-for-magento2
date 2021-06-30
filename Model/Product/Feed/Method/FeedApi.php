@@ -233,6 +233,7 @@ class FeedApi
     public function execute($storeId = null)
     {
         $this->storeId = $storeId;
+        $this->builder->setStoreId($this->storeId);
         $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
 

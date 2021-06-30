@@ -8,6 +8,7 @@ namespace Facebook\BusinessExtension\Model\Product\Feed\Builder;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 
 class Tools
@@ -18,11 +19,20 @@ class Tools
     protected $priceCurrency;
 
     /**
-     * @param PriceCurrencyInterface $priceCurrency
+     * @var ObjectManagerInterface
      */
-    public function __construct(PriceCurrencyInterface $priceCurrency)
+    protected $objectManager;
+
+    /**
+     * Tools constructor
+     *
+     * @param PriceCurrencyInterface $priceCurrency
+     * @param ObjectManagerInterface $objectManager
+     */
+    public function __construct(PriceCurrencyInterface $priceCurrency, ObjectManagerInterface $objectManager)
     {
         $this->priceCurrency = $priceCurrency;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -109,5 +119,16 @@ class Tools
     public function replaceLocalUrlWithDummyUrl($url)
     {
         return str_replace('localhost', 'magento.com', $url);
+    }
+
+    /**
+     * @param int $useMultiSource
+     * @return InventoryInterface
+     */
+    public function getInventoryObject($useMultiSource = 0)
+    {
+        return $useMultiSource
+            ? $this->objectManager->get('Facebook\BusinessExtension\Model\Product\Feed\Builder\MultiSourceInventory')
+            : $this->objectManager->get('Facebook\BusinessExtension\Model\Product\Feed\Builder\Inventory');
     }
 }
