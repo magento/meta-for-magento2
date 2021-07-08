@@ -7,85 +7,128 @@ namespace Facebook\BusinessExtension\Controller\Pixel;
 
 use Facebook\BusinessExtension\Helper\EventIdGenerator;
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Magento\Catalog\Model\Product;
 
 class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
 {
-    protected $_resultJsonFactory;
-    protected $_productFactory;
-    protected $_fbeHelper;
-    protected $_formKeyValidator;
-    protected $_magentoDataHelper;
+    /**
+     * @var \Magento\Framework\Controller\Result\JsonFactory
+     */
+    protected $resultJsonFactory;
 
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
+    protected $productFactory;
+
+    /**
+     * @var FBEHelper
+     */
+    protected $fbeHelper;
+
+    /**
+     * @var \Magento\Framework\Data\Form\FormKey\Validator
+     */
+    protected $formKeyValidator;
+
+    /**
+     * @var \Facebook\BusinessExtension\Helper\MagentoDataHelper
+     */
+    protected $magentoDataHelper;
+
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
+    protected $priceHelper;
+
+    /**
+     * ProductInfoForAddToCart constructor
+     *
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param FBEHelper $helper
+     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+     * @param \Facebook\BusinessExtension\Helper\MagentoDataHelper $magentoDataHelper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         FBEHelper $helper,
         \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
-        \Facebook\BusinessExtension\Helper\MagentoDataHelper $magentoDataHelper
+        \Facebook\BusinessExtension\Helper\MagentoDataHelper $magentoDataHelper,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper
     ) {
         parent::__construct($context);
-        $this->_resultJsonFactory = $resultJsonFactory;
-        $this->_productFactory = $productFactory;
-        $this->_fbeHelper = $helper;
-        $this->_formKeyValidator = $formKeyValidator;
-        $this->_magentoDataHelper = $magentoDataHelper;
+        $this->resultJsonFactory = $resultJsonFactory;
+        $this->productFactory = $productFactory;
+        $this->fbeHelper = $helper;
+        $this->formKeyValidator = $formKeyValidator;
+        $this->magentoDataHelper = $magentoDataHelper;
+        $this->priceHelper = $priceHelper;
     }
 
     private function getCategory($product)
     {
-        $category_ids = $product->getCategoryIds();
-        if (count($category_ids) > 0) {
-            $category_names = [];
-            $category_model = $this->_fbeHelper->getObject(\Magento\Catalog\Model\Category::class);
-            foreach ($category_ids as $category_id) {
-                $category = $category_model->load($category_id);
-                $category_names[] = $category->getName();
+        $categoryIds = $product->getCategoryIds();
+        if (count($categoryIds) > 0) {
+            $categoryNames = [];
+            $categoryModel = $this->fbeHelper->getObject(\Magento\Catalog\Model\Category::class);
+            foreach ($categoryIds as $category_id) {
+                // @todo replace model load in loop with collection use
+                $category = $categoryModel->load($category_id);
+                $categoryNames[] = $category->getName();
             }
-            return addslashes(implode(',', $category_names));
+            return addslashes(implode(',', $categoryNames));
         } else {
             return null;
         }
     }
 
-    private function getValue($product)
+    /**
+     * @param $product
+     * @return mixed
+     */
+    private function getPriceValue($product)
     {
+        return $this->priceHelper->currency($product->getFinalPrice(), false, false);
+    }
+
+    /**
+     * @param $productSku
+     * @return array
+     */
+    private function getProductInfo($productSku)
+    {
+        /** @var Product $product */
+        $product = $this->magentoDataHelper->getProductBySku($productSku);
         if ($product && $product->getId()) {
-            $price = $product->getFinalPrice();
-            $price_helper = $this->_fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
-            return $price_helper->currency($price, false, false);
-        } else {
-            return null;
+            return [
+                'id'       => $this->magentoDataHelper->getContentId($product),
+                'name'     => $product->getName(),
+                'category' => $this->getCategory($product),
+                'value'    => $this->getPriceValue($product),
+            ];
         }
-    }
-
-    private function getProductInfo($product_sku)
-    {
-        $response_data = [];
-        $product = $this->_magentoDataHelper->getProductWithSku($product_sku);
-        if ($product->getId()) {
-            $response_data['id'] = $product->getId();
-            $response_data['name'] = $product->getName();
-            $response_data['category'] = $this->getCategory($product);
-            $response_data['value'] = $this->getValue($product);
-        }
-        return $response_data;
+        return [];
     }
 
     public function execute()
     {
-        $product_sku = $this->getRequest()->getParam('product_sku', null);
-        if ($this->_formKeyValidator->validate($this->getRequest()) && $product_sku) {
-            $response_data = $this->getProductInfo($product_sku);
+        $productSku = $this->getRequest()->getParam('product_sku', null);
+        if ($this->formKeyValidator->validate($this->getRequest()) && $productSku) {
+            $responseData = $this->getProductInfo($productSku);
             // If the sku is valid
             // The event id is added in the response
             // And a CAPI event is created
-            if (count($response_data) > 0) {
-                $event_id = EventIdGenerator::guidv4();
-                $response_data['event_id'] = $event_id;
-                $this->trackServerEvent($event_id);
-                $result = $this->_resultJsonFactory->create();
-                $result->setData(array_filter($response_data));
+            if (count($responseData) > 0) {
+                $eventId = EventIdGenerator::guidv4();
+                $responseData['event_id'] = $eventId;
+                $this->trackServerEvent($eventId);
+                $result = $this->resultJsonFactory->create();
+                $result->setData(array_filter($responseData));
                 return $result;
             }
         } else {

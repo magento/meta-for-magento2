@@ -56,19 +56,20 @@ class ViewContent implements ObserverInterface
                 'currency' => $this->_magentoDataHelper->getCurrency()
             ];
             $product = $this->registry->registry('current_product');
+            $contentId = $this->_magentoDataHelper->getContentId($product);
             if ($product && $product->getId()) {
                 $customData['value'] = $this->_magentoDataHelper->getValueForProduct($product);
-                $customData['content_ids'] = [$product->getId()];
+                $customData['content_ids'] = [$contentId];
                 $customData['content_category'] = $this->_magentoDataHelper->getCategoriesForProduct($product);
                 $customData['content_name'] = $product->getName();
+                // https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
                 $customData['contents'] = [
                     [
-                        'product_id' => $product->getId(),
+                        'id' => $contentId,
                         'item_price' => $this->_magentoDataHelper->getValueForProduct($product)
                     ]
                 ];
-                $customData['content_type'] = ($product->getTypeId() == Configurable::TYPE_CODE) ?
-                    'product_group' : 'product';
+                $customData['content_type'] = $this->_magentoDataHelper->getContentType($product);
             }
             $event = ServerEventFactory::createEvent('ViewContent', array_filter($customData), $eventId);
             $this->serverSideHelper->sendEvent($event);

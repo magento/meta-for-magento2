@@ -8,7 +8,6 @@ namespace Facebook\BusinessExtension\Observer;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\App\Helper\Context;
 
 class ProcessProductAfterDeleteEventObserver implements ObserverInterface
 {
@@ -40,10 +39,10 @@ class ProcessProductAfterDeleteEventObserver implements ObserverInterface
         if ($product->getId()) {
             $requestData = [];
             $requestData['method'] = 'DELETE';
-            $requestData['retailer_id'] = $product->getId();
+            $requestData['retailer_id'] = $this->fbeHelper->getRetailerId($product);
             $requestParams = [];
             $requestParams[0] = $requestData;
-            $response = $this->fbeHelper->makeHttpRequest($requestParams, null);
+            $this->fbeHelper->makeHttpRequest($requestParams, null);
         }
     }
 }

@@ -15,17 +15,16 @@ class Purchase extends Common
      */
     public function getContentIDs()
     {
-        $productIds = [];
+        $contentIds = [];
         /** @var Order $order */
         $order = $this->fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         if ($order) {
             $items = $order->getItemsCollection();
             foreach ($items as $item) {
-                $product = $item->getProduct();
-                $productIds[] = $product->getId();
+                $contentIds[] = $this->getContentId($item->getProduct());
             }
         }
-        return $this->arrayToCommaSeparatedStringValues($productIds);
+        return $this->arrayToCommaSeparatedStringValues($contentIds);
     }
 
     public function getValue()

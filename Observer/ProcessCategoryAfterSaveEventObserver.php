@@ -37,7 +37,7 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         $category = $observer->getEvent()->getCategory();
-        $this->_fbeHelper->log("save category: ".$category->getName());
+        $this->_fbeHelper->log("save category: " . $category->getName());
 
         /** @var CategoryCollection $categoryObj */
         $categoryObj = $this->_fbeHelper->getObject(CategoryCollection::class);

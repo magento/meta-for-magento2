@@ -5,8 +5,10 @@
 
 namespace Facebook\BusinessExtension\Helper;
 
+use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Logger\Logger;
 use Facebook\BusinessExtension\Model\ConfigFactory;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -81,6 +83,11 @@ class FBEHelper extends AbstractHelper
     protected $moduleList;
 
     /**
+     * @var ProductIdentifier
+     */
+    protected $productIdentifier;
+
+    /**
      * FBEHelper constructor
      *
      * @param Context $context
@@ -92,6 +99,7 @@ class FBEHelper extends AbstractHelper
      * @param Curl $curl
      * @param ResourceConnection $resourceConnection
      * @param ModuleListInterface $moduleList
+     * @param ProductIdentifier $productIdentifier
      */
     public function __construct(
         Context $context,
@@ -102,7 +110,8 @@ class FBEHelper extends AbstractHelper
         StoreManagerInterface $storeManager,
         Curl $curl,
         ResourceConnection $resourceConnection,
-        ModuleListInterface $moduleList
+        ModuleListInterface $moduleList,
+        ProductIdentifier $productIdentifier
     ) {
         parent::__construct($context);
         $this->objectManager = $objectManager;
@@ -113,6 +122,7 @@ class FBEHelper extends AbstractHelper
         $this->curl = $curl;
         $this->resourceConnection = $resourceConnection;
         $this->moduleList = $moduleList;
+        $this->productIdentifier = $productIdentifier;
     }
 
     public function getPixelID()
@@ -630,5 +640,14 @@ class FBEHelper extends AbstractHelper
             )));
         }
         return $breadcrumb;
+    }
+
+    /**
+     * @param Product $product
+     * @return bool|int|string
+     */
+    public function getRetailerId(Product $product)
+    {
+        return $this->productIdentifier->getMagentoProductRetailerId($product);
     }
 }

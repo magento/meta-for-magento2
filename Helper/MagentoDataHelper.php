@@ -5,8 +5,12 @@
 
 namespace Facebook\BusinessExtension\Helper;
 
+use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
+use Magento\Catalog\Model\Product;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\ObjectManagerInterface;
 
 /**
@@ -45,6 +49,11 @@ class MagentoDataHelper extends AbstractHelper
     protected $productRepository;
 
     /**
+     * @var ProductIdentifier
+     */
+    protected $productIdentifier;
+
+    /**
      * MagentoDataHelper constructor
      *
      * @param Context $context
@@ -53,6 +62,8 @@ class MagentoDataHelper extends AbstractHelper
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     * @param ProductIdentifier $productIdentifier
      */
     public function __construct(
         Context $context,
@@ -61,7 +72,8 @@ class MagentoDataHelper extends AbstractHelper
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        ProductIdentifier $productIdentifier
     ) {
         parent::__construct($context);
         $this->objectManager = $objectManager;
@@ -70,6 +82,7 @@ class MagentoDataHelper extends AbstractHelper
         $this->storeManager = $storeManager;
         $this->customerMetadata = $customerMetadata;
         $this->productRepository = $productRepository;
+        $this->productIdentifier = $productIdentifier;
     }
 
     /**
@@ -79,7 +92,6 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getEmail()
     {
-
         $currentSession = $this->objectManager->get(\Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getEmail();
     }
@@ -91,7 +103,6 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getFirstName()
     {
-
         $currentSession = $this->objectManager->get(\Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getFirstname();
     }
@@ -103,7 +114,6 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getLastName()
     {
-
         $currentSession = $this->objectManager->get(\Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getLastname();
     }
@@ -115,21 +125,23 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getDateOfBirth()
     {
-
         $currentSession = $this->objectManager->get(Magento\Customer\Model\Session::class);
         return $currentSession->getCustomer()->getDob();
     }
 
     /**
-     * Return the product with the given sku
+     * Return the product by the given sku
      *
      * @param string $productSku
-     * @return \Magento\Catalog\Model\Product
+     * @return \Magento\Catalog\Api\Data\ProductInterface | bool
      */
-    public function getProductWithSku($productSku)
+    public function getProductBySku($productSku)
     {
-        $product = $this->productRepository->get($productSku);
-        return $product;
+        try {
+            return $this->productRepository->get($productSku);
+        } catch (NoSuchEntityException $e) {
+            return false;
+        }
     }
 
     /**
@@ -152,6 +164,24 @@ class MagentoDataHelper extends AbstractHelper
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param Product $product
+     * @return bool|int|string
+     */
+    public function getContentType(Product $product)
+    {
+        return $product->getTypeId() == Configurable::TYPE_CODE ? 'product_group' : 'product';
+    }
+
+    /**
+     * @param Product $product
+     * @return bool|int|string
+     */
+    public function getContentId(Product $product)
+    {
+        return $this->productIdentifier->getContentId($product);
     }
 
     /**
@@ -184,17 +214,16 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getCartContentIds()
     {
-        $productIds = [];
+        $contentIds = [];
         $cart = $this->objectManager->get(\Magento\Checkout\Model\Cart::class);
         if (!$cart || !$cart->getQuote()) {
             return null;
         }
         $items = $cart->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
-            $product = $item->getProduct();
-            $productIds[] = $product->getId();
+            $contentIds[] = $this->getContentId($item->getProduct());
         }
-        return $productIds;
+        return $contentIds;
     }
 
     /**
@@ -236,6 +265,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return information about the cart items
+     * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
      * @return array
      */
     public function getCartContents()
@@ -250,7 +280,7 @@ class MagentoDataHelper extends AbstractHelper
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contents[] = [
-                'product_id' => $product->getId(),
+                'id' => $this->getContentId($product),
                 'quantity' => $item->getQty(),
                 'item_price' => $priceHelper->currency($product->getFinalPrice(), false, false)
             ];
@@ -268,13 +298,12 @@ class MagentoDataHelper extends AbstractHelper
         if (!$order) {
             return null;
         }
-        $productIds = [];
+        $contentIds = [];
         $items = $order->getAllVisibleItems();
         foreach ($items as $item) {
-            $product = $item->getProduct();
-            $productIds[] = $product->getId();
+            $contentIds[] = $this->getContentId($item->getProduct());
         }
-        return $productIds;
+        return $contentIds;
     }
 
     /**
@@ -299,6 +328,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return information about the last order items
      *
+     * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
      * @return array
      */
     public function getOrderContents()
@@ -313,7 +343,7 @@ class MagentoDataHelper extends AbstractHelper
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contents[] = [
-                'product_id' => $product->getId(),
+                'id' => $this->getContentId($product),
                 'quantity' => (int)$item->getQtyOrdered(),
                 'item_price' => $priceHelper->currency($product->getFinalPrice(), false, false)
             ];
@@ -371,7 +401,7 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getRegionCodeForAddress($address)
     {
-        $region = $this ->objectManager->get(\Magento\Directory\Model\Region::class)
+        $region = $this->objectManager->get(\Magento\Directory\Model\Region::class)
             ->load($address->getRegionId());
         if ($region) {
             return $region->getCode();

@@ -7,6 +7,7 @@ namespace Facebook\BusinessExtension\Block\Pixel;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\MagentoDataHelper;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template\Context;
@@ -158,5 +159,14 @@ class Common extends \Magento\Framework\View\Element\Template
     public function getEventToObserveName()
     {
         return '';
+    }
+
+    /**
+     * @param Product $product
+     * @return bool|int|string
+     */
+    public function getContentId(Product $product)
+    {
+        return $this->magentoDataHelper->getContentId($product);
     }
 }

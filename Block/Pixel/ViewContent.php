@@ -14,12 +14,12 @@ class ViewContent extends Common
      */
     public function getContentIDs()
     {
-        $product_ids = [];
+        $contentIds = [];
         $product = $this->registry->registry('current_product');
         if ($product && $product->getId()) {
-            $product_ids[] = $product->getId();
+            $contentIds[] = $this->getContentId($product);
         }
-        return $this->arrayToCommaSeparatedStringValues($product_ids);
+        return $this->arrayToCommaSeparatedStringValues($contentIds);
     }
 
     /**
@@ -40,8 +40,9 @@ class ViewContent extends Common
      */
     public function getContentType()
     {
+        /** @var \Magento\Catalog\Model\Product $product */
         $product = $this->registry->registry('current_product');
-        return ($product->getTypeId() == Configurable::TYPE_CODE) ? 'product_group' : 'product';
+        return $this->magentoDataHelper->getContentType($product);
     }
 
     /**

@@ -5,11 +5,10 @@
 
 namespace Facebook\BusinessExtension\Plugin;
 
+use Facebook\BusinessExtension\Api\Data\FacebookOrderInterfaceFactory;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-
-use Facebook\BusinessExtension\Api\Data\FacebookOrderInterfaceFactory;
 
 class OrderGet
 {
@@ -30,8 +29,7 @@ class OrderGet
     public function __construct(
         OrderExtensionFactory $orderExtensionFactory,
         FacebookOrderInterfaceFactory $facebookOrderFactory
-    )
-    {
+    ) {
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->facebookOrderFactory = $facebookOrderFactory;
     }

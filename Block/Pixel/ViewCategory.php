@@ -13,11 +13,7 @@ class ViewCategory extends Common
     public function getCategory()
     {
         $category = $this->registry->registry('current_category');
-        if ($category) {
-            return $this->escapeQuotes($category->getName());
-        } else {
-            return null;
-        }
+        return $category ? $this->escapeQuotes($category->getName()) : null;
     }
 
     /**

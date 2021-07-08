@@ -35,10 +35,12 @@ class Identifier
     }
 
     /**
+     * Get product's identifier (SKU or ID, depending on configuration)
+     *
      * @param Product $product
-     * @return int|string|bool
+     * @return bool|int|string
      */
-    public function getMagentoProductRetailerId(Product $product)
+    protected function getProductIdentifier(Product $product)
     {
         if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $product->getSku();
@@ -46,6 +48,28 @@ class Identifier
             return $product->getId();
         }
         return false;
+    }
+
+    /**
+     * Get product Retailer ID for Commerce
+     *
+     * @param Product $product
+     * @return int|string|bool
+     */
+    public function getMagentoProductRetailerId(Product $product)
+    {
+        return $this->getProductIdentifier($product);
+    }
+
+    /**
+     * Get product Content ID for Pixel and CAPI
+     *
+     * @param Product $product
+     * @return bool|int|string
+     */
+    public function getContentId(Product $product)
+    {
+        return $this->getMagentoProductRetailerId($product);
     }
 
     /**

@@ -64,7 +64,7 @@ class DeleteAfter implements ObserverInterface
         // @todo observer should not know how to assemble request
         $requestData = [
             'method' => 'DELETE',
-            'data' => ['id' => $product->getSku()],
+            'data' => ['id' => $this->fbeHelper->getRetailerId($product)],
         ];
 
         try {
