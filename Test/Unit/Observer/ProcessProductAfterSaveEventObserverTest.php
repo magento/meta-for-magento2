@@ -55,7 +55,7 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
         $this->fbeHelper->expects($this->once())->method('getStore')->will($this->returnValue($this->store));
         $this->_product = $this->createMock(Product::class);
         $this->_product->expects($this->once())->method('getId')->will($this->returnValue("1234"));
-        $event = $this->createPartialMock(Event::class, ['getProduct']);
+        $event = $this->getMockBuilder(Event::class)->addMethods(['getProduct'])->getMock();
         $event->expects($this->once())->method('getProduct')->will($this->returnValue($this->_product));
         $this->_eventObserverMock = $this->createMock(Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
@@ -67,9 +67,9 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
             );
     }
 
-    public function testExcution()
+    public function testExecution()
     {
-        $this->_batchApi->expects($this->once())->method('buildProductRequest');
+        $this->_batchApi->expects($this->once())->method('buildRequestForIndividualProduct');
         $this->fbeHelper->expects($this->atLeastOnce())->method('makeHttpRequest');
         $this->processProductAfterSaveEventObserver->execute($this->_eventObserverMock);
     }

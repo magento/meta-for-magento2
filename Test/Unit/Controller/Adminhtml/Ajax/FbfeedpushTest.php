@@ -62,6 +62,9 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase
      */
     public function testExternalBizIdExists()
     {
+        // @todo Temporarily disabling FB feed push in this version (see https://fburl.com/707tgrel)
+        $this->markTestSkipped('must be revisited');
+
         $this->fbeHelper->method('getConfigValue')->willReturn('bizID');
         $result = $this->fbFeedPush->executeForJson();
         $this->assertFalse($result['success']);
@@ -76,6 +79,9 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase
      */
     public function testExternalBizIdNotExists()
     {
+        // @todo Temporarily disabling FB feed push in this version (see https://fburl.com/707tgrel)
+        $this->markTestSkipped('must be revisited');
+
         $this->fbeHelper->method('getConfigValue')->willReturn(null);
         $this->request->method('getParam')->willReturn('randomStr');
         $this->fbeHelper->method('saveConfig')->willReturn(null);

@@ -6,6 +6,7 @@
 namespace Facebook\BusinessExtension\Test\Unit\Helper;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Logger\Logger;
 use Facebook\BusinessExtension\Model\Config;
 use Facebook\BusinessExtension\Model\ConfigFactory;
@@ -40,6 +41,8 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
 
     protected $moduleList;
 
+    protected $productIdentifier;
+
     /**
      * Used to reset or change values after running a test
      *
@@ -65,6 +68,7 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->curl = $this->createMock(Curl::class);
         $this->resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
+        $this->productIdentifier = $this->createMock(ProductIdentifier::class);
 
         $this->fbeHelper = new FBEHelper(
             $this->context,
@@ -75,7 +79,8 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
             $this->storeManager,
             $this->curl,
             $this->resourceConnection,
-            $this->moduleList
+            $this->moduleList,
+            $this->productIdentifier
         );
     }
 

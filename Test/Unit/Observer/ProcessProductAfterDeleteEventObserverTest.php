@@ -45,7 +45,7 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
         $this->_product->expects($this->atLeastOnce())->method('getId')->will($this->returnValue("1234"));
         $this->_product->expects($this->never())->method('getSku');
 
-        $event = $this->createPartialMock(Event::class, ['getProduct']);
+        $event = $this->getMockBuilder(Event::class)->addMethods(['getProduct'])->getMock();
         $event->expects($this->once())->method('getProduct')->will($this->returnValue($this->_product));
         $this->_eventObserverMock = $this->createMock(Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
@@ -53,7 +53,7 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
             new ProcessProductAfterDeleteEventObserver($this->fbeHelper);
     }
 
-    public function testExcution()
+    public function testExecution()
     {
         $this->fbeHelper->expects($this->atLeastOnce())->method('makeHttpRequest');
         $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);

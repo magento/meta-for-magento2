@@ -44,14 +44,22 @@ class ViewContentTest extends CommonTest
 
     public function testViewContentEventCreated()
     {
+        $id = 123;
+        $sku = 'SKU-123';
+        $contentType = 'product_group';
+        $eventId = '1234';
+
         $this->magentoDataHelper->method('getValueForProduct')->willReturn(12.99);
         $this->magentoDataHelper->method('getCategoriesForProduct')->willReturn('Electronics');
+        $this->magentoDataHelper->method('getContentId')->willReturn($id);
+        $this->magentoDataHelper->method('getContentType')->willReturn($contentType);
+
         $product = $this->objectManager->getObject('\Magento\Catalog\Model\Product');
-        $product->setId(123);
+        $product->setId($id)->setSku($sku);
         $product->setName('Earphones');
         $this->registry->method('registry')->willReturn($product);
 
-        $observer = new Observer(['eventId' => '1234']);
+        $observer = new Observer(['eventId' => $eventId]);
 
         $this->viewContentObserver->execute($observer);
 
@@ -59,15 +67,15 @@ class ViewContentTest extends CommonTest
 
         $event = $this->serverSideHelper->getTrackedEvents()[0];
 
-        $this->assertEquals('1234', $event->getEventId());
+        $this->assertEquals($eventId, $event->getEventId());
 
         $customDataArray = [
-        'currency' => 'USD',
-        'value' => 12.99,
-        'content_type' => 'product',
-        'content_ids' => [123],
-        'content_category' => 'Electronics',
-        'content_name' => 'Earphones'
+            'currency' => 'USD',
+            'value' => 12.99,
+            'content_type' => $contentType,
+            'content_ids' => [$id],
+            'content_category' => 'Electronics',
+            'content_name' => 'Earphones'
         ];
 
         $this->assertEqualsCustomData($customDataArray, $event->getCustomData());

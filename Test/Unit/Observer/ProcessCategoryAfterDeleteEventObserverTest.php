@@ -42,7 +42,7 @@ class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
     {
         parent::setUp();
         $this->_category = $this->createMock(Category::class);
-        $event = $this->createPartialMock(Event::class, ['getCategory']);
+        $event = $this->getMockBuilder(Event::class)->addMethods(['getCategory'])->getMock();
         $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->_category));
         $this->_eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
@@ -50,7 +50,7 @@ class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
             new \Facebook\BusinessExtension\Observer\ProcessCategoryAfterDeleteEventObserver($this->fbeHelper);
     }
 
-    public function testExcution()
+    public function testExecution()
     {
         $categoryObj = $this->createMock(CategoryCollection::class);
         $this->fbeHelper->expects($this->once())->method('getObject')->willReturn($categoryObj);

@@ -43,15 +43,23 @@ class AddToCartTest extends CommonTest
 
     public function testAddToCartEventCreated()
     {
+        $id = 123;
+        $sku = 'SKU-123';
+        $contentType = 'product';
+        $eventId = '1234';
+
         $this->magentoDataHelper->method('getValueForProduct')->willReturn(12.99);
         $this->magentoDataHelper->method('getCategoriesForProduct')->willReturn('Electronics');
+        $this->magentoDataHelper->method('getContentId')->willReturn($sku);
+        $this->magentoDataHelper->method('getContentType')->willReturn($contentType);
+
         $product = $this->objectManager->getObject('\Magento\Catalog\Model\Product');
-        $product->setId(123);
+        $product->setId($id)->setSku($sku);
         $product->setName('Earphones');
-        $this->request->method('getParam')->willReturn('123');
+        $this->request->method('getParam')->willReturn($sku);
         $this->magentoDataHelper->method('getProductBySku')->willReturn($product);
 
-        $observer = new Observer(['eventId' => '1234']);
+        $observer = new Observer(['eventId' => $eventId]);
 
         $this->addToCartObserver->execute($observer);
 
@@ -59,15 +67,15 @@ class AddToCartTest extends CommonTest
 
         $event = $this->serverSideHelper->getTrackedEvents()[0];
 
-        $this->assertEquals('1234', $event->getEventId());
+        $this->assertEquals($eventId, $event->getEventId());
 
         $customDataArray = [
-        'currency' => 'USD',
-        'value' => 12.99,
-        'content_type' => 'product',
-        'content_ids' => [123],
-        'content_category' => 'Electronics',
-        'content_name' => 'Earphones'
+            'currency' => 'USD',
+            'value' => 12.99,
+            'content_type' => $contentType,
+            'content_ids' => [$sku],
+            'content_category' => 'Electronics',
+            'content_name' => 'Earphones'
         ];
 
         $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
