@@ -59,6 +59,7 @@ class Uploader
             try {
                 $response = $this->methodBatchApi->generateProductRequestData($storeId);
             } catch (Exception $e) {
+                throw new LocalizedException(__($e->getMessage()));
             }
         } elseif ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $response = $this->methodFeedApi->execute($storeId);

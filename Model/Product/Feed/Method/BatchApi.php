@@ -24,6 +24,8 @@ class BatchApi
     // Process only the maximum allowed by API per request
     const BATCH_MAX = 4999;
 
+    protected $storeId;
+
     /**
      * @var FBEHelper
      */
@@ -109,7 +111,8 @@ class BatchApi
      */
     public function generateProductRequestData($storeId = null, $accessToken = null)
     {
-        $this->builder->setStoreId($this->storeId);
+        $this->storeId = $storeId;
+        $this->builder->setStoreId($storeId);
         $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken ?? $this->systemConfig->getAccessToken($storeId));
 
