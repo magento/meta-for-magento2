@@ -98,6 +98,7 @@ class Inventory implements InventoryInterface
             return 0;
         }
 
-        return (int)max($this->productStock->getQty() - $this->systemConfig->getOutOfStockThreshold(), 0);
+        $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
+        return (int)max($this->productStock->getQty() - $outOfStockThreshold, 0);
     }
 }

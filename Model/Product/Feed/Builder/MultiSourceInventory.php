@@ -122,6 +122,7 @@ class MultiSourceInventory implements InventoryInterface
             return 0;
         }
 
-        return (int)max($this->stockQty - $this->systemConfig->getOutOfStockThreshold(), 0);
+        $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
+        return (int)max($this->stockQty - $outOfStockThreshold, 0);
     }
 }
