@@ -29,7 +29,7 @@ class GraphAPIAdapter
     /**
      * @var string
      */
-    private $graphAPIVersion = '9.0';
+    private $graphAPIVersion = '12.0';
 
     /**
      * @var Client
