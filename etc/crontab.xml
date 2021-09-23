@@ -7,10 +7,7 @@
         <job name="facebook_automation_sync_orders" instance="Facebook\BusinessExtension\Cron\SyncOrders" method="execute">
             <schedule>*/15 * * * *</schedule>
         </job>
-    </group>
-    <group id="facebook_automation">
         <job name="facebook_business_extension_aam_settings_cronjob" instance="Facebook\BusinessExtension\Cron\AAMSettingsCron" method="execute">
-            <!--Check this document to read more about cron jobs in Magento: https://devdocs.magento.com/guides/v2.4/config-guide/cron/custom-cron-ref.html-->
             <schedule>*/20 * * * *</schedule>
         </job>
 <!--        <job name="facebook_business_extension_category_sync_cronjob" instance="Facebook\BusinessExtension\Cron\CategorySyncCron" method="execute">-->
