@@ -91,6 +91,11 @@ class Builder
     private $uploadMethod;
 
     /**
+     * @var bool
+     */
+    private $inventoryOnly = false;
+
+    /**
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
@@ -134,6 +139,16 @@ class Builder
     public function setUploadMethod($uploadMethod)
     {
         $this->uploadMethod = $uploadMethod;
+        return $this;
+    }
+
+    /**
+     * @param bool $inventoryOnly
+     * @return $this
+     */
+    public function setInventoryOnly($inventoryOnly)
+    {
+        $this->inventoryOnly = $inventoryOnly;
         return $this;
     }
 
@@ -428,6 +443,18 @@ class Builder
     public function buildProductEntry(Product $product)
     {
         $inventory = $this->getInventory($product);
+        $retailerId = $this->trimAttribute(
+            self::ATTR_RETAILER_ID,
+            $this->productIdentifier->getMagentoProductRetailerId($product)
+        );
+
+        if ($this->inventoryOnly) {
+            return [
+                self::ATTR_RETAILER_ID  => $retailerId,
+                self::ATTR_AVAILABILITY => $inventory->getAvailability(),
+                self::ATTR_INVENTORY    => $inventory->getInventory(),
+            ];
+        }
 
         $productType = $this->trimAttribute(self::ATTR_PRODUCT_TYPE, $this->getCategoryPath($product));
 
@@ -436,8 +463,6 @@ class Builder
 
         $images = $this->getProductImages($product);
         $imageUrl = $this->trimAttribute(self::ATTR_IMAGE_URL, $images['main_image']);
-
-        $retailerId = $this->productIdentifier->getMagentoProductRetailerId($product);
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_CATALOG_BATCH_API) {
             $additionalImages = $images['additional_images'];
@@ -501,6 +526,10 @@ class Builder
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $headerFields[] = self::ATTR_UNIT_PRICE;
+        }
+
+        if ($this->inventoryOnly) {
+            return [self::ATTR_RETAILER_ID, self::ATTR_AVAILABILITY, self::ATTR_INVENTORY];
         }
 
         return $headerFields;

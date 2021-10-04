@@ -45,6 +45,7 @@ class Config
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES = 'facebook/catalog_management/incremental_product_updates';
 
+    const XML_PATH_FACEBOOK_ENABLE_INVENTORY_UPLOAD = 'facebook/inventory_management/enable_inventory_upload';
     const XML_PATH_FACEBOOK_USE_MULTI_SOURCE_INVENTORY = 'facebook/inventory_management/use_multi_source_inventory';
     const XML_PATH_FACEBOOK_INVENTORY_STOCK = 'facebook/inventory_management/inventory_stock';
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD = 'facebook/inventory_management/out_of_stock_threshold';
@@ -185,6 +186,16 @@ class Config
     public function isActiveIncrementalProductUpdates($scopeId = null, $scope = null)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
+    public function isActiveInventoryUpload($scopeId = null, $scope = null)
+    {
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_INVENTORY_UPLOAD, $scopeId, $scope);
     }
 
     /**

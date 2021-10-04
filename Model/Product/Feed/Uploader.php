@@ -45,6 +45,8 @@ class Uploader
     }
 
     /**
+     * Upload Magento catalog to Facebook
+     *
      * @param null $storeId
      * @return array
      * @throws LocalizedException
@@ -52,7 +54,6 @@ class Uploader
      */
     public function uploadFullCatalog($storeId = null)
     {
-        $response = [];
         $uploadMethod = $this->systemConfig->getFeedUploadMethod($storeId);
 
         if ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_CATALOG_BATCH_API) {
@@ -65,6 +66,23 @@ class Uploader
             $response = $this->methodFeedApi->execute($storeId);
         } else {
             throw new LocalizedException(__('Unknown feed upload method'));
+        }
+        return $response;
+    }
+
+    /**
+     * Upload product inventory to Facebook
+     *
+     * @param null $storeId
+     * @return array
+     * @throws LocalizedException
+     */
+    public function uploadInventory($storeId = null)
+    {
+        try {
+            $response = $this->methodBatchApi->generateProductRequestData($storeId, null, true);
+        } catch (Exception $e) {
+            throw new LocalizedException(__($e->getMessage()));
         }
         return $response;
     }

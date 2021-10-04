@@ -106,13 +106,17 @@ class BatchApi
     /**
      * @param null $storeId
      * @param null $accessToken
+     * @param bool $inventoryOnly
      * @return array
      * @throws Exception
      */
-    public function generateProductRequestData($storeId = null, $accessToken = null)
+    public function generateProductRequestData($storeId = null, $accessToken = null, $inventoryOnly = false)
     {
+        $this->fbeHelper->log($storeId ? "Starting batch upload for store $storeId" : 'Starting batch upload');
+
         $this->storeId = $storeId;
-        $this->builder->setStoreId($storeId);
+        $this->builder->setStoreId($storeId)
+            ->setInventoryOnly($inventoryOnly);
         $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken ?? $this->systemConfig->getAccessToken($storeId));
 
