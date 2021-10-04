@@ -22,6 +22,7 @@
             <orders_sync>
                 <active>0</active>
                 <default_order_status>pending</default_order_status>
+                <auto_subscribe_to_newsletter>0</auto_subscribe_to_newsletter>
             </orders_sync>
             <debug>
                 <debug_mode>1</debug_mode>

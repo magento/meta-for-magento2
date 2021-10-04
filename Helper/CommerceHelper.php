@@ -349,6 +349,11 @@ class CommerceHelper extends AbstractHelper
             ->setExtraData($extraData);
         $facebookOrder->save();
 
+        $this->_eventManager->dispatch('facebook_order_create_after', [
+            'order' => $order,
+            'facebook_order' => $facebookOrder,
+        ]);
+
         $this->orderIds[$order->getIncrementId()] = $facebookOrderId;
         return $order;
     }

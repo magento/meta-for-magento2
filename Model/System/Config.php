@@ -51,6 +51,7 @@ class Config
 
     const XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE = 'facebook/orders_sync/active';
     const XML_PATH_FACEBOOK_ORDERS_SYNC_DEFAULT_ORDER_STATUS = 'facebook/orders_sync/default_order_status';
+    const XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER = 'facebook/orders_sync/auto_subscribe_to_newsletter';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE = 'facebook/debug/debug_mode';
 
@@ -234,6 +235,16 @@ class Config
     public function getDefaultOrderStatus($scopeId = null, $scope = null)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_ORDERS_SYNC_DEFAULT_ORDER_STATUS, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return bool
+     */
+    public function isAutoNewsletterSubscriptionOn($scopeId = null, $scope = null)
+    {
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER, $scopeId, $scope);
     }
 
     /**
