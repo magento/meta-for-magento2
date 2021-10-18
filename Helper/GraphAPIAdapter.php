@@ -354,6 +354,7 @@ class GraphAPIAdapter
             'idempotency_key' => $this->getUniqId(),
             'items' => json_encode($items),
             'tracking_info' => json_encode($trackingInfo),
+            'should_use_default_fulfillment_location' => true,
         ]);
         $response = json_decode($response->getBody(), true);
         return $response;

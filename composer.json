@@ -3,7 +3,7 @@
   "description": "Facebook Business Extension for Magento 2",
   "type": "magento2-module",
   "license": "GPL-1.0-or-later",
-  "version": "1.3.5",
+  "version": "1.3.7",
   "require": {
     "facebook/php-business-sdk": "9.0.3"
   },

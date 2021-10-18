@@ -277,7 +277,7 @@ class CategoryCollection
             $this->curl->post($url, $params);
             $response = $this->curl->getBody();
         } catch (\Exception $e) {
-            $this->logException($e);
+            $this->fbeHelper->logException($e);
         }
         $this->fbeHelper->log("response from fb: ".$response);
         $response_obj = json_decode($response, true);
