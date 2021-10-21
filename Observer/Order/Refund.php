@@ -113,6 +113,11 @@ class Refund implements ObserverInterface
         $reasonText = $creditmemo->getCustomerNote();
         $currencyCode = $payment->getOrder()->getOrderCurrencyCode();
 
+        // refunds in the UK are after tax
+        if ($currencyCode === 'GBP') {
+            $shippingRefundAmount += $creditmemo->getShippingTaxAmount();
+        }
+
         $this->commerceHelper->setStoreId($storeId)
             ->refundOrder($facebookOrder->getFacebookOrderId(), $refundItems, $shippingRefundAmount, $currencyCode, $reasonText);
         $payment->getOrder()->addCommentToStatusHistory('Refunded order on Facebook');
