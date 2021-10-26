@@ -152,8 +152,11 @@ class Facebook extends Template implements TabInterface
      */
     public function getOrderFacebookUrl()
     {
-        return sprintf('https://www.facebook.com/commerce_manager/%s/orders/%s/',
-            $this->systemConfig->getCommerceAccountId(), $this->getFacebookOrderId());
+        return sprintf(
+            'https://www.facebook.com/commerce_manager/%s/orders/%s/',
+            $this->systemConfig->getCommerceAccountId($this->getOrder()->getStoreId()),
+            $this->getFacebookOrderId()
+        );
     }
 
     /**
