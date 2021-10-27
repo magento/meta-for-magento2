@@ -282,7 +282,7 @@ class GraphAPIAdapter
             'ship_by_date',
             'order_status',
             'selected_shipping_option',
-            'shipping_address',
+            'shipping_address{first_name, last_name, street1, street2, city, postal_code, country}',
             'payments',
             'last_updated',
         ];

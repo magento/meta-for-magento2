@@ -246,8 +246,8 @@ class CommerceHelper extends AbstractHelper
         $addressData = [
             'region' => $data['shipping_address']['state'] ?? null,
             'postcode' => $data['shipping_address']['postal_code'],
-            'firstname' => explode(' ', $data['shipping_address']['name'])[0],
-            'lastname' => explode(' ', $data['shipping_address']['name'])[1],
+            'firstname' => $data['shipping_address']['first_name'],
+            'lastname' => $data['shipping_address']['last_name'],
             'street' => $street,
             'city' => $data['shipping_address']['city'],
             'email' => $data['buyer_details']['email'],
@@ -297,8 +297,8 @@ class CommerceHelper extends AbstractHelper
             ->setBaseSubtotal($orderSubtotalAmount)
             ->setBaseGrandTotal($orderTotalAmount)
             ->setCustomerEmail($customerEmail)
-            ->setCustomerFirstname(explode(' ', $data['shipping_address']['name'])[0])
-            ->setCustomerLastname(explode(' ', $data['shipping_address']['name'])[1])
+            ->setCustomerFirstname($data['shipping_address']['first_name'])
+            ->setCustomerLastname($data['shipping_address']['last_name'])
             ->setBillingAddress($billingAddress)
             ->setShippingAddress($shippingAddress);
         $order->setBaseShippingAmount($data['selected_shipping_option']['price']['amount']);
