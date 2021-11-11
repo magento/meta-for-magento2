@@ -8,6 +8,7 @@ namespace Facebook\BusinessExtension\Model\Config\Source\Product;
 use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilderFactory;
+use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Inventory\Model\Stock;
 
@@ -24,17 +25,25 @@ class InventoryStock extends AbstractSource
     protected $objectManager;
 
     /**
+     * @var ModuleManager $moduleManager
+     */
+    protected $moduleManager;
+
+    /**
      * InventoryStock constructor
      *
      * @param SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory
      * @param ObjectManagerInterface $objectManager
+     * @param ModuleManager $moduleManager
      */
     public function __construct(
         SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory,
-        ObjectManagerInterface $objectManager
+        ObjectManagerInterface $objectManager,
+        ModuleManager $moduleManager
     ) {
         $this->searchCriteriaBuilderFactory = $searchCriteriaBuilderFactory;
         $this->objectManager = $objectManager;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
@@ -42,6 +51,10 @@ class InventoryStock extends AbstractSource
      */
     protected function getStockRepository()
     {
+        if (!$this->moduleManager->isEnabled('Magento_InventoryApi')) {
+            return false;
+        }
+
         try {
             return $this->objectManager->get('Magento\InventoryApi\Api\StockRepositoryInterface');
         } catch (\Exception $e) {
