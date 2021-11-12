@@ -6,6 +6,7 @@ use Exception;
 use Facebook\BusinessExtension\Api\Data\FacebookOrderInterfaceFactory;
 use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Model\Config\Source\DefaultOrderStatus;
+use Facebook\BusinessExtension\Model\FacebookOrder;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 use GuzzleHttp\Exception\GuzzleException;
@@ -229,12 +230,12 @@ class CommerceHelper extends AbstractHelper
         $storeId = $this->storeId ?? $this->systemConfig->getStoreId();
 
         $facebookOrderId = $data['id'];
-        /** @var FacebookOrderInterfaceFactory $facebookOrder */
+        /** @var FacebookOrder $facebookOrder */
         $facebookOrder = $this->facebookOrderFactory->create();
-        $facebookOrder->load($facebookOrderId);
+        $facebookOrder->load($facebookOrderId, 'facebook_order_id');
 
         if ($facebookOrder->getId()) {
-            $msg = __(sprintf('Order with Facebook ID %s already exists in Magento', $facebookOrder->getId()));
+            $msg = __(sprintf('Order with Facebook ID %s already exists in Magento', $facebookOrderId));
             throw new LocalizedException($msg);
         }
 
