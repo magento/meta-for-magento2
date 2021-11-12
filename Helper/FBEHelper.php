@@ -650,4 +650,25 @@ class FBEHelper extends AbstractHelper
     {
         return $this->productIdentifier->getMagentoProductRetailerId($product);
     }
+
+    /**
+     * @param $email
+     * @param $storeId
+     * @return $this
+     */
+    public function subscribeToNewsletter($email, $storeId)
+    {
+        $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager';
+        if (class_exists($subscriptionClass) && method_exists($subscriptionClass, 'subscribe')) {
+            /** @var \Magento\Newsletter\Model\SubscriptionManager $subscriptionManager */
+            $subscriptionManager = $this->createObject(\Magento\Newsletter\Model\SubscriptionManager::class);
+            $subscriptionManager->subscribe($email, $storeId);
+        } else {
+            // for older Magento versions (2.3 and below)
+            /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
+            $subscriber = $this->createObject(\Magento\Newsletter\Model\Subscriber::class);
+            $subscriber->subscribe($email);
+        }
+        return $this;
+    }
 }

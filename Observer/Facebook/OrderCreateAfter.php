@@ -5,11 +5,11 @@
 
 namespace Facebook\BusinessExtension\Observer\Facebook;
 
+use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Model\FacebookOrder;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Newsletter\Model\SubscriptionManager;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 
@@ -26,23 +26,34 @@ class OrderCreateAfter implements ObserverInterface
     protected $logger;
 
     /**
-     * @var SubscriptionManager
+     * @var FBEHelper
      */
-    protected $subscriptionManager;
+    protected $fbeHelper;
 
     /**
      * @param SystemConfig $systemConfig
      * @param LoggerInterface $logger
-     * @param SubscriptionManager $subscriptionManager
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         SystemConfig $systemConfig,
         LoggerInterface $logger,
-        SubscriptionManager $subscriptionManager
+        FBEHelper $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
-        $this->subscriptionManager = $subscriptionManager;
+        $this->fbeHelper = $fbeHelper;
+    }
+
+    /**
+     * @param $email
+     * @param $storeId
+     * @return $this
+     */
+    public function subscribeToNewsletter($email, $storeId)
+    {
+        $this->fbeHelper->subscribeToNewsletter($email, $storeId);
+        return $this;
     }
 
     public function execute(Observer $observer)
@@ -65,7 +76,7 @@ class OrderCreateAfter implements ObserverInterface
             $extraData = $facebookOrder->getExtraData();
             $email = $order->getCustomerEmail();
             if (isset($extraData['email_remarketing_option']) && $extraData['email_remarketing_option'] === true) {
-                $this->subscriptionManager->subscribe($email, $storeId);
+                $this->subscribeToNewsletter($email, $storeId);
             }
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
