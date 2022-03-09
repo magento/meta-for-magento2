@@ -10,8 +10,12 @@ use Facebook\BusinessExtension\Model\FacebookOrder;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 use GuzzleHttp\Exception\GuzzleException;
+use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ProductRepository;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
+use Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection as AttributeOptionCollection;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DB\Transaction;
@@ -86,6 +90,21 @@ class CommerceHelper extends AbstractHelper
      */
     private $productIdentifier;
 
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    /**
+     * @var ConfigurableType
+     */
+    private $configurableType;
+
+    /**
+     * @var AttributeOptionCollection
+     */
+    private $attributeOptionCollection;
+
     private $storeId;
 
     private $pageId;
@@ -126,6 +145,9 @@ class CommerceHelper extends AbstractHelper
      * @param OrderExtensionFactory $orderExtensionFactory
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      * @param ProductIdentifier $productIdentifier
+     * @param ProductRepository $productRepository
+     * @param ConfigurableType $configurableType
+     * @param AttributeOptionCollection $attributeOptionCollection
      */
     public function __construct(
         Context $context,
@@ -140,7 +162,10 @@ class CommerceHelper extends AbstractHelper
         LoggerInterface $logger,
         OrderExtensionFactory $orderExtensionFactory,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
-        ProductIdentifier $productIdentifier
+        ProductIdentifier $productIdentifier,
+        ProductRepository $productRepository,
+        ConfigurableType $configurableType,
+        AttributeOptionCollection $attributeOptionCollection
     ) {
         $this->storeManager = $storeManager;
         $this->objectManager = $objectManager;
@@ -154,6 +179,9 @@ class CommerceHelper extends AbstractHelper
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->facebookOrderFactory = $facebookOrderFactory;
         $this->productIdentifier = $productIdentifier;
+        $this->productRepository = $productRepository;
+        $this->configurableType = $configurableType;
+        $this->attributeOptionCollection = $attributeOptionCollection;
 
         $this->storeId = $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId();
         $this->pageId = $this->systemConfig->getPageId();
@@ -193,6 +221,57 @@ class CommerceHelper extends AbstractHelper
     }
 
     /**
+     * Get configurable product options such as size and color
+     *
+     * @param Product $product
+     * @param OrderItem $orderItem
+     * @return array|null
+     */
+    private function getProductOptions(Product $product, OrderItem $orderItem)
+    {
+        $configurableProducts = $this->configurableType->getParentIdsByChild($product->getId());
+        if (!isset($configurableProducts[0])) {
+            return null;
+        }
+        $parentId = $configurableProducts[0];
+        try {
+            $parentProduct = $this->productRepository->getById($parentId, false, $product->getStoreId());
+            $configurableAttributes = $this->configurableType->getConfigurableAttributes($parentProduct);
+
+            $superAttributes = [];
+            $attributesInfo = [];
+
+            foreach ($configurableAttributes as $attribute) {
+                $attributeId = (int)$attribute->getAttributeId();
+                $productAttribute = $attribute->getProductAttribute();
+                $attributeValue = $product->getData($productAttribute->getAttributeCode());
+                $optionId = $productAttribute->getSource()->getOptionId($attributeValue);
+                $optionText = $productAttribute->getSource()->getOptionText($attributeValue);
+                $superAttributes[$attributeId] = $optionId;
+                $attributesInfo[] = [
+                    'label' => __($productAttribute->getStoreLabel()),
+                    'value' => $optionText,
+                    'option_id' => $attributeId,
+                    'option_value' => $optionId,
+                ];
+            }
+
+            return [
+                'info_buyRequest' => [
+                    'qty' => $orderItem->getQtyOrdered(),
+                    'super_attribute' => $superAttributes,
+                ],
+                'attributes_info' => $attributesInfo,
+                'simple_sku' => $product->getSku(),
+                'simple_name' => $product->getName(),
+            ];
+        } catch (Exception $e) {
+            $this->logger->critical($e);
+            return null;
+        }
+    }
+
+    /**
      * @param $item
      * @return OrderItem
      * @throws LocalizedException
@@ -213,6 +292,11 @@ class CommerceHelper extends AbstractHelper
             ->setTaxAmount($item['tax_details']['estimated_tax']['amount'])
             ->setRowTotal($item['price_per_unit']['amount'] * $item['quantity'])
             ->setProductType($product->getTypeId());
+
+        $productOptions = $this->getProductOptions($product, $orderItem);
+        if ($productOptions) {
+            $orderItem->setProductOptions($productOptions);
+        }
         return $orderItem;
     }
 
