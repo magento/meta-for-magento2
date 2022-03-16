@@ -2,8 +2,26 @@
 
 namespace Facebook\BusinessExtension\Helper;
 
-class ShippingHelper
+use Exception;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Directory\Model\RegionFactory;
+use Psr\Log\LoggerInterface;
+
+class ShippingHelper extends AbstractHelper
 {
+
+    protected $regionFactory;
+    protected $logger;
+
+    public function __construct(
+        RegionFactory   $regionFactory,
+        LoggerInterface $logger
+    )
+    {
+        $this->regionFactory = $regionFactory;
+        $this->logger = $logger;
+    }
+
     /**
      * Array of FB supported shipping carriers
      *
@@ -524,5 +542,22 @@ class ShippingHelper
             "ZTO_EXPRESS" => "ZTO Express",
             "ZYLLEM" => "Zyllem"
         ];
+    }
+
+    /**
+     * Gets the region name from state code
+     * @param $stateId - State code
+     *
+     * @return string
+     */
+
+    public function getRegionName($stateId)
+    {
+        try {
+            $region = $this->regionFactory->create();
+            return $region->load($stateId)['code'] ?? $stateId;
+        } catch (Exception $e) {
+            $this->logger->critical($e->getMessage());
+        }
     }
 }

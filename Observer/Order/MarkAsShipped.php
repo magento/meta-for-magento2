@@ -48,11 +48,12 @@ class MarkAsShipped implements ObserverInterface
      * @param ShippingHelper $shippingHelper
      */
     public function __construct(
-        SystemConfig $systemConfig,
+        SystemConfig    $systemConfig,
         LoggerInterface $logger,
-        CommerceHelper $commerceHelper,
-        ShippingHelper $shippingHelper
-    ) {
+        CommerceHelper  $commerceHelper,
+        ShippingHelper  $shippingHelper
+    )
+    {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->commerceHelper = $commerceHelper;
@@ -99,8 +100,8 @@ class MarkAsShipped implements ObserverInterface
             }
             // Try to map some US standard carriers
             $carriers = [
-                'UPS'   => 'United Parcel Service',
-                'USPS'  => 'United States Postal Service',
+                'UPS' => 'United Parcel Service',
+                'USPS' => 'United States Postal Service',
                 'FEDEX' => 'Federal Express',
             ];
             foreach ($carriers as $code => $title) {
@@ -158,11 +159,31 @@ class MarkAsShipped implements ObserverInterface
             'shipping_method_name' => $track->getTitle(),
             'carrier' => $this->getCarrierCodeForFacebook($track),
         ];
-
+        $fulfillmentAddress = [];
+        if (!($this->systemConfig->shouldUseDefaultFulfillmentAddress($storeId))) {
+            $fulfillmentAddress = $this->systemConfig->getFulfillmentAddress($storeId);
+            $this->validateFulfillmentAddress($fulfillmentAddress);
+            $fulfillmentAddress['state'] = $this->shippingHelper->getRegionName($fulfillmentAddress['state']);
+        }
         $this->commerceHelper->setStoreId($storeId)
-            ->markOrderAsShipped($fbOrderId, $itemsToShip, $trackingInfo);
+            ->markOrderAsShipped($fbOrderId, $itemsToShip, $trackingInfo, $fulfillmentAddress);
         $shipment->getOrder()->addCommentToStatusHistory("Marked order as shipped on Facebook with {$track->getTitle()}. Tracking #: {$track->getNumber()}.");
 
         // @todo Update order totals
+    }
+
+    private function validateFulfillmentAddress($address)
+    {
+        $requiredFields = ['street_1' => 'Street Address 1',
+            'country' => 'Country',
+            'state' => 'Region/State',
+            'city' => 'City',
+            'postal_code' => 'Zip/Postal Code'];
+        $missingFields = array_filter($requiredFields, function ($field) use ($address) {
+            return empty($address[$field]);
+        }, ARRAY_FILTER_USE_KEY);
+        if (!empty($missingFields)) {
+            throw new LocalizedException(__('Please provide the required fields: ' . implode(', ', array_values($missingFields)) . ' in the Fulfillment Address section.'));
+        }
     }
 }

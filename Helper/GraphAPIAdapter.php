@@ -344,18 +344,23 @@ class GraphAPIAdapter
      * @param $fbOrderId
      * @param $items
      * @param $trackingInfo
+     * @param $fulfillmentAddressData
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function markOrderAsShipped($fbOrderId, $items, $trackingInfo)
+    public function markOrderAsShipped($fbOrderId, $items, $trackingInfo, $fulfillmentAddressData)
     {
-        $response = $this->callApi('POST', "{$fbOrderId}/shipments", [
-            'access_token' => $this->accessToken,
+        $request = ['access_token' => $this->accessToken,
             'idempotency_key' => $this->getUniqId(),
             'items' => json_encode($items),
-            'tracking_info' => json_encode($trackingInfo),
-            'should_use_default_fulfillment_location' => true,
-        ]);
+            'tracking_info' => json_encode($trackingInfo),];
+        if($fulfillmentAddressData){
+            $request['should_use_default_fulfillment_location'] = false;
+            $request['fulfillment']['fulfillment_address'] = $fulfillmentAddressData;
+        } else{
+            $request['should_use_default_fulfillment_location'] = true;
+        }
+        $response = $this->callApi('POST', "{$fbOrderId}/shipments", $request);
         $response = json_decode($response->getBody(), true);
         return $response;
     }

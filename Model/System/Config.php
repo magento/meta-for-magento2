@@ -54,6 +54,14 @@ class Config
     const XML_PATH_FACEBOOK_ORDERS_SYNC_DEFAULT_ORDER_STATUS = 'facebook/orders_sync/default_order_status';
     const XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER = 'facebook/orders_sync/auto_subscribe_to_newsletter';
 
+    const XML_PATH_FACEBOOK_USE_DEFAULT_FULFILLMENT_LOCATION = 'facebook/orders_sync/default_fulfillment_location';
+    const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1 = 'facebook/orders_sync/street_line1';
+    const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_2 = 'facebook/orders_sync/street_line2';
+    const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_COUNTRY_ID = 'facebook/orders_sync/country_id';
+    const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STATE = 'facebook/orders_sync/region_id';
+    const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_CITY = 'facebook/orders_sync/city';
+    const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_ZIP_CODE = 'facebook/orders_sync/postcode';
+
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE = 'facebook/debug/debug_mode';
 
     /**
@@ -91,11 +99,12 @@ class Config
      */
     public function __construct(
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
-        ResourceConfig $resourceConfig,
-        ModuleListInterface $moduleList,
-        TypeListInterface $cacheTypeList
-    ) {
+        ScopeConfigInterface  $scopeConfig,
+        ResourceConfig        $resourceConfig,
+        ModuleListInterface   $moduleList,
+        TypeListInterface     $cacheTypeList
+    )
+    {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;
@@ -253,6 +262,35 @@ class Config
      * @param null $scope
      * @return bool
      */
+    public function shouldUseDefaultFulfillmentAddress($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_USE_DEFAULT_FULFILLMENT_LOCATION, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
+    public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    {
+        $address = [];
+
+        $address['street_1'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1, $scopeId, $scope);
+        $address['street_2'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_2, $scopeId, $scope);
+        $address['country'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_COUNTRY_ID, $scopeId, $scope);
+        $address['state'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STATE, $scopeId, $scope);
+        $address['city'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_CITY, $scopeId, $scope);
+        $address['postal_code'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_ZIP_CODE, $scopeId, $scope);
+
+        return $address;
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return bool
+     */
     public function isAutoNewsletterSubscriptionOn($scopeId = null, $scope = null)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER, $scopeId, $scope);
@@ -262,8 +300,8 @@ class Config
      * @param $configPath
      * @param null $scopeId
      * @param null $scope
-     * @todo implement method for getting boolean values
      * @return mixed
+     * @todo implement method for getting boolean values
      */
     public function getConfig($configPath, $scopeId = null, $scope = null)
     {
