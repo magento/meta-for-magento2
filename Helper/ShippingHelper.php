@@ -3,21 +3,35 @@
 namespace Facebook\BusinessExtension\Helper;
 
 use Exception;
-use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Directory\Model\RegionFactory;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Sales\Model\Order\Shipment\Track;
 use Psr\Log\LoggerInterface;
 
 class ShippingHelper extends AbstractHelper
 {
-
+    /**
+     * @var RegionFactory
+     */
     protected $regionFactory;
+
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
+    /**
+     * @param Context $context
+     * @param RegionFactory $regionFactory
+     * @param LoggerInterface $logger
+     */
     public function __construct(
-        RegionFactory   $regionFactory,
+        Context $context,
+        RegionFactory $regionFactory,
         LoggerInterface $logger
-    )
-    {
+    ) {
+        parent::__construct($context);
         $this->regionFactory = $regionFactory;
         $this->logger = $logger;
     }
@@ -546,11 +560,10 @@ class ShippingHelper extends AbstractHelper
 
     /**
      * Gets the region name from state code
-     * @param $stateId - State code
      *
+     * @param $stateId - State code
      * @return string
      */
-
     public function getRegionName($stateId)
     {
         try {
@@ -559,5 +572,72 @@ class ShippingHelper extends AbstractHelper
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
         }
+        return $stateId;
+    }
+
+    /**
+     * A map for popular US carriers with long titles
+     *
+     * @return array
+     */
+    protected function getSupplementaryCarriersMap()
+    {
+        return [
+            'UPS'   => 'United Parcel Service',
+            'USPS'  => 'United States Postal Service',
+            'FEDEX' => 'Federal Express',
+        ];
+    }
+
+    /**
+     * @param $carrierTitle
+     * @param array $carriersMap
+     * @return string|false
+     */
+    protected function findCodeByTitle($carrierTitle, array $carriersMap)
+    {
+        foreach ($carriersMap as $code => $title) {
+            if (stripos($carrierTitle, $title) !== false || stripos($carrierTitle, $code) !== false) {
+                return $code;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param Track $track
+     * @return string
+     */
+    protected function getCanonicalCarrierCode($track)
+    {
+        $carrierCode = strtoupper($track->getCarrierCode());
+        $carrierTitle = $track->getTitle();
+
+        if ($carrierCode !== 'CUSTOM') {
+            return $carrierCode;
+        }
+
+        $code = $this->findCodeByTitle($carrierTitle, $this->getSupplementaryCarriersMap());
+        if ($code) {
+            return $code;
+        }
+        $code = $this->findCodeByTitle($carrierTitle, $this->getFbSupportedShippingCarriers());
+        if ($code) {
+            return $code;
+        }
+
+        return 'OTHER';
+    }
+
+    /**
+     * @param Track $track
+     * @return string
+     */
+    public function getCarrierCodeForFacebook($track)
+    {
+        $supportedCarriers = $this->getFbSupportedShippingCarriers();
+        $canonicalCarrierCode = $this->getCanonicalCarrierCode($track);
+
+        return array_key_exists($canonicalCarrierCode, $supportedCarriers) ? $canonicalCarrierCode : 'OTHER';
     }
 }
