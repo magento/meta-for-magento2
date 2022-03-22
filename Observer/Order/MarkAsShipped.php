@@ -53,9 +53,21 @@ class MarkAsShipped implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
+        $event = $observer->getEvent()->getName();
+
         /** @var Shipment $shipment */
-        $shipment = $observer->getEvent()->getShipment();
+        if ($event == Shipper::MAGENTO_EVENT_SHIPMENT_SAVE_AFTER) {
+            $shipment = $observer->getEvent()->getShipment();
+        } else if ($event == Shipper::MAGENTO_EVENT_TRACKING_SAVE_AFTER) {
+            $shipment = $observer->getEvent()->getTrack()->getShipment();
+        } else {
+            return;
+        }
+
         $storeId = $shipment->getOrder()->getStoreId();
+        if ($event !== $this->shipper->getOrderShipEvent($storeId)) {
+            return;
+        }
 
         if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->isActiveOrderSync($storeId))) {
             return;

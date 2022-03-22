@@ -53,6 +53,7 @@ class Config
     const XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE = 'facebook/orders_sync/active';
     const XML_PATH_FACEBOOK_ORDERS_SYNC_DEFAULT_ORDER_STATUS = 'facebook/orders_sync/default_order_status';
     const XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER = 'facebook/orders_sync/auto_subscribe_to_newsletter';
+    const XML_PATH_FACEBOOK_ORDER_SHIP_EVENT = 'facebook/orders_sync/order_ship_event';
 
     const XML_PATH_FACEBOOK_USE_DEFAULT_FULFILLMENT_LOCATION = 'facebook/orders_sync/default_fulfillment_location';
     const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1 = 'facebook/orders_sync/street_line1';
@@ -294,6 +295,16 @@ class Config
     public function isAutoNewsletterSubscriptionOn($scopeId = null, $scope = null)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return bool
+     */
+    public function getOrderShipEvent($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_ORDER_SHIP_EVENT, $scopeId, $scope);
     }
 
     /**

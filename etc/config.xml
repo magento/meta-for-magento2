@@ -25,6 +25,8 @@
                 <default_order_status>pending</default_order_status>
                 <auto_subscribe_to_newsletter>0</auto_subscribe_to_newsletter>
                 <default_fulfillment_location>1</default_fulfillment_location>
+                <!-- Supported events: sales_order_shipment_save_after, sales_order_shipment_track_save_after -->
+                <order_ship_event>sales_order_shipment_save_after</order_ship_event>
             </orders_sync>
             <debug>
                 <debug_mode>1</debug_mode>

@@ -9,6 +9,9 @@
     <event name="sales_order_shipment_save_after">
         <observer name="facebook_order_mark_as_shipped" instance="Facebook\BusinessExtension\Observer\Order\MarkAsShipped" />
     </event>
+    <event name="sales_order_shipment_track_save_after">
+        <observer name="facebook_order_mark_as_shipped" instance="Facebook\BusinessExtension\Observer\Order\MarkAsShipped" />
+    </event>
     <event name="order_cancel_after">
         <observer name="facebook_order_cancel" instance="Facebook\BusinessExtension\Observer\Order\Cancel" />
     </event>

@@ -18,6 +18,10 @@ use Psr\Log\LoggerInterface;
 
 class Shipper
 {
+    const MAGENTO_EVENT_SHIPMENT_SAVE_AFTER = 'sales_order_shipment_save_after';
+
+    const MAGENTO_EVENT_TRACKING_SAVE_AFTER = 'sales_order_shipment_track_save_after';
+
     /**
      * @var SystemConfig
      */
@@ -54,6 +58,15 @@ class Shipper
         $this->logger = $logger;
         $this->commerceHelper = $commerceHelper;
         $this->shippingHelper = $shippingHelper;
+    }
+
+    /**
+     * @param null $storeId
+     * @return bool
+     */
+    public function getOrderShipEvent($storeId = null)
+    {
+        return $this->systemConfig->getOrderShipEvent($storeId);
     }
 
     /**
