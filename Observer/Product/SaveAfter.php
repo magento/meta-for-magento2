@@ -13,7 +13,6 @@ use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Store\Model\ScopeInterface;
 
 class SaveAfter implements ObserverInterface
 {
@@ -48,8 +47,7 @@ class SaveAfter implements ObserverInterface
         FBEHelper $helper,
         BatchApi $batchApi,
         GraphAPIAdapter $graphApiAdapter
-    )
-    {
+    ) {
         $this->systemConfig = $systemConfig;
         $this->fbeHelper = $helper;
         $this->batchApi = $batchApi;

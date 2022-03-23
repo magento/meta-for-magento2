@@ -3,9 +3,6 @@
     <event name="catalog_product_delete_after_done">
         <observer name="facebook_product_delete_after" instance="Facebook\BusinessExtension\Observer\Product\DeleteAfter" />
     </event>
-    <event name="catalog_product_save_after">
-        <observer name="facebook_product_save_after" instance="Facebook\BusinessExtension\Observer\Product\SaveAfter" />
-    </event>
     <event name="sales_order_shipment_save_after">
         <observer name="facebook_order_mark_as_shipped" instance="Facebook\BusinessExtension\Observer\Order\MarkAsShipped" />
     </event>
