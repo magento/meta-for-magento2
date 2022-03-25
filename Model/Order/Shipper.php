@@ -93,6 +93,30 @@ class Shipper
     }
 
     /**
+     * @param $address
+     * @throws LocalizedException
+     */
+    private function validateFulfillmentAddress($address)
+    {
+        $requiredFields = [
+            'street_1'    => __('Street Address 1'),
+            'country'     => __('Country'),
+            'state'       => __('Region/State'),
+            'city'        => __('City'),
+            'postal_code' => __('Zip/Postal Code')
+        ];
+        $missingFields = array_filter($requiredFields, function ($field) use ($address) {
+            return empty($address[$field]);
+        }, ARRAY_FILTER_USE_KEY);
+        if (!empty($missingFields)) {
+            throw new LocalizedException(__(
+                'Please provide the required fields: %1 in the Fulfillment Address section.',
+                implode(', ', array_values($missingFields))
+            ));
+        }
+    }
+
+    /**
      * @param Shipment $shipment
      * @throws LocalizedException
      * @throws GuzzleException
@@ -132,8 +156,15 @@ class Shipper
             'carrier' => $this->getCarrierCodeForFacebook($track),
         ];
 
+        $fulfillmentAddress = [];
+        if (!$this->systemConfig->shouldUseDefaultFulfillmentAddress($storeId)) {
+            $fulfillmentAddress = $this->systemConfig->getFulfillmentAddress($storeId);
+            $this->validateFulfillmentAddress($fulfillmentAddress);
+            $fulfillmentAddress['state'] = $this->shippingHelper->getRegionName($fulfillmentAddress['state']);
+        }
+
         $this->commerceHelper->setStoreId($storeId)
-            ->markOrderAsShipped($fbOrderId, $itemsToShip, $trackingInfo);
+            ->markOrderAsShipped($fbOrderId, $itemsToShip, $trackingInfo, $fulfillmentAddress);
         $shipment->getOrder()->addCommentToStatusHistory("Marked order as shipped on Facebook with {$track->getTitle()}. Tracking #: {$track->getNumber()}.");
 
         // @todo Update order totals

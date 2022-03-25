@@ -496,7 +496,7 @@ class CommerceHelper extends AbstractHelper
      * @param array $fulfillmentAddressData
      * @throws GuzzleException
      */
-    public function markOrderAsShipped($fbOrderId, $items, $trackingInfo, array $fulfillmentAddressData)
+    public function markOrderAsShipped($fbOrderId, $items, $trackingInfo, array $fulfillmentAddressData = [])
     {
         $this->graphAPIAdapter->markOrderAsShipped($fbOrderId, $items, $trackingInfo, $fulfillmentAddressData);
     }
