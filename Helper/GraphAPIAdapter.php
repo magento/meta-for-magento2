@@ -53,7 +53,7 @@ class GraphAPIAdapter
         $this->accessToken = $systemConfig->getAccessToken();
         $this->client = new Client([
             'base_uri' => "https://graph.facebook.com/v{$this->graphAPIVersion}/",
-            'timeout'  => 60,
+            'timeout' => 60,
         ]);
         $this->debugMode = $systemConfig->isDebugMode();
     }
@@ -284,6 +284,7 @@ class GraphAPIAdapter
             'selected_shipping_option',
             'shipping_address{first_name, last_name, street1, street2, city, postal_code, country}',
             'payments',
+            'promotion_details{applied_amount, coupon_code}',
             'last_updated',
         ];
         $request = [
@@ -311,6 +312,7 @@ class GraphAPIAdapter
             'quantity',
             'price_per_unit',
             'tax_details',
+            'product_id'
         ];
         $request = [
             'access_token' => $this->accessToken,
@@ -354,10 +356,10 @@ class GraphAPIAdapter
             'idempotency_key' => $this->getUniqId(),
             'items' => json_encode($items),
             'tracking_info' => json_encode($trackingInfo),];
-        if($fulfillmentAddressData){
+        if ($fulfillmentAddressData) {
             $request['should_use_default_fulfillment_location'] = false;
             $request['fulfillment']['fulfillment_address'] = $fulfillmentAddressData;
-        } else{
+        } else {
             $request['should_use_default_fulfillment_location'] = true;
         }
         $response = $this->callApi('POST', "{$fbOrderId}/shipments", $request);
@@ -413,5 +415,23 @@ class GraphAPIAdapter
         $response = $this->callApi('POST', "{$fbOrderId}/refunds", $request);
         $response = json_decode($response->getBody(), true);
         return $response;
+    }
+
+    /**
+     * @param $productId
+     * @return array|mixed|object
+     */
+    public function getProductInfo($productId)
+    {
+        $requestFields = [
+            'price'
+        ];
+
+        $request = [
+            'access_token' => $this->accessToken,
+            'fields' => implode(',', $requestFields),
+        ];
+        $response = $this->callApi('GET', "{$productId}", $request);
+        return json_decode($response->getBody(), true);
     }
 }

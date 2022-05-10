@@ -150,23 +150,24 @@ class CommerceHelper extends AbstractHelper
      * @param AttributeOptionCollection $attributeOptionCollection
      */
     public function __construct(
-        Context $context,
-        ObjectManagerInterface $objectManager,
-        StoreManagerInterface $storeManager,
-        OrderManagement $orderManagement,
-        CustomerFactory $customerFactory,
-        CustomerRepositoryInterface $customerRepository,
-        GraphAPIAdapter $graphAPIAdapter,
-        OrderService $orderService,
-        SystemConfig $systemConfig,
-        LoggerInterface $logger,
-        OrderExtensionFactory $orderExtensionFactory,
+        Context                       $context,
+        ObjectManagerInterface        $objectManager,
+        StoreManagerInterface         $storeManager,
+        OrderManagement               $orderManagement,
+        CustomerFactory               $customerFactory,
+        CustomerRepositoryInterface   $customerRepository,
+        GraphAPIAdapter               $graphAPIAdapter,
+        OrderService                  $orderService,
+        SystemConfig                  $systemConfig,
+        LoggerInterface               $logger,
+        OrderExtensionFactory         $orderExtensionFactory,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
-        ProductIdentifier $productIdentifier,
-        ProductRepository $productRepository,
-        ConfigurableType $configurableType,
-        AttributeOptionCollection $attributeOptionCollection
-    ) {
+        ProductIdentifier             $productIdentifier,
+        ProductRepository             $productRepository,
+        ConfigurableType              $configurableType,
+        AttributeOptionCollection     $attributeOptionCollection
+    )
+    {
         $this->storeManager = $storeManager;
         $this->objectManager = $objectManager;
         $this->orderManagement = $orderManagement;
@@ -279,18 +280,29 @@ class CommerceHelper extends AbstractHelper
     protected function getOrderItem(array $item)
     {
         $product = $this->productIdentifier->getProductByFacebookRetailerId($item['retailer_id']);
+        try {
+            $productInfo = $this->graphAPIAdapter->getProductInfo($item['product_id']);
+        } catch (Exception $e) {
+            $this->exceptions[] = $e->getMessage();
+            $this->logger->critical($e->getMessage());
+        }
+        $price = $item['price_per_unit']['amount'];
+        //this returns amount without $, ex: $100.00 -> 100.00
+        $originalPrice = substr($productInfo['price'], 1);
+        $quantity = $item['quantity'];
+        $taxAmount = $item['tax_details']['estimated_tax']['amount'];
 
         /** @var OrderItem $orderItem */
         $orderItem = $this->objectManager->create(OrderItem::class);
         $orderItem->setProductId($product->getId())
             ->setSku($product->getSku())
             ->setName($product->getName())
-            ->setQtyOrdered($item['quantity'])
-            ->setBasePrice($item['price_per_unit']['amount'])
-            ->setOriginalPrice($item['price_per_unit']['amount'])
-            ->setPrice($item['price_per_unit']['amount'])
-            ->setTaxAmount($item['tax_details']['estimated_tax']['amount'])
-            ->setRowTotal($item['price_per_unit']['amount'] * $item['quantity'])
+            ->setQtyOrdered($quantity)
+            ->setBasePrice($price)
+            ->setOriginalPrice($originalPrice)
+            ->setPrice($price)
+            ->setTaxAmount($taxAmount)
+            ->setRowTotal($price * $quantity)
             ->setProductType($product->getTypeId());
 
         $productOptions = $this->getProductOptions($product, $orderItem);
@@ -339,6 +351,7 @@ class CommerceHelper extends AbstractHelper
             'telephone' => '0', // is required by magento
             'country_id' => $data['shipping_address']['country'] // maps 1:1
         ];
+        $promotionDetails = $data['promotion_details'] ?? null;
         $channel = ucfirst($data['channel']);
         $shippingOptionName = $data['selected_shipping_option']['name'];
         //var_dump($data); die();
@@ -403,6 +416,17 @@ class CommerceHelper extends AbstractHelper
             $order->addItem($this->getOrderItem($item));
         }
 
+        if ($promotionDetails) {
+            $discountAmount = -($promotionDetails['data'][0]['applied_amount']['amount']);
+            $couponCode = $promotionDetails['data'][0]['coupon_code'] ?? '';
+            $order->setDiscountAmount($discountAmount);
+            $order->setBaseDiscountAmount($discountAmount);
+            $order->setSubtotalWithDiscount($orderSubtotalAmount);
+            $order->setBaseSubtotalWithDiscount($orderSubtotalAmount);
+            if ($couponCode) {
+                $order->setDiscountDescription($couponCode);
+            }
+        }
         $order->addCommentToStatusHistory("Imported order #{$facebookOrderId} from {$channel}.");
         $order->setCanSendNewEmailFlag(false);
 
