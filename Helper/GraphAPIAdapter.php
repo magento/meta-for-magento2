@@ -311,6 +311,7 @@ class GraphAPIAdapter
             'retailer_id',
             'quantity',
             'price_per_unit',
+            'is_price_per_unit_tax_inclusive',
             'tax_details',
             'product_id'
         ];

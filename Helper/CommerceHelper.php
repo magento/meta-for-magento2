@@ -286,11 +286,17 @@ class CommerceHelper extends AbstractHelper
             $this->exceptions[] = $e->getMessage();
             $this->logger->critical($e->getMessage());
         }
-        $price = $item['price_per_unit']['amount'];
+        $pricePerUnit = $item['price_per_unit']['amount'];
+        $isPricePerUnitTaxInclusive = $item['is_price_per_unit_tax_inclusive'] ?? false;
         //this returns amount without $, ex: $100.00 -> 100.00
         $originalPrice = substr($productInfo['price'], 1);
         $quantity = $item['quantity'];
         $taxAmount = $item['tax_details']['estimated_tax']['amount'];
+
+        $rowTotal = $pricePerUnit * $quantity;
+        if ($isPricePerUnitTaxInclusive) {
+            $rowTotal -= $taxAmount;
+        }
 
         /** @var OrderItem $orderItem */
         $orderItem = $this->objectManager->create(OrderItem::class);
@@ -298,11 +304,11 @@ class CommerceHelper extends AbstractHelper
             ->setSku($product->getSku())
             ->setName($product->getName())
             ->setQtyOrdered($quantity)
-            ->setBasePrice($price)
+            ->setBasePrice($pricePerUnit)
             ->setOriginalPrice($originalPrice)
-            ->setPrice($price)
+            ->setPrice($pricePerUnit)
             ->setTaxAmount($taxAmount)
-            ->setRowTotal($price * $quantity)
+            ->setRowTotal($rowTotal)
             ->setProductType($product->getTypeId());
 
         $productOptions = $this->getProductOptions($product, $orderItem);
