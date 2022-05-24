@@ -1,0 +1,58 @@
+<?php /* @var $block \Facebook\BusinessExtension\Block\Adminhtml\System\Config\PushPromotions */ ?>
+
+<script>
+    require([
+        'jquery',
+        'prototype'
+    ], function (jQuery) {
+        const resultBlock = jQuery('#fb_push_promotions_result');
+        const responseToggle = jQuery('#fb_push_promotions_result_response_toggle');
+        const responseTextBlock = jQuery('#fb_push_promotions_result_response');
+
+        responseToggle.click(function () {
+            responseTextBlock.toggle();
+        });
+
+        jQuery('#fb_push_promotions_btn').click(function () {
+            const params = {};
+            new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+                parameters: params,
+                loaderArea: false,
+                asynchronous: true,
+                onCreate: function () {
+                    resultBlock.find('.fb-push-promotions-finished').hide();
+                    resultBlock.find('.fb-push-promotions-processing').show();
+                    jQuery('#fb_push_promotions_result_text').text('');
+                    responseToggle.hide();
+                    responseTextBlock.hide();
+                },
+                onSuccess: function (response) {
+                    resultBlock.find('.fb-push-promotions-processing').hide();
+
+                    let resultText = '';
+                    let resultResponse = '';
+                    if (response.status > 200) {
+                        resultText = response.statusText;
+                    } else {
+                        resultResponse = ' (' + response.responseText + ')';
+                        resultText = 'Finished';
+                        resultBlock.find('.fb-push-promotions-finished').show();
+                    }
+                    jQuery('#fb_push_promotions_result_text').text(resultText);
+                    jQuery('#fb_push_promotions_result_response').text(resultResponse);
+                    responseToggle.show();
+                }
+            });
+        });
+
+    });
+</script>
+
+<?php echo $block->getButtonHtml() ?>
+<span id="fb_push_promotions_result">
+    <img class="fb-push-promotions-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src="<?php echo $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
+    <img class="fb-push-promotions-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <span id="fb_push_promotions_result_text"></span>
+    <span id="fb_push_promotions_result_response_toggle" style="display: none; cursor: pointer; color: #888a85; text-decoration: underline;">(response)</span>
+    <div id="fb_push_promotions_result_response" style="display: none; color: #888a85; font-size: 13px; max-width: 459px; margin: 2px 0;"></div>
+</span>

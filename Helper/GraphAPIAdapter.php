@@ -195,11 +195,29 @@ class GraphAPIAdapter
 
     public function getCatalogFeeds($catalogId)
     {
+
+        $requestFields = [
+            'id',
+            'file_name',
+            'name',
+            'catalog_item_type',
+        ];
+
+
         $response = $this->callApi('GET', "{$catalogId}/product_feeds", [
             'access_token' => $this->accessToken,
+            'fields' => implode(',', $requestFields),
         ]);
         $response = json_decode($response->getBody(), true);
         return $response['data'];
+    }
+
+    public function getOfferFeeds($catalogId)
+    {
+        $catalogFeeds = $this->getCatalogFeeds($catalogId);
+        return array_filter($catalogFeeds, function ($row) {
+            return $row['catalog_item_type'] === 'OFFER_ITEM';
+        });
     }
 
     public function getFeed($feedId)
@@ -211,15 +229,21 @@ class GraphAPIAdapter
         return $response;
     }
 
-    public function createEmptyFeed($catalogId, $name)
+    public function createEmptyFeed($catalogId, $name, $isPromotion = false)
     {
-        $response = $this->callApi('POST', "{$catalogId}/product_feeds", [
-            'access_token' => $this->accessToken,
-            'name' => $name,
-        ]);
+        $request =
+            [
+                'access_token' => $this->accessToken,
+                'name' => $name,
+            ];
+        if ($isPromotion) {
+            $request['feed_type'] = 'OFFER';
+        }
+        $response = $this->callApi('POST', "{$catalogId}/product_feeds", $request);
         $response = json_decode($response->getBody(), true);
         return $response['id'];
     }
+
 
     /**
      * @param $feedId
@@ -227,6 +251,16 @@ class GraphAPIAdapter
      * @return mixed
      */
     public function pushProductFeed($feedId, $feed)
+    {
+        return $this->pushFeed($feedId, $feed);
+    }
+
+    /**
+     * @param $feedId
+     * @param $feed
+     * @return mixed
+     */
+    public function pushFeed($feedId, $feed)
     {
         $endpoint = "https://graph.facebook.com/v{$this->graphAPIVersion}/$feedId/uploads";
 

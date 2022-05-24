@@ -262,7 +262,18 @@
                     <source_model>Facebook\BusinessExtension\Model\Config\Source\ActiveShippingMethods</source_model>
                 </field>
             </group>
-            <group id="debug" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Promotions</label>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
+                <field id="push_promotions" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Push Promotions</label>
+                    <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\PushPromotions</frontend_model>
+                    <comment>Manually push promotions on Magento to Facebook</comment>
+                </field>
+            </group>
+            <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Debug</label>
                 <depends>
 <!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
