@@ -423,14 +423,26 @@ class CommerceHelper extends AbstractHelper
         }
 
         if ($promotionDetails) {
-            $discountAmount = -($promotionDetails['data'][0]['applied_amount']['amount']);
-            $couponCode = $promotionDetails['data'][0]['coupon_code'] ?? '';
+            $discountAmount = 0;
+            $couponCodes = [];
+            foreach ($promotionDetails['data'] as $promotionDetail) {
+                if ($promotionDetail['target_granularity'] === 'order_level' && $promotionDetail['sponsor'] === 'merchant') {
+                    $discountAmount -= $promotionDetail['applied_amount']['amount'];
+                }
+                if (array_key_exists('coupon_code', $promotionDetail)) {
+                    $couponCodes[] = $promotionDetail['coupon_code'];
+                }
+            }
+            $discountDescription = null;
+            if (!empty($couponCodes)) {
+                $discountDescription = implode(", ", $couponCodes);
+            }
             $order->setDiscountAmount($discountAmount);
             $order->setBaseDiscountAmount($discountAmount);
             $order->setSubtotalWithDiscount($orderSubtotalAmount);
             $order->setBaseSubtotalWithDiscount($orderSubtotalAmount);
-            if ($couponCode) {
-                $order->setDiscountDescription($couponCode);
+            if ($discountDescription) {
+                $order->setDiscountDescription($discountDescription);
             }
         }
         $order->addCommentToStatusHistory("Imported order #{$facebookOrderId} from {$channel}.");

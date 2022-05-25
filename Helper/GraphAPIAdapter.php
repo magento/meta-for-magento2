@@ -318,7 +318,7 @@ class GraphAPIAdapter
             'selected_shipping_option',
             'shipping_address{first_name, last_name, street1, street2, city, postal_code, country}',
             'payments',
-            'promotion_details{applied_amount, coupon_code}',
+            'promotion_details{applied_amount, coupon_code, target_granularity, sponsor}',
             'last_updated',
         ];
         $request = [

@@ -18,7 +18,6 @@ use Magento\OfflineShipping\Model\SalesRule\Rule as ShippingRule;
 
 class Builder
 {
-    //todo convert for other currencies
     const MIN_SUBTOTAL = '%02.2f %s';
 
     //https://developers.facebook.com/docs/marketing-api/catalog/guides/offers-api#available-fields
