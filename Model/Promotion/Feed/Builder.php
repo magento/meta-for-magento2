@@ -125,11 +125,11 @@ class Builder
                 $entry += [self::ATTR_MIN_SUBTOTAL => $this->getMinSubtotal($rule)];
                 $entry += [self::ATTR_VALUE_TYPE => "PERCENTAGE"];
                 $entry += [self::ATTR_FIXED_AMOUNT_OFF => ""];
-                $entry += [self::ATTR_PERCENT_OFF => 100];
                 $entry += [self::ATTR_TARGET_GRANULARITY => "ITEM_LEVEL"];
                 $entry += [self::ATTR_TARGET_TYPE => 'SHIPPING'];
                 $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => "STANDARD"];
                 $entry += [self::ATTR_MIN_QUANTITY => '0'];
+                $entry += [self::ATTR_PERCENT_OFF => 100];
                 $entry += [self::ATTR_TARGET_QUANTITY => ''];
                 break;
             case ShippingRule::FREE_SHIPPING_ITEM:
@@ -140,25 +140,41 @@ class Builder
                         $entry += [self::ATTR_MIN_SUBTOTAL => $this->getMinSubtotal($rule)];
                         $entry += [self::ATTR_VALUE_TYPE => "PERCENTAGE"];
                         $entry += [self::ATTR_FIXED_AMOUNT_OFF => ""];
-                        $entry += [self::ATTR_PERCENT_OFF => intval($rule->getDiscountAmount())];
                         $entry += [self::ATTR_TARGET_GRANULARITY => "ORDER_LEVEL"];
                         $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
                         $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
                         $entry += [self::ATTR_MIN_QUANTITY => '0'];
+                        $entry += [self::ATTR_PERCENT_OFF => intval($rule->getDiscountAmount())];
                         $entry += [self::ATTR_TARGET_QUANTITY => ''];
                         break;
                     case "by_fixed":
                         $entry += [self::ATTR_MIN_SUBTOTAL => ''];
                         $entry += [self::ATTR_VALUE_TYPE => "FIXED_AMOUNT"];
                         $entry += [self::ATTR_FIXED_AMOUNT_OFF => intval($rule->getDiscountAmount())];
-                        $entry += [self::ATTR_PERCENT_OFF => ""];
                         $entry += [self::ATTR_TARGET_GRANULARITY => "ORDER_LEVEL"];
                         $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
                         $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
                         $entry += [self::ATTR_MIN_QUANTITY => '0'];
+                        $entry += [self::ATTR_PERCENT_OFF => ""];
                         $entry += [self::ATTR_TARGET_QUANTITY => ''];
                         break;
                     case "buy_x_get_y":
+                        $entry += [self::ATTR_MIN_SUBTOTAL => ''];
+                        $entry += [self::ATTR_VALUE_TYPE => "PERCENTAGE"];
+                        $entry += [self::ATTR_FIXED_AMOUNT_OFF => ''];
+                        $entry += [self::ATTR_TARGET_GRANULARITY => "ITEM_LEVEL"];
+                        $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
+                        $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
+                        $entry += [self::ATTR_MIN_QUANTITY => $rule->getDiscountStep()];
+                        $discountAmt = $rule->getDiscountAmount();
+                        if ($discountAmt < 1) {
+                            $entry += [self::ATTR_PERCENT_OFF => $discountAmt * 100];
+                            $entry += [self::ATTR_TARGET_QUANTITY => 1];
+                        } else {
+                            $entry += [self::ATTR_PERCENT_OFF => "100"];
+                            $entry += [self::ATTR_TARGET_QUANTITY => intval($discountAmt)];
+                        }
+                        break;
                     case "cart_fixed":
                     default:
                         throw new LocalizedException(__(sprintf('Unsupported discount action: %s', $action)));
@@ -205,11 +221,11 @@ class Builder
             self::ATTR_MIN_SUBTOTAL,
             self::ATTR_VALUE_TYPE,
             self::ATTR_FIXED_AMOUNT_OFF,
-            self::ATTR_PERCENT_OFF,
             self::ATTR_TARGET_GRANULARITY,
             self::ATTR_TARGET_TYPE,
             self::ATTR_TARGET_SHIPPING_OPTIONS,
             self::ATTR_MIN_QUANTITY,
+            self::ATTR_PERCENT_OFF,
             self::ATTR_TARGET_QUANTITY,
         ];
     }
