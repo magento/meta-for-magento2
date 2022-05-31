@@ -29,7 +29,7 @@ class Builder
     const ATTR_END_DATE = 'end_date_time';
     const ATTR_MIN_SUBTOTAL = 'min_subtotal';
     const ATTR_MIN_QUANTITY = 'min_quantity';
-
+    const ATTR_TARGET_FILTER = 'target_filter';
     const ATTR_REDEEM_LIMIT = 'redeem_limit_per_user';
     const ATTR_VALUE_TYPE = 'value_type';
     const ATTR_FIXED_AMOUNT_OFF = 'fixed_amount_off';
@@ -112,6 +112,14 @@ class Builder
                 throw new LocalizedException(__(sprintf('Unsupported coupon type: %s ', $couponType)));
         }
         $action = $rule->getSimpleAction();
+        $skus = $this->getMatchingSkus($rule);
+        if (!empty($skus)) {
+            $entry += [self::ATTR_TARGET_SELECTION => "SPECIFIC_PRODUCTS"];
+            $entry += [self::ATTR_TARGET_FILTER => "{'retailer_id': {'is_any':" . json_encode($skus) . "}}"];
+        } else {
+            $entry += [self::ATTR_TARGET_SELECTION => "ALL_CATALOG_PRODUCTS"];
+            $entry += [self::ATTR_TARGET_FILTER => null];
+        }
         switch ($isShipping) {
             case ShippingRule::FREE_SHIPPING_ADDRESS:
                 $entry += [self::ATTR_MIN_SUBTOTAL => $this->getMinSubtotal($rule)];
@@ -119,7 +127,6 @@ class Builder
                 $entry += [self::ATTR_FIXED_AMOUNT_OFF => ""];
                 $entry += [self::ATTR_PERCENT_OFF => 100];
                 $entry += [self::ATTR_TARGET_GRANULARITY => "ITEM_LEVEL"];
-                $entry += [self::ATTR_TARGET_SELECTION => "ALL_CATALOG_PRODUCTS"];
                 $entry += [self::ATTR_TARGET_TYPE => 'SHIPPING'];
                 $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => "STANDARD"];
                 $entry += [self::ATTR_MIN_QUANTITY => '0'];
@@ -135,7 +142,6 @@ class Builder
                         $entry += [self::ATTR_FIXED_AMOUNT_OFF => ""];
                         $entry += [self::ATTR_PERCENT_OFF => intval($rule->getDiscountAmount())];
                         $entry += [self::ATTR_TARGET_GRANULARITY => "ORDER_LEVEL"];
-                        $entry += [self::ATTR_TARGET_SELECTION => "ALL_CATALOG_PRODUCTS"];
                         $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
                         $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
                         $entry += [self::ATTR_MIN_QUANTITY => '0'];
@@ -147,7 +153,6 @@ class Builder
                         $entry += [self::ATTR_FIXED_AMOUNT_OFF => intval($rule->getDiscountAmount())];
                         $entry += [self::ATTR_PERCENT_OFF => ""];
                         $entry += [self::ATTR_TARGET_GRANULARITY => "ORDER_LEVEL"];
-                        $entry += [self::ATTR_TARGET_SELECTION => "ALL_CATALOG_PRODUCTS"];
                         $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
                         $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
                         $entry += [self::ATTR_MIN_QUANTITY => '0'];
@@ -179,7 +184,7 @@ class Builder
                 return sprintf(self::MIN_SUBTOTAL, $conditions[0]->getValue(), $this->getStoreCurrency());
             }
         }
-        throw new LocalizedException(__('Unsupported conditions'));
+        return null;
     }
 
     /**
@@ -195,17 +200,41 @@ class Builder
             self::ATTR_REDEEM_LIMIT,
             self::ATTR_PUBLIC_COUPON_CODE,
             self::ATTR_OFFER_APPLICATION_TYPE,
+            self::ATTR_TARGET_SELECTION,
+            self::ATTR_TARGET_FILTER,
             self::ATTR_MIN_SUBTOTAL,
             self::ATTR_VALUE_TYPE,
             self::ATTR_FIXED_AMOUNT_OFF,
             self::ATTR_PERCENT_OFF,
             self::ATTR_TARGET_GRANULARITY,
-            self::ATTR_TARGET_SELECTION,
             self::ATTR_TARGET_TYPE,
             self::ATTR_TARGET_SHIPPING_OPTIONS,
             self::ATTR_MIN_QUANTITY,
             self::ATTR_TARGET_QUANTITY,
         ];
+    }
+
+    private function getMatchingSkus($offer): array
+    {
+        //TODO this isn't a reliable way to get products that match for an offer
+        $skus = [];
+        $ruleData = $offer->getActionsSerialized();
+        if ($ruleData) {
+            $ruleDataArray = json_decode($ruleData, true);
+            if (isset($ruleDataArray['conditions'])) {
+                $conditions = $ruleDataArray['conditions'];
+                foreach ($conditions as $condition) {
+                    if ($condition['attribute'] === 'sku') {
+                        $skuValues = $condition['value'];
+                        $skuValues = explode(",", $skuValues);
+                        foreach ($skuValues as $skuValue) {
+                            $skus[] = $skuValue;
+                        }
+                    }
+                }
+            }
+        }
+        return $skus;
     }
 
     private function getStoreCurrency()
