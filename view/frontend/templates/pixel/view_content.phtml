@@ -8,7 +8,6 @@ if ($block->getFacebookPixelID()) {
         fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
         fbq('track', 'ViewContent', {
                 source: "<?= $block->getSource() ?>",
-                version: "<?= $block->getMagentoVersion() ?>",
                 pluginVersion: "<?= $block->getPluginVersion() ?>",
                 content_type: "<?= $block->getContentType() ?>",
                 content_ids: [<?= $block->getContentIDs() ?>]

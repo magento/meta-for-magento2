@@ -198,7 +198,7 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->objectManagerInterface->method('get')->willReturn($productMetadata);
         $this->assertEquals(
             sprintf('%s-%s-%s', $source, $magentoVersion, $pluginVersion),
-            $this->fbeHelper->getPartnerAgent()
+            $this->fbeHelper->getPartnerAgent(true)
         );
     }
 }

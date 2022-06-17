@@ -22,7 +22,6 @@ fbq(
 );
 fbq('track', 'PageView', {
   source: "<?= $block->getSource() ?>",
-  version: "<?= $block->getMagentoVersion() ?>",
   pluginVersion: "<?= $block->getPluginVersion() ?>"
 });
 </script>

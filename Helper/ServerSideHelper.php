@@ -65,7 +65,7 @@ class ServerSideHelper
 
             $request = (new EventRequestAsync($this->fbeHelper->getPixelID()))
                 ->setEvents($events)
-                ->setPartnerAgent($this->fbeHelper->getPartnerAgent());
+                ->setPartnerAgent($this->fbeHelper->getPartnerAgent(true));
 
             $this->fbeHelper->log('Sending event ' . $event->getEventId());
 

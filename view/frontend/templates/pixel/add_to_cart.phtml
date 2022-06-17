@@ -9,7 +9,6 @@
                 fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
                 fbq('track', 'AddToCart', {
                         source: "<?= $block->getSource() ?>",
-                        version: "<?= $block->getMagentoVersion() ?>",
                         pluginVersion: "<?= $block->getPluginVersion() ?>",
                         content_type: "<?= $block->getContentType() ?>",
                         currency: "<?= $block->getCurrency() ?>",
