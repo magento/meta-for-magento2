@@ -73,7 +73,7 @@ class Simple implements ProductRetrieverInterface
             ->setStoreId($storeId);
 
         $collection
-            ->getSelect()->joinLeft(['l' => 'catalog_product_super_link'], 'e.entity_id = l.product_id')
+            ->getSelect()->joinLeft(['l' => $collection->getTable('catalog_product_super_link')], 'e.entity_id = l.product_id')
             ->where('l.product_id IS NULL')
             ->order(new \Zend_Db_Expr('e.updated_at desc'))
             ->limit($limit, $offset);
