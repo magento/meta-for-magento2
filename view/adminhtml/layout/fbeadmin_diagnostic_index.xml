@@ -8,5 +8,8 @@
         <css src="Facebook_BusinessExtension::css/fbe.css"/>
     </head>
     <body>
+        <referenceContainer name="content">
+            <block class="Facebook\BusinessExtension\Block\Adminhtml\Diagnostics" template="Facebook_BusinessExtension::diagnostics.phtml"/>
+        </referenceContainer>
     </body>
 </page>

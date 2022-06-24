@@ -22,11 +22,11 @@
                 action="fbeadmin/setup"
                 resource="Facebook_BusinessExtension::facebook"/>
         <add
-                id="Facebook_BusinessExtension::feed"
+                id="Facebook_BusinessExtension::diagnostic"
                 title="Catalog Diagnostics"
                 translate="title"
                 module="Facebook_BusinessExtension"
-                parent="Facebook_BusinessExtension::diagnostic"
+                parent="Facebook_BusinessExtension::facebook"
                 sortOrder="20"
                 dependsOnModule="Facebook_BusinessExtension"
                 action="fbeadmin/diagnostic"

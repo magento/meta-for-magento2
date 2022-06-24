@@ -469,4 +469,17 @@ class GraphAPIAdapter
         $response = $this->callApi('GET', "{$productId}", $request);
         return json_decode($response->getBody(), true);
     }
+
+    public function getCatalogDiagnostics($catalogId)
+    {
+
+        $request = [
+            'access_token' => $this->accessToken,
+            'fields' => 'diagnostics'
+        ];
+
+        $response = $this->callApi('GET', "{$catalogId}", $request);
+        return json_decode($response->getBody(), true);
+    }
+
 }

@@ -1,0 +1,38 @@
+<?php /** @var Facebook\BusinessExtension\Block\Adminhtml\Diagnostics $block */
+$report = $block->getReport();
+?>
+
+<?php if (!empty($report)): ?>
+    <?php /** @var Magento\Framework\Escaper $escaper */
+    $table = "<style>
+th, td {
+  padding: 15px;
+}
+</style>
+<table>";
+    $table .= "<tr><th>Title</th><th>Severity</th><th>Type</th><th>Diagnostics Description</th></tr>";
+
+    foreach ($report as $item) {
+        $table .= "<tr>";
+        $table .= "<td>" . $escaper->escapeHtml($item['title']) . "</td>";
+        $table .= "<td>" . $escaper->escapeHtml($item['severity']) . "</td>";
+        $table .= "<td>" . $escaper->escapeHtml($item['type']) . "</td>";
+        $table .= "<td>";
+        $diagnostics = $item['diagnostics'];
+        $table .= "<ul>";
+        foreach ($diagnostics as $diagnostic) {
+            $table .= "<li>" . $escaper->escapeHtml($diagnostic['description']) . "</li>";
+        }
+        $table .= "</ul>";
+        $table .= "</td>";
+        $table .= "</tr>";
+    }
+    $table .= "</table>";
+    echo $table;
+    ?>
+
+<?php else: ?>
+    <p>Report is not available</p>
+<?php endif; ?>
+
+
