@@ -28,8 +28,8 @@ class ResetSettings extends AbstractAjax
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
-        GraphAPIAdapter $graphApiAdapter)
-    {
+        GraphAPIAdapter $graphApiAdapter
+    ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
@@ -37,13 +37,18 @@ class ResetSettings extends AbstractAjax
 
     public function executeForJson()
     {
-        $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID)
-            ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE, SystemConfig::ONBOARDING_STATE_PENDING)
-            ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, 0)
+        $storeId = $this->getRequest()->getParam('store');
+        $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $storeId)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $storeId)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $storeId)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $storeId)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $storeId)
+            ->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE,
+                SystemConfig::ONBOARDING_STATE_PENDING,
+                $storeId
+            )
+            ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, 0, $storeId)
             ->cleanCache();
 
         $successMessage = __('Successfully removed core configuration data.');

@@ -6,7 +6,6 @@
     }
 </style>
 
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v7.0&appId=<?= $block->getAppId() ?>&autoLogAppEvents=1" nonce="kLhUXZDc"></script>
 <script>
     const FacebookOnboarding = {
         skipShopCreation: function () {
@@ -20,30 +19,8 @@
             });
         },
         init: function() {
-            FB.init({
-                appId   : '<?= $block->getAppId() ?>',
-                cookie  : true,    // Enable cookies to allow the server to access the session.
-                xfbml   : true,    // Parse social plugins on this webpage.
-                version : 'v8.0'   // Use this Graph API version for this call.
-            });
-
             FB.getLoginStatus(function(response) {   // Called after the JS SDK has been initialized.
                 FacebookOnboarding.statusChangeCallback(response);        // Returns the login status.
-            });
-        },
-        onLogin: function() {                      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
-            console.log('Welcome! Fetching your information.... ');
-            FB.api('/me', function(response) {
-                console.log(response);
-                console.log('Successful login for: ' + response.name);
-                document.getElementById('fb_status').innerHTML = '';
-
-                document.getElementById('fb_onboarding_step_2').style.color = 'grey';
-                document.getElementById('fb_onboarding_step_2_img').style.display = 'inline-block';
-                document.getElementById('fb_onboarding_step_3').style.display = 'inline-block';
-
-                document.getElementById('fb_button').style.display = 'none';
-                setTimeout(function(){ location.reload(); }, 5000);
             });
         },
         statusChangeCallback: function (response) {  // Called with the results from FB.getLoginStatus().
@@ -51,17 +28,21 @@
             console.log(response);                   // The current login status of the person.
             if (response.status === 'connected') {   // Logged into your webpage and Facebook.
                 const accessToken = response.authResponse.accessToken;
-                FB.api('/me/accounts', function(response) {
-                    const token = response.data[0].access_token;
-                    console.log('Fetched page access token ' + token);
-                    FacebookOnboarding.persistPageAccessToken(token);
-                });
-                FacebookOnboarding.onLogin();
+                console.log('Fetched access token ' + accessToken);
+                FacebookOnboarding.persistAccessToken(accessToken);
+                document.getElementById('fb_status').innerHTML = '';
+
+                document.getElementById('fb_onboarding_step_2').style.color = 'grey';
+                document.getElementById('fb_onboarding_step_2_img').style.display = 'inline-block';
+                document.getElementById('fb_onboarding_step_3').style.display = 'inline-block';
+
+                document.getElementById('fb_button').style.display = 'none';
+                setTimeout(function(){ location.reload(); }, 2000);
             } else {   // Not logged into your webpage or we are unable to tell.
                 document.getElementById('fb_status').innerHTML = '';
             }
         },
-        persistPageAccessToken: function (access_token) {
+        persistAccessToken: function (access_token) {
             new Ajax.Request('<?= $block->getPersistAccessTokenUrl() ?>', {
                 parameters: {access_token: access_token},
                 onSuccess: function (response) {
@@ -79,6 +60,9 @@
                         console.log(response);
                         location.reload();
                     }
+                });
+                FB.logout(function(response) {
+                    console.log('User is now logged out');
                 });
             } else {
                 // Do nothing!
@@ -126,7 +110,24 @@
                 FacebookOnboarding.statusChangeCallback(response);
             });
         }
-        window.fbAsyncInit = FacebookOnboarding.init();
+
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '<?= $block->getAppId() ?>',
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v13.0'
+            });
+            FacebookOnboarding.init();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
     </script>
 
     <div id="fb_button" class="fb-login-button"
@@ -143,4 +144,27 @@
     <div id="fb_status"></div>
 <?php elseif ($block->getOnboardingState() == \Facebook\BusinessExtension\Model\System\Config::ONBOARDING_STATE_COMPLETED): ?>
     <p>Completed (<a href="javascript:void(0);" onclick="FacebookOnboarding.resetSettings();">Reset settings</a>)</p>
+
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '<?= $block->getAppId() ?>',
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v13.0'
+            });
+            FB.getLoginStatus(function(response) {
+                // do nothing
+            });
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
 <?php endif; ?>

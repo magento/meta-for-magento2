@@ -12,24 +12,24 @@
             <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Setup</label>
                 <attribute type="expanded">1</attribute>
-<!--                <field id="onboarding" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">-->
-<!--                    <label>Onboarding</label>-->
-<!--                    <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\Onboarding</frontend_model>-->
-<!--                </field>-->
-<!--                <field id="onboarding_state" translate="label comment" type="hidden" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">-->
-<!--                    <label>Onboarding State</label>-->
-<!--                    <config_path>facebook/business_extension/onboarding_state</config_path>-->
-<!--                </field>-->
+                <field id="onboarding" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Onboarding</label>
+                    <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\Onboarding</frontend_model>
+                </field>
+                <field id="onboarding_state" translate="label comment" type="hidden" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Onboarding State</label>
+                    <config_path>facebook/business_extension/onboarding_state</config_path>
+                </field>
                 <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Activate Integration</label>
-<!--                    <depends><field id="facebook_business_extension/business_extension/onboarding_state">4</field></depends>-->
+                    <depends><field id="facebook_business_extension/business_extension/onboarding_state">4</field></depends>
                     <config_path>facebook/business_extension/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="page_id" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Page ID</label>
                     <depends>
-<!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <config_path>facebook/business_extension/page_id</config_path>
@@ -37,7 +37,7 @@
                 <field id="catalog_id" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Catalog ID</label>
                     <depends>
-<!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <config_path>facebook/business_extension/catalog_id</config_path>
@@ -46,7 +46,7 @@
                 <field id="commerce_account_id" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Commerce Account ID</label>
                     <depends>
-<!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <config_path>facebook/business_extension/commerce_account_id</config_path>
@@ -54,7 +54,7 @@
                 <field id="access_token" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>API Access Token</label>
                     <depends>
-<!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <config_path>facebook/business_extension/access_token</config_path>
@@ -63,7 +63,7 @@
                 <field id="store" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Store</label>
                     <depends>
-<!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <config_path>facebook/business_extension/store</config_path>
@@ -73,7 +73,7 @@
                 <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Module Info</label>
                     <depends>
-<!--                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                        <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo</frontend_model>
@@ -82,7 +82,7 @@
             <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Catalog Management</label>
                 <depends>
-<!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="daily_product_feed" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
@@ -129,7 +129,7 @@
             <group id="inventory_management" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Inventory Management</label>
                 <depends>
-<!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="use_multi_source_inventory" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -162,7 +162,7 @@
             <group id="orders_sync" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Orders Sync</label>
                 <depends>
-<!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
@@ -243,7 +243,7 @@
             <group id="shipping_methods" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Shipping Methods Mapping</label>
                 <depends>
-<!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="standard" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
@@ -265,6 +265,7 @@
             <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Promotions</label>
                 <depends>
+                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="push_promotions" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
@@ -276,7 +277,7 @@
             <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Debug</label>
                 <depends>
-<!--                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>-->
+                    <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">

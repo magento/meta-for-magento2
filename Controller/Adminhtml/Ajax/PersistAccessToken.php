@@ -28,8 +28,8 @@ class PersistAccessToken extends AbstractAjax
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
-        GraphAPIAdapter $graphApiAdapter)
-    {
+        GraphAPIAdapter $graphApiAdapter
+    ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
@@ -39,41 +39,48 @@ class PersistAccessToken extends AbstractAjax
     {
         $response = [];
         $accessToken = $this->getRequest()->getParam('access_token');
+        $storeId = $this->getRequest()->getParam('store');
         if ($accessToken) {
 
             // @todo Implement OBO
 
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $accessToken)
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $accessToken, $storeId)
                 ->cleanCache();
 
-            $commerceAccountId = $this->systemConfig->getCommerceAccountId();
+            $pageId = $this->graphApiAdapter->getPageIdFromUserToken($accessToken);
+            if (!$pageId) {
+                $response['success'] = false;
+                $response['message'] = __('Cannot fetch page ID');
+                return $response;
+            }
+
+            $commerceAccountId = $this->systemConfig->getCommerceAccountId($storeId);
 
             if (!$commerceAccountId) {
-                $commerceAccountId = $this->graphApiAdapter->getPageMerchantSettingsId($accessToken);
+                $commerceAccountId = $this->graphApiAdapter->getPageMerchantSettingsId($accessToken, $pageId);
                 if (!$commerceAccountId) {
                     $response['success'] = false;
                     $response['message'] = __('Cannot fetch commerce account ID');
                     return $response;
                 }
-                $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId);
+                $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId, $storeId);
             }
 
             $commerceAccountData = $this->graphApiAdapter->getCommerceAccountData($commerceAccountId, $accessToken);
 
-            $pageId = $commerceAccountData['page_id'];
             $catalogId = $commerceAccountData['catalog_id'];
 
-            if (!$pageId || !$catalogId) {
+            if (!$catalogId) {
                 $response['success'] = false;
-                $response['message'] = __('Error persisting page and catalog ID');
+                $response['message'] = __('Cannot fetch catalog ID');
                 return $response;
             }
 
             $this->graphApiAdapter->associateMerchantSettingsWithApp($commerceAccountId, $accessToken);
 
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId)
-                ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId)
-                ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE, SystemConfig::ONBOARDING_STATE_COMPLETED)
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId, $storeId)
+                ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId, $storeId)
+                ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE, SystemConfig::ONBOARDING_STATE_COMPLETED, $storeId)
                 ->cleanCache();
 
             $response['success'] = true;

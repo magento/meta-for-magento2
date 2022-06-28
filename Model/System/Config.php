@@ -105,8 +105,7 @@ class Config
         ResourceConfig        $resourceConfig,
         ModuleListInterface   $moduleList,
         TypeListInterface     $cacheTypeList
-    )
-    {
+    ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;
@@ -119,7 +118,7 @@ class Config
      */
     public function getAppId()
     {
-        return '1718676831733203';
+        return '1843036385894568';
     }
 
     public function getModuleVersion()
@@ -352,7 +351,11 @@ class Config
      */
     public function deleteConfig($path, $storeId = null)
     {
-        $this->resourceConfig->deleteConfig($path, ScopeInterface::SCOPE_STORES, $storeId);
+        if ($storeId) {
+            $this->resourceConfig->deleteConfig($path, ScopeInterface::SCOPE_STORES, $storeId);
+        } else {
+            $this->resourceConfig->deleteConfig($path);
+        }
         return $this;
     }
 

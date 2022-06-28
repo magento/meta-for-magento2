@@ -28,8 +28,8 @@ class SkipShopCreation extends AbstractAjax
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
-        GraphAPIAdapter $graphApiAdapter)
-    {
+        GraphAPIAdapter $graphApiAdapter
+    ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
@@ -37,7 +37,12 @@ class SkipShopCreation extends AbstractAjax
 
     public function executeForJson()
     {
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE, SystemConfig::ONBOARDING_STATE_IN_PROGRESS_EXISTING_SHOP)
+        $storeId = $this->getRequest()->getParam('store');
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE,
+            SystemConfig::ONBOARDING_STATE_IN_PROGRESS_EXISTING_SHOP,
+            $storeId
+        )
             ->cleanCache();
 
         $successMessage = __('Successfully updated onboarding state.');

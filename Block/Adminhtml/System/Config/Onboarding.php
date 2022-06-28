@@ -67,11 +67,19 @@ class Onboarding extends Field
     }
 
     /**
+     * @return mixed
+     */
+    protected function getStoreId()
+    {
+        return $this->getRequest()->getParam('store');
+    }
+
+    /**
      * @return string
      */
     protected function getRedirectUrl()
     {
-        return $this->getUrl('fbeadmin/setup/registerMerchantSettings');
+        return $this->getUrl('fbeadmin/setup/registerMerchantSettings', ['store' => $this->getStoreId()]);
     }
 
     /**
@@ -79,7 +87,7 @@ class Onboarding extends Field
      */
     public function getRegisteredCommerceAccountId()
     {
-        return $this->systemConfig->getCommerceAccountId();
+        return $this->systemConfig->getCommerceAccountId($this->getStoreId());
     }
 
     /**
@@ -87,7 +95,7 @@ class Onboarding extends Field
      */
     public function getRegisteredAccessToken()
     {
-        return $this->systemConfig->getAccessToken();
+        return $this->systemConfig->getAccessToken($this->getStoreId());
     }
 
     /**
@@ -95,10 +103,11 @@ class Onboarding extends Field
      */
     public function getOnboardingState()
     {
-        return $this->systemConfig->getOnboardingState();
+        return $this->systemConfig->getOnboardingState($this->getStoreId());
     }
 
     /**
+     * @param bool $isTestMode
      * @return string
      */
     public function getCommerceManagerOnboardingUrl($isTestMode = false)
@@ -110,16 +119,16 @@ class Onboarding extends Field
 
     public function getPersistAccessTokenUrl()
     {
-        return $this->getUrl('fbeadmin/ajax/persistAccessToken');
+        return $this->getUrl('fbeadmin/ajax/persistAccessToken', ['store' => $this->getStoreId()]);
     }
 
     public function getResetSettingsUrl()
     {
-        return $this->getUrl('fbeadmin/ajax/resetSettings');
+        return $this->getUrl('fbeadmin/ajax/resetSettings', ['store' => $this->getStoreId()]);
     }
 
     public function getSkipShopCreationUrl()
     {
-        return $this->getUrl('fbeadmin/ajax/skipShopCreation');
+        return $this->getUrl('fbeadmin/ajax/skipShopCreation', ['store' => $this->getStoreId()]);
     }
 }

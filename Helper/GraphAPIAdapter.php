@@ -143,17 +143,33 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param null|string $accessToken
+     * @param $userToken
      * @return false|string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPageMerchantSettingsId($accessToken = null)
+    public function getPageIdFromUserToken($userToken)
+    {
+        $request = [
+            'access_token' => $userToken
+        ];
+        $response = $this->callApi('GET', 'me/accounts', $request);
+        $response = json_decode($response->getBody(), true);
+        return $response['data'][0]['id'] ?? false;
+    }
+
+    /**
+     * @param null|string $accessToken
+     * @param null $pageId
+     * @return false|string
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getPageMerchantSettingsId($accessToken = null, $pageId = null)
     {
         $request = [
             'access_token' => $accessToken ?: $this->accessToken,
             'fields' => 'commerce_merchant_settings',
         ];
-        $response = $this->callApi('GET', 'me', $request);
+        $response = $this->callApi('GET', $pageId ?? 'me', $request);
         $response = json_decode($response->getBody(), true);
         return $response['commerce_merchant_settings']['data'][0]['id'] ?? false;
     }
