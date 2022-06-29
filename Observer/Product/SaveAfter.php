@@ -73,6 +73,10 @@ class SaveAfter implements ObserverInterface
             return;
         }
 
+        if ($product->getSendToFacebook() !== \Magento\Eav\Model\Entity\Attribute\Source\Boolean::VALUE_NO) {
+            return;
+        }
+
         $productStoreId = $product->getStoreId();
         $storeId = $this->fbeHelper->getStore()->getId();
         $product->setStoreId($storeId);

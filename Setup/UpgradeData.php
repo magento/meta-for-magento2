@@ -272,7 +272,6 @@ class UpgradeData implements UpgradeDataInterface
 
         // remove FB attributes from products admin grid
         if (version_compare($context->getVersion(), '1.3.2') < 0) {
-
             $removeAttributeFromGrid = function ($attrCode) use ($eavSetup) {
                 $attrId = $eavSetup->getAttributeId(Product::ENTITY, $attrCode);
                 if ($attrId) {
@@ -300,6 +299,57 @@ class UpgradeData implements UpgradeDataInterface
             foreach ($this->attributeConfig->getUnitPriceAttributesConfig() as $attrCode => $config) {
                 if (!$eavSetup->getAttributeId(Product::ENTITY, $attrCode)) {
                     $eavSetup->addAttribute(Product::ENTITY, $attrCode, $config);
+                }
+            }
+        }
+
+        // create send_to_facebook & facebook_product_id product attributes
+        if (version_compare($context->getVersion(), '1.3.12') < 0) {
+            $entityTypeId = $eavSetup->getEntityTypeId(Product::ENTITY);
+            $attributeSetId = $eavSetup->getDefaultAttributeSetId($entityTypeId);
+            $attributesToCreate = [
+                'send_to_facebook' => [
+                    'group' => 'General',
+                    'type' => 'int',
+                    'label' => 'Send to Facebook',
+                    'default' => 1,
+                    'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
+                    'input' => 'select',
+                    'visible' => true,
+                    'sort_order' => 45
+                ],
+                'facebook_product_id' => [
+                    'group' => 'Facebook Attribute Group',
+                    'type' => 'varchar',
+                    'label' => 'Facebook Product ID',
+                    'input' => 'text',
+                    'visible' => false,
+                    'sort_order' => 10,
+                ]
+            ];
+            $commonConfig = [
+                'required' => false,
+                'is_used_in_grid' => false,
+                'is_visible_in_grid' => false,
+                'is_filterable_in_grid' => false,
+                'is_html_allowed_on_front' => false,
+                'visible_on_front' => false,
+                'global' => ScopedAttributeInterface::SCOPE_STORE
+            ];
+            foreach ($attributesToCreate as $attrCode => $attrConfig) {
+                if (!$eavSetup->getAttributeId(Product::ENTITY, $attrCode)) {
+                    try {
+                        $eavSetup->addAttribute(Product::ENTITY, $attrCode, array_merge($attrConfig, $commonConfig));
+                        $eavSetup->addAttributeToGroup(
+                            $entityTypeId,
+                            $attributeSetId,
+                            $attrConfig['group'],
+                            $attrCode,
+                            10
+                        );
+                    } catch (Exception $e) {
+                        $this->logger->critical($e);
+                    }
                 }
             }
         }

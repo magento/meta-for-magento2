@@ -69,6 +69,16 @@ class Configurable implements ProductRetrieverInterface
         $configurableCollection->addAttributeToSelect('*')
             ->addAttributeToFilter('status', Status::STATUS_ENABLED)
             ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
+            ->addAttributeToFilter([
+                [
+                    'attribute' => 'send_to_facebook',
+                    'neq' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::VALUE_NO
+                ],
+                [
+                    'attribute' => 'send_to_facebook',
+                    'null' => true
+                ]
+            ], null, 'left')
             ->addAttributeToFilter('type_id', $this->getProductType())
             ->addStoreFilter($storeId)
             ->setStoreId($storeId);

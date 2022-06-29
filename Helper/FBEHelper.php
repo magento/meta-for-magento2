@@ -160,6 +160,7 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * @param bool $withMagentoVersion
      * @return string
      */
     public function getPartnerAgent($withMagentoVersion = false)
@@ -373,6 +374,14 @@ class FBEHelper extends AbstractHelper
     public function log($info)
     {
         $this->logger->info($info);
+    }
+
+    /**
+     * @param $message
+     */
+    public function logCritical($message)
+    {
+        $this->logger->critical($message);
     }
 
     /**
