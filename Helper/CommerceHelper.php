@@ -150,24 +150,23 @@ class CommerceHelper extends AbstractHelper
      * @param AttributeOptionCollection $attributeOptionCollection
      */
     public function __construct(
-        Context                       $context,
-        ObjectManagerInterface        $objectManager,
-        StoreManagerInterface         $storeManager,
-        OrderManagement               $orderManagement,
-        CustomerFactory               $customerFactory,
-        CustomerRepositoryInterface   $customerRepository,
-        GraphAPIAdapter               $graphAPIAdapter,
-        OrderService                  $orderService,
-        SystemConfig                  $systemConfig,
-        LoggerInterface               $logger,
-        OrderExtensionFactory         $orderExtensionFactory,
+        Context $context,
+        ObjectManagerInterface $objectManager,
+        StoreManagerInterface $storeManager,
+        OrderManagement $orderManagement,
+        CustomerFactory $customerFactory,
+        CustomerRepositoryInterface $customerRepository,
+        GraphAPIAdapter $graphAPIAdapter,
+        OrderService $orderService,
+        SystemConfig $systemConfig,
+        LoggerInterface $logger,
+        OrderExtensionFactory $orderExtensionFactory,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
-        ProductIdentifier             $productIdentifier,
-        ProductRepository             $productRepository,
-        ConfigurableType              $configurableType,
-        AttributeOptionCollection     $attributeOptionCollection
-    )
-    {
+        ProductIdentifier $productIdentifier,
+        ProductRepository $productRepository,
+        ConfigurableType $configurableType,
+        AttributeOptionCollection $attributeOptionCollection
+    ) {
         $this->storeManager = $storeManager;
         $this->objectManager = $objectManager;
         $this->orderManagement = $orderManagement;
@@ -183,7 +182,6 @@ class CommerceHelper extends AbstractHelper
         $this->productRepository = $productRepository;
         $this->configurableType = $configurableType;
         $this->attributeOptionCollection = $attributeOptionCollection;
-
         $this->storeId = $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId();
         $this->pageId = $this->systemConfig->getPageId();
         parent::__construct($context);
@@ -273,6 +271,25 @@ class CommerceHelper extends AbstractHelper
     }
 
     /**
+     * @param $fbProductId
+     * @return array|bool|mixed|object
+     */
+    private function getPriceBeforeDiscount($fbProductId)
+    {
+        try {
+            $productInfo = $this->graphAPIAdapter->getProductInfo($fbProductId);
+            if ($productInfo && array_key_exists('price', $productInfo)) {
+                //this returns amount without $, ex: $100.00 -> 100.00
+                return substr($productInfo['price'], 1);
+            }
+        } catch (GuzzleException $e) {
+            $this->exceptions[] = $e->getMessage();
+            $this->logger->critical($e->getMessage());
+        }
+        return false;
+    }
+
+    /**
      * @param $item
      * @return OrderItem
      * @throws LocalizedException
@@ -280,16 +297,11 @@ class CommerceHelper extends AbstractHelper
     protected function getOrderItem(array $item)
     {
         $product = $this->productIdentifier->getProductByFacebookRetailerId($item['retailer_id']);
-        try {
-            $productInfo = $this->graphAPIAdapter->getProductInfo($item['product_id']);
-        } catch (Exception $e) {
-            $this->exceptions[] = $e->getMessage();
-            $this->logger->critical($e->getMessage());
-        }
         $pricePerUnit = $item['price_per_unit']['amount'];
         $isPricePerUnitTaxInclusive = $item['is_price_per_unit_tax_inclusive'] ?? false;
-        //this returns amount without $, ex: $100.00 -> 100.00
-        $originalPrice = substr($productInfo['price'], 1);
+
+        $originalPrice = $this->getPriceBeforeDiscount($item['product_id']) ?? $pricePerUnit;
+
         $quantity = $item['quantity'];
         $taxAmount = $item['tax_details']['estimated_tax']['amount'];
 

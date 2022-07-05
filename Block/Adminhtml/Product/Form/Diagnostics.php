@@ -120,9 +120,9 @@ class Diagnostics extends Text
         $diagnosticsHtml = '<p style="font-weight: bold;">Facebook diagnostic report:</p><ul>';
         foreach ($diagnosticsReport as $errorItem) {
             $diagnosticsHtml .= '<li class="message message-warning list-item" style="list-style-type: none;">' .
-                $this->_escaper->escapeHtml($errorItem['title']) . ': '
-                . $this->_escaper->escapeHtml($errorItem['description']) .
-                '</li>';
+                $this->_escaper->escapeHtml($errorItem['title']) . ': ' .
+                $this->_escaper->escapeHtml($errorItem['description']) .
+            '</li>';
         }
         $diagnosticsHtml .= '</ul>';
         return '<div class="admin__fieldset" style="padding-top: 0;"><div class="admin__field">
