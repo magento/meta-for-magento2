@@ -26,6 +26,13 @@ class PromotionFeedUpload extends AbstractAjax
      */
     protected $uploader;
 
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
+     * @param Uploader $uploader
+     */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,

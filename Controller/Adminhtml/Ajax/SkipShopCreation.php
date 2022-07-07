@@ -23,6 +23,13 @@ class SkipShopCreation extends AbstractAjax
      */
     protected $graphApiAdapter;
 
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
+     * @param GraphAPIAdapter $graphApiAdapter
+     */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
@@ -35,6 +42,9 @@ class SkipShopCreation extends AbstractAjax
         $this->graphApiAdapter = $graphApiAdapter;
     }
 
+    /**
+     * @return array
+     */
     public function executeForJson()
     {
         $storeId = $this->getRequest()->getParam('store');

@@ -24,6 +24,13 @@ class PullOrders extends AbstractAjax
      */
     protected $commerceHelper;
 
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param SystemConfig $systemConfig
+     * @param FBEHelper $fbeHelper
+     * @param CommerceHelper $commerceHelper
+     */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
@@ -36,6 +43,10 @@ class PullOrders extends AbstractAjax
         $this->commerceHelper = $commerceHelper;
     }
 
+    /**
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function executeForJson()
     {
         // get default store info

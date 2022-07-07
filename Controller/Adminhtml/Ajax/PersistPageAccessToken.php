@@ -23,24 +23,34 @@ class PersistPageAccessToken extends AbstractAjax
      */
     protected $graphApiAdapter;
 
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
+     * @param GraphAPIAdapter $graphApiAdapter
+     */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
-        GraphAPIAdapter $graphApiAdapter)
-    {
+        GraphAPIAdapter $graphApiAdapter
+    ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
     }
 
+    /**
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function executeForJson()
     {
         $response = [];
         $accessToken = $this->getRequest()->getParam('accessToken');
         if ($accessToken) {
-
             $pageToken = $this->graphApiAdapter->getPageTokenFromUserToken($accessToken);
 
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $pageToken)
