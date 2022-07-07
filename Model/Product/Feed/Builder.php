@@ -21,25 +21,26 @@ use Magento\Framework\Exception\LocalizedException;
 
 class Builder
 {
-    const ATTR_RETAILER_ID          = 'id';
-    const ATTR_ITEM_GROUP_ID        = 'item_group_id';
-    const ATTR_DESCRIPTION          = 'description';
-    const ATTR_RICH_DESCRIPTION     = 'rich_text_description';
-    const ATTR_URL                  = 'link';
-    const ATTR_IMAGE_URL            = 'image_link';
+    const ATTR_RETAILER_ID = 'id';
+    const ATTR_ITEM_GROUP_ID = 'item_group_id';
+    const ATTR_DESCRIPTION = 'description';
+    const ATTR_RICH_DESCRIPTION = 'rich_text_description';
+    const ATTR_URL = 'link';
+    const ATTR_IMAGE_URL = 'image_link';
     const ATTR_ADDITIONAL_IMAGE_URL = 'additional_image_link';
-    const ATTR_BRAND                = 'brand';
-    const ATTR_SIZE                 = 'size';
-    const ATTR_COLOR                = 'color';
-    const ATTR_CONDITION            = 'condition';
-    const ATTR_AVAILABILITY         = 'availability';
-    const ATTR_INVENTORY            = 'inventory';
-    const ATTR_PRICE                = 'price';
-    const ATTR_SALE_PRICE           = 'sale_price';
-    const ATTR_NAME                 = 'title';
-    const ATTR_PRODUCT_TYPE         = 'product_type';
-    const ATTR_PRODUCT_CATEGORY     = 'google_product_category';
-    const ATTR_UNIT_PRICE           = 'unit_price';
+    const ATTR_BRAND = 'brand';
+    const ATTR_SIZE = 'size';
+    const ATTR_COLOR = 'color';
+    const ATTR_CONDITION = 'condition';
+    const ATTR_AVAILABILITY = 'availability';
+    const ATTR_INVENTORY = 'inventory';
+    const ATTR_PRICE = 'price';
+    const ATTR_SALE_PRICE = 'sale_price';
+    const ATTR_SALE_PRICE_EFFECTIVE_DATE = 'sale_price_effective_date';
+    const ATTR_NAME = 'title';
+    const ATTR_PRODUCT_TYPE = 'product_type';
+    const ATTR_PRODUCT_CATEGORY = 'google_product_category';
+    const ATTR_UNIT_PRICE = 'unit_price';
 
     /**
      * @var FBEHelper
@@ -105,14 +106,15 @@ class Builder
      * @param CatalogHelper $catalogHelper
      */
     public function __construct(
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
+        FBEHelper                 $fbeHelper,
+        SystemConfig              $systemConfig,
         CategoryCollectionFactory $categoryCollectionFactory,
-        BuilderTools $builderTools,
-        ProductIdentifier $productIdentifier,
-        EnhancedCatalogHelper $enhancedCatalogHelper,
-        CatalogHelper $catalogHelper
-    ) {
+        BuilderTools              $builderTools,
+        ProductIdentifier         $productIdentifier,
+        EnhancedCatalogHelper     $enhancedCatalogHelper,
+        CatalogHelper             $catalogHelper
+    )
+    {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -228,6 +230,30 @@ class Builder
             : $product->getSpecialPrice();
         return $this->builderTools->formatPrice($price, $product->getStoreId());
     }
+
+    /**
+     * @param Product $product
+     * @return string
+     */
+    protected function getProductSalePriceEffectiveDate(Product $product)
+    {
+        $specialFromDate = $product->getSpecialFromDate();
+        $specialToDate = $product->getSpecialToDate();
+
+        $salePriceStartDate = '';
+        if ($specialFromDate) {
+            $salePriceStartDate = (new \DateTime($specialFromDate))->format('c');
+        }
+        $salePriceEndDate = '';
+        if ($specialToDate) {
+            $salePriceEndDate = (new \DateTime($specialToDate))->format('c');
+        }
+        if ($product->getSpecialPrice() && $salePriceStartDate || $salePriceEndDate) {
+            return sprintf("%s/%s", $salePriceStartDate, $salePriceEndDate);
+        }
+        return '';
+    }
+
 
     /**
      * @param Product $product
@@ -450,9 +476,9 @@ class Builder
 
         if ($this->inventoryOnly) {
             return [
-                self::ATTR_RETAILER_ID  => $retailerId,
+                self::ATTR_RETAILER_ID => $retailerId,
                 self::ATTR_AVAILABILITY => $inventory->getAvailability(),
-                self::ATTR_INVENTORY    => $inventory->getInventory(),
+                self::ATTR_INVENTORY => $inventory->getInventory(),
             ];
         }
 
@@ -471,22 +497,23 @@ class Builder
         }
 
         $entry = [
-            self::ATTR_RETAILER_ID          => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
-            self::ATTR_ITEM_GROUP_ID        => $this->getItemGroupId($product),
-            self::ATTR_NAME                 => $productTitle,
-            self::ATTR_DESCRIPTION          => $this->getDescription($product),
-            self::ATTR_AVAILABILITY         => $inventory->getAvailability(),
-            self::ATTR_INVENTORY            => $inventory->getInventory(),
-            self::ATTR_BRAND                => $this->getBrand($product),
-            self::ATTR_PRODUCT_CATEGORY     => $product->getGoogleProductCategory() ?? '',
-            self::ATTR_PRODUCT_TYPE         => $productType,
-            self::ATTR_CONDITION            => $this->getCondition($product),
-            self::ATTR_PRICE                => $this->getProductPrice($product),
-            self::ATTR_SALE_PRICE           => $this->getProductSalePrice($product),
-            self::ATTR_COLOR                => $this->getColor($product),
-            self::ATTR_SIZE                 => $this->getSize($product),
-            self::ATTR_URL                  => $this->getProductUrl($product),
-            self::ATTR_IMAGE_URL            => $imageUrl,
+            self::ATTR_RETAILER_ID => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
+            self::ATTR_ITEM_GROUP_ID => $this->getItemGroupId($product),
+            self::ATTR_NAME => $productTitle,
+            self::ATTR_DESCRIPTION => $this->getDescription($product),
+            self::ATTR_AVAILABILITY => $inventory->getAvailability(),
+            self::ATTR_INVENTORY => $inventory->getInventory(),
+            self::ATTR_BRAND => $this->getBrand($product),
+            self::ATTR_PRODUCT_CATEGORY => $product->getGoogleProductCategory() ?? '',
+            self::ATTR_PRODUCT_TYPE => $productType,
+            self::ATTR_CONDITION => $this->getCondition($product),
+            self::ATTR_PRICE => $this->getProductPrice($product),
+            self::ATTR_SALE_PRICE => $this->getProductSalePrice($product),
+            self::ATTR_SALE_PRICE_EFFECTIVE_DATE => $this->getProductSalePriceEffectiveDate($product),
+            self::ATTR_COLOR => $this->getColor($product),
+            self::ATTR_SIZE => $this->getSize($product),
+            self::ATTR_URL => $this->getProductUrl($product),
+            self::ATTR_IMAGE_URL => $imageUrl,
             self::ATTR_ADDITIONAL_IMAGE_URL => $additionalImages,
         ];
 
@@ -517,6 +544,7 @@ class Builder
             self::ATTR_CONDITION,
             self::ATTR_PRICE,
             self::ATTR_SALE_PRICE,
+            self::ATTR_SALE_PRICE_EFFECTIVE_DATE,
             self::ATTR_COLOR,
             self::ATTR_SIZE,
             self::ATTR_URL,
