@@ -73,7 +73,7 @@ class SaveAfter implements ObserverInterface
             return;
         }
 
-        if ($product->getSendToFacebook() !== \Magento\Eav\Model\Entity\Attribute\Source\Boolean::VALUE_NO) {
+        if ($product->getSendToFacebook() === \Magento\Eav\Model\Entity\Attribute\Source\Boolean::VALUE_NO) {
             return;
         }
 
