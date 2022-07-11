@@ -24,4 +24,12 @@ class PaymentMethod extends AbstractMethod
      * @var bool
      */
     protected $_isOffline = true;
+
+    /**
+     * Disallow this method in Magento checkout
+     * https://devdocs.magento.com/guides/v2.4/payments-integrations/base-integration/payment-option-config.html
+     *
+     * @var bool
+     */
+    protected $_canUseCheckout = false;
 }
