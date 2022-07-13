@@ -1,38 +1,68 @@
-<?php /** @var Facebook\BusinessExtension\Block\Adminhtml\Diagnostics $block */
+<?php
+/** @var Facebook\BusinessExtension\Block\Adminhtml\Diagnostics $block */
+/** @var Magento\Framework\Escaper $escaper */
 $report = $block->getReport();
 ?>
 
 <?php if (!empty($report)): ?>
-    <?php /** @var Magento\Framework\Escaper $escaper */
-    $table = "<style>
-th, td {
+<style>
+#catalog-diagnostics-report th, td {
+    border: 1px solid black;
+}
+#catalog-diagnostics-report th, td {
   padding: 15px;
 }
+.sample-affected-items {
+    margin-bottom: 15px;
+}
+.sample-affected-items ul {
+    margin-left: 15px;
+}
+.diagnostic-description {
+    padding-left: 25px;
+}
 </style>
-<table>";
-    $table .= "<tr><th>Title</th><th>Severity</th><th>Type</th><th>Diagnostics Description</th></tr>";
+<table id="catalog-diagnostics-report">
+    <tr>
+        <th><?= __('Title') ?></th>
+        <th><?= __('Severity') ?></th>
+        <th><?= __('Type') ?></th>
+        <th><?= __('Diagnostics Description') ?></th>
+    </tr>
 
-    foreach ($report as $item) {
-        $table .= "<tr>";
-        $table .= "<td>" . $escaper->escapeHtml($item['title']) . "</td>";
-        $table .= "<td>" . $escaper->escapeHtml($item['severity']) . "</td>";
-        $table .= "<td>" . $escaper->escapeHtml($item['type']) . "</td>";
-        $table .= "<td>";
-        $diagnostics = $item['diagnostics'];
-        $table .= "<ul>";
-        foreach ($diagnostics as $diagnostic) {
-            $table .= "<li>" . $escaper->escapeHtml($diagnostic['description']) . "</li>";
-        }
-        $table .= "</ul>";
-        $table .= "</td>";
-        $table .= "</tr>";
-    }
-    $table .= "</table>";
-    echo $table;
-    ?>
-
+    <?php foreach ($report as $item) : ?>
+        <tr>
+            <td><?= $escaper->escapeHtml($item['title']) ?></td>
+            <td><?= $escaper->escapeHtml($item['severity']) ?></td>
+            <td><?= $escaper->escapeHtml($item['type']) ?></td>
+            <td class="diagnostic-description">
+                <?php $diagnostics = $item['diagnostics']; ?>
+                <ul>
+                <?php foreach ($diagnostics as $diagnostic) : ?>
+                    <li><div><?= $escaper->escapeHtml($diagnostic['description']) ?></div>
+                    <?php $products = $block->getSampleAffectedItems($diagnostic); ?>
+                        <?php if ($products) : ?>
+                            <div class="sample-affected-items">
+                            <p><?= __('Sample affected items:') ?></p>
+                            <ul>
+                            <?php foreach ($products as $product) : ?>
+                                <li>
+                                    <?= $escaper->escapeHtml($product->getName()) ?>
+                                    (<a href="<?= $block->getAdminUrl($product) ?>">
+                                        <?= $escaper->escapeHtml($product->getSku()) ?>
+                                    </a>)
+                                </li>
+                            <?php endforeach; ?>
+                            </ul>
+                            </div>
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</table>
 <?php else: ?>
-    <p>Report is not available</p>
+    <p><?= __('Report is not available') ?></p>
 <?php endif; ?>
-
-

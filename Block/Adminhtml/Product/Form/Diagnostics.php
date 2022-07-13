@@ -97,7 +97,9 @@ class Diagnostics extends Text
             $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $retailerId);
             $fbProductId = $product['data'][0]['id'] ?? false;
             if ($fbProductId) {
-                return $this->graphApiAdapter->getProductErrors($fbProductId);
+                $productErrors = $this->graphApiAdapter->getProductErrors($fbProductId)['errors'] ?? [];
+                // remove duplicates
+                return array_unique($productErrors, SORT_REGULAR);
             }
         } catch (\Exception $e) {
             $this->fbeHelper->logCritical($e->getMessage());
@@ -112,7 +114,7 @@ class Diagnostics extends Text
      */
     protected function _toHtml()
     {
-        $diagnosticsReport = $this->getFacebookProductDiagnostics()['errors'] ?? [];
+        $diagnosticsReport = $this->getFacebookProductDiagnostics();
         if (empty($diagnosticsReport)) {
             return '';
         }
@@ -121,7 +123,7 @@ class Diagnostics extends Text
         foreach ($diagnosticsReport as $errorItem) {
             $diagnosticsHtml .= '<li class="message message-warning list-item" style="list-style-type: none;">' .
                 $this->_escaper->escapeHtml($errorItem['title']) . ': ' .
-                $this->_escaper->escapeHtml($errorItem['description']) .
+                $this->stripTags($errorItem['description'], '<br>') .
             '</li>';
         }
         $diagnosticsHtml .= '</ul>';

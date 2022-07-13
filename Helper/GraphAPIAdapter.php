@@ -529,6 +529,22 @@ class GraphAPIAdapter
     }
 
     /**
+     * @param $catalogId
+     * @param array $fbProductIds
+     * @return array|mixed|object
+     * @throws GuzzleException
+     */
+    public function getProductsByFacebookProductIds($catalogId, array $fbProductIds)
+    {
+        $request = [
+            'access_token' => $this->accessToken,
+            'filter' => '{"product_item_id":{"is_any":' . json_encode($fbProductIds) . '}}',
+        ];
+        $response = $this->callApi('GET', "{$catalogId}/products", $request);
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
      * @param $fbProductId
      * @return array|mixed|object
      * @throws GuzzleException
@@ -543,16 +559,18 @@ class GraphAPIAdapter
         return json_decode($response->getBody(), true);
     }
 
+    /**
+     * @param $catalogId
+     * @return mixed
+     * @throws GuzzleException
+     */
     public function getCatalogDiagnostics($catalogId)
     {
-
         $request = [
             'access_token' => $this->accessToken,
             'fields' => 'diagnostics'
         ];
-
         $response = $this->callApi('GET', "{$catalogId}", $request);
         return json_decode($response->getBody(), true);
     }
-
 }

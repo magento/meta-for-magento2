@@ -75,9 +75,11 @@ class Shipper
      */
     protected function getRetailerId($orderItem)
     {
-        if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+        $storeId = $orderItem->getStoreId();
+        $productIdentifierAttr = $this->systemConfig->getProductIdentifierAttr($storeId);
+        if ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $orderItem->getSku();
-        } elseif ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+        } elseif ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
             return $orderItem->getProductId();
         }
         return false;
