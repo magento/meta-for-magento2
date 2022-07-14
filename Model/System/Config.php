@@ -121,24 +121,48 @@ class Config
         return '1843036385894568';
     }
 
+    /**
+     * @return mixed
+     */
     public function getModuleVersion()
     {
         return $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
     }
 
+    /**
+     * @param null $storeId
+     * @return string
+     */
     public function getCommerceManagerUrl($storeId = null)
     {
-        return sprintf('https://www.facebook.com/commerce_manager/%s', $this->getCommerceAccountId($storeId));
+        return sprintf('https://www.facebook.com/commerce/%s', $this->getCommerceAccountId($storeId));
     }
 
+    /**
+     * @param null $storeId
+     * @return string
+     */
     public function getCatalogManagerUrl($storeId = null)
     {
         return sprintf('https://www.facebook.com/products/catalogs/%s/products', $this->getCatalogId($storeId));
     }
 
+    /**
+     * @param null $storeId
+     * @return string
+     */
     public function getSupportUrl($storeId = null)
     {
-        return sprintf('https://www.facebook.com/commerce_manager/%s/support/', $this->getCommerceAccountId($storeId));
+        return sprintf('https://www.facebook.com/commerce/%s/support/', $this->getCommerceAccountId($storeId));
+    }
+
+    /**
+     * @param null $storeId
+     * @return string
+     */
+    public function getPromotionsUrl($storeId = null)
+    {
+        return sprintf('https://www.facebook.com/commerce/%s/promotions/discounts/', $this->getCommerceAccountId($storeId));
     }
 
     /**
