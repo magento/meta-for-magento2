@@ -13,7 +13,7 @@
                 <label>Setup</label>
                 <attribute type="expanded">1</attribute>
                 <field id="onboarding" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Onboarding</label>
+                    <label>Onboarding [Beta]</label>
                     <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\Onboarding</frontend_model>
                 </field>
                 <field id="onboarding_state" translate="label comment" type="hidden" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
@@ -263,7 +263,7 @@
                 </field>
             </group>
             <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
-                <label>Promotions</label>
+                <label>Promotions [Beta]</label>
                 <depends>
                     <field id="facebook_business_extension/business_extension/onboarding_state">4</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
