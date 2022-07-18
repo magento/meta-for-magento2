@@ -321,8 +321,12 @@ class CommerceHelper extends AbstractHelper
             ->setPrice($pricePerUnit)
             ->setTaxAmount($taxAmount)
             ->setRowTotal($rowTotal)
+            ->setDiscountAmount(($originalPrice - $pricePerUnit) * $quantity )
+            ->setBaseDiscountAmount(($originalPrice - $pricePerUnit) * $quantity)
             ->setProductType($product->getTypeId());
-
+        if ($rowTotal != 0) {
+            $orderItem->setTaxPercent(round(($taxAmount / $rowTotal) * 100, 2));
+        }
         $productOptions = $this->getProductOptions($product, $orderItem);
         if ($productOptions) {
             $orderItem->setProductOptions($productOptions);
