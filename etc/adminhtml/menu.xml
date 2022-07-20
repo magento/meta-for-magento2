@@ -2,34 +2,32 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add
-                id="Facebook_BusinessExtension::facebook"
-                title="Facebook"
-                translate="title"
-                module="Facebook_BusinessExtension"
-                parent="Magento_Backend::stores"
-                sortOrder="50"
-                dependsOnModule="Facebook_BusinessExtension"
-                resource="Facebook_BusinessExtension::facebook"/>
-        <add
-                id="Facebook_BusinessExtension::facebook_business_extension"
-                title="Setup"
-                translate="title"
-                module="Facebook_BusinessExtension"
-                parent="Facebook_BusinessExtension::facebook"
-                sortOrder="10"
-                dependsOnModule="Facebook_BusinessExtension"
-                action="fbeadmin/setup"
-                resource="Facebook_BusinessExtension::facebook"/>
-        <add
-                id="Facebook_BusinessExtension::diagnostic"
-                title="Catalog Diagnostics"
-                translate="title"
-                module="Facebook_BusinessExtension"
-                parent="Facebook_BusinessExtension::facebook"
-                sortOrder="20"
-                dependsOnModule="Facebook_BusinessExtension"
-                action="fbeadmin/diagnostic"
-                resource="Facebook_BusinessExtension::facebook"/>
+        <add id="Facebook_BusinessExtension::facebook"
+            title="Facebook"
+            translate="title"
+            module="Facebook_BusinessExtension"
+            parent="Magento_Backend::stores"
+            sortOrder="50"
+            dependsOnModule="Facebook_BusinessExtension"
+            resource="Facebook_BusinessExtension::facebook"/>
+<!-- @todo https://fburl.com/hphvc050 -->
+<!--        <add id="Facebook_BusinessExtension::facebook_business_extension"-->
+<!--            title="Setup"-->
+<!--            translate="title"-->
+<!--            module="Facebook_BusinessExtension"-->
+<!--            parent="Facebook_BusinessExtension::facebook"-->
+<!--            sortOrder="10"-->
+<!--            dependsOnModule="Facebook_BusinessExtension"-->
+<!--            action="fbeadmin/setup"-->
+<!--            resource="Facebook_BusinessExtension::facebook"/>-->
+        <add id="Facebook_BusinessExtension::diagnostic"
+            title="Catalog Diagnostics"
+            translate="title"
+            module="Facebook_BusinessExtension"
+            parent="Facebook_BusinessExtension::facebook"
+            sortOrder="20"
+            dependsOnModule="Facebook_BusinessExtension"
+            action="fbeadmin/diagnostic"
+            resource="Facebook_BusinessExtension::facebook"/>
     </menu>
 </config>

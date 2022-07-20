@@ -114,11 +114,12 @@ class Config
     }
 
     /**
+     * @todo Add app ID once scaled onboarding is implemented https://fburl.com/ns10a8kb
      * @return string
      */
     public function getAppId()
     {
-        return '1843036385894568';
+        return '';
     }
 
     /**

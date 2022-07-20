@@ -10,7 +10,7 @@ use Facebook\BusinessExtension\Model\FacebookOrder;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 use GuzzleHttp\Exception\GuzzleException;
-use Magento\Catalog\Model\Product;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Customer\Api\CustomerRepositoryInterface;
@@ -222,11 +222,11 @@ class CommerceHelper extends AbstractHelper
     /**
      * Get configurable product options such as size and color
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @param OrderItem $orderItem
      * @return array|null
      */
-    private function getProductOptions(Product $product, OrderItem $orderItem)
+    private function getProductOptions(ProductInterface $product, OrderItem $orderItem)
     {
         $configurableProducts = $this->configurableType->getParentIdsByChild($product->getId());
         if (!isset($configurableProducts[0])) {
@@ -321,7 +321,7 @@ class CommerceHelper extends AbstractHelper
             ->setPrice($pricePerUnit)
             ->setTaxAmount($taxAmount)
             ->setRowTotal($rowTotal)
-            ->setDiscountAmount(($originalPrice - $pricePerUnit) * $quantity )
+            ->setDiscountAmount(($originalPrice - $pricePerUnit) * $quantity)
             ->setBaseDiscountAmount(($originalPrice - $pricePerUnit) * $quantity)
             ->setProductType($product->getTypeId());
         if ($rowTotal != 0) {
