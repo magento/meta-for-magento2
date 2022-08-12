@@ -29,5 +29,15 @@
             dependsOnModule="Facebook_BusinessExtension"
             action="fbeadmin/diagnostic"
             resource="Facebook_BusinessExtension::facebook"/>
+        <add
+                id="Facebook_BusinessExtension::email"
+                title="Loyalty Emails"
+                translate="title"
+                module="Facebook_BusinessExtension"
+                parent="Facebook_BusinessExtension::facebook"
+                sortOrder="30"
+                dependsOnModule="Facebook_BusinessExtension"
+                action="fbeadmin/email"
+                resource="Facebook_BusinessExtension::facebook"/>
     </menu>
 </config>
