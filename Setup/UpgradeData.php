@@ -354,6 +354,22 @@ class UpgradeData implements UpgradeDataInterface
             }
         }
 
+        //format facebook product attributes descriptions
+        if (version_compare($context->getVersion(), '1.3.13') < 0) {
+            $attributeConfig = $this->attributeConfig->getAttributesConfig();
+            foreach ($attributeConfig as $attrCode => $config) {
+                if ($eavSetup->getAttributeId(Product::ENTITY, $attrCode) && isset($config['note'])) {
+                    $eavSetup->updateAttribute(
+                        Product::ENTITY,
+                        $attrCode,
+                        [
+                            'note' => $config['note'],
+                        ]
+                    );
+                }
+            }
+        }
+
         $setup->endSetup();
     }
 }

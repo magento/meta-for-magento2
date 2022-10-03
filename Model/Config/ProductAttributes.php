@@ -76,8 +76,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 5,
-                'note' => 'Use one or more words to describe the color, not a hex code. "
-                            . "Sample Sample value: Royal Blue.',
+                'note' => 'Use one or more words to describe the color, not a hex code. Sample value: Royal Blue.',
             ],
             'facebook_capacity' => [
                 'label' => 'Capacity',
@@ -104,7 +103,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 8,
-                'note' => 'Sample Values: Small, Medium, Large, \'2\', 4, 6, One Size, Twin, Full, Queen, King',
+                'note' => 'Sample Values: Small, Medium, Large, 2, 4, 6, One Size, Twin, Full, Queen, King',
             ],
             'facebook_style' => [
                 'label' => 'Style',
@@ -113,8 +112,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 9,
-                'note' => 'Sample values: bangle, cuff, engagement ring, stud, hoops, Maxi, "
-                            ."Boyfriend, Braided, fashion, fine',
+                'note' => 'Sample values: bangle, cuff, engagement ring, stud, hoops, Maxi, Boyfriend, Braided, fashion, fine',
             ],
             'facebook_brand' => [
                 'label' => 'Brand',
@@ -123,8 +121,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 10,
-                'note' => 'Brand name, unique manufacturer part number (MPN), or Global Trade "
-                            ."Item Number (GTIN) of the item.',
+                'note' => 'Brand name, unique manufacturer part number (MPN), or Global Trade Item Number (GTIN) of the item.',
             ],
             'facebook_product_length' => [
                 'label' => 'Product Length',
@@ -160,8 +157,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 14,
-                'note' => 'Common name of the model of the product. Does not include model numbers. "
-                            ."Sample values: iPhone 6, Galaxy S8.',
+                'note' => 'Common name of the model of the product. Does not include model numbers. Sample values: iPhone 6, Galaxy S8.',
             ],
             'facebook_product_depth' => [
                 'label' => 'Product Depth',
@@ -197,8 +193,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 18,
-                'note' => 'Minimum and maximum ages for a product, such as the unit of measure in "
-                        ."Months, or Years. Sample values: 1-3 yrs, 6-9 mos.',
+                'note' => 'Minimum and maximum ages for a product, such as the unit of measure in Months, or Years. Sample values: 1-3 yrs, 6-9 mos.',
             ],
             'facebook_screen_size' => [
                 'label' => 'Screen Size',
@@ -207,8 +202,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 19,
-                'note' => 'Measurement of the device\'s screen, typically measured diagonally "
-                            ."in inches. Sample values: 42 in, 5.5 in.',
+                'note' => 'Measurement of the device\'s screen, typically measured diagonally in inches. Sample values: 42 in, 5.5 in.',
             ],
             'facebook_maximum_weight' => [
                 'label' => 'Maximum Weight',
@@ -244,8 +238,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 23,
-                'note' => 'Type of preloaded operating system software installed on the device. "
-                        ."Sample values: Android, iOS, Windows.',
+                'note' => 'Type of preloaded operating system software installed on the device. Sample values: Android, iOS, Windows.',
             ],
             'facebook_is_assembly_required' => [
                 'label' => 'Is Assembly Required',
@@ -263,8 +256,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 25,
-                'note' => 'Amount of storage space on the item\'s hard drive, typically measured "
-                            ."in megabytes, gigabytes or terabytes. Sample values: 1 TB, 16 GB.',
+                'note' => 'Amount of storage space on the item\'s hard drive, typically measured in megabytes, gigabytes or terabytes. Sample values: 1 TB, 16 GB.',
             ],
             'facebook_number_of_licenses' => [
                 'label' => 'Number of Licenses',
@@ -273,8 +265,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 26,
-                'note' => 'Maximum number of users or installations Sample under the terms of the "
-                            ."software licensing agreement. Sample values: 1, 3, 5.',
+                'note' => 'Maximum number of users or installations Sample under the terms of the software licensing agreement. Sample values: 1, 3, 5.',
             ],
             'facebook_product_form' => [
                 'label' => 'Product Form',
@@ -283,8 +274,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 27,
-                'note' => 'Consistency, texture, or formulation of the item and the way it will be consumed "
-                            ."or dispensed. Sample values: Oil, Gel, Spray, Cream, Powder, Serum, Liquid.',
+                'note' => 'Consistency, texture, or formulation of the item and the way it will be consumed or dispensed. Sample values: Oil, Gel, Spray, Cream, Powder, Serum, Liquid.',
             ],
             'facebook_compatible_devices' => [
                 'label' => 'Compatible Devices',
@@ -293,8 +283,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 28,
-                'note' => 'Devices compatible with the item. Sample values: iPad, Tablet Computers, "
-                            ."Windows Desktop Computers, Apple Computers.',
+                'note' => 'Devices compatible with the item. Sample values: iPad, Tablet Computers, Windows Desktop Computers, Apple Computers.',
             ],
             'facebook_video_game_platform' => [
                 'label' => 'Video Game Platform',
@@ -303,8 +292,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 29,
-                'note' => 'Type of platform on which video game software is capable of running. Sample values:"
-                        ."Xbox 360, Nintendo Wii, PC.',
+                'note' => 'Type of platform on which video game software is capable of running. Sample values: Xbox 360, Nintendo Wii, PC.',
             ],
             'facebook_system_requirements' => [
                 'label' => 'Software System Requirements',
@@ -331,8 +319,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 32,
-                'note' => 'Recommended use or surface of cleaning product. Multiple values accepted. "
-                            ".Sample values: carpet, hardwood, tile, glass, porcelain, leather.',
+                'note' => 'Recommended use or surface of cleaning product. Multiple values accepted. Sample values: carpet, hardwood, tile, glass, porcelain, leather.',
             ],
             'facebook_digital_zoom' => [
                 'label' => 'Digital Zoom',
@@ -341,9 +328,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 33,
-                'note' => 'Magnification power provided by a feature that electronically enlarges the image area."
-                 ."Sample values must be numbers (containing only numerals or a decimal point). "
-                 ."Sample values: 6x, 160x, 200x. Values such as 20X or 20.4 MP will be rejected.',
+                'note' => 'Magnification power provided by a feature that electronically enlarges the image area. Sample values must be numbers (containing only numerals or a decimal point). Sample values: 6x, 160x, 200x. Values such as 20X or 20.4 MP will be rejected.',
             ],
             'facebook_scent' => [
                 'label' => 'Scent',
@@ -352,8 +337,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 34,
-                'note' => 'Scent(s) or fragrance(s) of your item, including items labeled as "unscented". Multiple".
-                            "values accepted. Sample values: Lavender, Vanilla, Lemon, Coconut, Jasmine, Pine.',
+                'note' => 'Scent(s) or fragrance(s) of your item, including items labeled as "unscented". Multiple values accepted. Sample values: Lavender, Vanilla, Lemon, Coconut, Jasmine, Pine.',
             ],
             'facebook_health_concern' => [
                 'label' => 'Health Concern',
@@ -389,8 +373,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 38,
-                'note' => 'Type of gemstone(s) in your item. Sample values: Diamond, "
-                        ."Turquoise, Ruby, Emerald, Sapphire.',
+                'note' => 'Type of gemstone(s) in your item. Sample values: Diamond, Turquoise, Ruby, Emerald, Sapphire.',
             ],
             'facebook_optical_zoom' => [
                 'label' => 'Optical Zoom',
@@ -426,9 +409,7 @@ class ProductAttributes
                 'input' => 'text',
                 'type' => 'text',
                 'sort_order' => 42,
-                'note' => 'External treatment to the product that usually includes a change in appearance or" .
-                           "texture to the item. Commonly used for furniture include wood, metal, and fabric. Sample ".
-                           ".values: Natural/Unfinished, Walnut, Pewter, Antiqued.',
+                'note' => 'External treatment to the product that usually includes a change in appearance or texture to the item. Commonly used for furniture include wood, metal, and fabric. Sample values: Natural/Unfinished, Walnut, Pewter, Antiqued.',
             ],
             'facebook_product_weight' => [
                 'label' => 'Product Weight',
