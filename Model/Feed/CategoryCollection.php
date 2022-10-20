@@ -8,7 +8,6 @@ namespace Facebook\BusinessExtension\Model\Feed;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\HttpClient;
 use Magento\Catalog\Model\Category;
-use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Framework\HTTP\Client\Curl;
 
@@ -42,18 +41,30 @@ class CategoryCollection
     private $httpClient;
 
     /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
+    protected $_categoryCollection;
+
+    /**
      * Constructor
      * @param CollectionFactory $productCollectionFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
      * @param FBEHelper $helper
      * @param Curl $curl
      * @param HttpClient $httpClient
      */
     public function __construct(
         CollectionFactory $productCollectionFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
         FBEHelper $helper,
         Curl $curl,
         HttpClient $httpClient
     ) {
+        $this->_storeManager = $storeManager;
+        $this->_categoryCollection = $categoryCollection;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->fbeHelper = $helper;
         $this->curl = $curl;
@@ -212,13 +223,14 @@ class CategoryCollection
 
     /**
      * @return Category
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getAllActiveCategories()
     {
-        $categories = $this->fbeHelper
-            ->getObject(Collection::class)
+        $categories = $this->_categoryCollection->create()
             ->addAttributeToSelect('*')
-            ->addAttributeToFilter('is_active', 1);
+            ->addAttributeToFilter('is_active', 1)
+            ->setStore($this->_storeManager->getStore());
         return $categories;
     }
 
@@ -229,6 +241,7 @@ class CategoryCollection
      */
     public function pushAllCategoriesToFbCollections()
     {
+        $resArray = [];
         $access_token = $this->fbeHelper->getAccessToken();
         if ($access_token == null) {
             $this->fbeHelper->log("can't find access token, abort pushAllCategoriesToFbCollections");
@@ -237,16 +250,25 @@ class CategoryCollection
         $this->fbeHelper->log("pushing all categories to fb collections");
         $categories = $this->getAllActiveCategories();
         foreach ($categories as $category) {
+            $syncEnabled =$category->getData("sync_to_facebook_catalog");
+            if ($syncEnabled === "0") {
+                $this->fbeHelper->log("user disabled category sync ".$category->getName());
+                continue;
+            }
+            $this->fbeHelper->log("user enabled category sync ".$category->getName());
             $set_id = $this->getFBProductSetID($category);
             $this->fbeHelper->log("setid for it is:". (string)$set_id);
             if ($set_id) {
                 $response = $this->updateCategoryWithFB($category, $set_id);
+                $resArray[] = $response;
                 continue;
             }
             if (!$category->hasChildren()) {
-                $this->pushNewCategoryToFB($category);
+                $response = $this->pushNewCategoryToFB($category);
+                $resArray[] = $response;
             }
         }
+        return json_encode($resArray);
     }
 
     /**

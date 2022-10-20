@@ -13,6 +13,7 @@
                 <product_identifier>sku</product_identifier>
                 <price_incl_tax>0</price_incl_tax>
                 <collections_sync>0</collections_sync>
+                <catalog_sync>1</catalog_sync>
             </catalog_management>
             <inventory_management>
                 <enable_inventory_upload>0</enable_inventory_upload>

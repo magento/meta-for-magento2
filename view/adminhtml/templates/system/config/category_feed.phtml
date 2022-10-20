@@ -1,0 +1,59 @@
+<?php /* @var $block \Facebook\BusinessExtension\Block\Adminhtml\System\Config\CategoryFeed */ ?>
+<script>
+    require([
+        'jquery',
+        'prototype'
+    ], function (jQuery) {
+        const resultBlock = jQuery('#fb_category_upload_result');
+        const responseToggle = jQuery('#fb_category_upload_result_response_toggle');
+        const responseTextBlock = jQuery('#fb_category_upload_result_response');
+
+        responseToggle.click(function () {
+            responseTextBlock.toggle();
+        });
+
+        jQuery('#fb_category_upload_btn').click(function () {
+            const params = {};
+            console.log("here");
+            new Ajax.Request('<?= $block->getAjaxUrl() ?>', {
+                parameters: params,
+                loaderArea: false,
+                asynchronous: true,
+                onCreate: function () {
+                    resultBlock.find('.fb-category-upload-finished').hide();
+                    resultBlock.find('.fb-category-upload-processing').show();
+                    jQuery('#fb_category_upload_result_text').text('');
+                    responseToggle.hide();
+                    responseTextBlock.hide();
+                },
+                onSuccess: function (response) {
+                    resultBlock.find('.fb-category-upload-processing').hide();
+
+                    let resultText = '';
+                    let resultResponse = '';
+                    if (response.status > 200) {
+                        resultText = response.statusText;
+                    } else {
+                        resultResponse = ' (' + response.responseText + ')';
+                        resultText = 'Finished';
+                        resultBlock.find('.fb-category-upload-finished').show();
+                    }
+                    jQuery('#fb_category_upload_result_text').text(resultText);
+                    jQuery('#fb_category_upload_result_response').text(resultResponse);
+                    const json = response.responseJSON;
+                    responseToggle.show();
+                }
+            });
+        });
+
+    });
+</script>
+
+<?= $block->getButtonHtml() ?>
+<span id="fb_category_upload_result">
+    <img class="fb-category-upload-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src="<?= $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
+    <img class="fb-category-upload-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src="<?= $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <span id="fb_category_upload_result_text"></span>
+    <span id="fb_category_upload_result_response_toggle" style="display: none; cursor: pointer; color: #888a85; text-decoration: underline;">(response)</span>
+    <span id="fb_category_upload_result_response" style="display: none; color: #888a85; font-size: 13px;"></span>
+</span>

@@ -64,9 +64,9 @@ class ProductFeedUpload extends AbstractAjax
             $storeName = $this->systemConfig->getStoreManager()->getStore($storeId)->getName();
         }
 
-        if (!$this->systemConfig->getAccessToken($storeId)) {
+        if (!$this->_fbeHelper->getAccessToken()) {
             $response['success'] = false;
-            $response['message'] = __(sprintf('Set up the extension for \'%s\' before uploading products.', $storeName));
+            $response['message'] = __('Set up the extension before uploading products.');
             return $response;
         }
 

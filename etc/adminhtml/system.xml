@@ -120,9 +120,13 @@
                     <comment>Use price including tax in feed. Should be "No" for the US and "Yes" for the UK. Note: only works if Sales -> Tax -> Price Display Settings -> Display Product Prices In Catalog is set to "Including Tax"</comment>
                 </field>
 <!-- @todo https://fburl.com/707tgrel -->
-<!--                <field id="collections_sync" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="1">-->
-<!--                    <label>Enable Collections Sync</label>-->
-<!--                    <config_path>facebook/catalog_management/collections_sync</config_path>-->
+<!--                <field id="category_feed" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Push All Categories to Facebook Catalog</label>
+                    <frontend_model>Facebook\BusinessExtension\Block\Adminhtml\System\Config\CategoryFeed</frontend_model>
+                </field>
+                <field id="catalog_sync" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="1">-->
+<!--                    <label>Enable Catalog Sync</label>-->
+<!--                    <config_path>facebook/catalog_management/catalog_sync</config_path>-->
 <!--                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
 <!--                    <comment>Activates synchronization of Magento product categories to Facebook collections</comment>-->
 <!--                </field>-->

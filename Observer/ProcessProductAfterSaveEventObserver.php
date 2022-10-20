@@ -8,6 +8,7 @@ namespace Facebook\BusinessExtension\Observer;
 use Exception;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -25,16 +26,25 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
     protected $batchApi;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * Constructor
      * @param FBEHelper $helper
      * @param BatchApi $batchApi
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        FBEHelper $helper,
-        BatchApi $batchApi
-    ) {
+        FBEHelper    $helper,
+        BatchApi     $batchApi,
+        SystemConfig $systemConfig
+    )
+    {
         $this->fbeHelper = $helper;
         $this->batchApi = $batchApi;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -45,6 +55,9 @@ class ProcessProductAfterSaveEventObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
+        if (!$this->systemConfig->isActiveIncrementalProductUpdates()) {
+            return;
+        }
         /** @var Product $product */
         $product = $observer->getEvent()->getProduct();
         if (!$product->getId()) {

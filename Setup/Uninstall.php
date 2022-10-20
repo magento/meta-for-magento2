@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved
+ */
 namespace Facebook\BusinessExtension\Setup;
 
 use Facebook\BusinessExtension\Model\Config\ProductAttributes;

@@ -66,6 +66,10 @@ class Config
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE = 'facebook/debug/debug_mode';
 
+    #todo do we need this
+    const XML_PATH_FACEBOOK_CATALOG_SYNC_IS_ACTIVE = 'facebook/catalog_management/catalog_sync';
+
+
     /**
      * @var StoreManagerInterface
      */
@@ -511,5 +515,13 @@ class Config
     public function isActiveCollectionsSync($scopeId = null, $scope = null)
     {
         return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE, $scopeId = null, $scope = null);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActiveCatalogSync()
+    {
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_CATALOG_SYNC_IS_ACTIVE);
     }
 }

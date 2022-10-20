@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <referenceBlock name="page.title">
+        <action method="setPageTitle">
+            <argument name="title" xsi:type="string">Information</argument>
+        </action>
+    </referenceBlock>
+    <body>
+        <referenceContainer name="content">
+            <block class="Facebook\BusinessExtension\Block\Adminhtml\Info" template="Facebook_BusinessExtension::info.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -80,14 +80,15 @@ class UpgradeData implements UpgradeDataInterface
      * @param SystemConfig $systemConfig
      */
     public function __construct(
-        EavSetupFactory $eavSetupFactory,
+        EavSetupFactory      $eavSetupFactory,
         CategorySetupFactory $categorySetupFactory,
-        SetFactory $attributeSetFactory,
-        ProductAttributes $attributeConfig,
-        FBEHelper $helper,
-        Logger $logger,
-        SystemConfig $systemConfig
-    ) {
+        SetFactory           $attributeSetFactory,
+        ProductAttributes    $attributeConfig,
+        FBEHelper            $helper,
+        Logger               $logger,
+        SystemConfig         $systemConfig
+    )
+    {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->categorySetupFactory = $categorySetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
@@ -126,8 +127,9 @@ class UpgradeData implements UpgradeDataInterface
      */
     public function upgrade(
         ModuleDataSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
+        ModuleContextInterface   $context
+    )
+    {
         $setup->startSetup();
 
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
@@ -264,14 +266,31 @@ class UpgradeData implements UpgradeDataInterface
                 );
             }
         }
-
-        // disable the extension for non-default stores
-        if (version_compare($context->getVersion(), '1.3.0') < 0) {
-            $this->systemConfig->disableExtensionForNonDefaultStores();
+        // user can config if they want to sync a category or not
+        if (version_compare($context->getVersion(), '1.4.2') < 0) {
+            $attrCode = "sync_to_facebook_catalog";
+            $eavSetup->removeAttribute(Product::ENTITY, $attrCode);
+            if (!$eavSetup->getAttributeId(Product::ENTITY, $attrCode)) {
+                $eavSetup->addAttribute(
+                    \Magento\Catalog\Model\Category::ENTITY,
+                    $attrCode,
+                    [
+                        'type' => 'int',
+                        'input' => 'boolean',
+                        'source' => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+                        'visible' => true,
+                        'default' => "1",
+                        'required' => false,
+                        'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_STORE,
+                        'group' => 'Display Settings',
+                    ]
+                );
+            }
         }
 
         // remove FB attributes from products admin grid
-        if (version_compare($context->getVersion(), '1.3.2') < 0) {
+        if (version_compare($context->getVersion(), '1.4.3') < 0) {
+
             $removeAttributeFromGrid = function ($attrCode) use ($eavSetup) {
                 $attrId = $eavSetup->getAttributeId(Product::ENTITY, $attrCode);
                 if ($attrId) {
@@ -294,17 +313,18 @@ class UpgradeData implements UpgradeDataInterface
             $removeAttributeFromGrid('google_product_category');
         }
 
-        // install per unit pricing attributes
-        if (version_compare($context->getVersion(), '1.3.2') < 0) {
+        // disable the extension for non-default stores
+        if (version_compare($context->getVersion(), '2.0.0') < 0) {
+            $this->systemConfig->disableExtensionForNonDefaultStores();
+
+            // install per unit pricing attributes
             foreach ($this->attributeConfig->getUnitPriceAttributesConfig() as $attrCode => $config) {
                 if (!$eavSetup->getAttributeId(Product::ENTITY, $attrCode)) {
                     $eavSetup->addAttribute(Product::ENTITY, $attrCode, $config);
                 }
             }
-        }
 
-        // create send_to_facebook & facebook_product_id product attributes
-        if (version_compare($context->getVersion(), '1.3.12') < 0) {
+            // create send_to_facebook & facebook_product_id product attributes
             $entityTypeId = $eavSetup->getEntityTypeId(Product::ENTITY);
             $attributeSetId = $eavSetup->getDefaultAttributeSetId($entityTypeId);
             $attributesToCreate = [
@@ -352,10 +372,8 @@ class UpgradeData implements UpgradeDataInterface
                     }
                 }
             }
-        }
 
-        //format facebook product attributes descriptions
-        if (version_compare($context->getVersion(), '1.3.13') < 0) {
+            //format facebook product attributes descriptions
             $attributeConfig = $this->attributeConfig->getAttributesConfig();
             foreach ($attributeConfig as $attrCode => $config) {
                 if ($eavSetup->getAttributeId(Product::ENTITY, $attrCode) && isset($config['note'])) {

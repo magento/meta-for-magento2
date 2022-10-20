@@ -1,7 +1,7 @@
 <?php /** @var \Facebook\BusinessExtension\Block\Pixel\Head $block */ ?>
 <?php if ($block->getFacebookPixelID()) { ?>
-<!-- Facebook Business Extension for Magento 2 -->
-<!-- Facebook Pixel Code -->
+<!-- Meta Business Extension for Magento 2 -->
+<!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -41,10 +41,10 @@ fbq('track', 'PageView', {
     }
     ?>
 </noscript>
-<!-- End Facebook Pixel Code -->
+<!-- End Meta Pixel Code -->
 <?php } else { ?>
 <!-- NO Pixel ID is configured, please goto Admin -->
 <script>
-console.log('No facebook pixel is configured, please log in as a admin and then visit Stores -> Facebook -> Setup -> Get Started');
+console.log('No Meta pixel is configured, please log in as a admin and then visit Stores -> Meta -> Setup -> Get Started');
 </script>
 <?php } ?>

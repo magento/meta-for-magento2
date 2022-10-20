@@ -38,9 +38,14 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
     {
         $category = $observer->getEvent()->getCategory();
         $this->_fbeHelper->log("save category: " . $category->getName());
-
         /** @var CategoryCollection $categoryObj */
         $categoryObj = $this->_fbeHelper->getObject(CategoryCollection::class);
+        $syncEnabled =$category->getData("sync_to_facebook_catalog");
+        if ($syncEnabled === "0") {
+            $this->_fbeHelper->log("user disabled category sync");
+            return;
+        }
+
         $response = $categoryObj->makeHttpRequestAfterCategorySave($category);
         return $response;
     }

@@ -440,24 +440,26 @@ class MagentoDataHelper extends AbstractHelper
         $userData = [];
 
         $userData[AAMSettingsFields::EXTERNAL_ID] = $order->getCustomerId();
-        $userData[AAMSettingsFields::EMAIL] = $order->getCustomerEmail();
-        $userData[AAMSettingsFields::FIRST_NAME] = $order->getCustomerFirstname();
-        $userData[AAMSettingsFields::LAST_NAME] = $order->getCustomerLastname();
-        $userData[AAMSettingsFields::DATE_OF_BIRTH] = $order->getCustomerDob();
+        $userData[AAMSettingsFields::EMAIL] = $this->hashValue($order->getCustomerEmail());
+        $userData[AAMSettingsFields::FIRST_NAME] = $this->hashValue($order->getCustomerFirstname());
+        $userData[AAMSettingsFields::LAST_NAME] = $this->hashValue($order->getCustomerLastname());
+        $userData[AAMSettingsFields::DATE_OF_BIRTH] = $this->hashValue($order->getCustomerDob());
         if ($order->getCustomerGender()) {
             $genderId = $order->getCustomerGender();
             $userData[AAMSettingsFields::GENDER] =
-                $this->customerMetadata->getAttributeMetadata('gender')
-                    ->getOptions()[$genderId]->getLabel();
+                $this->hashValue(
+                    $this->customerMetadata->getAttributeMetadata('gender')
+                        ->getOptions()[$genderId]->getLabel()
+                );
         }
 
         $billingAddress = $order->getBillingAddress();
         if ($billingAddress) {
-            $userData[AAMSettingsFields::ZIP_CODE] = $billingAddress->getPostcode();
-            $userData[AAMSettingsFields::CITY] = $billingAddress->getCity();
-            $userData[AAMSettingsFields::PHONE] = $billingAddress->getTelephone();
-            $userData[AAMSettingsFields::STATE] = $billingAddress->getRegionCode();
-            $userData[AAMSettingsFields::COUNTRY] = $billingAddress->getCountryId();
+            $userData[AAMSettingsFields::ZIP_CODE] = $this->hashValue($billingAddress->getPostcode());
+            $userData[AAMSettingsFields::CITY] = $this->hashValue($billingAddress->getCity());
+            $userData[AAMSettingsFields::PHONE] = $this->hashValue($billingAddress->getTelephone());
+            $userData[AAMSettingsFields::STATE] = $this->hashValue($billingAddress->getRegionCode());
+            $userData[AAMSettingsFields::COUNTRY] = $this->hashValue($billingAddress->getCountryId());
         }
 
         return array_filter($userData);
@@ -480,27 +482,33 @@ class MagentoDataHelper extends AbstractHelper
         $userData = [];
 
         $userData[AAMSettingsFields::EXTERNAL_ID] = $customer->getId();
-        $userData[AAMSettingsFields::EMAIL] = $customer->getEmail();
-        $userData[AAMSettingsFields::FIRST_NAME] = $customer->getFirstname();
-        $userData[AAMSettingsFields::LAST_NAME] = $customer->getLastname();
-        $userData[AAMSettingsFields::DATE_OF_BIRTH] = $customer->getDob();
+        $userData[AAMSettingsFields::EMAIL] = $this->hashValue($customer->getEmail());
+        $userData[AAMSettingsFields::FIRST_NAME] = $this->hashValue($customer->getFirstname());
+        $userData[AAMSettingsFields::LAST_NAME] = $this->hashValue($customer->getLastname());
+        $userData[AAMSettingsFields::DATE_OF_BIRTH] = $this->hashValue($customer->getDob());
         if ($customer->getGender()) {
             $genderId = $customer->getGender();
             $userData[AAMSettingsFields::GENDER] =
-                $this->customerMetadata->getAttributeMetadata('gender')
-                    ->getOptions()[$genderId]->getLabel();
+                $this->hashValue(
+                    $this->customerMetadata->getAttributeMetadata('gender')
+                        ->getOptions()[$genderId]->getLabel()
+                );
         }
 
         $billingAddress = $this->getCustomerAddress($customer);
         if ($billingAddress) {
-            $userData[AAMSettingsFields::ZIP_CODE] = $billingAddress->getPostcode();
-            $userData[AAMSettingsFields::CITY] = $billingAddress->getCity();
-            $userData[AAMSettingsFields::PHONE] = $billingAddress->getTelephone();
-            $userData[AAMSettingsFields::STATE] = $billingAddress->getRegionCode();
-            $userData[AAMSettingsFields::COUNTRY] = $billingAddress->getCountryId();
+            $userData[AAMSettingsFields::ZIP_CODE] = $this->hashValue($billingAddress->getPostcode());
+            $userData[AAMSettingsFields::CITY] = $this->hashValue($billingAddress->getCity());
+            $userData[AAMSettingsFields::PHONE] = $this->hashValue($billingAddress->getTelephone());
+            $userData[AAMSettingsFields::STATE] = $this->hashValue($billingAddress->getRegionCode());
+            $userData[AAMSettingsFields::COUNTRY] = $this->hashValue($billingAddress->getCountryId());
         }
 
         return array_filter($userData);
+    }
+
+    private function hashValue($string){
+        return hash('sha256', strtolower($string));
     }
 
     // TODO Remaining user/custom data methods that can be obtained using Magento.

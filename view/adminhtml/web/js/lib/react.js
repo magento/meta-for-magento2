@@ -47,7 +47,7 @@
     })({
         1: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -89,7 +89,7 @@
         }, {"106": 106, "23": 23, "35": 35, "45": 45, "63": 63}],
         2: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -127,7 +127,7 @@
         }, {"108": 108, "138": 138, "65": 65}],
         3: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015 Facebook, Inc.
+             * Copyright 2013-2015 Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -534,7 +534,7 @@
         }, {"130": 130, "148": 148, "15": 15, "19": 19, "20": 20, "90": 90, "94": 94}],
         4: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -675,7 +675,7 @@
         }, {}],
         5: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -852,7 +852,7 @@
         }, {"105": 105, "130": 130, "132": 132, "143": 143, "150": 150, "155": 155, "4": 4, "71": 71}],
         6: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -947,7 +947,7 @@
         }, {"144": 144, "23": 23, "24": 24}],
         7: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -1282,7 +1282,7 @@
         }],
         8: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -1307,7 +1307,7 @@
         }, {}],
         9: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -1438,7 +1438,7 @@
         }, {"12": 12, "124": 124, "125": 125, "144": 144, "67": 67, "71": 71}],
         10: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -1674,7 +1674,7 @@
         }, {"144": 144}],
         11: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -1901,7 +1901,7 @@
         }, {"10": 10, "122": 122, "155": 155, "71": 71}],
         12: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -2048,7 +2048,7 @@
         }, {"130": 130, "135": 135, "136": 136, "140": 140, "144": 144}],
         13: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -2077,7 +2077,7 @@
         }, {"148": 148}],
         14: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -2203,7 +2203,7 @@
         }, {"148": 148, "15": 15, "19": 19, "65": 65, "96": 96}],
         15: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -2297,7 +2297,7 @@
         }, {"147": 147}],
         16: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -2578,7 +2578,7 @@
         }, {"102": 102, "110": 110, "144": 144, "155": 155, "17": 17, "18": 18, "56": 56}],
         17: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -2800,7 +2800,7 @@
         }, {"144": 144}],
         18: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3005,7 +3005,7 @@
         }, {"144": 144, "15": 15, "155": 155, "56": 56}],
         19: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3142,7 +3142,7 @@
         }, {"102": 102, "110": 110, "15": 15, "155": 155, "16": 16}],
         20: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3239,7 +3239,7 @@
         }, {"117": 117, "23": 23, "24": 24}],
         21: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3473,7 +3473,7 @@
         }, {"10": 10, "130": 130}],
         22: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3611,7 +3611,7 @@
         }, {"144": 144, "155": 155, "73": 73, "74": 74}],
         23: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3660,7 +3660,7 @@
         }, {}],
         24: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3781,7 +3781,7 @@
         }, {"144": 144}],
         25: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -3819,7 +3819,7 @@
         }, {"108": 108, "155": 155, "62": 62}],
         26: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -4145,7 +4145,7 @@
         }, {"101": 101, "119": 119, "15": 15, "16": 16, "17": 17, "23": 23, "57": 57, "71": 71}],
         27: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -4269,7 +4269,7 @@
         }, {"118": 118, "126": 126, "127": 127, "155": 155, "76": 76}],
         28: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -4456,7 +4456,7 @@
         }, {"127": 127, "136": 136, "24": 24, "52": 52}],
         29: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -5245,7 +5245,7 @@
         }],
         30: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -5369,7 +5369,7 @@
         }, {"104": 104, "137": 137, "144": 144, "155": 155, "69": 69}],
         31: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -5412,7 +5412,7 @@
         }, {"40": 40, "65": 65}],
         32: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -5465,7 +5465,7 @@
         }, {"144": 144}],
         33: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -6178,7 +6178,7 @@
         }],
         34: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -6210,7 +6210,7 @@
         }, {}],
         35: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -6318,7 +6318,7 @@
         }],
         36: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -6370,7 +6370,7 @@
         }, {}],
         37: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -7362,7 +7362,7 @@
         }],
         38: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -7541,7 +7541,7 @@
         }, {"149": 149, "52": 52, "53": 53}],
         39: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -7561,7 +7561,7 @@
         }, {}],
         40: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -7657,7 +7657,7 @@
         }, {"11": 11, "144": 144, "65": 65, "71": 71, "9": 9}],
         41: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -7812,7 +7812,7 @@
         }, {"144": 144, "22": 22, "23": 23, "40": 40, "65": 65, "83": 83}],
         42: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -7900,7 +7900,7 @@
         }, {"155": 155, "23": 23, "28": 28, "43": 43}],
         43: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -8090,7 +8090,7 @@
         }, {"155": 155, "22": 22, "23": 23, "65": 65, "83": 83}],
         44: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -8304,7 +8304,7 @@
         }, {"116": 116, "117": 117, "130": 130}],
         45: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -8332,7 +8332,7 @@
         }, {"49": 49, "80": 80, "84": 84}],
         46: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -8461,7 +8461,7 @@
         }, {"107": 107, "11": 11, "125": 125, "128": 128, "23": 23, "31": 31, "65": 65, "9": 9}],
         47: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -8576,7 +8576,7 @@
         }, {"144": 144, "155": 155, "22": 22, "23": 23, "40": 40, "83": 83}],
         48: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -8645,7 +8645,7 @@
         }, {"100": 100, "136": 136, "23": 23, "83": 83}],
         49: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -8767,7 +8767,7 @@
         }],
         50: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9006,7 +9006,7 @@
         }, {"10": 10, "152": 152, "51": 51, "65": 65, "71": 71}],
         51: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9207,7 +9207,7 @@
         }, {"23": 23}],
         52: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9456,7 +9456,7 @@
         }, {"104": 104, "23": 23, "34": 34}],
         53: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9739,7 +9739,7 @@
         }, {"104": 104, "115": 115, "144": 144, "155": 155, "34": 34, "52": 52, "72": 72, "73": 73}],
         54: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9794,7 +9794,7 @@
         }, {"23": 23, "52": 52, "55": 55, "76": 76}],
         55: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9844,7 +9844,7 @@
         }, {}],
         56: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9923,7 +9923,7 @@
         }, {}],
         57: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -9963,7 +9963,7 @@
         }, {"16": 16}],
         58: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -10177,7 +10177,7 @@
         }, {"114": 114, "129": 129, "130": 130, "141": 141, "23": 23, "24": 24, "61": 61, "65": 65, "83": 83}],
         59: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -10217,7 +10217,7 @@
         }, {"10": 10, "16": 16, "26": 26, "29": 29, "32": 32, "54": 54, "68": 68, "71": 71, "78": 78, "83": 83}],
         60: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -10343,7 +10343,7 @@
         }, {"133": 133, "138": 138, "139": 139, "44": 44}],
         61: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -10647,7 +10647,7 @@
         }, {"144": 144, "78": 78}],
         62: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -10696,7 +10696,7 @@
         }, {}],
         63: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -10772,7 +10772,7 @@
         }, {"121": 121, "23": 23, "28": 28, "29": 29, "30": 30, "38": 38, "52": 52, "53": 53, "74": 74, "84": 84}],
         64: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -10819,7 +10819,7 @@
         }, {"103": 103}],
         65: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -11696,7 +11696,7 @@
         }],
         66: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12194,7 +12194,7 @@
         }, {"109": 109, "27": 27, "32": 32, "34": 34, "67": 67, "76": 76}],
         67: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12228,7 +12228,7 @@
         }, {"147": 147}],
         68: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12324,7 +12324,7 @@
         }, {"144": 144, "23": 23}],
         69: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2015, Facebook, Inc.
+             * Copyright 2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12445,7 +12445,7 @@
         }, {"155": 155}],
         70: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12538,7 +12538,7 @@
         }, {"144": 144}],
         71: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12636,7 +12636,7 @@
         }, {}],
         72: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12662,7 +12662,7 @@
         }, {}],
         73: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -12686,7 +12686,7 @@
         }, {"147": 147}],
         74: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13053,7 +13053,7 @@
         }, {"115": 115, "136": 136, "52": 52, "72": 72}],
         75: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13206,7 +13206,7 @@
         }, {"100": 100, "23": 23, "24": 24, "26": 26, "39": 39, "6": 6, "60": 60}],
         76: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13315,7 +13315,7 @@
         }, {"77": 77}],
         77: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13395,7 +13395,7 @@
         }, {"70": 70}],
         78: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13426,7 +13426,7 @@
         }, {}],
         79: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13451,7 +13451,7 @@
         }, {}],
         80: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13536,7 +13536,7 @@
         }, {"118": 118, "137": 137, "144": 144, "48": 48, "52": 52, "61": 61, "64": 64, "79": 79, "81": 81, "83": 83}],
         81: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13625,7 +13625,7 @@
         }, {"100": 100, "136": 136, "23": 23, "24": 24, "6": 6}],
         82: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2015, Facebook, Inc.
+             * Copyright 2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -13884,7 +13884,7 @@
         }, {"144": 144, "155": 155, "23": 23, "34": 34, "52": 52, "62": 62, "83": 83}],
         83: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -14109,7 +14109,7 @@
         }, {"100": 100, "144": 144, "23": 23, "24": 24, "6": 6, "71": 71, "76": 76}],
         84: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -14125,7 +14125,7 @@
         }, {}],
         85: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -14254,7 +14254,7 @@
         }, {"10": 10}],
         86: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -14457,7 +14457,7 @@
         }, {"120": 120, "130": 130, "139": 139, "148": 148, "15": 15, "153": 153, "19": 19, "60": 60, "92": 92}],
         87: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -14488,7 +14488,7 @@
         }, {}],
         88: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15095,7 +15095,7 @@
         }],
         89: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15136,7 +15136,7 @@
         }, {"92": 92}],
         90: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15175,7 +15175,7 @@
         }, {"92": 92}],
         91: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15214,7 +15214,7 @@
         }, {"96": 96}],
         92: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15393,7 +15393,7 @@
         }, {"136": 136, "155": 155, "23": 23, "24": 24}],
         93: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15432,7 +15432,7 @@
         }, {"98": 98}],
         94: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15472,7 +15472,7 @@
         }, {"92": 92}],
         95: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15559,7 +15559,7 @@
         }, {"111": 111, "112": 112, "113": 113, "98": 98}],
         96: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15634,7 +15634,7 @@
         }, {"101": 101, "113": 113, "98": 98}],
         97: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15682,7 +15682,7 @@
         }, {"113": 113, "98": 98}],
         98: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15744,7 +15744,7 @@
         }, {"114": 114, "92": 92}],
         99: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -15801,7 +15801,7 @@
         }, {"96": 96}],
         100: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16037,7 +16037,7 @@
         }, {"144": 144}],
         101: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16066,7 +16066,7 @@
         }, {}],
         102: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16127,7 +16127,7 @@
         }, {"144": 144}],
         103: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16171,7 +16171,7 @@
         }, {}],
         104: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16200,7 +16200,7 @@
         }, {}],
         105: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16257,7 +16257,7 @@
         }, {"4": 4}],
         106: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16307,7 +16307,7 @@
         }, {"155": 155, "23": 23}],
         107: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16347,7 +16347,7 @@
         }, {}],
         108: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16398,7 +16398,7 @@
         }, {"144": 144, "155": 155, "34": 34, "62": 62, "65": 65}],
         109: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16448,7 +16448,7 @@
         }, {"127": 127, "155": 155}],
         110: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16479,7 +16479,7 @@
         }, {}],
         111: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16531,7 +16531,7 @@
         }, {}],
         112: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16636,7 +16636,7 @@
         }, {"111": 111}],
         113: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16682,7 +16682,7 @@
         }, {}],
         114: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16713,7 +16713,7 @@
         }, {}],
         115: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16755,7 +16755,7 @@
         }, {}],
         116: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16830,7 +16830,7 @@
         }, {}],
         117: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16865,7 +16865,7 @@
         }, {"130": 130}],
         118: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -16980,7 +16980,7 @@
         }, {"144": 144, "155": 155, "23": 23, "33": 33, "54": 54, "68": 68}],
         119: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17042,7 +17042,7 @@
         }, {"130": 130}],
         120: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17084,7 +17084,7 @@
         }, {}],
         121: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17119,7 +17119,7 @@
         }, {"144": 144, "52": 52}],
         122: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17147,7 +17147,7 @@
         }, {"107": 107}],
         123: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17165,7 +17165,7 @@
         }, {"65": 65}],
         124: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17257,7 +17257,7 @@
         }, {"130": 130}],
         125: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17299,7 +17299,7 @@
         }, {"107": 107, "124": 124, "130": 130}],
         126: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17344,7 +17344,7 @@
         }, {}],
         127: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17535,7 +17535,7 @@
         }, {"115": 115, "144": 144, "155": 155, "34": 34, "52": 52, "61": 61}],
         128: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2015, Facebook, Inc.
+             * Copyright 2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -17900,7 +17900,7 @@
         }, {"136": 136, "155": 155, "23": 23}],
         129: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              *
              * Licensed under the Apache License, Version 2.0 (the "License");
              * you may not use this file except in compliance with the License.
@@ -17987,7 +17987,7 @@
         }, {"136": 136}],
         130: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18025,7 +18025,7 @@
         }, {}],
         131: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18059,7 +18059,7 @@
         }, {}],
         132: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18101,7 +18101,7 @@
         }, {"131": 131}],
         133: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18158,7 +18158,7 @@
         }, {"146": 146}],
         134: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18245,7 +18245,7 @@
         }, {"154": 154}],
         135: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18331,7 +18331,7 @@
         }, {"130": 130, "134": 134, "140": 140, "144": 144}],
         136: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18372,7 +18372,7 @@
         }, {}],
         137: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18394,7 +18394,7 @@
         }, {}],
         138: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18423,7 +18423,7 @@
         }, {}],
         139: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18458,7 +18458,7 @@
         }, {}],
         140: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18555,7 +18555,7 @@
         }, {"130": 130, "144": 144}],
         141: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18595,7 +18595,7 @@
         }, {}],
         142: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18630,7 +18630,7 @@
         }, {}],
         143: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18671,7 +18671,7 @@
         }, {"142": 142}],
         144: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18722,7 +18722,7 @@
         }, {}],
         145: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18747,7 +18747,7 @@
         }, {}],
         146: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18774,7 +18774,7 @@
         }, {"145": 145}],
         147: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18824,7 +18824,7 @@
         }, {"144": 144}],
         148: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18861,7 +18861,7 @@
         }, {}],
         149: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18914,7 +18914,7 @@
         }, {}],
         150: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18947,7 +18947,7 @@
         }, {}],
         151: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -18972,7 +18972,7 @@
         }, {"130": 130}],
         152: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -19003,7 +19003,7 @@
         }, {"151": 151}],
         153: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -19055,7 +19055,7 @@
         }, {}],
         154: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2013-2015, Facebook, Inc.
+             * Copyright 2013-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the
@@ -19114,7 +19114,7 @@
         }, {"144": 144}],
         155: [function (_dereq_, module, exports) {
             /**
-             * Copyright 2014-2015, Facebook, Inc.
+             * Copyright 2014-2015, Meta, Inc.
              * All rights reserved.
              *
              * This source code is licensed under the BSD-style license found in the

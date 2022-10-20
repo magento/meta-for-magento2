@@ -44,8 +44,7 @@ class CategorySyncCron
 
     public function execute()
     {
-        if ($this->systemConfig->isActiveCollectionsSync()) {
-            $this->fbeHelper->log('start category sync cron job ');
+        if ($this->systemConfig->isActiveCatalogSync()) {
             $this->categoryCollection->pushAllCategoriesToFbCollections();
             return true;
         }

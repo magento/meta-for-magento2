@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016-present, Facebook, Inc.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -115,7 +115,7 @@ var FBEFlowContainer = React.createClass({
         let msg = '';
         if (response.success) {
           _this.setState({pixelId: response.pixelId});
-          msg = "The Facebook Pixel with ID: " + response.pixelId + " is now installed on your website.";
+          msg = "The Meta Pixel with ID: " + response.pixelId + " is now installed on your website.";
         } else {
           msg = "There was a problem saving the pixel. Please try again";
         }

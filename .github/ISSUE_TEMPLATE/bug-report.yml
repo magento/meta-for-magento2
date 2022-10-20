@@ -1,0 +1,53 @@
+name: Bug Report
+description: File a bug report / issue
+title: "[Bug]: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: input
+    id: magento_version
+    attributes:
+      label: Magento Version
+      description: What version of the Magento software are you running?
+    validations:
+      required: true
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin Version
+      description: What version of the plugin are you running?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. Use info tab page for logs (for version 1.4.3 onwards).
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://opensource.fb.com/code-of-conduct/) that we expect project participants to adhere to.
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

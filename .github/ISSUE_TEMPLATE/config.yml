@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Bug Report With Sensitive Information
+    url: https://www.facebook.com/help/contact/224834796277182
+    about: Please report issues here in case you want to provide sensitive information, like Pixel ID and logs, that will help us better understand the context.

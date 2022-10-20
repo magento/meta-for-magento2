@@ -12,6 +12,8 @@ interface InventoryInterface
 
     const STATUS_OUT_OF_STOCK = 'out of stock';
 
+    const UNMANAGED_STOCK_QTY = 9999;
+
     /**
      * @param Product $product
      * @return $this

@@ -1,0 +1,80 @@
+<?php /** @var Facebook\BusinessExtension\Block\Adminhtml\Info $block */ ?>
+
+<p><span> <?= __('Magento Version: ') ?> </span><span id="magento_version"><?= __($block->getMagentoVersion()) ?></span></p>
+<p><span> <?= __('Extension Version: ') ?> </span><span id="fbe_version"><?= __($block->getFBEVersion()) ?></span></p>
+
+<br>
+<h1><?= __('Logs') ?></h1>
+
+<button id="btnAll" onclick="toggleAll()"><?= __('Show Logs') ?></button>
+
+<br>
+<br>
+
+<h1><?= __('Reporting an Issue') ?></h1>
+<div class="row">
+    <div class="column";>
+        <button class = "btn" id="btnPublicIssue" onclick="openPublicIssue()"><?= __('Public Issue') ?></button>
+        <p><?= __('Please report an issue to get feedback and help from the developer community of the extension. All the info you share is public.') ?></p>
+    </div>
+    <div class="column" style="margin-left: 50px;">
+        <button class = "btn" id="btnPrivateIssue" onclick="openPrivateIssue()"><?= __('Private Issue') ?></button>
+        <p><?= __('Please share an issue using this form in case you want to share sensitive information that is related to the issue.') ?></p>
+
+    </div>
+</div>
+
+<br>
+
+<div id="all_logs" style="display: none">
+<p><?= $block->allLogs() ?></p>
+</div>
+
+<style>
+    {
+        box-sizing: border-box;
+    }
+    .column {
+        float: left;
+        width: 50%;
+        max-width : 300px;
+        word-wrap: break-word;
+    }
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    .btn {
+        width : 75%;
+        display: block;
+    }
+</style>
+
+<script>
+
+    var isAll = false;
+
+    function toggleAll() {
+        var hid = document.getElementById("all_logs");
+        var button = document.getElementById("btnAll");
+
+        if (hid.style.display === "block") { //Currently showing
+            hid.style.display = "none";
+            button.innerText = `<?= __('Show Logs') ?>`;
+            isAll = false;
+        } else { //Currently hidden
+            hid.style.display = "block";
+            button.innerText = `<?= __(' Hide Logs') ?>`;
+            isAll = true;
+        }
+    }
+
+    function openPublicIssue() {
+        window.open('<?= $block->publicIssueLink() ?>', "_blank");
+    }
+
+    function openPrivateIssue() {
+        window.open('<?= $block->privateIssueLink() ?>', "_blank");
+    }
+</script>

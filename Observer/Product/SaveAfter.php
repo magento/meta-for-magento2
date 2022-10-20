@@ -14,6 +14,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
+//TODO(T135444965): merge with ProcessProductAfterSaveEventObserver.php
 class SaveAfter implements ObserverInterface
 {
     /**

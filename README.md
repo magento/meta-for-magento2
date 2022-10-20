@@ -6,14 +6,14 @@
 Marketing on Facebook helps your business build lasting relationships with people, find new customers and increase sales for your online store. With this Facebook ad extension, we make it easy to reach the people who matter to your business and track the results of your advertising across devices. This extension will help you:
 
 ### Reach the right people
-Set up the Facebook pixel to find new customers, optimize your ads for people likely to buy and reach people with relevant ads on Facebook after they've visited your website.
+Set up the Meta pixel to find new customers, optimize your ads for people likely to buy and reach people with relevant ads on Facebook after they've visited your website.
 
 ### Show them the right products
 Connect your product catalog to Facebook to use dynamic ads. Reach shoppers when they're on Facebook with ads for the products they viewed on your website.
 
 ### Measure the results of your ads
-When you have the Facebook pixel set up, you can use Facebook ads reporting to understand the sales and revenue that resulted from your ads.
-Many online retailers have found success using the Facebook pixel to track the performance of their ads and run dynamic ads:
+When you have the Meta pixel set up, you can use Facebook ads reporting to understand the sales and revenue that resulted from your ads.
+Many online retailers have found success using the Meta pixel to track the performance of their ads and run dynamic ads:
 
 “The ability to measure sales was the first sign that our business would be a success. Our first day of breaking 100-plus sales always sticks out. Point blank, our marketing plan is Facebook, Facebook, and more Facebook... Facebook is 100% the backbone of our customer acquisition efforts and it's been made even better with the improved Facebook pixel” — Ali Najafian, co-founder, Trendy Butler
 
@@ -24,7 +24,7 @@ Many online retailers have found success using the Facebook pixel to track the p
 ## What's included?
 
 ### (a) Pixel installer
-Installing the Facebook pixel allows you to access the features below:
+Installing the Meta pixel allows you to access the features below:
 
 Conversion tracking: See how successful your ad is by seeing what happened as a direct result of your ad (including conversions and sales)
 
@@ -56,38 +56,47 @@ Before installing, verify your Magento cron job is up and running, read more abo
 Login to your server instance.
 
 ### INSTALLATION
+
+#### Magento Marketplace Installation
+You can download and install our extension in [Magento marketplace](https://marketplace.magento.com/facebook-facebook-for-magento2.html) if you have a marketplace account.
 #### Composer Installation
 * Go to your magento root path
 * Execute command `cd /var/www/Magento` or
  `cd /var/www/html/Magento` based on your server Centos or Ubuntu.
 * run composer command: `composer require facebook/facebook-for-magento2`
+- To enable module execute `php bin/magento module:enable Facebook_BusinessExtension`
+- Execute `php bin/magento setup:upgrade`
+- Optional `php bin/magento setup:static-content:deploy`
+- Execute `php bin/magento setup:di:compile`
+- Execute `php bin/magento cache:clean`
+- Execute `php bin/magento cron:run` three times
 
 #### Manual Installation
-* extract files from an archive.  
+* extract files from an archive.
 * Execute command `cd /var/www/Magento/app/code` or
- `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.  
+ `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.
 * Move files into Magento2 folder `app/code/Facebook/BusinessExtension`. If you downloaded zip file on github, you need to
 create directory `app/code/Facebook/BusinessExtension`. If you downloaded zip from facebook, those two folders are included.
 
 
-### ENABLE EXTENSION
+##### ENABLE EXTENSION
 * Make sure you have correct read/write permissions on your Magento root directory.
-    Read about them [here](https://magento.stackexchange.com/questions/91870/magento-2-folder-file-permissions).  
+    Read about them [here](https://magento.stackexchange.com/questions/91870/magento-2-folder-file-permissions).
 * Move to magento root folder by executing command `cd ../../`
 
-####  Enable Extension By Running Script
-You can install the extension with a bash script.  
+######  Enable Extension By Running Script
+You can install the extension with a bash script.
 - Copy the install-facebook-business-extension.sh script to your Magento root folder.
 - Give it execute permission with `chmod +x install-facebook-business-extension.sh` (you may have to log in as root user to do it).
 - Switch to Magento files owner user and run: `./install-facebook-business-extension.sh`.
 - You should read `Installation finished` when the script is done.
 - Optional. If you don't switch to Magento files owner user run:
-	  `chmod -R 755 ./`  
-	  `chmod -R 777 var/`  
-	  `chmod -R 777 pub/`    
-	  `chmod -R 777 app/etc`     
-	  `chmod -R 777 generated`  
-####  Enable Extension By Running Commands Manually
+	  `chmod -R 755 ./`
+	  `chmod -R 777 var/`
+	  `chmod -R 777 pub/`
+	  `chmod -R 777 app/etc`
+	  `chmod -R 777 generated`
+######  Enable Extension By Running Commands Manually
 7. Execute the following commands to manually install Facebook Business Extension.
 - Install the Facebook Business SDK for PHP: `composer require facebook/php-business-sdk`. This dependency is used by the extension.
 - You will see a message similar to: `Installing facebook/php-business-sdk (8.0.0): Downloading (100%)`
@@ -100,11 +109,11 @@ You can install the extension with a bash script.
 - Execute `php bin/magento cache:clean`
 - Execute `php bin/magento cron:run` three times
 - Optional. If you are not the owner of Magento files:
-	  `chmod -R 755 ./`  
-	  `chmod -R 777 var/`  
-	  `chmod -R 777 pub/`    
-	  `chmod -R 777 app/etc`     
-	  `chmod -R 777 generated`   
+	  `chmod -R 755 ./`
+	  `chmod -R 777 var/`
+	  `chmod -R 777 pub/`
+	  `chmod -R 777 app/etc`
+	  `chmod -R 777 generated`
 ### Verify Installation
 - Upon successful installation, login to your Magento Admin panel.
 - Click the Stores icon in the main menu.
