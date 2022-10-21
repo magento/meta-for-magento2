@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="script-src">
+            <values>
+                <value id="facebook" type="host">www.facebook.com</value>
+                <value id="facebook-connect" type="host">connect.facebook.net</value>
+                <value id="facebook-graph-api" type="host">graph.facebook.com</value>
+                <value id="facebook-business" type="host">business.facebook.com</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="facebook" type="host">www.facebook.com</value>
+                <value id="facebook-connect" type="host">connect.facebook.net</value>
+                <value id="facebook-graph-api" type="host">graph.facebook.com</value>
+                <value id="facebook-business" type="host">business.facebook.com</value>
+            </values>
+        </policy>
+        <policy id="frame-src">
+            <values>
+                <value id="facebook" type="host">www.facebook.com</value>
+                <value id="facebook-connect" type="host">connect.facebook.net</value>
+                <value id="facebook-graph-api" type="host">graph.facebook.com</value>
+                <value id="facebook-business" type="host">business.facebook.com</value>
+            </values>
+        </policy>
+        <policy id="img-src">
+            <values>
+                <value id="facebook" type="host">www.facebook.com</value>
+                <value id="facebook-connect" type="host">connect.facebook.net</value>
+                <value id="facebook-graph-api" type="host">graph.facebook.com</value>
+                <value id="facebook-business" type="host">business.facebook.com</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>
