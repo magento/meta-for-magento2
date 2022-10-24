@@ -238,7 +238,7 @@ var FBEFlowContainer = React.createClass({
   savePixelId: function savePixelId(pixelId) {
     var _this = this;
     if (!pixelId) {
-      console.error('Facebook Business Extension Error: got no pixel_id');
+      console.error('Meta Business Extension Error: got no pixel_id');
       return;
     }
     jQuery.ajax({
@@ -267,7 +267,7 @@ var FBEFlowContainer = React.createClass({
   saveAccessToken: function saveAccessToken(accessToken) {
     var _this = this;
     if (!accessToken) {
-      console.error('Facebook Business Extension Error: got no access token');
+      console.error('Meta Business Extension Error: got no access token');
       return;
     }
     jQuery.ajax({
@@ -288,7 +288,7 @@ var FBEFlowContainer = React.createClass({
   saveProfilesData: function saveProfilesData(profiles) {
     var _this = this;
     if (!profiles) {
-      console.error('Facebook Business Extension Error: got no profiles data');
+      console.error('Meta Business Extension Error: got no profiles data');
       return;
     }
     jQuery.ajax({
@@ -331,7 +331,7 @@ var FBEFlowContainer = React.createClass({
   pushFeed: function pushFeed(accessToken, catalogId) {
     var _this = this;
       if (!accessToken) {
-      console.error('Facebook Business Extension Error: got no access token to push product feed');
+      console.error('Meta Business Extension Error: got no access token to push product feed');
       return;
     }
     jQuery.ajax({

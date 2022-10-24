@@ -5,7 +5,7 @@
 # Be sure to log in as the Magento files owner and browse to Magento root directory
 # Make this file executable with chmod +x install-facebook-business-extension.sh
 
-echo "Starting Facebook Business Extension installation"
+echo "Starting Meta Business Extension installation"
 
 echo "Installing Facebook Business SDK..."
 composer require facebook/php-business-sdk

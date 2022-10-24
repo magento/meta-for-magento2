@@ -2,7 +2,7 @@
 
 ## Installation instructions
 
-These instructions will start a set of Docker containers, containing a Magento 2 store with the Facebook Business Extension, in your local machine, so you can try its capabilities before deploying to your production environment.
+These instructions will start a set of Docker containers, containing a Magento 2 store with the Meta Business Extension, in your local machine, so you can try its capabilities before deploying to your production environment.
 
 1. Change your etc/hosts file. It's necessary to access the store.
 

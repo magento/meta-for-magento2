@@ -1,4 +1,4 @@
-# Contributing to Facebook Business Extension For Magento2
+# Contributing to Meta Business Extension For Magento2
 We want to make contributing to this project as easy and transparent as
 possible.
 
@@ -30,6 +30,6 @@ outlined on that page and do not file a public issue.
 * 80 character line length
 
 ## License
-By contributing to Facebook Business Extension For Magento2, you agree that your contributions
+By contributing to Meta Business Extension For Magento2, you agree that your contributions
 will be licensed under the LICENSE file in the root directory of
 this source tree.

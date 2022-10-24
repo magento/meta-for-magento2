@@ -3,7 +3,7 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="Facebook_BusinessExtension::facebook" title="Facebook Business Extension" sortOrder="51">
+                <resource id="Facebook_BusinessExtension::facebook" title="Meta Business Extension" sortOrder="51">
                     <resource id="Facebook_BusinessExtension::system_config" title="Setup" sortOrder="99" />
                 </resource>
             </resource>

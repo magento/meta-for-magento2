@@ -83,7 +83,7 @@ class Notification implements MessageInterface
     public function getText()
     {
         $url = $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/facebook_business_extension');
-        return __('Facebook Business Extension: Complete the setup by configuring <a href="%1">Shipping Methods Mapping</a>.', $url);
+        return __('Meta Business Extension: Complete the setup by configuring <a href="%1">Shipping Methods Mapping</a>.', $url);
     }
 
     /**

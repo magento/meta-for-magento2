@@ -32,7 +32,7 @@ class FBEHelper extends AbstractHelper
 
     const FB_GRAPH_BASE_URL = "https://graph.facebook.com/";
 
-    const DELETE_SUCCESS_MESSAGE = "You have successfully deleted Facebook Business Extension.
+    const DELETE_SUCCESS_MESSAGE = "You have successfully deleted Meta Business Extension.
     The pixel installed on your website is now deleted.";
 
     const DELETE_FAILURE_MESSAGE = "There was a problem deleting the connection.

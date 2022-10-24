@@ -1,5 +1,5 @@
 
-# Facebook Business Extension For Magento2
+# Meta Business Extension For Magento2
 
 ## Facebook Connects Businesses with People
 
@@ -46,9 +46,9 @@ Cross-device: Reach people with ads on any device they use, regardless of where 
 
 ## Usage Instructions
 
-Facebook Business Extension - Installation steps
+Meta Business Extension - Installation steps
 
-INSTALL FACEBOOK BUSINESS EXTENSION FROM ZIP FILE ON YOUR DEV INSTANCE. TEST THAT THE EXTENSION
+INSTALL META BUSINESS EXTENSION FROM ZIP FILE ON YOUR DEV INSTANCE. TEST THAT THE EXTENSION
 WAS INSTALLED CORRECTLY BEFORE SHIPPING THE CODE TO PRODUCTION
 
 Before installing, verify your Magento cron job is up and running, read more about it on [this](https://devdocs.magento.com/guides/v2.3/config-guide/cli/config-cli-subcommands-cron.html) page.
@@ -97,7 +97,7 @@ You can install the extension with a bash script.
 	  `chmod -R 777 app/etc`
 	  `chmod -R 777 generated`
 ######  Enable Extension By Running Commands Manually
-7. Execute the following commands to manually install Facebook Business Extension.
+7. Execute the following commands to manually install Meta Business Extension.
 - Install the Facebook Business SDK for PHP: `composer require facebook/php-business-sdk`. This dependency is used by the extension.
 - You will see a message similar to: `Installing facebook/php-business-sdk (8.0.0): Downloading (100%)`
 - Execute `php bin/magento module:status`
@@ -132,7 +132,7 @@ Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help
 
 ## Requirements
 
-Facebook Business Extension For Magento2 requires
+Meta Business Extension For Magento2 requires
 * Magento version 2.0 and above
 * PHP 7.0 or greater
 * Memory limit of 1 GB or greater (2 GB or higher is preferred)
@@ -143,4 +143,4 @@ See the CONTRIBUTING file for how to help out.
 
 ## License
 
-Facebook Business Extension For Magento2 is Platform-licensed.
+Meta Business Extension For Magento2 is Platform-licensed.
