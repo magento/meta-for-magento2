@@ -10,7 +10,6 @@
              sortOrder="50"
              dependsOnModule="Facebook_BusinessExtension"
              resource="Facebook_BusinessExtension::facebook"/>
-        <!-- @todo https://fburl.com/hphvc050 -->
         <add id="Facebook_BusinessExtension::facebook_business_extension"
              title="Setup"
              translate="title"
@@ -20,16 +19,6 @@
              dependsOnModule="Facebook_BusinessExtension"
              action="fbeadmin/setup/index"
              resource="Facebook_BusinessExtension::facebook"/>
-        <add
-                id="Facebook_BusinessExtension::facebook_business_extension_info"
-                title="Info"
-                translate="title"
-                module="Facebook_BusinessExtension"
-                parent="Facebook_BusinessExtension::facebook"
-                sortOrder="20"
-                dependsOnModule="Facebook_BusinessExtension"
-                action="fbeadmin/info/index"
-                resource="Facebook_BusinessExtension::facebook"/>
         <add id="Facebook_BusinessExtension::diagnostic"
              title="Catalog Diagnostics"
              translate="title"
