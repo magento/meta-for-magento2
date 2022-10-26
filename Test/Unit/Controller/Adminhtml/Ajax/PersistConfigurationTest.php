@@ -7,7 +7,7 @@ namespace Facebook\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 
-class FbfeedpushTest extends \PHPUnit\Framework\TestCase
+class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
 {
     protected $fbeHelper;
 
@@ -47,7 +47,7 @@ class FbfeedpushTest extends \PHPUnit\Framework\TestCase
         $this->customerSession = $this->createMock(\Magento\Customer\Model\Session::class);
         $this->_batchApi = $this->createMock(\Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi::class);
 
-        $this->fbFeedPush = new \Facebook\BusinessExtension\Controller\Adminhtml\Ajax\Fbfeedpush(
+        $this->fbFeedPush = new \Facebook\BusinessExtension\Controller\Adminhtml\Ajax\PersistConfiguration(
             $this->context,
             $this->resultJsonFactory,
             $this->fbeHelper,

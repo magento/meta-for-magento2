@@ -7,7 +7,7 @@ namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 
 use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi;
 
-class Fbfeedpush extends AbstractAjax
+class PersistConfiguration extends AbstractAjax
 {
 
     /**
@@ -27,32 +27,15 @@ class Fbfeedpush extends AbstractAjax
 
     public function executeForJson()
     {
-        // TODO(T135443230): determine whether customer wants this or not
-        // $response = [];
-        // do not sync products after FBE is setup in this version
-        // @todo https://fburl.com/707tgrel
-        // return $response;
-        $external_business_id = $this->_fbeHelper->getConfigValue('fbe/external/id');
-        $this->_fbeHelper->log("Existing external business id --- ". $external_business_id);
-        if ($external_business_id) {
-            $response['success'] = false;
-            $response['message'] = 'One time feed push is completed at the time of setup';
-            return $response;
-        }
         try {
-            /* even the rest code failed, we should store external business id and catalog id,
-            because user can push feed sync button in configuration*/
-            $access_token = $this->getRequest()->getParam('accessToken');
             $external_business_id = $this->getRequest()->getParam('externalBusinessId');
             $this->saveExternalBusinessId($external_business_id);
             $catalog_id = $this->getRequest()->getParam('catalogId');
             $this->saveCatalogId($catalog_id);
-            if ($access_token) {
-                $feed_push_response = $this->batchApi->generateProductRequestData(null, $access_token);
-                $response['success'] = true;
-                $response['feed_push_response'] = $feed_push_response;
-                return $response;
-            }
+            $response['success'] = true;
+            $response['feed_push_response'] = 'Business and catalog IDs successfully saved';
+
+            return $response;
         } catch (\Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();

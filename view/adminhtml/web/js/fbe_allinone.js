@@ -227,7 +227,7 @@ var FBEFlowContainer = React.createClass({
           _this.saveAccessToken(accessToken);
           _this.saveProfilesData(profiles);
           _this.saveAAMSettings(pixelId);
-          _this.pushFeed(accessToken, catalogId);
+          _this.saveConfig(catalogId);
           _this.setState({installed: 'true'});
         }
       }else {
@@ -328,28 +328,23 @@ var FBEFlowContainer = React.createClass({
       }
     });
   },
-  pushFeed: function pushFeed(accessToken, catalogId) {
+  saveConfig: function saveConfig(catalogId) {
     var _this = this;
-      if (!accessToken) {
-      console.error('Meta Business Extension Error: got no access token to push product feed');
-      return;
-    }
     jQuery.ajax({
       type: 'post',
-      url: ajaxify(window.facebookBusinessExtensionConfig.setFeedPush),
+      url: ajaxify(window.facebookBusinessExtensionConfig.saveConfig),
         async : false,
         data: ajaxParam({
-        accessToken: accessToken,
         externalBusinessId: window.facebookBusinessExtensionConfig.externalBusinessId,
         catalogId: catalogId,
       }),
       success: function onSuccess(data, _textStatus, _jqXHR) {
         if(data.success) {
-          _this.consoleLog('Feed push successful');
+          _this.consoleLog('Catalog & Business Ids successfully saved');
         }
       },
       error: function() {
-        console.error('There was problem pushing data feed');
+        console.error('There was a problem saving Catalog & Business Ids');
       }
     });
   },

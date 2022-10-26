@@ -80,9 +80,9 @@ class Setup extends \Magento\Backend\Block\Template
     /**
      * @return mixed
      */
-    public function getFeedPushAjaxRoute()
+    public function fetchConfigurationAjaxRoute()
     {
-        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbfeedpush');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/persistconfiguration');
     }
 
     /**
