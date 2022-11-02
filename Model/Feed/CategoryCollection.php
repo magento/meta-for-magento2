@@ -7,6 +7,7 @@ namespace Facebook\BusinessExtension\Model\Feed;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\HttpClient;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Framework\HTTP\Client\Curl;
@@ -47,6 +48,11 @@ class CategoryCollection
     protected $_categoryCollection;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * Constructor
      * @param CollectionFactory $productCollectionFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -54,6 +60,7 @@ class CategoryCollection
      * @param FBEHelper $helper
      * @param Curl $curl
      * @param HttpClient $httpClient
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         CollectionFactory $productCollectionFactory,
@@ -61,7 +68,8 @@ class CategoryCollection
         \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
         FBEHelper $helper,
         Curl $curl,
-        HttpClient $httpClient
+        HttpClient $httpClient,
+        SystemConfig $systemConfig
     ) {
         $this->_storeManager = $storeManager;
         $this->_categoryCollection = $categoryCollection;
@@ -70,6 +78,7 @@ class CategoryCollection
         $this->curl = $curl;
         $this->categoryMap = $this->fbeHelper->generateCategoryNameMap();
         $this->httpClient = $httpClient;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -101,7 +110,7 @@ class CategoryCollection
     public function getCatalogID()
     {
         if ($this->catalogId == null) {
-            $this->catalogId = $this->fbeHelper->getConfigValue('fbe/catalog/id');
+            $this->catalogId = $this->systemConfig->getCatalogId();
         }
         return $this->catalogId;
     }
@@ -114,7 +123,7 @@ class CategoryCollection
     public function getFBProductSetID(Category $category)
     {
         $key = $this->getCategoryKey($category);
-        return $this->fbeHelper->getConfigValue($key);
+        return $this->systemConfig->getConfig($key);
     }
 
     /**
@@ -149,7 +158,7 @@ class CategoryCollection
     public function saveFBProductSetID(Category $category, string $setID)
     {
         $key = $this->getCategoryKey($category);
-        $this->fbeHelper->saveConfig($key, $setID);
+        $this->systemConfig->saveConfig($key, $setID);
     }
 
     /**

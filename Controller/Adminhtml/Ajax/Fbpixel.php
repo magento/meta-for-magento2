@@ -6,41 +6,44 @@
 namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Fbpixel extends AbstractAjax
 {
 
+    /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
     // phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
+        \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper,
+        SystemConfig $systemConfig
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        $this->systemConfig = $systemConfig;
     }
 
   // Yet to verify how to use the pii info, hence have commented the part of code.
     public function executeForJson()
     {
-        $old_pixel_id = $this->_fbeHelper->getConfigValue('fbpixel/id');
+        $old_pixel_id = $this->systemConfig->getConfig('fbpixel/id');
         $response = [
         'success' => false,
         'pixelId' => $old_pixel_id
-        //'pixelUsePii' => $this->_fbeHelper->getConfigValue('fbpixel/pixel_use_pii')
         ];
         $pixel_id = $this->getRequest()->getParam('pixelId');
-      //$pixel_use_pii = $this->getRequest()->getParam('pixelUsePii');
         if ($pixel_id && $this->_fbeHelper->isValidFBID($pixel_id)) {
-            $this->_fbeHelper->saveConfig('fbpixel/id', $pixel_id);
-            $this->_fbeHelper->saveConfig('fbe/installed', true);
-          // $this->_fbeHelper->saveConfig('fbpixel/pixel_use_pii', $pixel_use_pii === 'true'? '1' : '0');
+            $this->systemConfig->saveConfig('fbpixel/id', $pixel_id);
+            $this->systemConfig->saveConfig('fbe/installed', true);
             $response['success'] = true;
             $response['pixelId'] = $pixel_id;
-          // $response['pixelUsePii'] = $pixel_use_pii;
             if ($old_pixel_id != $pixel_id) {
                 $this->_fbeHelper->log(sprintf("Pixel id updated from %d to %d", $old_pixel_id, $pixel_id));
                 $datetime = $this->_fbeHelper->createObject(DateTime::class);
-                $this->_fbeHelper->saveConfig(
+                $this->systemConfig->saveConfig(
                     'fbpixel/install_time',
                     $datetime->gmtDate('Y-m-d H:i:s')
                 );

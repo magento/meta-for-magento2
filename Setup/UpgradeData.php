@@ -386,6 +386,10 @@ class UpgradeData implements UpgradeDataInterface
                     );
                 }
             }
+
+            //todo(T135735830): migrate fbe token and ids to systemconfig
+            //todo(T135735830): delete fbe configs from db
+
         }
 
         $setup->endSetup();

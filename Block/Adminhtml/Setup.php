@@ -6,6 +6,7 @@
 namespace Facebook\BusinessExtension\Block\Adminhtml;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Setup extends \Magento\Backend\Block\Template
 {
@@ -15,17 +16,25 @@ class Setup extends \Magento\Backend\Block\Template
     protected $fbeHelper;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param FBEHelper $fbeHelper
      * @param array $data
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         FBEHelper $fbeHelper,
-        array $data = []
+        array $data = [],
+        SystemConfig $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -65,7 +74,7 @@ class Setup extends \Magento\Backend\Block\Template
      */
     public function fetchPixelId()
     {
-        return $this->fbeHelper->getConfigValue('fbpixel/id');
+        return $this->systemConfig->getConfig('fbpixel/id');
     }
 
     /**

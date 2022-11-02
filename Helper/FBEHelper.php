@@ -19,6 +19,7 @@ use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\UrlInterface;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use Magento\Store\Api\Data\StoreInterface;
@@ -88,6 +89,11 @@ class FBEHelper extends AbstractHelper
     protected $productIdentifier;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * FBEHelper constructor
      *
      * @param Context $context
@@ -100,6 +106,7 @@ class FBEHelper extends AbstractHelper
      * @param ResourceConnection $resourceConnection
      * @param ModuleListInterface $moduleList
      * @param ProductIdentifier $productIdentifier
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         Context $context,
@@ -111,7 +118,8 @@ class FBEHelper extends AbstractHelper
         Curl $curl,
         ResourceConnection $resourceConnection,
         ModuleListInterface $moduleList,
-        ProductIdentifier $productIdentifier
+        ProductIdentifier $productIdentifier,
+        SystemConfig $systemConfig
     ) {
         parent::__construct($context);
         $this->objectManager = $objectManager;
@@ -123,16 +131,18 @@ class FBEHelper extends AbstractHelper
         $this->resourceConnection = $resourceConnection;
         $this->moduleList = $moduleList;
         $this->productIdentifier = $productIdentifier;
+        $this->systemConfig = $systemConfig;
     }
 
+    #TODO(T135735830): remove this and get pixelid from systemconfig
     public function getPixelID()
     {
-        return $this->getConfigValue('fbpixel/id');
+        return $this->systemConfig->getConfig('fbpixel/id');
     }
-
+    #TODO(T135735830): remove this and get accesstoken from systemconfig
     public function getAccessToken()
     {
-        return $this->getConfigValue('fbaccess/token');
+        return $this->systemConfig->getConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN);
     }
 
     /**
@@ -251,58 +261,6 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $configKey
-     * @param $configValue
-     */
-    public function saveConfig($configKey, $configValue)
-    {
-        try {
-            $configRow = $this->configFactory->create()->load($configKey);
-            if ($configRow->getData('config_key')) {
-                $configRow->setData('config_value', $configValue);
-                $configRow->setData('update_time', time());
-            } else {
-                $t = time();
-                $configRow->setData('config_key', $configKey);
-                $configRow->setData('config_value', $configValue);
-                $configRow->setData('creation_time', $t);
-                $configRow->setData('update_time', $t);
-            }
-            $configRow->save();
-        } catch (\Exception $e) {
-            $this->logException($e);
-        }
-    }
-
-    /**
-     * @param $configKey
-     */
-    public function deleteConfig($configKey)
-    {
-        try {
-            $configRow = $this->configFactory->create()->load($configKey);
-            $configRow->delete();
-        } catch (\Exception $e) {
-            $this->logException($e);
-        }
-    }
-
-    /**
-     * @param $configKey
-     * @return mixed|null
-     */
-    public function getConfigValue($configKey)
-    {
-        try {
-            $configRow = $this->configFactory->create()->load($configKey);
-        } catch (\Exception $e) {
-            $this->logException($e);
-            return null;
-        }
-        return $configRow ? $configRow->getConfigValue() : null;
-    }
-
-    /**
      * @param $requestParams
      * @param null $accessToken
      * @return string|null
@@ -311,7 +269,7 @@ class FBEHelper extends AbstractHelper
     {
         $response = null;
         if ($accessToken == null) {
-            $accessToken = $this->getConfigValue('fbaccess/token');
+            $accessToken = $this->getAccessToken();
         }
         try {
             $url = $this->getCatalogBatchAPI($accessToken);
@@ -333,7 +291,7 @@ class FBEHelper extends AbstractHelper
      */
     public function getFBEExternalBusinessId()
     {
-        $stored_external_id = $this->getConfigValue('fbe/external/id');
+        $stored_external_id = $this->systemConfig->getConfig('fbe/external/id');
         if ($stored_external_id) {
             return $stored_external_id;
         }
@@ -527,7 +485,7 @@ class FBEHelper extends AbstractHelper
      */
     public function getCatalogBatchAPI($accessToken)
     {
-        $catalogId = $this->getConfigValue('fbe/catalog/id');
+        $catalogId = $this->systemConfig->getConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID);
         $external_business_id = $this->getFBEExternalBusinessId();
         if ($catalogId != null) {
             $catalog_path = "/" . $catalogId . "/items_batch";
@@ -555,7 +513,7 @@ class FBEHelper extends AbstractHelper
      */
     public function isFBEInstalled()
     {
-        $isFbeInstalled = $this->getConfigValue('fbe/installed');
+        $isFbeInstalled = $this->systemConfig->getConfig('fbe/installed');
         if ($isFbeInstalled) {
             return 'true';
         }
@@ -576,7 +534,7 @@ class FBEHelper extends AbstractHelper
      */
     public function getAAMSettings()
     {
-        $settingsAsString = $this->getConfigValue('fbpixel/aam_settings');
+        $settingsAsString = $this->systemConfig->getConfig('fbpixel/aam_settings');
         if ($settingsAsString) {
             $settingsAsArray = json_decode($settingsAsString, true);
             if ($settingsAsArray) {
