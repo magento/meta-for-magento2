@@ -55,11 +55,6 @@ class ResetSettings extends AbstractAjax
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $storeId)
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $storeId)
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $defaultStoreId)
-            ->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE,
-                SystemConfig::ONBOARDING_STATE_PENDING,
-                $storeId
-            )
             ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, 0, $storeId)
             ->cleanCache();
 

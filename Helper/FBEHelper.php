@@ -7,7 +7,6 @@ namespace Facebook\BusinessExtension\Helper;
 
 use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Logger\Logger;
-use Facebook\BusinessExtension\Model\ConfigFactory;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\App\Filesystem\DirectoryList;
@@ -54,11 +53,6 @@ class FBEHelper extends AbstractHelper
     protected $storeManager;
 
     /**
-     * @var ConfigFactory
-     */
-    protected $configFactory;
-
-    /**
      * @var Logger
      */
     protected $logger;
@@ -98,7 +92,6 @@ class FBEHelper extends AbstractHelper
      *
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
-     * @param ConfigFactory $configFactory
      * @param Logger $logger
      * @param DirectoryList $directorylist
      * @param StoreManagerInterface $storeManager
@@ -111,7 +104,6 @@ class FBEHelper extends AbstractHelper
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
-        ConfigFactory $configFactory,
         Logger $logger,
         DirectoryList $directorylist,
         StoreManagerInterface $storeManager,
@@ -124,7 +116,6 @@ class FBEHelper extends AbstractHelper
         parent::__construct($context);
         $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;
-        $this->configFactory = $configFactory;
         $this->logger = $logger;
         $this->directoryList = $directorylist;
         $this->curl = $curl;
@@ -134,15 +125,20 @@ class FBEHelper extends AbstractHelper
         $this->systemConfig = $systemConfig;
     }
 
-    #TODO(T135735830): remove this and get pixelid from systemconfig
+    /**
+     * @return mixed
+     */
     public function getPixelID()
     {
-        return $this->systemConfig->getConfig('fbpixel/id');
+        return $this->systemConfig->getPixelId();
     }
-    #TODO(T135735830): remove this and get accesstoken from systemconfig
+
+    /**
+     * @return mixed
+     */
     public function getAccessToken()
     {
-        return $this->systemConfig->getConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN);
+        return $this->systemConfig->getAccessToken();
     }
 
     /**
@@ -272,7 +268,7 @@ class FBEHelper extends AbstractHelper
             $accessToken = $this->getAccessToken();
         }
         try {
-            $url = $this->getCatalogBatchAPI($accessToken);
+            $url = $this->getCatalogBatchAPI();
             $params = [
                 'access_token' => $accessToken,
                 'requests' => json_encode($requestParams),
@@ -291,9 +287,9 @@ class FBEHelper extends AbstractHelper
      */
     public function getFBEExternalBusinessId()
     {
-        $stored_external_id = $this->systemConfig->getConfig('fbe/external/id');
-        if ($stored_external_id) {
-            return $stored_external_id;
+        $storedExternalId = $this->systemConfig->getExternalBusinessId();
+        if ($storedExternalId) {
+            return $storedExternalId;
         }
         $storeId = $this->getStore()->getId();
         $this->log("Store id---" . $storeId);
@@ -358,22 +354,20 @@ class FBEHelper extends AbstractHelper
     public function getAPIVersion()
     {
         $accessToken = $this->getAccessToken();
-        if ($accessToken == null) {
+        if (!$accessToken) {
             $this->log("can't find access token, won't get api update version ");
             return;
         }
-        $api_version = null;
+        $apiVersion = null;
         try {
-
-            $configRow = $this->configFactory->create()->load('fb/api/version');
-            $api_version = $configRow ? $configRow->getConfigValue() : null;
-            //$this->log("Current api version : ".$api_version);
-            $versionLastUpdate = $configRow ? $configRow->getUpdateTime() : null;
+            $apiVersion = $this->systemConfig->getApiVersion();
+            //$this->log("Current api version : ".$apiVersion);
+            $versionLastUpdate = $this->systemConfig->getApiVersionLastUpdate();
             //$this->log("Version last update: ".$versionLastUpdate);
-            $is_updated_version = $this->isUpdatedVersion($versionLastUpdate);
-            if ($api_version && $is_updated_version) {
-                //$this->log("Returning the version already stored in db : ".$api_version);
-                return $api_version;
+            $isUpdatedVersion = $this->isUpdatedVersion($versionLastUpdate);
+            if ($apiVersion && $isUpdatedVersion) {
+                //$this->log("Returning the version already stored in db : ".$apiVersion);
+                return $apiVersion;
             }
             $this->curl->addHeader("Authorization", "Bearer " . $accessToken);
             $this->curl->get(self::FB_GRAPH_BASE_URL . 'api_version');
@@ -381,15 +375,18 @@ class FBEHelper extends AbstractHelper
             $response = $this->curl->getBody();
             //$this->log("The API reponse : ".json_encode($response));
             $decodeResponse = json_decode($response);
-            $api_version = $decodeResponse->api_version;
-            //$this->log("The version fetched via API call: ".$api_version);
-            $this->saveConfig('fb/api/version', $api_version);
+            $apiVersion = $decodeResponse->api_version;
+            //$this->log("The version fetched via API call: ".$apiVersion);
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION, $apiVersion);
+            $date = new \DateTime();
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
+                $date->format('Y-m-d H:i:s'));
 
         } catch (\Exception $e) {
             $this->log("Failed to fetch latest api version with error " . $e->getMessage());
         }
 
-        return $api_version ? $api_version : self::CURRENT_API_VERSION;
+        return $apiVersion ? $apiVersion : self::CURRENT_API_VERSION;
     }
 
     /*
@@ -445,6 +442,18 @@ class FBEHelper extends AbstractHelper
             $facebook_config = $this->resourceConnection->getTableName('facebook_business_extension_config');
             $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' ";
             $connection->query($sql);
+
+            $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_INSTALL_TIME)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES_CREATION_TIME)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION)
+                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE);
+
             $response['success'] = true;
             $response['message'] = self::DELETE_SUCCESS_MESSAGE;
         } catch (\Exception $e) {
@@ -480,10 +489,9 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $accessToken
      * @return string
      */
-    public function getCatalogBatchAPI($accessToken)
+    public function getCatalogBatchAPI()
     {
         $catalogId = $this->systemConfig->getConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID);
         $external_business_id = $this->getFBEExternalBusinessId();
@@ -494,7 +502,7 @@ class FBEHelper extends AbstractHelper
                 $external_business_id;
         }
         $catalogBatchApi = self::FB_GRAPH_BASE_URL .
-            $this->getAPIVersion($accessToken) .
+            $this->getAPIVersion() .
             $catalog_path;
         $this->log("Catalog Batch API - " . $catalogBatchApi);
         return $catalogBatchApi;
@@ -513,11 +521,7 @@ class FBEHelper extends AbstractHelper
      */
     public function isFBEInstalled()
     {
-        $isFbeInstalled = $this->systemConfig->getConfig('fbe/installed');
-        if ($isFbeInstalled) {
-            return 'true';
-        }
-        return 'false';
+        return $this->systemConfig->isFBEInstalled() ? 'true' : 'false';
     }
 
     /**
@@ -534,7 +538,7 @@ class FBEHelper extends AbstractHelper
      */
     public function getAAMSettings()
     {
-        $settingsAsString = $this->systemConfig->getConfig('fbpixel/aam_settings');
+        $settingsAsString = $this->systemConfig->getPixelAamSettings();
         if ($settingsAsString) {
             $settingsAsArray = json_decode($settingsAsString, true);
             if ($settingsAsArray) {
@@ -560,7 +564,7 @@ class FBEHelper extends AbstractHelper
             'pixelId' => $settings->getPixelId(),
         ];
         $settingsAsString = json_encode($settingsAsArray);
-        $this->saveConfig('fbpixel/aam_settings', $settingsAsString);
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS, $settingsAsString);
         return $settingsAsString;
     }
 

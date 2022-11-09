@@ -5,20 +5,22 @@
 
 namespace Facebook\BusinessExtension\Cron;
 
+use Facebook\BusinessExtension\Helper\FBEHelper;
+
 class AAMSettingsCron
 {
     /**
-     * @var \Facebook\BusinessExtension\Helper\FBEHelper
+     * @var FBEHelper
      */
     protected $fbeHelper;
 
     /**
      * AAMSettingsCron constructor
      *
-     * @param \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
-        \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
+        FBEHelper $fbeHelper
     ) {
         $this->fbeHelper = $fbeHelper;
     }

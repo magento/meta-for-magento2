@@ -5,13 +5,14 @@
 
 namespace Facebook\BusinessExtension\Cron;
 
+use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Model\Feed\CategoryCollection;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 class CategorySyncCron
 {
     /**
-     * @var \Facebook\BusinessExtension\Helper\FBEHelper
+     * @var FBEHelper
      */
     protected $fbeHelper;
 
@@ -28,12 +29,12 @@ class CategorySyncCron
     /**
      * CategorySyncCron constructor
      *
-     * @param \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
+     * @param FBEHelper $fbeHelper
      * @param CategoryCollection $categoryCollection
      * @param SystemConfig $systemConfig
      */
     public function __construct(
-        \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper,
+        FBEHelper $fbeHelper,
         CategoryCollection $categoryCollection,
         SystemConfig $systemConfig
     ) {
@@ -44,7 +45,7 @@ class CategorySyncCron
 
     public function execute()
     {
-        if ($this->systemConfig->isActiveCatalogSync()) {
+        if ($this->systemConfig->isActiveCollectionsSync()) {
             $this->categoryCollection->pushAllCategoriesToFbCollections();
             return true;
         }

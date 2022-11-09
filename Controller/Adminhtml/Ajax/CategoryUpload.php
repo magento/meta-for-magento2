@@ -19,6 +19,12 @@ class CategoryUpload extends AbstractAjax
      */
     protected $categoryCollection;
 
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param CategoryCollection $categoryCollection
+     */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
@@ -29,6 +35,9 @@ class CategoryUpload extends AbstractAjax
         $this->categoryCollection = $categoryCollection;
     }
 
+    /**
+     * @return array
+     */
     public function executeForJson()
     {
         $response = [];

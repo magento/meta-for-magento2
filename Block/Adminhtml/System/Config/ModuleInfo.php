@@ -90,6 +90,14 @@ class ModuleInfo extends Field
     /**
      * @return string
      */
+    public function getPageId()
+    {
+        return $this->systemConfig->getPageId($this->getStoreId());
+    }
+
+    /**
+     * @return string
+     */
     public function getCatalogId()
     {
         return $this->systemConfig->getCatalogId($this->getStoreId());

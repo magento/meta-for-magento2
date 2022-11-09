@@ -8,6 +8,11 @@ namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 class Fbaamsettings extends AbstractAjax
 {
     // phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod
+    /**
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+     * @param \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
+     */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
@@ -19,8 +24,8 @@ class Fbaamsettings extends AbstractAjax
     public function executeForJson()
     {
         $response = [
-        'success' => false,
-        'settings' => null,
+            'success' => false,
+            'settings' => null,
         ];
         $pixelId = $this->getRequest()->getParam('pixelId');
         if ($pixelId) {

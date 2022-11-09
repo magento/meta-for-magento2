@@ -17,13 +17,17 @@ class Config
 {
     const MODULE_NAME = 'Facebook_BusinessExtension';
 
-    const ONBOARDING_STATE_PENDING = 0;
-    const ONBOARDING_STATE_IN_PROGRESS_NEW_SHOP = 1;
-    const ONBOARDING_STATE_IN_PROGRESS_EXISTING_SHOP = 2;
-    const ONBOARDING_STATE_COMPLETED = 4;
-
-    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE = 'facebook/business_extension/onboarding_state';
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE = 'facebook/business_extension/active';
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED = 'facebook/business_extension/installed';
+
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID = 'facebook/business_extension/external_business_id';
+
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID = 'facebook/business_extension/pixel_id';
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_INSTALL_TIME = 'facebook/business_extension/pixel_install_time';
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS = 'facebook/business_extension/pixel_aam_settings';
+
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES = 'facebook/business_extension/profiles';
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES_CREATION_TIME = 'facebook/business_extension/profiles_creation_time';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID = 'facebook/business_extension/page_id';
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID = 'facebook/business_extension/catalog_id';
@@ -43,6 +47,7 @@ class Config
     const XML_PATH_FACEBOOK_SHIPPING_METHODS_RUSH = 'facebook/shipping_methods/rush';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN = 'facebook/business_extension/access_token';
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN_CREATION_TIME = 'facebook/business_extension/access_token_creation_time';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES = 'facebook/catalog_management/incremental_product_updates';
 
@@ -66,9 +71,8 @@ class Config
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE = 'facebook/debug/debug_mode';
 
-    #todo do we need this
-    const XML_PATH_FACEBOOK_CATALOG_SYNC_IS_ACTIVE = 'facebook/catalog_management/catalog_sync';
-
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION = 'facebook/api/version';
+    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE = 'facebook/api/version_last_update';
 
     /**
      * @var StoreManagerInterface
@@ -181,22 +185,22 @@ class Config
 
     /**
      * @param null $scopeId
-     * @param null $scope
-     * @return mixed
-     */
-    public function getOnboardingState($scopeId = null, $scope = null)
-    {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE, $scopeId, $scope);
-    }
-
-    /**
-     * @param null $scopeId
-     * @param null $scope
+     * @param string $scope
      * @return bool
      */
     public function isActiveExtension($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isFBEInstalled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    {
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, $scopeId, $scope);
     }
 
     /**
@@ -429,6 +433,46 @@ class Config
      * @param null $scope
      * @return mixed
      */
+    public function getExternalBusinessId($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
+    public function getPixelId($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
+    public function getPixelAamSettings($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
+    public function getProfiles($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
     public function getPageId($scopeId = null, $scope = null)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $scopeId, $scope);
@@ -465,6 +509,26 @@ class Config
     }
 
     /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
+    public function getApiVersion($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION, $scopeId, $scope);
+    }
+
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
+    public function getApiVersionLastUpdate($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE, $scopeId, $scope);
+    }
+
+    /**
      * @param null $storeId
      * @return array
      */
@@ -477,31 +541,61 @@ class Config
         ];
     }
 
+    /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return bool
+     */
     public function isActiveDailyProductFeed($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED, $scopeId, $scope);
     }
 
+    /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return mixed
+     */
     public function getFeedUploadMethod($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_FEED_UPLOAD_METHOD, $scopeId, $scope);
     }
 
+    /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return mixed
+     */
     public function getFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $scopeId, $scope);
     }
 
+    /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return mixed
+     */
     public function getOffersFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OFFERS_FEED_ID, $scopeId, $scope);
     }
 
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return mixed
+     */
     public function getProductIdentifierAttr($scopeId = null, $scope = null)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER, $scopeId, $scope);
     }
 
+    /**
+     * @param null $scopeId
+     * @param null $scope
+     * @return bool
+     */
     public function isPriceInclTax($scopeId = null, $scope = null)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_PRICE_INCL_TAX, $scopeId, $scope);
@@ -515,13 +609,5 @@ class Config
     public function isActiveCollectionsSync($scopeId = null, $scope = null)
     {
         return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE, $scopeId = null, $scope = null);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActiveCatalogSync()
-    {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_CATALOG_SYNC_IS_ACTIVE);
     }
 }
