@@ -15,33 +15,27 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterSaveEventObserverTest extends CommonTest
 {
-
     protected $processProductAfterSaveEventObserver;
+
     /**
      * @var MockObject
      */
     private $_eventObserverMock;
+
     /**
      * @var MockObject
      */
     private $_product;
+
     /**
      * @var MockObject
      */
     private $store;
+
     /**
      * @var MockObject
      */
     private $_batchApi;
-
-    /**
-     * Used to reset or change values after running a test
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-    }
 
     /**
      * Used to set the values before running a test
@@ -63,12 +57,14 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
         $this->processProductAfterSaveEventObserver =
             new ProcessProductAfterSaveEventObserver(
                 $this->fbeHelper,
-                $this->_batchApi
+                $this->_batchApi,
+                $this->systemConfig
             );
     }
 
     public function testExecution()
     {
+        $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
         $this->_batchApi->expects($this->once())->method('buildRequestForIndividualProduct');
         $this->fbeHelper->expects($this->atLeastOnce())->method('makeHttpRequest');
         $this->processProductAfterSaveEventObserver->execute($this->_eventObserverMock);

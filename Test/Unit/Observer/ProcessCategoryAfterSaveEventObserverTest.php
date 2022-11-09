@@ -9,25 +9,17 @@ use Magento\Framework\Event;
 
 class ProcessCategoryAfterSaveEventObserverTest extends CommonTest
 {
-
     protected $processCategoryAfterSaveEventObserver;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $_eventObserverMock;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $_category;
-
-    /**
-     * Used to reset or change values after running a test
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-    }
 
     /**
      * Used to set the values before running a test

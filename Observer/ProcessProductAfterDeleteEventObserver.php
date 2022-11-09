@@ -17,10 +17,12 @@ class ProcessProductAfterDeleteEventObserver implements ObserverInterface
      * @var FBEHelper
      */
     protected $fbeHelper;
+
     /**
      * @var BatchApi
      */
     protected $batchApi;
+
     /**
      * @var SystemConfig
      */

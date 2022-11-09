@@ -17,11 +17,6 @@ use Magento\Store\Model\ScopeInterface;
 class ProductFeedUpload extends AbstractAjax
 {
     /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
      * @var Uploader
      */
     protected $uploader;
@@ -64,9 +59,9 @@ class ProductFeedUpload extends AbstractAjax
             $storeName = $this->systemConfig->getStoreManager()->getStore($storeId)->getName();
         }
 
-        if (!$this->_fbeHelper->getAccessToken()) {
+        if (!$this->systemConfig->getAccessToken()) {
             $response['success'] = false;
-            $response['message'] = __('Set up the extension before uploading products.');
+            $response['message'] = __(sprintf('Before uploading products, set up the extension for \'%s\'.', $storeName));
             return $response;
         }
 

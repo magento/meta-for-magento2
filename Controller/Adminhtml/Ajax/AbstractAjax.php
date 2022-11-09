@@ -7,6 +7,7 @@ namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 
 use Exception;
 use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Security\Model\AdminSessionsManager;
@@ -24,18 +25,26 @@ abstract class AbstractAjax extends \Magento\Backend\App\Action
     protected $_fbeHelper;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
-        FBEHelper $fbeHelper
+        FBEHelper $fbeHelper,
+        SystemConfig $systemConfig
     ) {
         parent::__construct($context);
         $this->_resultJsonFactory = $resultJsonFactory;
         $this->_fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     abstract protected function executeForJson();

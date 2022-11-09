@@ -17,11 +17,6 @@ use Magento\Store\Model\ScopeInterface;
 class PromotionFeedUpload extends AbstractAjax
 {
     /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
      * @var Uploader
      */
     protected $uploader;
@@ -40,8 +35,7 @@ class PromotionFeedUpload extends AbstractAjax
         SystemConfig $systemConfig,
         Uploader $uploader
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper);
-        $this->systemConfig = $systemConfig;
+        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
         $this->uploader = $uploader;
     }
 
@@ -66,7 +60,7 @@ class PromotionFeedUpload extends AbstractAjax
 
         if (!$this->systemConfig->getAccessToken($storeId)) {
             $response['success'] = false;
-            $response['message'] = __(sprintf('Set up the extension for \'%s\' before uploading promotions.', $storeName));
+            $response['message'] = __(sprintf('Before uploading promotions, set up the extension for \'%s\'.', $storeName));
             return $response;
         }
 

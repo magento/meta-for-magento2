@@ -9,8 +9,9 @@ use FacebookAds\Object\ServerSide\AdsPixelSettings;
 
 class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
 {
-
     protected $fbeHelper;
+
+    protected $systemConfig;
 
     protected $context;
 
@@ -39,12 +40,14 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
         $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
         $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
         $this->fbeHelper = $this->createMock(\Facebook\BusinessExtension\Helper\FBEHelper::class);
+        $this->systemConfig = $this->createMock(\Facebook\BusinessExtension\Model\System\Config::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
         $this->fbdeleteasset = new \Facebook\BusinessExtension\Controller\Adminhtml\Ajax\Fbdeleteasset(
             $this->context,
             $this->resultJsonFactory,
-            $this->fbeHelper
+            $this->fbeHelper,
+            $this->systemConfig
         );
     }
 

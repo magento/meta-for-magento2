@@ -14,11 +14,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 class ResetSettings extends AbstractAjax
 {
     /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
      * @var GraphAPIAdapter
      */
     protected $graphApiAdapter;
@@ -37,8 +32,7 @@ class ResetSettings extends AbstractAjax
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper);
-        $this->systemConfig = $systemConfig;
+        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
         $this->graphApiAdapter = $graphApiAdapter;
     }
 

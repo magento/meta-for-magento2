@@ -7,20 +7,6 @@ namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 
 class Fbaamsettings extends AbstractAjax
 {
-    // phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod
-    /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
-     */
-    public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
-    ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper);
-    }
-
     public function executeForJson()
     {
         $response = [

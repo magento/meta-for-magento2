@@ -9,6 +9,7 @@ use Exception;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Model\Feed\CategoryCollection;
 
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 
@@ -23,15 +24,17 @@ class CategoryUpload extends AbstractAjax
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
      * @param CategoryCollection $categoryCollection
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
+        SystemConfig $systemConfig,
         CategoryCollection $categoryCollection
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
         $this->categoryCollection = $categoryCollection;
     }
 
@@ -42,9 +45,9 @@ class CategoryUpload extends AbstractAjax
     {
         $response = [];
 
-        if (!$this->_fbeHelper->getAccessToken()) {
+        if (!$this->systemConfig->getAccessToken()) {
             $response['success'] = false;
-            $response['message'] = __('Set up the extension before uploading category.');
+            $response['message'] = __('Before uploading categories, set up the extension.');
             return $response;
         }
 

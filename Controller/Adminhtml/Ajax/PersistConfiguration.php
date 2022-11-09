@@ -10,34 +10,6 @@ use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 
 class PersistConfiguration extends AbstractAjax
 {
-    /**
-     * @var BatchApi
-     */
-    protected $batchApi;
-    /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \Facebook\BusinessExtension\Helper\FBEHelper $helper
-     * @param BatchApi $batchApi
-     * @param SystemConfig $systemConfig
-     */
-    public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Facebook\BusinessExtension\Helper\FBEHelper $helper,
-        BatchApi $batchApi,
-        SystemConfig $systemConfig
-    ) {
-        parent::__construct($context, $resultJsonFactory, $helper);
-        $this->batchApi = $batchApi;
-        $this->systemConfig = $systemConfig;
-    }
-
     public function executeForJson()
     {
         try {

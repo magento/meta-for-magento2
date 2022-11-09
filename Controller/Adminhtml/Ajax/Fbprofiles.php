@@ -11,27 +11,6 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 
 class Fbprofiles extends AbstractAjax
 {
-    /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     */
-    public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Facebook\BusinessExtension\Helper\FBEHelper $fbeHelper,
-        SystemConfig $systemConfig
-    ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper);
-        $this->systemConfig = $systemConfig;
-    }
-
     public function executeForJson()
     {
         $oldProfiles = $this->systemConfig->getProfiles();
