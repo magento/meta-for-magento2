@@ -22,13 +22,8 @@ class Fbtoken extends AbstractAjax
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $accessToken);
             $response['success'] = true;
             $response['accessToken'] = $accessToken;
-            if ($oldAccessToken != $accessToken) {
-                $this->_fbeHelper->log("Updated Access token...");
-                $datetime = $this->_fbeHelper->createObject(DateTime::class);
-                $this->systemConfig->saveConfig(
-                    SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN_CREATION_TIME,
-                    $datetime->gmtDate('Y-m-d H:i:s')
-                );
+            if ($oldAccessToken && $oldAccessToken != $accessToken) {
+                $this->_fbeHelper->log('Updated Access token...');
             }
         }
         return $response;

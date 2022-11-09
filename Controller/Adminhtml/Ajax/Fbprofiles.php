@@ -23,13 +23,6 @@ class Fbprofiles extends AbstractAjax
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES, $profiles);
             $response['success'] = true;
             $response['profiles'] = $profiles;
-            if ($oldProfiles != $profiles) {
-                $datetime = $this->_fbeHelper->createObject(DateTime::class);
-                $this->systemConfig->saveConfig(
-                    SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES_CREATION_TIME,
-                    $datetime->gmtDate('Y-m-d H:i:s')
-                );
-            }
         }
         return $response;
     }

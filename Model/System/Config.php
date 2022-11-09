@@ -23,11 +23,9 @@ class Config
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID = 'facebook/business_extension/external_business_id';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID = 'facebook/business_extension/pixel_id';
-    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_INSTALL_TIME = 'facebook/business_extension/pixel_install_time';
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS = 'facebook/business_extension/pixel_aam_settings';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES = 'facebook/business_extension/profiles';
-    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES_CREATION_TIME = 'facebook/business_extension/profiles_creation_time';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID = 'facebook/business_extension/page_id';
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID = 'facebook/business_extension/catalog_id';
@@ -47,7 +45,6 @@ class Config
     const XML_PATH_FACEBOOK_SHIPPING_METHODS_RUSH = 'facebook/shipping_methods/rush';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN = 'facebook/business_extension/access_token';
-    const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN_CREATION_TIME = 'facebook/business_extension/access_token_creation_time';
 
     const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES = 'facebook/catalog_management/incremental_product_updates';
 

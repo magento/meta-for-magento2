@@ -24,13 +24,8 @@ class Fbpixel extends AbstractAjax
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, true);
             $response['success'] = true;
             $response['pixelId'] = $pixelId;
-            if ($oldPixelId != $pixelId) {
+            if ($oldPixelId && $oldPixelId != $pixelId) {
                 $this->_fbeHelper->log(sprintf("Pixel id updated from %d to %d", $oldPixelId, $pixelId));
-                $datetime = $this->_fbeHelper->createObject(DateTime::class);
-                $this->systemConfig->saveConfig(
-                    SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_INSTALL_TIME,
-                    $datetime->gmtDate('Y-m-d H:i:s')
-                );
             }
         }
         return $response;
