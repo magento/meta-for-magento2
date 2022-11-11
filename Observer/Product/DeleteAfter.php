@@ -14,7 +14,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\ScopeInterface;
 
-//TODO(T135444965): merge with ProcessProductAfterDeleteEventObserver.php
 class DeleteAfter implements ObserverInterface
 {
     /**

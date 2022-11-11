@@ -257,32 +257,6 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $requestParams
-     * @param null $accessToken
-     * @return string|null
-     */
-    public function makeHttpRequest($requestParams, $accessToken = null)
-    {
-        $response = null;
-        if ($accessToken == null) {
-            $accessToken = $this->getAccessToken();
-        }
-        try {
-            $url = $this->getCatalogBatchAPI();
-            $params = [
-                'access_token' => $accessToken,
-                'requests' => json_encode($requestParams),
-                'item_type' => 'PRODUCT_ITEM',
-            ];
-            $this->curl->post($url, $params);
-            $response = $this->curl->getBody();
-        } catch (\Exception $e) {
-            $this->logException($e);
-        }
-        return $response;
-    }
-
-    /**
      * @return mixed|string|null
      */
     public function getFBEExternalBusinessId()
@@ -487,39 +461,11 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @return string
-     */
-    public function getCatalogBatchAPI()
-    {
-        $catalogId = $this->systemConfig->getConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID);
-        $external_business_id = $this->getFBEExternalBusinessId();
-        if ($catalogId != null) {
-            $catalog_path = "/" . $catalogId . "/items_batch";
-        } else {
-            $catalog_path = "/fbe_catalog/batch?fbe_external_business_id=" .
-                $external_business_id;
-        }
-        $catalogBatchApi = self::FB_GRAPH_BASE_URL .
-            $this->getAPIVersion() .
-            $catalog_path;
-        $this->log("Catalog Batch API - " . $catalogBatchApi);
-        return $catalogBatchApi;
-    }
-
-    /**
      * @return mixed
      */
     public function getStoreCurrencyCode()
     {
         return $this->getStore()->getCurrentCurrencyCode();
-    }
-
-    /**
-     * @return string
-     */
-    public function isFBEInstalled()
-    {
-        return $this->systemConfig->isFBEInstalled() ? 'true' : 'false';
     }
 
     /**
