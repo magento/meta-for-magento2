@@ -7,6 +7,7 @@ namespace Facebook\BusinessExtension\Block\Pixel;
 
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\MagentoDataHelper;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Registry;
@@ -35,6 +36,11 @@ class Common extends \Magento\Framework\View\Element\Template
     protected $magentoDataHelper;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * Common constructor
      *
      * @param Context $context
@@ -42,6 +48,7 @@ class Common extends \Magento\Framework\View\Element\Template
      * @param Registry $registry
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
+     * @param SystemConfig $systemConfig
      * @param array $data
      */
     public function __construct(
@@ -50,6 +57,7 @@ class Common extends \Magento\Framework\View\Element\Template
         Registry $registry,
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
+        SystemConfig $systemConfig,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -57,6 +65,7 @@ class Common extends \Magento\Framework\View\Element\Template
         $this->registry = $registry;
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -84,7 +93,7 @@ class Common extends \Magento\Framework\View\Element\Template
      */
     public function getFacebookPixelID()
     {
-        return $this->fbeHelper->getPixelID();
+        return $this->systemConfig->getPixelId();
     }
 
     /**

@@ -8,6 +8,7 @@ namespace Facebook\BusinessExtension\Block\Pixel;
 use Facebook\BusinessExtension\Helper\AAMFieldsExtractorHelper;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\MagentoDataHelper;
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template\Context;
@@ -28,6 +29,7 @@ class Head extends Common
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param AAMFieldsExtractorHelper $aamFieldsExtractorHelper
+     * @param SystemConfig $systemConfig
      * @param array $data
      */
     public function __construct(
@@ -37,9 +39,10 @@ class Head extends Common
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         AAMFieldsExtractorHelper $aamFieldsExtractorHelper,
+        SystemConfig $systemConfig,
         array $data = []
     ) {
-        parent::__construct($context, $objectManager, $registry, $fbeHelper, $magentoDataHelper, $data);
+        parent::__construct($context, $objectManager, $registry, $fbeHelper, $magentoDataHelper, $systemConfig, $data);
         $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
     }
 
