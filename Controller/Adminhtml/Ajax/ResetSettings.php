@@ -14,11 +14,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 class ResetSettings extends AbstractAjax
 {
     /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
      * @var GraphAPIAdapter
      */
     protected $graphApiAdapter;
@@ -37,8 +32,7 @@ class ResetSettings extends AbstractAjax
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper);
-        $this->systemConfig = $systemConfig;
+        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
         $this->graphApiAdapter = $graphApiAdapter;
     }
 
@@ -55,11 +49,6 @@ class ResetSettings extends AbstractAjax
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $storeId)
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $storeId)
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $defaultStoreId)
-            ->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE,
-                SystemConfig::ONBOARDING_STATE_PENDING,
-                $storeId
-            )
             ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, 0, $storeId)
             ->cleanCache();
 

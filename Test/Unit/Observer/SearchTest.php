@@ -16,15 +16,6 @@ class SearchTest extends CommonTest
     protected $searchObserver;
 
     /**
-     * Used to reset or change values after running a test
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-    }
-
-    /**
      * Used to set the values before running a test
      *
      * @return void

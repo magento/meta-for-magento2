@@ -11,6 +11,8 @@ class FbtokenTest extends \PHPUnit\Framework\TestCase
 {
     protected $fbeHelper;
 
+    protected $systemConfig;
+
     protected $context;
 
     protected $resultJsonFactory;
@@ -38,12 +40,14 @@ class FbtokenTest extends \PHPUnit\Framework\TestCase
         $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
         $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
         $this->fbeHelper = $this->createMock(\Facebook\BusinessExtension\Helper\FBEHelper::class);
+        $this->systemConfig = $this->createMock(\Facebook\BusinessExtension\Model\System\Config::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
         $this->fbtoken = new \Facebook\BusinessExtension\Controller\Adminhtml\Ajax\Fbtoken(
             $this->context,
             $this->resultJsonFactory,
-            $this->fbeHelper
+            $this->fbeHelper,
+            $this->systemConfig
         );
     }
 
@@ -56,7 +60,7 @@ class FbtokenTest extends \PHPUnit\Framework\TestCase
         $accessToken = 'abcd';
         $this->request->method('getParam')
             ->willReturn($accessToken);
-        $this->fbeHelper->method('getConfigValue')
+        $this->systemConfig->method('getAccessToken')
             ->willReturn($accessToken);
         $result = $this->fbtoken->executeForJson();
         $this->assertNotNull($result);
@@ -73,7 +77,7 @@ class FbtokenTest extends \PHPUnit\Framework\TestCase
         $accessToken = 'abcd';
         $this->request->method('getParam')
             ->willReturn(null);
-        $this->fbeHelper->method('getConfigValue')
+        $this->systemConfig->method('getAccessToken')
             ->willReturn($accessToken);
         $result = $this->fbtoken->executeForJson();
         $this->assertNotNull($result);

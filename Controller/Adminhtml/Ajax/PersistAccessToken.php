@@ -14,11 +14,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 class PersistAccessToken extends AbstractAjax
 {
     /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
      * @var GraphAPIAdapter
      */
     protected $graphApiAdapter;
@@ -37,8 +32,7 @@ class PersistAccessToken extends AbstractAjax
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper);
-        $this->systemConfig = $systemConfig;
+        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
         $this->graphApiAdapter = $graphApiAdapter;
     }
 
@@ -91,7 +85,6 @@ class PersistAccessToken extends AbstractAjax
 
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId, $storeId)
                 ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId, $storeId)
-                ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE, SystemConfig::ONBOARDING_STATE_COMPLETED, $storeId)
                 ->cleanCache();
 
             $response['success'] = true;

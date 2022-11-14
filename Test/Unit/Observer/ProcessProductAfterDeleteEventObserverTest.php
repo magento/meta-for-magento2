@@ -5,6 +5,7 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Observer;
 
+use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi;
 use Facebook\BusinessExtension\Observer\ProcessProductAfterDeleteEventObserver;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event;
@@ -13,25 +14,22 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterDeleteEventObserverTest extends CommonTest
 {
-
     protected $processProductAfterDeleteEventObserver;
+
     /**
      * @var MockObject
      */
     private $_eventObserverMock;
+
     /**
      * @var MockObject
      */
     private $_product;
 
     /**
-     * Used to reset or change values after running a test
-     *
-     * @return void
+     * @var MockObject
      */
-    public function tearDown(): void
-    {
-    }
+    private $_batchApi;
 
     /**
      * Used to set the values before running a test
@@ -49,12 +47,14 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
         $event->expects($this->once())->method('getProduct')->will($this->returnValue($this->_product));
         $this->_eventObserverMock = $this->createMock(Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
+        $this->_batchApi = $this->createMock(BatchApi::class);
         $this->processProductAfterDeleteEventObserver =
-            new ProcessProductAfterDeleteEventObserver($this->fbeHelper);
+            new ProcessProductAfterDeleteEventObserver($this->fbeHelper, $this->_batchApi, $this->systemConfig);
     }
 
     public function testExecution()
     {
+        $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
         $this->fbeHelper->expects($this->atLeastOnce())->method('makeHttpRequest');
         $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);
     }

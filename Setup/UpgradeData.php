@@ -313,8 +313,8 @@ class UpgradeData implements UpgradeDataInterface
             $removeAttributeFromGrid('google_product_category');
         }
 
-        // disable the extension for non-default stores
         if (version_compare($context->getVersion(), '2.0.0') < 0) {
+            // disable the extension for non-default stores
             $this->systemConfig->disableExtensionForNonDefaultStores();
 
             // install per unit pricing attributes

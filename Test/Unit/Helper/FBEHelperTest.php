@@ -8,8 +8,6 @@ namespace Facebook\BusinessExtension\Test\Unit\Helper;
 use Facebook\BusinessExtension\Helper\FBEHelper;
 use Facebook\BusinessExtension\Helper\Product\Identifier as ProductIdentifier;
 use Facebook\BusinessExtension\Logger\Logger;
-use Facebook\BusinessExtension\Model\Config;
-use Facebook\BusinessExtension\Model\ConfigFactory;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
@@ -23,11 +21,11 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
 {
     protected $fbeHelper;
 
+    protected $systemConfig;
+
     protected $context;
 
     protected $objectManagerInterface;
-
-    protected $configFactory;
 
     protected $logger;
 
@@ -61,7 +59,6 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
     {
         $this->context = $this->createMock(Context::class);
         $this->objectManagerInterface = $this->createMock(ObjectManagerInterface::class);
-        $this->configFactory = $this->createMock(ConfigFactory::class);
         $this->logger = $this->createMock(Logger::class);
         $this->directorylist = $this->createMock(DirectoryList::class);
         $this->storeManager = $this->createMock(StoreManagerInterface::class);
@@ -69,109 +66,20 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
         $this->productIdentifier = $this->createMock(ProductIdentifier::class);
+        $this->systemConfig = $this->createMock(\Facebook\BusinessExtension\Model\System\Config::class);
 
         $this->fbeHelper = new FBEHelper(
             $this->context,
             $this->objectManagerInterface,
-            $this->configFactory,
             $this->logger,
             $this->directorylist,
             $this->storeManager,
             $this->curl,
             $this->resourceConnection,
             $this->moduleList,
-            $this->productIdentifier
+            $this->productIdentifier,
+            $this->systemConfig
         );
-    }
-
-    private function createRowWithValue($configValue)
-    {
-        $configRow = $this->getMockBuilder(Config::class)
-                  ->disableOriginalConstructor()
-                  ->setMethods(['getConfigValue', 'load'])
-                  ->getMock();
-        if ($configValue == null) {
-            $configRow->method('load')->willReturn(null);
-        } else {
-            $configRow->method('load')->willReturn($configRow);
-            $configRow->method('getConfigValue')->willReturn($configValue);
-        }
-        return $configRow;
-    }
-
-    /**
-     * Test that the returned access token is null when there is no row in the database
-     *
-     * @return void
-     */
-    public function testAccessTokenNullWhenNotPresentInDb()
-    {
-        $configRow = $this->createRowWithValue(null);
-
-        $this->configFactory->method('create')
-                        ->willReturn($configRow);
-
-        $this->assertNull($this->fbeHelper->getAccessToken());
-    }
-
-    /**
-     * Test that the returned access token is not null when there is a row in the database
-     *
-     * @return void
-     */
-    public function testAccessTokenNotNullWhenPresentInDb()
-    {
-        $dummyToken = '1234';
-        $configRow = $this->createRowWithValue($dummyToken);
-
-        $this->configFactory->method('create')
-                        ->willReturn($configRow);
-
-        $this->assertEquals($dummyToken, $this->fbeHelper->getAccessToken());
-    }
-
-    /**
-     * Test that the returned aam settings are null when there is no row in the database
-     *
-     * @return void
-     */
-    public function testAAMSettingsNullWhenNotPresentInDb()
-    {
-        $configRow = $this->createRowWithValue(null);
-
-        $this->configFactory->method('create')
-                        ->willReturn($configRow);
-
-        $this->assertNull($this->fbeHelper->getAAMSettings());
-    }
-
-    /**
-     * Test that the returned aam settings are not null when there is a row in the database
-     *
-     * @return void
-     */
-    public function testAAMSettingsNotNullWhenPresentInDb()
-    {
-        $settingsAsArray = [
-        "enableAutomaticMatching"=>false,
-        "enabledAutomaticMatchingFields"=>['em'],
-        "pixelId"=>"1234"
-        ];
-        $settingsAsString = json_encode($settingsAsArray);
-
-        $configRow = $this->createRowWithValue($settingsAsString);
-
-        $this->configFactory->method('create')
-                        ->willReturn($configRow);
-
-        $settings = $this->fbeHelper->getAAMSettings();
-
-        $this->assertEquals($settings->getEnableAutomaticMatching(), $settingsAsArray['enableAutomaticMatching']);
-        $this->assertEquals(
-            $settings->getEnabledAutomaticMatchingFields(),
-            $settingsAsArray['enabledAutomaticMatchingFields']
-        );
-        $this->assertEquals($settings->getPixelId(), $settingsAsArray['pixelId']);
     }
 
     /**
@@ -182,17 +90,17 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
     public function testCorrectPartnerAgent()
     {
         $magentoVersion = '2.3.5';
-        $pluginVersion = "1.0.0";
-        $this->moduleList->method("getOne")->willReturn(
+        $pluginVersion = '1.0.0';
+        $this->moduleList->method('getOne')->willReturn(
             [
-            "setup_version" => $pluginVersion
+                'setup_version' => $pluginVersion
             ]
         );
         $source = $this->fbeHelper->getSource();
         $productMetadata = $this->getMockBuilder(ProductMetadataInterface::class)
-                  ->disableOriginalConstructor()
-                  ->setMethods(['getVersion', 'getEdition','getName'])
-                  ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['getVersion', 'getEdition', 'getName'])
+            ->getMock();
         $productMetadata->method('getVersion')->willReturn($magentoVersion);
         $productMetadata->method('getVersion')->willReturn($magentoVersion);
         $this->objectManagerInterface->method('get')->willReturn($productMetadata);

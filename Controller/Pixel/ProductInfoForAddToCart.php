@@ -70,15 +70,19 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
         $this->priceHelper = $priceHelper;
     }
 
-    private function getCategory($product)
+    /**
+     * @param Product $product
+     * @return string|null
+     */
+    private function getCategory(Product $product)
     {
         $categoryIds = $product->getCategoryIds();
         if (count($categoryIds) > 0) {
             $categoryNames = [];
             $categoryModel = $this->fbeHelper->getObject(\Magento\Catalog\Model\Category::class);
-            foreach ($categoryIds as $category_id) {
+            foreach ($categoryIds as $categoryId) {
                 // @todo replace model load in loop with collection use
-                $category = $categoryModel->load($category_id);
+                $category = $categoryModel->load($categoryId);
                 $categoryNames[] = $category->getName();
             }
             return addslashes(implode(',', $categoryNames));

@@ -74,7 +74,7 @@ class Setup extends \Magento\Backend\Block\Template
      */
     public function fetchPixelId()
     {
-        return $this->systemConfig->getConfig('fbpixel/id');
+        return $this->systemConfig->getPixelId();
     }
 
     /**
@@ -91,7 +91,7 @@ class Setup extends \Magento\Backend\Block\Template
      */
     public function fetchConfigurationAjaxRoute()
     {
-        return $this->fbeHelper->getUrl('fbeadmin/ajax/persistconfiguration');
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/persistConfiguration');
     }
 
     /**
@@ -116,6 +116,6 @@ class Setup extends \Magento\Backend\Block\Template
      */
     public function isFBEInstalled()
     {
-        return $this->fbeHelper->isFBEInstalled();
+        return $this->systemConfig->isFBEInstalled();
     }
 }

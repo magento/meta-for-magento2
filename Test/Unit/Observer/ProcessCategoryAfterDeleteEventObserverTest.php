@@ -25,15 +25,6 @@ class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
     private $_category;
 
     /**
-     * Used to reset or change values after running a test
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-    }
-
-    /**
      * Used to set the values before running a test
      *
      * @return void
@@ -47,11 +38,15 @@ class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
         $this->_eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->processCategoryAfterDeleteEventObserver =
-            new \Facebook\BusinessExtension\Observer\ProcessCategoryAfterDeleteEventObserver($this->fbeHelper);
+            new \Facebook\BusinessExtension\Observer\ProcessCategoryAfterDeleteEventObserver(
+                $this->fbeHelper,
+                $this->systemConfig
+            );
     }
 
     public function testExecution()
     {
+        $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
         $categoryObj = $this->createMock(CategoryCollection::class);
         $this->fbeHelper->expects($this->once())->method('getObject')->willReturn($categoryObj);
         $this->fbeHelper->expects($this->once())->method('log')->willReturn(null);

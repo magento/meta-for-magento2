@@ -63,7 +63,6 @@ class RegisterMerchantSettings extends Action
             $this->messageManager->addErrorMessage('Cannot register FB commerce account. Missing merchant settings ID.');
         }
         $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $merchantSettingsId)
-            ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ONBOARDING_STATE, SystemConfig::ONBOARDING_STATE_IN_PROGRESS_NEW_SHOP)
             ->cleanCache();
         /** @var Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);

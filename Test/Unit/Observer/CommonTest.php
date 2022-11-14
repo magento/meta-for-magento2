@@ -18,6 +18,8 @@ abstract class CommonTest extends TestCase
 
     protected $fbeHelper;
 
+    protected $systemConfig;
+
     protected $objectManager;
 
     protected $serverSideHelper;
@@ -41,6 +43,7 @@ abstract class CommonTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(\Facebook\BusinessExtension\Model\System\Config::class);
         $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
         $this->objectManager = new ObjectManager($this);
         $this->aamFieldsExtractorHelper = new AAMFieldsExtractorHelper(
