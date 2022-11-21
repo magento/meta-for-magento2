@@ -251,7 +251,7 @@ class CategoryCollection
     public function pushAllCategoriesToFbCollections()
     {
         $resArray = [];
-        $access_token = $this->fbeHelper->getAccessToken();
+        $access_token = $this->systemConfig->getAccessToken();
         if ($access_token == null) {
             $this->fbeHelper->log("can't find access token, abort pushAllCategoriesToFbCollections");
             return;
@@ -289,7 +289,7 @@ class CategoryCollection
     public function pushNewCategoryToFB(Category $category)
     {
         $this->fbeHelper->log("pushing category to fb collections: ".$category->getName());
-        $access_token = $this->fbeHelper->getAccessToken();
+        $access_token = $this->systemConfig->getAccessToken();
         if ($access_token == null) {
             $this->fbeHelper->log("can't find access token, won't push new catalog category ");
             return;
@@ -391,7 +391,7 @@ class CategoryCollection
      */
     public function updateCategoryWithFB(Category $category, string $set_id)
     {
-        $access_token = $this->fbeHelper->getAccessToken();
+        $access_token = $this->systemConfig->getAccessToken();
         if ($access_token == null) {
             $this->fbeHelper->log("can't find access token, won't update category with fb ");
         }
@@ -449,7 +449,7 @@ class CategoryCollection
      */
     public function deleteCategoryFromFB(Category $category)
     {
-        $access_token = $this->fbeHelper->getAccessToken();
+        $access_token = $this->systemConfig->getAccessToken();
         if ($access_token == null) {
             $this->fbeHelper->log("can't find access token, won't do category delete");
             return;

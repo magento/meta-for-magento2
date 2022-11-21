@@ -5,20 +5,51 @@
 
 namespace Facebook\BusinessExtension\Controller\Adminhtml\Ajax;
 
-use Facebook\BusinessExtension\Model\Product\Feed\Method\BatchApi;
+use Facebook\BusinessExtension\Helper\FBEHelper;
+use Facebook\BusinessExtension\Helper\GraphAPIAdapter;
 use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Exception\LocalizedException;
 
 class PersistConfiguration extends AbstractAjax
 {
+    /**
+     * @var GraphAPIAdapter
+     */
+    protected $graphApiAdapter;
+
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
+     * @param GraphAPIAdapter $graphApiAdapter
+     */
+    public function __construct(
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        FBEHelper $fbeHelper,
+        SystemConfig $systemConfig,
+        GraphAPIAdapter $graphApiAdapter
+    ) {
+        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
+        $this->graphApiAdapter = $graphApiAdapter;
+    }
+
     public function executeForJson()
     {
         try {
             $externalBusinessId = $this->getRequest()->getParam('externalBusinessId');
-            $this->saveExternalBusinessId($externalBusinessId);
             $catalogId = $this->getRequest()->getParam('catalogId');
-            $this->saveCatalogId($catalogId);
+            $pageId = $this->getRequest()->getParam('pageId');
+
+            $this->saveExternalBusinessId($externalBusinessId)
+                ->saveCatalogId($catalogId)
+                ->saveCommerceConfiguration($pageId);
+
             $response['success'] = true;
-            $response['feed_push_response'] = 'Business and catalog IDs successfully saved';
+            $response['message'] = 'Configuration successfully saved';
             return $response;
         } catch (\Exception $e) {
             $response['success'] = false;
@@ -34,9 +65,9 @@ class PersistConfiguration extends AbstractAjax
      */
     public function saveCatalogId($catalogId)
     {
-        if ($catalogId != null) {
+        if ($catalogId) {
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId);
-            $this->_fbeHelper->log("Catalog id saved on instance --- ". $catalogId);
+            $this->_fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
         }
         return $this;
     }
@@ -47,10 +78,52 @@ class PersistConfiguration extends AbstractAjax
      */
     public function saveExternalBusinessId($externalBusinessId)
     {
-        if ($externalBusinessId != null) {
+        if ($externalBusinessId) {
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId);
-            $this->_fbeHelper->log("External business id saved on instance --- ". $externalBusinessId);
+            $this->_fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
         }
+        return $this;
+    }
+
+    /**
+     * @param $pageId
+     * @return $this
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws LocalizedException
+     */
+    public function saveCommerceConfiguration($pageId)
+    {
+        if (!$pageId) {
+            $this->_fbeHelper->log('No FB page ID available');
+            return $this;
+        }
+
+        // save page ID
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId);
+        $this->_fbeHelper->log('Page ID saved on instance --- '. $pageId);
+
+        // retrieve page access token
+        $userAccessToken = $this->systemConfig->getAccessToken();
+        $pageAccessToken = $this->graphApiAdapter->getPageAccessToken($pageId, $userAccessToken);
+        if (!$pageAccessToken) {
+            throw new LocalizedException(__('Cannot retrieve page access token'));
+        }
+        // save page access token
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN, $pageAccessToken);
+
+        // retrieve commerce account ID
+        $commerceAccountId = $this->graphApiAdapter->getPageMerchantSettingsId($pageAccessToken, $pageId);
+        if (!$commerceAccountId) {
+            // commerce account may not be created at this point
+            return $this;
+        }
+
+        // save commerce account ID
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId);
+
+        // enable API integration
+        $this->graphApiAdapter->associateMerchantSettingsWithApp($commerceAccountId, $userAccessToken);
+
         return $this;
     }
 }

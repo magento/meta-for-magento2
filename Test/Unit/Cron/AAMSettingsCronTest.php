@@ -39,10 +39,6 @@ class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
      */
     public function testNullSettingsWhenNoPixelPresent()
     {
-        $pixelId = null;
-
-        $this->fbeHelper->method('getPixelID')->willReturn($pixelId);
-
         $result = $this->aamSettingsCron->execute();
 
         $this->assertNull($result);
@@ -55,9 +51,6 @@ class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
      */
     public function testNullSettingsWhenAAMSettingsNotFetched()
     {
-        $pixelId = '1234';
-
-        $this->fbeHelper->method('getPixelID')->willReturn($pixelId);
         $this->fbeHelper->method('fetchAndSaveAAMSettings')->willReturn(null);
 
         $result = $this->aamSettingsCron->execute();
@@ -80,7 +73,6 @@ class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
         ];
         $settingsAsString = json_encode($settingsAsArray);
 
-        $this->fbeHelper->method('getPixelID')->willReturn($pixelId);
         $this->fbeHelper->method('fetchAndSaveAAMSettings')->willReturn($settingsAsString);
 
         $result = $this->aamSettingsCron->execute();

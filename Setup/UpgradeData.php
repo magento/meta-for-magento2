@@ -386,12 +386,49 @@ class UpgradeData implements UpgradeDataInterface
                     );
                 }
             }
-
-            //todo(T135735830): migrate fbe token and ids to systemconfig
-            //todo(T135735830): delete fbe configs from db
-
+            //migrate old configs to core_config_data table and delete old configs
+            $this->migrateOldConfigs($eavSetup);
+            $this->deleteOldConfigs($eavSetup);
         }
 
         $setup->endSetup();
+    }
+
+    private function migrateOldConfigs(EavSetup $eavSetup)
+    {
+        $facebookConfig = $eavSetup->getSetup()->getTable('facebook_business_extension_config');
+        $configKeys = [SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN => 'fbaccess/token',
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED => 'fbe/installed',
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID => 'fbe/external/id',
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID => 'fbe/catalog/id',
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS => 'fbpixel/aam_settings',
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID => 'fbpixel/id',
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES => 'fbprofile/ids',
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION => 'fb/api/version'
+        ];
+        $connection = $eavSetup->getSetup()->getConnection();
+        foreach ($configKeys as $newKey => $oldKey) {
+            try {
+                $query = $connection->select()
+                    ->from($facebookConfig, ['config_value'])
+                    ->where('config_key = ?', $oldKey);
+                $value = $connection->fetchOne($query);
+                $this->systemConfig->saveConfig($newKey, $value);
+            } catch (\Exception $e) {
+                $this->logger->critical($e);
+                $this->logger->critical('Error migrating: '. $oldKey);
+            }
+        }
+    }
+
+    private function deleteOldConfigs(EavSetup $eavSetup)
+    {
+        $connection = $eavSetup->getSetup()->getConnection();
+        $facebookConfig = $eavSetup->getSetup()->getTable('facebook_business_extension_config');
+        try {
+            $connection->delete($facebookConfig, "config_key NOT LIKE 'permanent%'");
+        } catch (\Exception $e) {
+            $this->logger->critical($e);
+        }
     }
 }

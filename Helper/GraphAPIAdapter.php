@@ -159,6 +159,23 @@ class GraphAPIAdapter
     }
 
     /**
+     * @param $accessToken
+     * @param $pageId
+     * @return false|string
+     * @throws GuzzleException
+     */
+    public function getPageAccessToken($accessToken, $pageId)
+    {
+        $request = [
+            'access_token' => $accessToken,
+            'fields' => 'access_token'
+        ];
+        $response = $this->callApi('GET', $pageId, $request);
+        $response = json_decode($response->getBody(), true);
+        return $response['access_token'] ?? false;
+    }
+
+    /**
      * @param null|string $accessToken
      * @param null $pageId
      * @return false|string
