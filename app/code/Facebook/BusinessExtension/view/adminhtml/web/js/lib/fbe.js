@@ -71,12 +71,14 @@ var FBEFlowContainer = React.createClass({
     var _this = this;
     if (data) {
       var responseObj = JSON.parse(data);
-      _this.consoleLog("Response from fb login -- " + responseObj);
+      _this.consoleLog("Response from fb login:");
+      _this.consoleLog(responseObj);
       var accessToken = responseObj.access_token;
       var success = responseObj.success;
       var pixelId = responseObj.pixel_id;
       var profiles = responseObj.profiles;
       var catalogId = responseObj.catalog_id;
+      var pageId = responseObj.page_id;
 
       if(success) {
         let action = responseObj.action;
@@ -89,7 +91,7 @@ var FBEFlowContainer = React.createClass({
           _this.saveAccessToken(accessToken);
           _this.saveProfilesData(profiles);
           _this.saveAAMSettings(pixelId);
-          _this.saveConfig(catalogId);
+          _this.saveConfig(catalogId, pageId);
           _this.setState({installed: 'true'});
         }
       }else {
@@ -190,7 +192,7 @@ var FBEFlowContainer = React.createClass({
       }
     });
   },
-  saveConfig: function saveConfig(catalogId) {
+  saveConfig: function saveConfig(catalogId, pageId) {
     var _this = this;
     jQuery.ajax({
       type: 'post',
@@ -199,6 +201,7 @@ var FBEFlowContainer = React.createClass({
         data: ajaxParam({
         externalBusinessId: window.facebookBusinessExtensionConfig.externalBusinessId,
         catalogId: catalogId,
+        pageId: pageId,
       }),
       success: function onSuccess(data, _textStatus, _jqXHR) {
         if(data.success) {

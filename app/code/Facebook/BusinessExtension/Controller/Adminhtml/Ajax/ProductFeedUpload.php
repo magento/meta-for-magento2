@@ -36,7 +36,6 @@ class ProductFeedUpload extends AbstractAjax
         Uploader $uploader
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
-        $this->systemConfig = $systemConfig;
         $this->uploader = $uploader;
     }
 

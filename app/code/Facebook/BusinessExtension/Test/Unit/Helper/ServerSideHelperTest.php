@@ -41,7 +41,6 @@ class ServerSideHelperTest extends TestCase
         $this->serverSideHelper =
         new ServerSideHelper($this->fbeHelper, $this->aamFieldsExtractorHelper);
         $this->fbeHelper->method('getAccessToken')->willReturn('abc');
-        $this->fbeHelper->method('getPixelID')->willReturn('123');
     }
 
     public function testEventAddedToTrackedEvents()

@@ -5,6 +5,8 @@
 
 namespace Facebook\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
+use Facebook\BusinessExtension\Helper\GraphAPIAdapter;
+
 class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
 {
     protected $fbeHelper;
@@ -19,7 +21,7 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
 
     protected $request;
 
-    protected $customerSession;
+    protected $graphApiAdapter;
 
     /**
      * Used to reset or change values after running a test
@@ -43,13 +45,14 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
         $this->systemConfig = $this->createMock(\Facebook\BusinessExtension\Model\System\Config::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
-        $this->customerSession = $this->createMock(\Magento\Customer\Model\Session::class);
+        $this->graphApiAdapter = $this->createMock(GraphAPIAdapter::class);
 
         $this->fbFeedPush = new \Facebook\BusinessExtension\Controller\Adminhtml\Ajax\PersistConfiguration(
             $this->context,
             $this->resultJsonFactory,
             $this->fbeHelper,
-            $this->systemConfig
+            $this->systemConfig,
+            $this->graphApiAdapter
         );
     }
 

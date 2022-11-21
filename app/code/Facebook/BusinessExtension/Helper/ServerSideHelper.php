@@ -5,6 +5,7 @@
 
 namespace Facebook\BusinessExtension\Helper;
 
+use Facebook\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Api;
 use FacebookAds\Object\ServerSide\Event;
 use FacebookAds\Object\ServerSide\EventRequestAsync;
@@ -34,17 +35,25 @@ class ServerSideHelper
     protected $trackedEvents = [];
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
      * @param AAMFieldsExtractorHelper $aamFieldsExtractorHelper
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         FBEHelper $fbeHelper,
-        AAMFieldsExtractorHelper $aamFieldsExtractorHelper
+        AAMFieldsExtractorHelper $aamFieldsExtractorHelper,
+        SystemConfig $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -54,7 +63,7 @@ class ServerSideHelper
     public function sendEvent($event, $userDataArray = null)
     {
         try {
-            $api = Api::init(null, null, $this->fbeHelper->getAccessToken());
+            $api = Api::init(null, null, $this->systemConfig->getAccessToken());
 
             $event = $this->aamFieldsExtractorHelper->setUserData($event, $userDataArray);
 
@@ -63,7 +72,7 @@ class ServerSideHelper
             $events = [];
             array_push($events, $event);
 
-            $request = (new EventRequestAsync($this->fbeHelper->getPixelID()))
+            $request = (new EventRequestAsync($this->systemConfig->getPixelId()))
                 ->setEvents($events)
                 ->setPartnerAgent($this->fbeHelper->getPartnerAgent(true));
 

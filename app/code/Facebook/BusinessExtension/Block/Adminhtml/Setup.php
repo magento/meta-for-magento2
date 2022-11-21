@@ -23,14 +23,14 @@ class Setup extends \Magento\Backend\Block\Template
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param FBEHelper $fbeHelper
-     * @param array $data
      * @param SystemConfig $systemConfig
+     * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         FBEHelper $fbeHelper,
-        array $data = [],
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        array $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
@@ -116,6 +116,6 @@ class Setup extends \Magento\Backend\Block\Template
      */
     public function isFBEInstalled()
     {
-        return $this->systemConfig->isFBEInstalled();
+        return $this->systemConfig->isFBEInstalled() ? 'true' : 'false';
     }
 }

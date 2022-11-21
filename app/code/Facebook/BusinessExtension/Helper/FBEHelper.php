@@ -128,22 +128,6 @@ class FBEHelper extends AbstractHelper
     /**
      * @return mixed
      */
-    public function getPixelID()
-    {
-        return $this->systemConfig->getPixelId();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAccessToken()
-    {
-        return $this->systemConfig->getAccessToken();
-    }
-
-    /**
-     * @return mixed
-     */
     public function getMagentoVersion()
     {
         return $this->objectManager->get(ProductMetadataInterface::class)->getVersion();
@@ -327,7 +311,7 @@ class FBEHelper extends AbstractHelper
      */
     public function getAPIVersion()
     {
-        $accessToken = $this->getAccessToken();
+        $accessToken = $this->systemConfig->getAccessToken();
         if (!$accessToken) {
             $this->log("can't find access token, won't get api update version ");
             return;
@@ -379,7 +363,7 @@ class FBEHelper extends AbstractHelper
         if ($external_business_id == null) {
             $external_business_id = $this->getFBEExternalBusinessId();
         }
-        $accessToken = $this->getAccessToken();
+        $accessToken = $this->systemConfig->getAccessToken();
         $urlSuffix = "/fbe_business/fbe_installs?fbe_external_business_id=" . $external_business_id;
         $url = $this::FB_GRAPH_BASE_URL . $this->getAPIVersion() . $urlSuffix;
         $this->log($url);
