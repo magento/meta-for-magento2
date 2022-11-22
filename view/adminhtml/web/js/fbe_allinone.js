@@ -229,7 +229,7 @@ var FBEFlowContainer = React.createClass({
           _this.saveAccessToken(accessToken);
           _this.saveProfilesData(profiles);
           _this.saveAAMSettings(pixelId);
-          _this.saveConfig(catalogId, pageId);
+          _this.saveConfig(accessToken, catalogId, pageId);
           _this.setState({installed: 'true'});
         }
       }else {
@@ -330,7 +330,7 @@ var FBEFlowContainer = React.createClass({
       }
     });
   },
-  saveConfig: function saveConfig(catalogId, pageId) {
+  saveConfig: function saveConfig(accessToken, catalogId, pageId) {
     var _this = this;
     jQuery.ajax({
       type: 'post',
@@ -340,14 +340,15 @@ var FBEFlowContainer = React.createClass({
         externalBusinessId: window.facebookBusinessExtensionConfig.externalBusinessId,
         catalogId: catalogId,
         pageId: pageId,
+        accessToken: accessToken,
       }),
       success: function onSuccess(data, _textStatus, _jqXHR) {
         if(data.success) {
-          _this.consoleLog('Catalog & Business Ids successfully saved');
+          _this.consoleLog('Config successfully saved');
         }
       },
       error: function() {
-        console.error('There was a problem saving Catalog & Business Ids');
+          console.error('There was a problem saving config');
       }
     });
   },

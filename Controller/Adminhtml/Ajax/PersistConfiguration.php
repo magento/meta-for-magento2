@@ -40,13 +40,14 @@ class PersistConfiguration extends AbstractAjax
     public function executeForJson()
     {
         try {
+            $accessToken = $this->getRequest()->getParam('accessToken');
             $externalBusinessId = $this->getRequest()->getParam('externalBusinessId');
             $catalogId = $this->getRequest()->getParam('catalogId');
             $pageId = $this->getRequest()->getParam('pageId');
 
             $this->saveExternalBusinessId($externalBusinessId)
                 ->saveCatalogId($catalogId)
-                ->saveCommerceConfiguration($pageId);
+                ->completeOnsiteOnboarding($accessToken, $pageId);
 
             $response['success'] = true;
             $response['message'] = 'Configuration successfully saved';
@@ -86,15 +87,21 @@ class PersistConfiguration extends AbstractAjax
     }
 
     /**
+     * @param $accessToken
      * @param $pageId
      * @return $this
-     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws LocalizedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function saveCommerceConfiguration($pageId)
+    public function completeOnsiteOnboarding($accessToken, $pageId)
     {
+        if (!$accessToken) {
+            $this->_fbeHelper->log('No access token available, skipping onboarding to onsite checkout');
+            return $this;
+        }
+
         if (!$pageId) {
-            $this->_fbeHelper->log('No FB page ID available');
+            $this->_fbeHelper->log('No FB page ID available, skipping onboarding to onsite checkout');
             return $this;
         }
 
@@ -103,8 +110,7 @@ class PersistConfiguration extends AbstractAjax
         $this->_fbeHelper->log('Page ID saved on instance --- '. $pageId);
 
         // retrieve page access token
-        $userAccessToken = $this->systemConfig->getAccessToken();
-        $pageAccessToken = $this->graphApiAdapter->getPageAccessToken($pageId, $userAccessToken);
+        $pageAccessToken = $this->graphApiAdapter->getPageAccessToken($accessToken, $pageId);
         if (!$pageAccessToken) {
             throw new LocalizedException(__('Cannot retrieve page access token'));
         }
