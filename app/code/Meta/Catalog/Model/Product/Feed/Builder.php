@@ -21,7 +21,6 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
-use Meta\Catalog\Model\Feed\EnhancedCatalogHelper;
 use Meta\Catalog\Model\Product\Feed\Builder\Inventory;
 use Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface;
 use Meta\Catalog\Model\Product\Feed\Builder\Tools as BuilderTools;
@@ -90,11 +89,6 @@ class Builder
     protected $productIdentifier;
 
     /**
-     * @var EnhancedCatalogHelper
-     */
-    protected $enhancedCatalogHelper;
-
-    /**
      * @var CatalogHelper
      */
     protected $catalogHelper;
@@ -114,7 +108,6 @@ class Builder
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
      * @param ProductIdentifier $productIdentifier
-     * @param EnhancedCatalogHelper $enhancedCatalogHelper
      * @param CatalogHelper $catalogHelper
      */
     public function __construct(
@@ -123,7 +116,6 @@ class Builder
         CategoryCollectionFactory $categoryCollectionFactory,
         BuilderTools              $builderTools,
         ProductIdentifier         $productIdentifier,
-        EnhancedCatalogHelper     $enhancedCatalogHelper,
         CatalogHelper             $catalogHelper
     )
     {
@@ -132,7 +124,6 @@ class Builder
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->builderTools = $builderTools;
         $this->productIdentifier = $productIdentifier;
-        $this->enhancedCatalogHelper = $enhancedCatalogHelper;
         $this->catalogHelper = $catalogHelper;
     }
 
@@ -532,8 +523,6 @@ class Builder
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $entry[self::ATTR_UNIT_PRICE] = $this->getUnitPrice($product);
         }
-
-        $this->enhancedCatalogHelper->assignECAttribute($product, $entry);
 
         return $entry;
     }

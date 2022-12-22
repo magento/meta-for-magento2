@@ -17,9 +17,7 @@
 
 namespace Meta\BusinessExtension\Helper;
 
-use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Meta\BusinessExtension\Logger\Logger;
-use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -90,11 +88,6 @@ class FBEHelper extends AbstractHelper
     protected $moduleList;
 
     /**
-     * @var ProductIdentifier
-     */
-    protected $productIdentifier;
-
-    /**
      * @var SystemConfig
      */
     protected $systemConfig;
@@ -110,7 +103,6 @@ class FBEHelper extends AbstractHelper
      * @param Curl $curl
      * @param ResourceConnection $resourceConnection
      * @param ModuleListInterface $moduleList
-     * @param ProductIdentifier $productIdentifier
      * @param SystemConfig $systemConfig
      */
     public function __construct(
@@ -122,7 +114,6 @@ class FBEHelper extends AbstractHelper
         Curl $curl,
         ResourceConnection $resourceConnection,
         ModuleListInterface $moduleList,
-        ProductIdentifier $productIdentifier,
         SystemConfig $systemConfig
     ) {
         parent::__construct($context);
@@ -133,7 +124,6 @@ class FBEHelper extends AbstractHelper
         $this->curl = $curl;
         $this->resourceConnection = $resourceConnection;
         $this->moduleList = $moduleList;
-        $this->productIdentifier = $productIdentifier;
         $this->systemConfig = $systemConfig;
     }
 
@@ -551,15 +541,6 @@ class FBEHelper extends AbstractHelper
             )));
         }
         return $breadcrumb;
-    }
-
-    /**
-     * @param Product $product
-     * @return bool|int|string
-     */
-    public function getRetailerId(Product $product)
-    {
-        return $this->productIdentifier->getMagentoProductRetailerId($product);
     }
 
     /**

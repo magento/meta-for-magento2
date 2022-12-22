@@ -24,6 +24,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Meta\Catalog\Helper\Product\Identifier;
 
 class DeleteAfter implements ObserverInterface
 {
@@ -43,15 +44,26 @@ class DeleteAfter implements ObserverInterface
     protected $fbeHelper;
 
     /**
+     * @var Identifier
+     */
+    private $identifier;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphApiAdapter
      * @param FBEHelper $fbeHelper
+     * @param Identifier $identifier
      */
-    public function __construct(SystemConfig $systemConfig, GraphApiAdapter $graphApiAdapter, FBEHelper $fbeHelper)
-    {
+    public function __construct(
+        SystemConfig $systemConfig,
+        GraphApiAdapter $graphApiAdapter,
+        FBEHelper $fbeHelper,
+        Identifier $identifier
+    ) {
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->fbeHelper = $fbeHelper;
+        $this->identifier = $identifier;
     }
 
     /**
@@ -75,7 +87,7 @@ class DeleteAfter implements ObserverInterface
         // @todo observer should not know how to assemble request
         $requestData = [
             'method' => 'DELETE',
-            'data' => ['id' => $this->fbeHelper->getRetailerId($product)],
+            'data' => ['id' => $this->identifier->getMagentoProductRetailerId($product)],
         ];
 
         try {
