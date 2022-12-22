@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="Meta\BusinessExtension\Model\Logger\ApiDebugger" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/facebook/api.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Meta\BusinessExtension\Model\Logger\ApiLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Meta\BusinessExtension\Model\Logger\ApiDebugger</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Meta\BusinessExtension\Helper\GraphAPIAdapter">
+        <arguments>
+            <argument name="logger" xsi:type="object">Meta\BusinessExtension\Model\Logger\ApiLogger</argument>
+        </arguments>
+    </type>
+</config>

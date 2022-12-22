@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <facebook>
+            <orders_sync>
+                <active>0</active>
+                <default_order_status>pending</default_order_status>
+                <auto_subscribe_to_newsletter>0</auto_subscribe_to_newsletter>
+                <default_fulfillment_location>1</default_fulfillment_location>
+                <!-- Supported events: sales_order_shipment_save_after, sales_order_shipment_track_save_after -->
+                <order_ship_event>sales_order_shipment_save_after</order_ship_event>
+            </orders_sync>
+        </facebook>
+        <payment>
+            <facebook>
+                <active>1</active>
+                <model>Meta\Sales\Model\PaymentMethod</model>
+                <order_status>processing</order_status>
+                <title>Paid on Facebook/Instagram</title>
+                <allowspecific>0</allowspecific>
+                <group>offline</group>
+                <email_customer>0</email_customer>
+            </facebook>
+        </payment>
+    </default>
+</config>

@@ -1,0 +1,30 @@
+{
+    "name": "meta/module-business-extension",
+    "description": "Meta Business Extension core module",
+    "type": "magento2-module",
+    "license": "GPL-1.0-or-later",
+    "require": {
+        "php": "~7.4.0||~8.1.0",
+        "magento/framework": "*",
+        "magento/module-backend": "*",
+        "magento/module-catalog": "*",
+        "magento/module-configurable-product": "*",
+        "magento/module-config": "*",
+        "magento/module-security": "*",
+        "magento/module-store": "*",
+        "magento/module-newsletter": "*",
+        "magento/module-customer": "*",
+        "magento/module-checkout": "*",
+        "magento/module-directory": "*",
+        "magento/module-eav": "*",
+        "facebook/php-business-sdk": "^15.0.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Meta\\BusinessExtension\\": ""
+        }
+    }
+}

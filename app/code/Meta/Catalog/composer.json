@@ -1,0 +1,29 @@
+{
+    "name": "meta/module-catalog",
+    "description": "Meta Business Extension Catalog module",
+    "type": "magento2-module",
+    "require": {
+        "php": "~7.4.0||~8.1.0",
+        "magento/framework": "*",
+        "magento/module-inventory": "*",
+        "magento/module-inventory-api": "*",
+        "magento/module-inventory-sales-api": "*",
+        "magento/module-backend": "*",
+        "magento/module-catalog": "*",
+        "magento/module-configurable-product": "*",
+        "magento/module-catalog-inventory": "*",
+        "magento/module-config": "*",
+        "magento/module-eav": "*",
+        "magento/module-store": "*",
+        "meta/module-business-extension": "*"
+    },
+    "license": "GPL-1.0-or-later",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Meta\\Catalog\\": ""
+        }
+    }
+}

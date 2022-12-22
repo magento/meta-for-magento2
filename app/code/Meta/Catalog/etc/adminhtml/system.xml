@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="facebook_business_extension">
+            <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Catalog Management</label>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
+                <field id="daily_product_feed" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Daily Product Feed</label>
+                    <config_path>facebook/catalog_management/daily_product_feed</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Scheduled full catalog upload</comment>
+                </field>
+                <field id="feed_upload_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Feed Upload Method</label>
+                    <config_path>facebook/catalog_management/feed_upload_method</config_path>
+                    <source_model>Meta\Catalog\Model\Config\Source\FeedUploadMethod</source_model>
+                </field>
+                <field id="product_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Push Products</label>
+                    <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
+                </field>
+                <field id="incremental_product_updates" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Incremental Product Updates</label>
+                    <config_path>facebook/catalog_management/incremental_product_updates</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Synchronize changes with Facebook every time a product is saved or deleted</comment>
+                </field>
+                <field id="product_identifier" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Product Identifier</label>
+                    <config_path>facebook/catalog_management/product_identifier</config_path>
+                    <source_model>Meta\Catalog\Model\Config\Source\Product\Identifier</source_model>
+                    <comment>Magento product attribute mapped to Retailer ID / Content ID on Facebook. Warning: use with caution, as changing this option after uploading products to FB might result in having duplicate products in your FB catalog</comment>
+                </field>
+                <field id="price_incl_tax" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Price Including Tax</label>
+                    <config_path>facebook/catalog_management/price_incl_tax</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Use price including tax in feed. Should be "No" for the US and "Yes" for the UK. Note: only works if Sales -> Tax -> Price Display Settings -> Display Product Prices In Catalog is set to "Including Tax"</comment>
+                </field>
+<!-- @todo https://fburl.com/707tgrel -->
+<!--                <field id="category_feed" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Push All Categories to Facebook Catalog</label>
+                    <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed</frontend_model>
+                </field>-->
+            </group>
+            <group id="inventory_management" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Inventory Management</label>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
+                <field id="use_multi_source_inventory" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Multi Source Inventory</label>
+                    <config_path>facebook/inventory_management/use_multi_source_inventory</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Set to 'Yes' if you'd like to use Magento's Multi Source Inventory for products sold on Facebook and Instagram</comment>
+                </field>
+                <field id="inventory_stock" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Inventory Stock</label>
+                    <config_path>facebook/inventory_management/inventory_stock</config_path>
+                    <source_model>Meta\Catalog\Model\Config\Source\Product\InventoryStock</source_model>
+                    <comment>Use this inventory stock for products sold on Facebook and Instagram</comment>
+                    <depends>
+                        <field id="facebook_business_extension/inventory_management/use_multi_source_inventory">1</field>
+                    </depends>
+                </field>
+                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Out-of-Stock Threshold</label>
+                    <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>
+                    <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
+                </field>
+                <field id="enable_inventory_upload" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Scheduled Inventory Upload</label>
+                    <config_path>facebook/inventory_management/enable_inventory_upload</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable hourly product inventory upload from Magento to your Facebook catalog</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

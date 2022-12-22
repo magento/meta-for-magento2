@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Meta_Catalog::diagnostic"
+             title="Catalog Diagnostics"
+             translate="title"
+             module="Meta_Catalog"
+             parent="Meta_BusinessExtension::facebook"
+             sortOrder="30"
+             dependsOnModule="Meta_BusinessExtension"
+             action="fbeadmin/diagnostic"
+             resource="Meta_BusinessExtension::facebook"/>
+    </menu>
+</config>

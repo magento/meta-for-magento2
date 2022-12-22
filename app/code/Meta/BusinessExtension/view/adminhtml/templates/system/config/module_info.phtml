@@ -1,0 +1,17 @@
+<?php /* @var $block \Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo */ ?>
+
+<div>
+    <p>Version: <?= $block->getModuleVersion() ?></p>
+    <p>Commerce Account ID: <?= $block->getCommerceAccountId() ?></p>
+    <p>Page ID: <?= $block->getPageId() ?></p>
+    <p>Catalog ID: <?= $block->getCatalogId() ?></p>
+    <?php if ($block->getCommerceAccountId()) :  ?>
+        <p><a target="_blank" href="<?= $block->getCommerceManagerUrl() ?> "><?= __('Commerce Manager') ?></a></p>
+    <?php endif; ?>
+    <?php if ($block->getCatalogId()) :  ?>
+        <p><a target="_blank" href="<?= $block->getCatalogManagerUrl() ?> "><?= __('Catalog Items') ?></a></p>
+    <?php endif; ?>
+    <?php if ($block->getCommerceAccountId()) :  ?>
+        <p><a target="_blank" href="<?= $block->getSupportUrl() ?> "><?= __('Contact Support') ?></a></p>
+    <?php endif; ?>
+</div>

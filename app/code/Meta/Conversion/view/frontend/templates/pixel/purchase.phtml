@@ -1,0 +1,26 @@
+<?php
+/** @var \Meta\Conversion\Block\Pixel\Purchase $block */
+if ($block->getFacebookPixelID()) {
+    $eventId = \Meta\Conversion\Helper\EventIdGenerator::guidv4();
+    $block->trackServerEvent($eventId);
+    ?>
+    <script>
+        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
+        fbq('track', 'Purchase', {
+                source: "<?= $block->getSource() ?>",
+                pluginVersion: "<?= $block->getPluginVersion() ?>",
+                content_type: "<?= $block->getContentType() ?>",
+                content_ids: [<?= $block->getContentIDs() ?>],
+                contents: [<?= $block->getContents() ?>]
+                <?php if ($block->getValue() && $block->getCurrency()) { ?>
+                , value: <?= $block->getValue() ?>
+                , currency: "<?= $block->getCurrency() ?>"
+                <?php } ?>
+            }
+            , {
+                eventID: "<?= $eventId ?>"
+            }
+        );
+    </script>
+    <?php $block->logEvent($block->getFacebookPixelID(), 'Purchase') ?>
+<?php } ?>

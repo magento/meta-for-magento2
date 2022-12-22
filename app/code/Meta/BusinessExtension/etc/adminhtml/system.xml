@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="facebook" translate="label" sortOrder="1000">
+            <label>Facebook</label>
+        </tab>
+        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+            <class>separator-top</class>
+            <label>Business Extension</label>
+            <tab>facebook</tab>
+            <resource>Meta_BusinessExtension::system_config</resource>
+            <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Setup</label>
+                <attribute type="expanded">1</attribute>
+                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Activate Integration</label>
+                    <config_path>facebook/business_extension/active</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="store" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Store</label>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                    </depends>
+                    <config_path>facebook/business_extension/store</config_path>
+                    <source_model>Meta\BusinessExtension\Model\Config\Source\Store</source_model>
+                    <comment>Magento store used as a purchase point for FB/IG orders</comment>
+                </field>
+                <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Module Info</label>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                    </depends>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo</frontend_model>
+                </field>
+            </group>
+            <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Debug</label>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
+                <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Enable Debug Mode</label>
+                    <config_path>facebook/debug/debug_mode</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

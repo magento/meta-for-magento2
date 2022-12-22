@@ -1,0 +1,22 @@
+{
+    "name": "meta/module-conversion",
+    "description": "Meta Business Extension Conversion module",
+    "type": "magento2-module",
+    "require": {
+        "php": "~7.4.0||~8.1.0",
+        "magento/framework": "*",
+        "magento/module-catalog": "*",
+        "magento/module-checkout": "*",
+        "magento/module-sales": "*",
+        "meta/module-business-extension": "*"
+    },
+    "license": "GPL-1.0-or-later",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Meta\\Conversion\\": ""
+        }
+    }
+}

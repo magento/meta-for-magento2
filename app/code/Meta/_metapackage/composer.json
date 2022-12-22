@@ -1,0 +1,12 @@
+{
+    "name": "meta/meta-for-magento2",
+    "description": "Meta Business Extension for Magento 2",
+    "type": "metapackage",
+    "require": {
+        "meta/module-business-extension": "*",
+        "meta/module-catalog": "*",
+        "meta/module-conversion": "*",
+        "meta/module-promotions": "*",
+        "meta/module-sales": "*"
+    }
+}

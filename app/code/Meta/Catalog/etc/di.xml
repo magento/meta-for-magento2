@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="Meta\Catalog\Model\Logger\ProductFeedDebugger" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/facebook/product-feed.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Meta\Catalog\Model\Logger\ProductFeedLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Meta\Catalog\Model\Logger\ProductFeedDebugger</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Meta\Catalog\Model\Product\Feed\Method\FeedApi">
+        <arguments>
+            <argument name="logger" xsi:type="object">Meta\Catalog\Model\Logger\ProductFeedLogger</argument>
+        </arguments>
+    </type>
+</config>

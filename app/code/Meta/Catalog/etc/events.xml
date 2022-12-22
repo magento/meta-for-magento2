@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="catalog_product_delete_after_done">
+        <observer name="facebook_product_delete_after" instance="Meta\Catalog\Observer\Product\DeleteAfter" />
+    </event>
+    <event name="catalog_category_save_after">
+        <observer name="custom_save_category" instance="Meta\Catalog\Observer\ProcessCategoryAfterSaveEventObserver" />
+    </event>
+    <event name="catalog_category_delete_after">
+        <observer name="custom_delete_category" instance="Meta\Catalog\Observer\ProcessCategoryAfterDeleteEventObserver" />
+    </event>
+</config>

@@ -1,0 +1,31 @@
+{
+    "name": "meta/module-sales",
+    "description": "Meta Business Extension Sales module",
+    "type": "magento2-module",
+    "require": {
+        "php": "~7.4.0||~8.1.0",
+        "magento/framework": "*",
+        "magento/module-sales": "*",
+        "magento/module-backend": "*",
+        "magento/module-config": "*",
+        "magento/module-catalog": "*",
+        "magento/module-configurable-product": "*",
+        "magento/module-store": "*",
+        "magento/module-customer": "*",
+        "magento/module-eav": "*",
+        "magento/module-directory": "*",
+        "magento/module-payment": "*",
+        "magento/module-shipping": "*",
+        "meta/module-business-extension": "*",
+        "meta/module-catalog": "*"
+    },
+    "license": "GPL-1.0-or-later",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Meta\\Sales\\": ""
+        }
+    }
+}

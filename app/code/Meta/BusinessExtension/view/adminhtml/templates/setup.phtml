@@ -1,0 +1,35 @@
+<?php /** @var Meta\BusinessExtension\Block\Adminhtml\Setup $block */ ?>
+<div>
+    <div id="fbe-iframe">
+    </div>
+</div>
+
+<script>
+    window.facebookBusinessExtensionConfig = {
+        pixelId: '<?= $block->fetchPixelId() ?>'
+        , popupOrigin: "https://business.facebook.com"
+        , setPixelId: '<?= $block->getPixelAjaxRoute() ?>'
+        , setAccessToken: '<?= $block->getAccessTokenAjaxRoute() ?>'
+        , setProfilesData: '<?= $block->getProfilesAjaxRoute()?>'
+        , saveConfig: '<?= $block->fetchConfigurationAjaxRoute() ?>'
+        , externalBusinessId: '<?= $block->getExternalBusinessId()?>'
+        , fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?"
+        , deleteConfigKeys: '<?= $block->getDeleteAssetIdsAjaxRoute() ?>'
+        , appId: '195311308289826'
+        , timeZone: 'America/Los_Angeles'
+        , installed: '<?= $block->isFBEInstalled() ?>'
+        , systemUserName: '<?= $block->getExternalBusinessId() ?>' + '_system_user'
+        , businessVertical: 'ECOMMERCE'
+        , channel: 'COMMERCE_OFFSITE'
+        , currency: '<?= $block->getCurrencyCode() ?>'
+        , businessName: 'Magento'
+        , debug: true
+        , setAAMSettings: '<?= $block->getAAMSettingsRoute() ?>'
+    };
+</script>
+<script>
+    require([
+        'Meta_BusinessExtension/js/fbe_allinone'
+    ], function () {
+    });
+</script>
