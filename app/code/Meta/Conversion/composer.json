@@ -10,7 +10,7 @@
         "magento/module-sales": "*",
         "meta/module-business-extension": "*"
     },
-    "license": "GPL-1.0-or-later",
+    "license": "Apache-2.0",
     "autoload": {
         "files": [
             "registration.php"

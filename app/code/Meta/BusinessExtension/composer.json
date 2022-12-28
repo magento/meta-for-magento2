@@ -2,7 +2,7 @@
     "name": "meta/module-business-extension",
     "description": "Meta Business Extension core module",
     "type": "magento2-module",
-    "license": "GPL-1.0-or-later",
+    "license": "Apache-2.0",
     "require": {
         "php": "~7.4.0||~8.1.0",
         "magento/framework": "*",

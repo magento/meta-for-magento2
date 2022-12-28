@@ -19,7 +19,7 @@
         "meta/module-business-extension": "*",
         "meta/module-catalog": "*"
     },
-    "license": "GPL-1.0-or-later",
+    "license": "Apache-2.0",
     "autoload": {
         "files": [
             "registration.php"
