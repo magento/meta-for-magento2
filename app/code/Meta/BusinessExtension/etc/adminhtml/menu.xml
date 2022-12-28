@@ -19,15 +19,5 @@
              dependsOnModule="Meta_BusinessExtension"
              action="fbeadmin/setup/index"
              resource="Meta_BusinessExtension::facebook"/>
-        <add
-                id="Meta_BusinessExtension::email"
-                title="Loyalty Emails"
-                translate="title"
-                module="Meta_BusinessExtension"
-                parent="Meta_BusinessExtension::facebook"
-                sortOrder="40"
-                dependsOnModule="Meta_BusinessExtension"
-                action="fbeadmin/email"
-                resource="Meta_BusinessExtension::facebook"/>
     </menu>
 </config>

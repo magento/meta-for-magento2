@@ -603,23 +603,4 @@ class GraphAPIAdapter
         $response = $this->callApi('GET', "{$catalogId}", $request);
         return json_decode($response->getBody(), true);
     }
-
-    /**
-     * @param $commerceAccountId
-     * @return array|mixed|object
-     * @throws GuzzleException
-     */
-    public function getLoyaltyMarketingEmails($commerceAccountId)
-    {
-        $requestFields = [
-            'email_address',
-            'source',
-        ];
-        $request = [
-            'access_token' => $this->accessToken,
-            'fields' => implode(',', $requestFields),
-        ];
-        $response = $this->callApi('GET', "{$commerceAccountId}/loyalty_marketing_emails", $request);
-        return json_decode($response->getBody(), true);
-    }
 }
