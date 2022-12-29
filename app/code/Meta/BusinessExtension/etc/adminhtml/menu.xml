@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Meta_BusinessExtension::facebook"
-             title="Facebook"
+             title="Meta"
              translate="title"
              module="Meta_BusinessExtension"
              parent="Magento_Backend::stores"
