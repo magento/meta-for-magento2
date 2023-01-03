@@ -15,12 +15,12 @@
         , externalBusinessId: '<?= $block->getExternalBusinessId()?>'
         , fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?"
         , deleteConfigKeys: '<?= $block->getDeleteAssetIdsAjaxRoute() ?>'
-        , appId: '195311308289826'
+        , appId: '<?= $block->getAppId() ?>'
         , timeZone: 'America/Los_Angeles'
         , installed: '<?= $block->isFBEInstalled() ?>'
         , systemUserName: '<?= $block->getExternalBusinessId() ?>' + '_system_user'
         , businessVertical: 'ECOMMERCE'
-        , channel: 'COMMERCE_OFFSITE'
+        , channel: 'DEFAULT'
         , currency: '<?= $block->getCurrencyCode() ?>'
         , businessName: 'Magento'
         , debug: true

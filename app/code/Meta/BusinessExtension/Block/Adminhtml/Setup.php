@@ -135,4 +135,12 @@ class Setup extends Template
     {
         return $this->systemConfig->isFBEInstalled() ? 'true' : 'false';
     }
+
+    /**
+     * @return string
+     */
+    public function getAppId()
+    {
+        return $this->systemConfig->getAppId();
+    }
 }
