@@ -299,7 +299,6 @@ class CommerceHelper extends AbstractHelper
     {
         $product = $this->productIdentifier->getProductByFacebookRetailerId($item['retailer_id']);
         $pricePerUnit = $item['price_per_unit']['amount'];
-        $isPricePerUnitTaxInclusive = $item['is_price_per_unit_tax_inclusive'] ?? false;
 
         $originalPrice = $this->getPriceBeforeDiscount($item['product_id']) ?? $pricePerUnit;
 
@@ -307,9 +306,6 @@ class CommerceHelper extends AbstractHelper
         $taxAmount = $item['tax_details']['estimated_tax']['amount'];
 
         $rowTotal = $pricePerUnit * $quantity;
-        if ($isPricePerUnitTaxInclusive) {
-            $rowTotal -= $taxAmount;
-        }
 
         /** @var OrderItem $orderItem */
         $orderItem = $this->objectManager->create(OrderItem::class);
