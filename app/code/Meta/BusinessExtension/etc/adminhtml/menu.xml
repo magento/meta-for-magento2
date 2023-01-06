@@ -6,7 +6,6 @@
              title="Meta"
              translate="title"
              module="Meta_BusinessExtension"
-             parent="Magento_Backend::stores"
              sortOrder="50"
              dependsOnModule="Meta_BusinessExtension"
              resource="Meta_BusinessExtension::facebook"/>
@@ -18,6 +17,15 @@
              sortOrder="10"
              dependsOnModule="Meta_BusinessExtension"
              action="fbeadmin/setup/index"
+             resource="Meta_BusinessExtension::facebook"/>
+        <add id="Meta_BusinessExtension::configuration"
+             title="Configuration"
+             translate="title"
+             module="Meta_BusinessExtension"
+             parent="Meta_BusinessExtension::facebook"
+             sortOrder="20"
+             dependsOnModule="Meta_BusinessExtension"
+             action="adminhtml/system_config/edit/section/facebook_business_extension"
              resource="Meta_BusinessExtension::facebook"/>
     </menu>
 </config>
