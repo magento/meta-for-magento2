@@ -25,20 +25,18 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\ObjectManagerInterface;
 use Meta\Conversion\Helper\AAMSettingsFields;
 use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Framework\Pricing\Helper\Data as PricingHelper;
+use Magento\Customer\Model\AddressFactory;
+use Magento\Directory\Model\RegionFactory;
 
 /**
  * Helper class to get data using Magento Platform methods.
  */
 class MagentoDataHelper extends AbstractHelper
 {
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $objectManager;
-
     /**
      * @var \Meta\BusinessExtension\Logger\Logger
      */
@@ -85,10 +83,29 @@ class MagentoDataHelper extends AbstractHelper
     protected $customerSession;
 
     /**
+     * @var CategoryRepositoryInterface
+     */
+    protected $categoryRepository;
+
+    /**
+     * @var PricingHelper
+     */
+    protected $pricingHelper;
+
+    /**
+     * @var AddressFactory
+     */
+    protected $addressFactory;
+
+    /**
+     * @var RegionFactory
+     */
+    protected $regionFactory;
+
+    /**
      * MagentoDataHelper constructor
      *
      * @param Context $context
-     * @param ObjectManagerInterface $objectManager
      * @param \Meta\BusinessExtension\Logger\Logger $logger
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -97,10 +114,13 @@ class MagentoDataHelper extends AbstractHelper
      * @param ProductIdentifier $productIdentifier
      * @param CheckoutSession $checkoutSession
      * @param CustomerSession $customerSession
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param PricingHelper $pricingHelper
+     * @param AddressFactory $addressFactory
+     * @param RegionFactory $regionFactory
      */
     public function __construct(
         Context $context,
-        ObjectManagerInterface $objectManager,
         \Meta\BusinessExtension\Logger\Logger $logger,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -108,10 +128,13 @@ class MagentoDataHelper extends AbstractHelper
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         ProductIdentifier $productIdentifier,
         CheckoutSession $checkoutSession,
-        CustomerSession $customerSession
+        CustomerSession $customerSession,
+        CategoryRepositoryInterface $categoryRepository,
+        PricingHelper $pricingHelper,
+        AddressFactory $addressFactory,
+        RegionFactory $regionFactory
     ) {
         parent::__construct($context);
-        $this->objectManager = $objectManager;
         $this->logger = $logger;
         $this->productFactory = $productFactory;
         $this->storeManager = $storeManager;
@@ -120,6 +143,10 @@ class MagentoDataHelper extends AbstractHelper
         $this->productIdentifier = $productIdentifier;
         $this->checkoutSession = $checkoutSession;
         $this->customerSession = $customerSession;
+        $this->categoryRepository = $categoryRepository;
+        $this->pricingHelper = $pricingHelper;
+        $this->addressFactory = $addressFactory;
+        $this->regionFactory = $regionFactory;
     }
 
     /**
@@ -188,9 +215,8 @@ class MagentoDataHelper extends AbstractHelper
         $categoryIds = $product->getCategoryIds();
         if (count($categoryIds) > 0) {
             $categoryNames = [];
-            $categoryModel = $this->objectManager->get(\Magento\Catalog\Model\Category::class);
             foreach ($categoryIds as $categoryId) {
-                $category = $categoryModel->load($categoryId);
+                $category = $this->categoryRepository->get($categoryId);
                 $categoryNames[] = $category->getName();
             }
             return addslashes(implode(',', $categoryNames));
@@ -226,8 +252,7 @@ class MagentoDataHelper extends AbstractHelper
     public function getValueForProduct($product)
     {
         $price = $product->getFinalPrice();
-        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
-        return $priceHelper->currency($price, false, false);
+        return $this->pricingHelper->currency($price, false, false);
     }
 
     /**
@@ -269,8 +294,7 @@ class MagentoDataHelper extends AbstractHelper
         }
         $subtotal = $this->getQuote()->getSubtotal();
         if ($subtotal) {
-            $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
-            return $priceHelper->currency($subtotal, false, false);
+            return $this->pricingHelper->currency($subtotal, false, false);
         } else {
             return null;
         }
@@ -305,13 +329,12 @@ class MagentoDataHelper extends AbstractHelper
         }
         $contents = [];
         $items = $this->getQuote()->getAllVisibleItems();
-        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contents[] = [
                 'id' => $this->getContentId($product),
                 'quantity' => $item->getQty(),
-                'item_price' => $priceHelper->currency($product->getFinalPrice(), false, false)
+                'item_price' => $this->pricingHelper->currency($product->getFinalPrice(), false, false)
             ];
         }
         return $contents;
@@ -347,8 +370,7 @@ class MagentoDataHelper extends AbstractHelper
         }
         $subtotal = $order->getSubTotal();
         if ($subtotal) {
-            $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
-            return $priceHelper->currency($subtotal, false, false);
+            return $this->pricingHelper->currency($subtotal, false, false);
         } else {
             return null;
         }
@@ -368,13 +390,12 @@ class MagentoDataHelper extends AbstractHelper
         }
         $contents = [];
         $items = $order->getAllVisibleItems();
-        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contents[] = [
                 'id' => $this->getContentId($product),
                 'quantity' => (int)$item->getQtyOrdered(),
-                'item_price' => $priceHelper->currency($product->getFinalPrice(), false, false)
+                'item_price' => $this->pricingHelper->currency($product->getFinalPrice(), false, false)
             ];
         }
         return $contents;
@@ -417,9 +438,7 @@ class MagentoDataHelper extends AbstractHelper
     public function getCustomerAddress($customer)
     {
         $customerAddressId = $customer->getDefaultBilling();
-        $address = $this->objectManager->get(\Magento\Customer\Model\Address::class);
-        $address->load($customerAddressId);
-        return $address;
+        return $this->addressFactory->create()->load($customerAddressId);
     }
 
     /**
@@ -429,8 +448,7 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function getRegionCodeForAddress($address)
     {
-        $region = $this->objectManager->get(\Magento\Directory\Model\Region::class)
-            ->load($address->getRegionId());
+        $region = $this->regionFactory->create()->load($address->getRegionId());
         if ($region) {
             return $region->getCode();
         } else {
