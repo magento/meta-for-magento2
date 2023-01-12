@@ -126,7 +126,6 @@ class MagentoDataHelper extends AbstractHelper
         RegionFactory $regionFactory
     ) {
         parent::__construct($context);
-
         $this->storeManager = $storeManager;
         $this->customerMetadata = $customerMetadata;
         $this->productRepository = $productRepository;
@@ -211,6 +210,7 @@ class MagentoDataHelper extends AbstractHelper
                 } catch (NoSuchEntityException $e) {
                     continue;
                 }
+
                 $categoryNames[] = $category->getName();
             }
             return addslashes(implode(',', $categoryNames));
