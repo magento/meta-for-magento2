@@ -263,19 +263,6 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $catalogId
-     * @return array
-     * @throws GuzzleException
-     */
-    public function getOfferFeeds($catalogId)
-    {
-        $catalogFeeds = $this->getCatalogFeeds($catalogId);
-        return array_filter($catalogFeeds, function ($row) {
-            return $row['catalog_item_type'] === 'OFFER_ITEM';
-        });
-    }
-
-    /**
      * @param $feedId
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
