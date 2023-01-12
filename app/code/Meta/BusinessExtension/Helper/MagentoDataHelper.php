@@ -323,6 +323,7 @@ class MagentoDataHelper extends AbstractHelper
         }
         $contents = [];
         $items = $this->getQuote()->getAllVisibleItems();
+
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contents[] = [
