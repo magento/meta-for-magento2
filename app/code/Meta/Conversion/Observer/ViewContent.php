@@ -38,11 +38,6 @@ class ViewContent implements ObserverInterface
     protected $serverSideHelper;
 
     /**
-     * \Magento\Framework\Registry
-     */
-    protected $registry;
-
-    /**
      * @var MagentoDataHelper
      */
     protected $_magentoDataHelper;
@@ -50,11 +45,9 @@ class ViewContent implements ObserverInterface
     public function __construct(
         FBEHelper $fbeHelper,
         ServerSideHelper $serverSideHelper,
-        MagentoDataHelper $magentoDataHelper,
-        \Magento\Framework\Registry $registry
+        MagentoDataHelper $magentoDataHelper
     ) {
         $this->fbeHelper = $fbeHelper;
-        $this->registry = $registry;
         $this->serverSideHelper = $serverSideHelper;
         $this->_magentoDataHelper = $magentoDataHelper;
     }
@@ -66,7 +59,7 @@ class ViewContent implements ObserverInterface
             $customData = [
                 'currency' => $this->_magentoDataHelper->getCurrency()
             ];
-            $product = $this->registry->registry('current_product');
+            $product = $observer->getData('product');
             $contentId = $this->_magentoDataHelper->getContentId($product);
             if ($product && $product->getId()) {
                 $customData['value'] = $this->_magentoDataHelper->getValueForProduct($product);
