@@ -28,7 +28,7 @@ class ViewContent extends Common
     public function getContentIDs()
     {
         $contentIds = [];
-        $product = $this->registry->registry('current_product');
+        $product = $this->getCurrentProduct();
         if ($product && $product->getId()) {
             $contentIds[] = $this->getContentId($product);
         }
@@ -40,7 +40,7 @@ class ViewContent extends Common
      */
     public function getContentName()
     {
-        $product = $this->registry->registry('current_product');
+        $product = $this->getCurrentProduct();
         if ($product && $product->getId()) {
             return $this->escapeQuotes($product->getName());
         } else {
@@ -54,7 +54,7 @@ class ViewContent extends Common
     public function getContentType()
     {
         /** @var \Magento\Catalog\Model\Product $product */
-        $product = $this->registry->registry('current_product');
+        $product = $this->getCurrentProduct();
         return $this->magentoDataHelper->getContentType($product);
     }
 
@@ -63,7 +63,7 @@ class ViewContent extends Common
      */
     public function getContentCategory()
     {
-        $product = $this->registry->registry('current_product');
+        $product = $this->getCurrentProduct();
         $categoryIds = $product->getCategoryIds();
         if (count($categoryIds) > 0) {
             $categoryNames = [];
@@ -81,7 +81,7 @@ class ViewContent extends Common
 
     public function getValue()
     {
-        $product = $this->registry->registry('current_product');
+        $product = $this->getCurrentProduct();
         if ($product && $product->getId()) {
             $price = $product->getFinalPrice();
             $priceHelper = $this->fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
@@ -97,5 +97,14 @@ class ViewContent extends Common
     public function getEventToObserveName()
     {
         return 'facebook_businessextension_ssapi_view_content';
+    }
+
+    /**
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getCurrentProduct()
+    {
+        return $this->getLayout()->getBlock('product.info')->getProduct();
     }
 }
