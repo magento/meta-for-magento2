@@ -140,7 +140,7 @@ class ViewContent extends Common
      */
     public function getProductId()
     {
-        $product = $this->registry->registry('current_product');
+        $product = $this->getLayout()->getBlock('product.info')->getProduct();
         return $product->getId();
     }
 }
