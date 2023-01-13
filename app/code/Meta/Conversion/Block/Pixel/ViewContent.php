@@ -143,4 +143,12 @@ class ViewContent extends Common
         $product = $this->getLayout()->getBlock('product.info')->getProduct();
         return $product->getId();
     }
+
+    /**
+     * @param $eventId
+     */
+    public function trackServerEvent($eventId)
+    {
+        $this->_eventManager->dispatch($this->getEventToObserveName(), ['eventId' => $eventId, 'product' => $this->getCurrentProduct()]);
+    }
 }
