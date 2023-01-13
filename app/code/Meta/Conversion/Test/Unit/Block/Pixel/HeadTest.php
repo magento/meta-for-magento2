@@ -63,10 +63,10 @@ class HeadTest extends TestCase
 
         $this->context = $this->createMock(Context::class);
         $this->objectManager = $this->createMock(ObjectManagerInterface::class);
-        $this->registry = $this->createMock(Registry::class);
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
         $this->systemConfig = $this->createMock(Config::class);
+
         $this->aamFieldsExtractorHelper = $this->createMock(
             AAMFieldsExtractorHelper::class
         );
