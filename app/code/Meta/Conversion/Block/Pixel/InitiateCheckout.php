@@ -17,7 +17,6 @@
 
 namespace Meta\Conversion\Block\Pixel;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\MagentoDataHelper;
@@ -37,7 +36,6 @@ class InitiateCheckout extends Common
     /**
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
-     * @param Registry $registry
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
@@ -47,14 +45,13 @@ class InitiateCheckout extends Common
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
-        Registry $registry,
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
         PricingHelper $pricingHelper,
         array $data = []
     ) {
-        parent::__construct($context, $objectManager, $registry, $fbeHelper, $magentoDataHelper, $systemConfig, $data);
+        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $data);
         $this->pricingHelper = $pricingHelper;
     }
 
