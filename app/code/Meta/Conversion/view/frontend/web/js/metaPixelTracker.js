@@ -3,7 +3,7 @@ define([
 ], function ($) {
     'use strict';
 
-    return function (config, element) {
+    return function (config) {
 
         $.ajax({
             showLoader: true,
