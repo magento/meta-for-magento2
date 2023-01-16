@@ -1,9 +1,27 @@
 <?php
 /** @var \Meta\Conversion\Block\Pixel\ViewCategory $block */
+
+$trackerUrl = $block->getTrackerUrl();
+?>
+
+<!-- Added the new component below to track server events -->
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Meta_Conversion/js/metaPixelTracker" : {
+                "url" : "<?= $block->escapeJs($trackerUrl); ?>",
+                "payload": <?= json_encode([
+                    "eventName" => $block->getEventToObserveName(),
+                    "categoryId" => $block->getCategoryId()
+                ]) ?>
+            }
+        }
+    }
+</script>
+
+<?php
 if ($block->getFacebookPixelID()) {
-    $eventId = \Meta\Conversion\Helper\EventIdGenerator::guidv4();
-    $block->trackServerEvent($eventId);
-    ?>
+?>
     <script>
         fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
         fbq('trackCustom', 'ViewCategory', {
@@ -14,7 +32,7 @@ if ($block->getFacebookPixelID()) {
                 <?php } ?>
             }
             , {
-                eventID: "<?= $eventId ?>"
+                eventID: "<?= $block->getEventId() ?>"
             }
         );
     </script>

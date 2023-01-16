@@ -38,4 +38,13 @@ class ViewCategory extends Common
     {
         return 'facebook_businessextension_ssapi_view_category';
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCategoryId()
+    {
+        $category = $this->registry->registry('current_category');
+        return $category->getId();
+    }
 }
