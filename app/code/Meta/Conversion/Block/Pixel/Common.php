@@ -24,6 +24,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template\Context;
+use Meta\Conversion\Helper\EventIdGenerator;
 
 class Common extends \Magento\Framework\View\Element\Template
 {
@@ -189,5 +190,21 @@ class Common extends \Magento\Framework\View\Element\Template
     public function getContentId(Product $product)
     {
         return $this->magentoDataHelper->getContentId($product);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTrackerUrl(): string
+    {
+        return $this->getUrl('fbe/pixel/tracker');
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventId(): string
+    {
+        return EventIdGenerator::guidv4();
     }
 }
