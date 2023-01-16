@@ -49,8 +49,9 @@ class Fbaamsettings extends AbstractAjax
             'settings' => null,
         ];
         $pixelId = $this->getRequest()->getParam('pixelId');
+        $storeId = $this->getRequest()->getParam('storeId');
         if ($pixelId) {
-            $settingsAsString = $this->fbeHelper->fetchAndSaveAAMSettings($pixelId);
+            $settingsAsString = $this->_fbeHelper->fetchAndSaveAAMSettings($pixelId, $storeId);
             if ($settingsAsString) {
                 $response['success'] = true;
                 $response['settings'] = $settingsAsString;

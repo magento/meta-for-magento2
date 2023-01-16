@@ -224,7 +224,7 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isActiveExtension($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function isActiveExtension($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
     }
@@ -236,7 +236,7 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isFBEInstalled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function isFBEInstalled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, $scopeId, $scope);
     }
@@ -259,8 +259,7 @@ class Config
      */
     public function getStoreId()
     {
-        $storeId = $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_STORE);
-        return $storeId >= 0 ? $storeId : $this->storeManager->getStore()->getId();
+        return $this->storeManager->getStore()->getId();
     }
 
     /**
@@ -374,7 +373,7 @@ class Config
      * @param int $scope
      * @return mixed
      */
-    public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         $address = [];
 
@@ -531,7 +530,7 @@ class Config
      * @param string $scope
      * @return mixed
      */
-    public function getAccessToken($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function getAccessToken($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $scopeId, $scope);
     }
@@ -611,7 +610,7 @@ class Config
      * @param string $scope
      * @return mixed
      */
-    public function getCatalogId($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function getCatalogId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $scopeId, $scope);
     }
@@ -698,7 +697,7 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isActiveDailyProductFeed($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function isActiveDailyProductFeed($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED, $scopeId, $scope);
     }
@@ -710,7 +709,7 @@ class Config
      * @param string $scope
      * @return mixed
      */
-    public function getFeedUploadMethod($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function getFeedUploadMethod($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_FEED_UPLOAD_METHOD, $scopeId, $scope);
     }
@@ -722,7 +721,7 @@ class Config
      * @param string $scope
      * @return mixed
      */
-    public function getFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function getFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $scopeId, $scope);
     }
@@ -734,7 +733,7 @@ class Config
      * @param string $scope
      * @return mixed
      */
-    public function getOffersFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
+    public function getOffersFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OFFERS_FEED_ID, $scopeId, $scope);
     }

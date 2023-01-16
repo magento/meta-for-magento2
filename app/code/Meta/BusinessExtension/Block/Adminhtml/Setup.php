@@ -21,6 +21,7 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Template;
+use Magento\Store\Api\StoreRepositoryInterface;
 
 /**
  * @api
@@ -38,20 +39,28 @@ class Setup extends Template
     private $systemConfig;
 
     /**
+     * @var StoreRepositoryInterface
+     */
+    public $storeRepo;
+
+    /**
      * @param Context $context
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
+     * @param StoreRepositoryInterface $storeRepo
      * @param array $data
      */
     public function __construct(
         Context $context,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
+        StoreRepositoryInterface $storeRepo,
         array $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
         $this->systemConfig = $systemConfig;
+        $this->storeRepo = $storeRepo;
     }
 
     /**
@@ -87,20 +96,22 @@ class Setup extends Template
     }
 
     /**
+     * @param int $storeId
      * @return string|null
      */
-    public function fetchPixelId()
+    public function fetchPixelId($storeId)
     {
-        return $this->systemConfig->getPixelId();
+        return $this->systemConfig->getPixelId($storeId);
     }
 
     /**
+     * @param int $storeId
      * @return string|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getExternalBusinessId()
+    public function getExternalBusinessId($storeId)
     {
-        return $this->fbeHelper->getFBEExternalBusinessId();
+        return $this->fbeHelper->getFBEExternalBusinessId($storeId);
     }
 
     /**
@@ -129,11 +140,12 @@ class Setup extends Template
     }
 
     /**
+     * @param int $storeId
      * @return string
      */
-    public function isFBEInstalled()
+    public function isFBEInstalled($storeId)
     {
-        return $this->systemConfig->isFBEInstalled() ? 'true' : 'false';
+        return $this->systemConfig->isFBEInstalled($storeId) ? 'true' : 'false';
     }
 
     /**
@@ -142,5 +154,13 @@ class Setup extends Template
     public function getAppId()
     {
         return $this->systemConfig->getAppId();
+    }
+
+    /**
+     * @return \Magento\Store\Api\Data\StoreInterface[]
+     */
+    public function getStores()
+    {
+        return $this->storeRepo->getList();
     }
 }

@@ -64,14 +64,15 @@ class PersistConfiguration extends AbstractAjax
     public function executeForJson()
     {
         try {
+            $storeId = $this->getRequest()->getParam('storeId');
             $accessToken = $this->getRequest()->getParam('accessToken');
             $externalBusinessId = $this->getRequest()->getParam('externalBusinessId');
             $catalogId = $this->getRequest()->getParam('catalogId');
             $pageId = $this->getRequest()->getParam('pageId');
 
-            $this->saveExternalBusinessId($externalBusinessId)
-                ->saveCatalogId($catalogId)
-                ->completeOnsiteOnboarding($accessToken, $pageId);
+            $this->saveExternalBusinessId($externalBusinessId, $storeId)
+                ->saveCatalogId($catalogId, $storeId)
+                ->completeOnsiteOnboarding($accessToken, $pageId, $storeId);
 
             $response['success'] = true;
             $response['message'] = 'Configuration successfully saved';
@@ -86,26 +87,28 @@ class PersistConfiguration extends AbstractAjax
 
     /**
      * @param $catalogId
+     * @param $storeId
      * @return $this
      */
-    private function saveCatalogId($catalogId)
+    public function saveCatalogId($catalogId, $storeId)
     {
         if ($catalogId) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId);
-            $this->fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId, $storeId);
+            $this->_fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
         }
         return $this;
     }
 
     /**
      * @param $externalBusinessId
+     * @param $storeId
      * @return $this
      */
-    private function saveExternalBusinessId($externalBusinessId)
+    public function saveExternalBusinessId($externalBusinessId, $storeId)
     {
         if ($externalBusinessId) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId);
-            $this->fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId, $storeId);
+            $this->_fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
         }
         return $this;
     }
@@ -113,11 +116,13 @@ class PersistConfiguration extends AbstractAjax
     /**
      * @param $accessToken
      * @param $pageId
+     * @param $storeId
      * @return $this
      * @throws LocalizedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function completeOnsiteOnboarding($accessToken, $pageId)
+
+    public function completeOnsiteOnboarding($accessToken, $pageId, $storeId)
     {
         if (!$accessToken) {
             $this->fbeHelper->log('No access token available, skipping onboarding to onsite checkout');
@@ -130,8 +135,8 @@ class PersistConfiguration extends AbstractAjax
         }
 
         // save page ID
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId);
-        $this->fbeHelper->log('Page ID saved on instance --- '. $pageId);
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId, $storeId);
+        $this->_fbeHelper->log('Page ID saved on instance --- '. $pageId);
 
         // retrieve page access token
         $pageAccessToken = $this->graphApiAdapter->getPageAccessToken($accessToken, $pageId);
@@ -139,7 +144,7 @@ class PersistConfiguration extends AbstractAjax
             throw new LocalizedException(__('Cannot retrieve page access token'));
         }
         // save page access token
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN, $pageAccessToken);
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN, $pageAccessToken, $storeId);
 
         // retrieve commerce account ID
         $commerceAccountId = $this->graphApiAdapter->getPageMerchantSettingsId($pageAccessToken, $pageId);
@@ -149,7 +154,7 @@ class PersistConfiguration extends AbstractAjax
         }
 
         // save commerce account ID
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId);
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId, $storeId);
 
         // enable API integration
         $this->graphApiAdapter->associateMerchantSettingsWithApp($commerceAccountId, $accessToken);

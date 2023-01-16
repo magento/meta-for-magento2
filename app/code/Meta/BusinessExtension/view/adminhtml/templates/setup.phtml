@@ -1,4 +1,19 @@
 <?php /** @var Meta\BusinessExtension\Block\Adminhtml\Setup $block */ ?>
+<select id="store">
+    <option value=""><?= $block->escapeHtml(__('Select store')) ?></option>
+    <?php foreach($block->getStores() as $key => $store): ?>
+        <?php if ($key == 'admin'): ?>
+            <?php continue; ?>
+        <?php endif; ?>
+        <option
+            value="<?= $block->escapeHtmlAttr($store['store_id']) ?>"
+            data-installed="<?= $block->isFBEInstalled($store['store_id']) ?>"
+            data-pixel-id="<?= $block->fetchPixelId($store['store_id']) ?>"
+            data-system-user-name="<?= $block->getExternalBusinessId($store['store_id']) ?>"
+            data-external-business-id="<?= $block->getExternalBusinessId($store['store_id']) ?>"
+        ><?= $block->escapeHtml(__($store['name'])) ?></option>
+    <?php endforeach; ?>
+</select>
 <div>
     <div id="fbe-iframe">
     </div>
@@ -6,19 +21,15 @@
 
 <script>
     window.facebookBusinessExtensionConfig = {
-        pixelId: '<?= $block->fetchPixelId() ?>'
-        , popupOrigin: "https://business.facebook.com"
+        popupOrigin: "https://business.facebook.com"
         , setPixelId: '<?= $block->getPixelAjaxRoute() ?>'
         , setAccessToken: '<?= $block->getAccessTokenAjaxRoute() ?>'
         , setProfilesData: '<?= $block->getProfilesAjaxRoute()?>'
         , saveConfig: '<?= $block->fetchConfigurationAjaxRoute() ?>'
-        , externalBusinessId: '<?= $block->getExternalBusinessId()?>'
         , fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?"
         , deleteConfigKeys: '<?= $block->getDeleteAssetIdsAjaxRoute() ?>'
         , appId: '<?= $block->getAppId() ?>'
         , timeZone: 'America/Los_Angeles'
-        , installed: '<?= $block->isFBEInstalled() ?>'
-        , systemUserName: '<?= $block->getExternalBusinessId() ?>' + '_system_user'
         , businessVertical: 'ECOMMERCE'
         , channel: 'DEFAULT'
         , currency: '<?= $block->getCurrencyCode() ?>'

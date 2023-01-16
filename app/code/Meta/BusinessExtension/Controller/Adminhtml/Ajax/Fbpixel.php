@@ -20,6 +20,7 @@ namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Magento\Store\Model\ScopeInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Fbpixel extends AbstractAjax
@@ -54,15 +55,17 @@ class Fbpixel extends AbstractAjax
     // Yet to verify how to use the pii info, hence have commented the part of code.
     public function executeForJson()
     {
-        $oldPixelId = $this->systemConfig->getPixelId();
+        $storeId = $this->getRequest()->getParam('storeId');
+        $oldPixelId = $this->systemConfig->getPixelId($storeId, ScopeInterface::SCOPE_STORES);
         $response = [
             'success' => false,
             'pixelId' => $oldPixelId
         ];
         $pixelId = $this->getRequest()->getParam('pixelId');
-        if ($pixelId && $this->fbeHelper->isValidFBID($pixelId)) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID, $pixelId);
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, true);
+
+        if ($pixelId && $this->_fbeHelper->isValidFBID($pixelId)) {
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID, $pixelId, $storeId);
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, true, $storeId);
             $response['success'] = true;
             $response['pixelId'] = $pixelId;
             if ($oldPixelId && $oldPixelId != $pixelId) {

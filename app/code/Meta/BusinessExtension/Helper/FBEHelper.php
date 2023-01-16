@@ -221,11 +221,12 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * @param int $storeId
      * @return mixed|string|null
      */
-    public function getFBEExternalBusinessId()
+    public function getFBEExternalBusinessId($storeId)
     {
-        $storedExternalId = $this->systemConfig->getExternalBusinessId();
+        $storedExternalId = $this->systemConfig->getExternalBusinessId($storeId);
         if ($storedExternalId) {
             return $storedExternalId;
         }
@@ -464,7 +465,7 @@ class FBEHelper extends AbstractHelper
      * @param $settings
      * @return false|string
      */
-    private function saveAAMSettings($settings)
+    private function saveAAMSettings($settings, $storeId)
     {
         $settingsAsArray = [
             'enableAutomaticMatching' => $settings->getEnableAutomaticMatching(),
@@ -472,7 +473,7 @@ class FBEHelper extends AbstractHelper
             'pixelId' => $settings->getPixelId(),
         ];
         $settingsAsString = json_encode($settingsAsArray);
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS, $settingsAsString);
+        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS, $settingsAsString, $storeId);
         return $settingsAsString;
     }
 
@@ -480,11 +481,11 @@ class FBEHelper extends AbstractHelper
      * @param $pixelId
      * @return false|string|null
      */
-    public function fetchAndSaveAAMSettings($pixelId)
+    public function fetchAndSaveAAMSettings($pixelId, $storeId)
     {
         $settings = $this->fetchAAMSettings($pixelId);
         if ($settings) {
-            return $this->saveAAMSettings($settings);
+            return $this->saveAAMSettings($settings, $storeId);
         }
         return null;
     }
