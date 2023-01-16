@@ -25,7 +25,6 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\Conversion\Helper\EventIdGenerator;
 use Magento\Framework\Escaper;
-
 class Common extends \Magento\Framework\View\Element\Template
 {
     /**
