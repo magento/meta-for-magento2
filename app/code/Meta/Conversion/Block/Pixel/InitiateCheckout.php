@@ -73,15 +73,7 @@ class InitiateCheckout extends Common
 
     public function getValue()
     {
-        if (!$this->magentoDataHelper->getQuote()) {
-            return null;
-        }
-        $subtotal = $this->magentoDataHelper->getQuote()->getSubtotal();
-        if ($subtotal) {
-            return $this->pricingHelper->currency($subtotal, false, false);
-        } else {
-            return null;
-        }
+        return $this->magentoDataHelper->getCartTotal();
     }
 
     /**
@@ -109,15 +101,7 @@ class InitiateCheckout extends Common
      */
     public function getNumItems()
     {
-        if (!$this->magentoDataHelper->getQuote()) {
-            return null;
-        }
-        $numItems = 0;
-        $items = $this->magentoDataHelper->getQuote()->getAllVisibleItems();
-        foreach ($items as $item) {
-            $numItems += $item->getQty();
-        }
-        return $numItems;
+        return $this->magentoDataHelper->getCartNumItems();
     }
 
     /**
