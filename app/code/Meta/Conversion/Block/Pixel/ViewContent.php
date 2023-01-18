@@ -134,4 +134,13 @@ class ViewContent extends Common
     {
         return $this->getLayout()->getBlock('product.info')->getProduct();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getProductId()
+    {
+        $product = $this->registry->registry('current_product');
+        return $product->getId();
+    }
 }
