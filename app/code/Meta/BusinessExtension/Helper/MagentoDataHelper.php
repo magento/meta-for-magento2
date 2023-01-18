@@ -31,6 +31,8 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Customer\Model\AddressFactory;
 use Magento\Directory\Model\RegionFactory;
+use Magento\Customer\Model\Address;
+use Magento\Customer\Model\Customer;
 
 /**
  * Helper class to get data using Magento Platform methods.
@@ -154,7 +156,7 @@ class MagentoDataHelper extends AbstractHelper
      *
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->customerSession->getCustomer()->getEmail();
     }
@@ -164,7 +166,7 @@ class MagentoDataHelper extends AbstractHelper
      *
      * @return string
      */
-    public function getFirstName()
+    public function getFirstName(): string
     {
         return $this->customerSession->getCustomer()->getFirstname();
     }
@@ -174,7 +176,7 @@ class MagentoDataHelper extends AbstractHelper
      *
      * @return string
      */
-    public function getLastName()
+    public function getLastName(): string
     {
         return $this->customerSession->getCustomer()->getLastname();
     }
@@ -184,7 +186,7 @@ class MagentoDataHelper extends AbstractHelper
      *
      * @return string
      */
-    public function getDateOfBirth()
+    public function getDateOfBirth(): string
     {
         return $this->customerSession->getCustomer()->getDob();
     }
@@ -208,9 +210,9 @@ class MagentoDataHelper extends AbstractHelper
      * Return the categories for the given product
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @return string
+     * @return string|null
      */
-    public function getCategoriesForProduct($product)
+    public function getCategoriesForProduct($product): ?string
     {
         $categoryIds = $product->getCategoryIds();
         if (count($categoryIds) > 0) {
@@ -227,9 +229,9 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * @param Product $product
-     * @return bool|int|string
+     * @return string
      */
-    public function getContentType(Product $product)
+    public function getContentType(Product $product): string
     {
         return $product->getTypeId() == Configurable::TYPE_CODE ? 'product_group' : 'product';
     }
@@ -247,9 +249,9 @@ class MagentoDataHelper extends AbstractHelper
      * Return the price for the given product
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @return int
+     * @return float
      */
-    public function getValueForProduct($product)
+    public function getValueForProduct($product): float
     {
         $price = $product->getFinalPrice();
         return $this->pricingHelper->currency($price, false, false);
@@ -261,16 +263,16 @@ class MagentoDataHelper extends AbstractHelper
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getCurrency()
+    public function getCurrency(): string
     {
         return $this->storeManager->getStore()->getCurrentCurrency()->getCode();
     }
 
     /**
      * Return the ids of the items added to the cart
-     * @return string[]
+     * @return array|null
      */
-    public function getCartContentIds()
+    public function getCartContentIds(): ?array
     {
         $contentIds = [];
         if (!$this->getQuote()) {
@@ -285,9 +287,9 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the cart total value
-     * @return int
+     * @return float|null
      */
-    public function getCartTotal()
+    public function getCartTotal(): ?float
     {
         if (!$this->getQuote()) {
             return null;
@@ -302,7 +304,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the amount of items in the cart
-     * @return int
+     * @return int|float|null
      */
     public function getCartNumItems()
     {
@@ -320,9 +322,9 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return information about the cart items
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
-     * @return array
+     * @return array|null
      */
-    public function getCartContents()
+    public function getCartContents(): ?array
     {
         if (!$this->getQuote()) {
             return null;
@@ -342,9 +344,9 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the ids of the items in the last order
-     * @return string[]
+     * @return array|null
      */
-    public function getOrderContentIds()
+    public function getOrderContentIds(): ?array
     {
         $order = $this->checkoutSession->getLastRealOrder();
         if (!$order) {
@@ -360,7 +362,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the last order total value
-     * @return string
+     * @return float|string|null
      */
     public function getOrderTotal()
     {
@@ -380,9 +382,9 @@ class MagentoDataHelper extends AbstractHelper
      * Return information about the last order items
      *
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
-     * @return array
+     * @return array|null
      */
-    public function getOrderContents()
+    public function getOrderContents(): ?array
     {
         $order = $this->checkoutSession->getLastRealOrder();
         if (!$order) {
@@ -404,7 +406,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the id of the last order
      *
-     * @return int
+     * @return mixed|null
      */
     public function getOrderId()
     {
@@ -419,9 +421,9 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return an object representing the current logged in customer
      *
-     * @return \Magento\Customer\Model\Customer
+     * @return Customer|null
      */
-    public function getCurrentCustomer()
+    public function getCurrentCustomer(): ?Customer
     {
         if (!$this->customerSession->isLoggedIn()) {
             return null;
@@ -433,9 +435,9 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the address of a given customer
      *
-     * @return \Magento\Customer\Model\Address
+     * @return Address
      */
-    public function getCustomerAddress($customer)
+    public function getCustomerAddress($customer): Address
     {
         $customerAddressId = $customer->getDefaultBilling();
         return $this->addressFactory->create()->load($customerAddressId);
@@ -444,9 +446,9 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the region's code for the given address
      *
-     * @return array
+     * @return string|null
      */
-    public function getRegionCodeForAddress($address)
+    public function getRegionCodeForAddress($address): ?string
     {
         $region = $this->regionFactory->create()->load($address->getRegionId());
         if ($region) {
@@ -459,9 +461,9 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the string representation of the customer gender
      *
-     * @return string
+     * @return string|null
      */
-    public function getGenderAsString($customer)
+    public function getGenderAsString($customer): ?string
     {
         if ($customer->getGender()) {
             return $customer->getResource()->getAttribute('gender')->getSource()->getOptionText($customer->getGender());
@@ -472,11 +474,11 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return all of the match keys that can be extracted from order information
      *
-     * @return string[]
+     * @return array|null
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getUserDataFromOrder()
+    public function getUserDataFromOrder(): ?array
     {
         $order = $this->checkoutSession->getLastRealOrder();
         if (!$order) {
@@ -514,11 +516,11 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return all of the match keys that can be extracted from user session
      *
-     * @return string[]
+     * @return array|null
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getUserDataFromSession()
+    public function getUserDataFromSession(): ?array
     {
         $customer = $this->getCurrentCustomer();
         if (!$customer) {
@@ -553,7 +555,8 @@ class MagentoDataHelper extends AbstractHelper
         return array_filter($userData);
     }
 
-    private function hashValue($string){
+    private function hashValue($string): string
+    {
         return hash('sha256', strtolower($string ?? ''));
     }
 
@@ -562,7 +565,7 @@ class MagentoDataHelper extends AbstractHelper
      *
      * @return Quote
      */
-    public function getQuote()
+    public function getQuote(): Quote
     {
         if (null === $this->quote) {
             $this->quote = $this->checkoutSession->getQuote();
