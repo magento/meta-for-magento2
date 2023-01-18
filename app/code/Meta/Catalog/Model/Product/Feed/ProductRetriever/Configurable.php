@@ -117,6 +117,9 @@ class Configurable implements ProductRetrieverInterface
                 }
                 $childProduct->setConfigurableSettings($configurableSettings);
                 $childProduct->setParentProductUrl($product->getProductUrl());
+                if (!$childProduct->getDescription()) {
+                    $childProduct->setDescription($product->getDescription());
+                }
                 $simpleProducts[] = $childProduct;
             }
         }
