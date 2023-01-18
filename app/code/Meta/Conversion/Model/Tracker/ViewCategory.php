@@ -25,7 +25,7 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 class ViewCategory implements TrackerInterface
 {
 
-    const EVENT_TYPE = "ViewContent";
+    const EVENT_TYPE = "ViewCategory";
 
     public function __construct(
         private readonly CategoryRepositoryInterface $categoryRepository
