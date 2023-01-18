@@ -218,7 +218,11 @@ class MagentoDataHelper extends AbstractHelper
         if (count($categoryIds) > 0) {
             $categoryNames = [];
             foreach ($categoryIds as $categoryId) {
-                $category = $this->categoryRepository->get($categoryId);
+                try {
+                    $category = $this->categoryRepository->get($categoryId);
+                } catch (NoSuchEntityException $e) {
+                    return null;
+                }
                 $categoryNames[] = $category->getName();
             }
             return addslashes(implode(',', $categoryNames));
