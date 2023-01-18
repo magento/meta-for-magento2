@@ -119,6 +119,7 @@ class Refund implements ObserverInterface
                         'item_refund_quantity' => $item->getQty(),
                     ];
                 } else {
+                    //TODO: refunds by qty for items with discount is unavailable atm; once it is available the else statement should be removed
                     $refundItems[] = [
                         'retailer_id' => $this->getRetailerId($item),
                         'item_refund_amount' => [
