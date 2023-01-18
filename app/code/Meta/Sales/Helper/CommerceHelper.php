@@ -308,9 +308,9 @@ class CommerceHelper extends AbstractHelper
         $rowTotal = $pricePerUnit * $quantity;
         $promotionDetails = $item['promotion_details']['data'] ?? null;
         $discountAmount = 0;
-        if($promotionDetails) {
+        if ($promotionDetails) {
             foreach ($promotionDetails as $promotionDetail) {
-                if($promotionDetail['target_granularity'] === 'order_level') {
+                if ($promotionDetail['target_granularity'] === 'order_level') {
                     $discountAmount += $promotionDetail['applied_amount']['amount'];
                 }
             }

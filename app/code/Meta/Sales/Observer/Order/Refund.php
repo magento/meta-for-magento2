@@ -113,10 +113,20 @@ class Refund implements ObserverInterface
         foreach ($creditmemo->getItems() as $item) {
             /** @var CreditmemoItem $item */
             if ($item->getQty() > 0) {
-                $refundItems[] = [
-                    'retailer_id' => $this->getRetailerId($item),
-                    'item_refund_quantity' => $item->getQty(),
-                ];
+                if ($item->getDiscountAmount() == 0) {
+                    $refundItems[] = [
+                        'retailer_id' => $this->getRetailerId($item),
+                        'item_refund_quantity' => $item->getQty(),
+                    ];
+                } else {
+                    $refundItems[] = [
+                        'retailer_id' => $this->getRetailerId($item),
+                        'item_refund_amount' => [
+                            'amount' => $item->getRowTotal() - $item->getDiscountAmount(),
+                            'currency' => $payment->getOrder()->getOrderCurrencyCode()
+                        ],
+                    ];
+                }
             }
         }
 
