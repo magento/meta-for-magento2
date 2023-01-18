@@ -210,7 +210,6 @@ class MagentoDataHelper extends AbstractHelper
                 } catch (NoSuchEntityException $e) {
                     continue;
                 }
-
                 $categoryNames[] = $category->getName();
             }
             return addslashes(implode(',', $categoryNames));
@@ -296,7 +295,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the amount of items in the cart
-     * 
+     *
      * @return int
      */
     public function getCartNumItems(): int
