@@ -36,7 +36,7 @@ class Tracker extends Action implements HttpPostActionInterface
                 $eventType = $this->pixelEvents[$eventName]->getEventType();
                 $eventId = EventIdGenerator::guidv4();
 
-                $event = ServerEventFactory::createEvent($eventType, $payload, $eventId);
+                $event = ServerEventFactory::createEvent($eventType, array_filter($payload), $eventId);
                 $this->serverSideHelper->sendEvent($event);
             }
         } catch (\Exception $ex) {

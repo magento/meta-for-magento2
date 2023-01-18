@@ -5,6 +5,7 @@
         <arguments>
             <argument name="pixelEvents" xsi:type="array">
                 <item name = "facebook_businessextension_ssapi_view_category" xsi:type="object">Meta\Conversion\Model\Tracker\ViewCategory</item>
+                <item name = "facebook_businessextension_ssapi_view_content" xsi:type="object">Meta\Conversion\Model\Tracker\ViewContent</item>
                 <item name = "facebook_businessextension_ssapi_search" xsi:type="object">Meta\Conversion\Model\Tracker\Search</item>
             </argument>
         </arguments>
