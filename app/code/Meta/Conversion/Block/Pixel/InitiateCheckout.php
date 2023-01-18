@@ -66,7 +66,6 @@ class InitiateCheckout extends Common
         $contentIds = [];
         $items = $this->magentoDataHelper->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
-            /** @var \Magento\Quote\Model\Quote\Item $item */
             $contentIds[] = $this->getContentId($item->getProduct());
         }
         return $this->arrayToCommaSeparatedStringValues($contentIds);
