@@ -210,9 +210,9 @@ class MagentoDataHelper extends AbstractHelper
      * Return the categories for the given product
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @return string|null
+     * @return string
      */
-    public function getCategoriesForProduct($product): ?string
+    public function getCategoriesForProduct($product): string
     {
         $categoryIds = $product->getCategoryIds();
         if (count($categoryIds) > 0) {
@@ -221,13 +221,13 @@ class MagentoDataHelper extends AbstractHelper
                 try {
                     $category = $this->categoryRepository->get($categoryId);
                 } catch (NoSuchEntityException $e) {
-                    return null;
+                    return '';
                 }
                 $categoryNames[] = $category->getName();
             }
             return addslashes(implode(',', $categoryNames));
         } else {
-            return null;
+            return '';
         }
     }
 
@@ -274,13 +274,13 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the ids of the items added to the cart
-     * @return array|null
+     * @return array
      */
-    public function getCartContentIds(): ?array
+    public function getCartContentIds(): array
     {
         $contentIds = [];
         if (!$this->getQuote()) {
-            return null;
+            return [];
         }
         $items = $this->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
@@ -308,14 +308,14 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the amount of items in the cart
-     * @return int|float|null
+     * @return int
      */
-    public function getCartNumItems()
+    public function getCartNumItems(): int
     {
-        if (!$this->getQuote()) {
-            return null;
-        }
         $numItems = 0;
+        if (!$this->getQuote()) {
+            return $numItems;
+        }
         $items = $this->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
             $numItems += $item->getQty();
@@ -326,12 +326,12 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return information about the cart items
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
-     * @return array|null
+     * @return array
      */
-    public function getCartContents(): ?array
+    public function getCartContents(): array
     {
         if (!$this->getQuote()) {
-            return null;
+            return [];
         }
         $contents = [];
         $items = $this->getQuote()->getAllVisibleItems();
@@ -348,13 +348,13 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the ids of the items in the last order
-     * @return array|null
+     * @return array
      */
-    public function getOrderContentIds(): ?array
+    public function getOrderContentIds(): array
     {
         $order = $this->checkoutSession->getLastRealOrder();
         if (!$order) {
-            return null;
+            return [];
         }
         $contentIds = [];
         $items = $order->getAllVisibleItems();
@@ -366,7 +366,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the last order total value
-     * @return float|string|null
+     * @return float|null
      */
     public function getOrderTotal()
     {
@@ -386,13 +386,13 @@ class MagentoDataHelper extends AbstractHelper
      * Return information about the last order items
      *
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
-     * @return array|null
+     * @return array
      */
-    public function getOrderContents(): ?array
+    public function getOrderContents(): array
     {
         $order = $this->checkoutSession->getLastRealOrder();
         if (!$order) {
-            return null;
+            return [];
         }
         $contents = [];
         $items = $order->getAllVisibleItems();
@@ -478,15 +478,15 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return all of the match keys that can be extracted from order information
      *
-     * @return array|null
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getUserDataFromOrder(): ?array
+    public function getUserDataFromOrder(): array
     {
         $order = $this->checkoutSession->getLastRealOrder();
         if (!$order) {
-            return null;
+            return [];
         }
 
         $userData = [];
@@ -520,15 +520,15 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return all of the match keys that can be extracted from user session
      *
-     * @return array|null
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getUserDataFromSession(): ?array
+    public function getUserDataFromSession(): array
     {
         $customer = $this->getCurrentCustomer();
         if (!$customer) {
-            return null;
+            return [];
         }
 
         $userData = [];
