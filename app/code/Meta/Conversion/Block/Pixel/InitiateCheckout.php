@@ -16,6 +16,7 @@
  */
 
 namespace Meta\Conversion\Block\Pixel;
+
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\BusinessExtension\Helper\FBEHelper;
