@@ -4,43 +4,82 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Controller\Pixel;
 
-use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\RequestInterface;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Helper\ServerEventFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\EventIdGenerator;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Controller\Result\Json;
 
-class Tracker extends Action implements HttpPostActionInterface
+class Tracker implements HttpPostActionInterface
 {
 
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var ServerSideHelper
+     */
+    private $serverSideHelper;
+
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @var array|mixed
+     */
+    private $pixelEvents;
+
+    /**
+     * @param RequestInterface $request
+     * @param ServerSideHelper $serverSideHelper
+     * @param FBEHelper $fbeHelper
+     * @param $pixelEvents
+     */
     public function __construct(
-        public Context $context,
-        private ServerSideHelper $serverSideHelper,
-        private FBEHelper $fbeHelper,
-        private $pixelEvents = []
+        RequestInterface $request,
+        ServerSideHelper $serverSideHelper,
+        FBEHelper $fbeHelper,
+        JsonFactory $jsonFactory,
+        array $pixelEvents = []
     ){
-        parent::__construct($context);
+        $this->request = $request;
+        $this->serverSideHelper = $serverSideHelper;
+        $this->fbeHelper = $fbeHelper;
+        $this->jsonFactory = $jsonFactory;
+        $this->pixelEvents = $pixelEvents;
     }
 
-    public function execute()
+    public function execute(): Json
     {
+        $response = [];
         try {
-            $params = $this->_request->getParams();
+            $params = $this->request->getParams();
             $eventName = $params['eventName'];
 
             if ($eventName) {
-
                 $payload = $this->pixelEvents[$eventName]->getPayload($params);
-                $eventType = $this->pixelEvents[$eventName]->getEventType();
-                $eventId = EventIdGenerator::guidv4();
+                if (count($payload)) {
+                    $eventType = $this->pixelEvents[$eventName]->getEventType();
+                    $eventId = EventIdGenerator::guidv4();
 
-                $event = ServerEventFactory::createEvent($eventType, array_filter($payload), $eventId);
-                $this->serverSideHelper->sendEvent($event);
+                    $event = ServerEventFactory::createEvent($eventType, array_filter($payload), $eventId);
+                    $this->serverSideHelper->sendEvent($event);
+                    $response['success'] = true;
+                }
             }
         } catch (\Exception $ex) {
+            $response['success'] = false;
             $this->fbeHelper->log(json_encode($ex));
         }
+        $resultJson = $this->jsonFactory->create();
+        $resultJson->setData($response);
+        return $resultJson;
     }
 }
