@@ -25,10 +25,9 @@ class ViewCategory extends Common
     /**
      * @return string|null
      */
-    public function getCategory()
+    public function getCategoryName()
     {
-        $category = $this->registry->registry('current_category');
-        return $category ? $this->escapeQuotes($category->getName()) : null;
+        return $this->getLayout()->getBlock('category.description')->getCurrentCategory()->getName();
     }
 
     /**
@@ -44,7 +43,6 @@ class ViewCategory extends Common
      */
     public function getCategoryId()
     {
-        $category = $this->registry->registry('current_category');
-        return $category->getId();
+        return $this->getLayout()->getBlock('category.description')->getCurrentCategory()->getId();
     }
 }

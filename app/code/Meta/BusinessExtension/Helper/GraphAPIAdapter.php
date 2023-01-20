@@ -263,19 +263,6 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $catalogId
-     * @return array
-     * @throws GuzzleException
-     */
-    public function getOfferFeeds($catalogId)
-    {
-        $catalogFeeds = $this->getCatalogFeeds($catalogId);
-        return array_filter($catalogFeeds, function ($row) {
-            return $row['catalog_item_type'] === 'OFFER_ITEM';
-        });
-    }
-
-    /**
      * @param $feedId
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
@@ -389,7 +376,7 @@ class GraphAPIAdapter
             'selected_shipping_option',
             'shipping_address{first_name, last_name, street1, street2, city, postal_code, country}',
             'payments',
-            'promotion_details{applied_amount, coupon_code, target_granularity, sponsor}',
+            'promotion_details{applied_amount, coupon_code, target_granularity, sponsor, campaign_name}',
             'last_updated',
         ];
         $request = [
@@ -417,7 +404,8 @@ class GraphAPIAdapter
             'quantity',
             'price_per_unit',
             'tax_details',
-            'product_id'
+            'product_id',
+            'promotion_details'
         ];
         $request = [
             'access_token' => $this->accessToken,

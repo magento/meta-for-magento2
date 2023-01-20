@@ -59,7 +59,11 @@ class AAMFieldsExtractorHelper
     public function getNormalizedUserData($userDataArray = null)
     {
         if (!$userDataArray) {
-            $userDataArray = $this->magentoDataHelper->getUserDataFromSession();
+            try {
+                $userDataArray = $this->magentoDataHelper->getUserDataFromSession();
+            } catch (\Exception $e) {
+                $this->fbeHelper->log(json_encode($e));
+            }
         }
 
         $aamSettings = $this->fbeHelper->getAAMSettings();

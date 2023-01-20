@@ -53,6 +53,12 @@ class Builder
     const ATTR_PRODUCT_CATEGORY = 'google_product_category';
     const ATTR_UNIT_PRICE = 'unit_price';
 
+    const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
+        '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
+        '<table>', '<tbody>', '<tfoot>', '<thead>', '<td>', '<th>', '<tr>',
+        '<ul>', '<li>', '<ol>', '<dl>', '<dd>', '<dt>',
+        '<b>', '<u>', '<i>', '<em>', '<strong>', '<title>', '<small>', '<br>', '<p>', '<div>', '<sub>', '<sup>', '<pre>', '<q>', '<s>'];
+
     /**
      * @var FBEHelper
      */
@@ -289,6 +295,9 @@ class Builder
      */
     protected function trimAttribute($attrName, $attrValue)
     {
+        if (!$attrValue) {
+            return '';
+        }
         $attrValue = trim($attrValue);
         // Facebook Product attributes
         // ref: https://developers.facebook.com/docs/commerce-platform/catalog/fields
@@ -320,8 +329,14 @@ class Builder
                 break;
             case self::ATTR_DESCRIPTION:
                 if ($attrValue) {
-                    // description max size: 5000
-                    return mb_strlen($attrValue) > 5000 ? mb_substr($attrValue, 0, 5000) : $attrValue;
+                    // description max size: 9999
+                    return mb_strlen($attrValue) > 9999 ? mb_substr($attrValue, 0, 9999) : $attrValue;
+                }
+                break;
+            case self::ATTR_RICH_DESCRIPTION:
+                if ($attrValue) {
+                    // description max size: 9999
+                    return mb_strlen($attrValue) > 9999 ? '' : $attrValue;
                 }
                 break;
             case self::ATTR_PRODUCT_TYPE:
@@ -361,8 +376,21 @@ class Builder
         $description = $description ?: $productTitle;
         // description can't be all uppercase
         $description = $this->builderTools->htmlDecode($description);
-        $description = addslashes($this->builderTools->lowercaseIfAllCaps($description));
-        return $description;
+        return addslashes($this->builderTools->lowercaseIfAllCaps($description));
+    }
+
+    /**
+     * @param Product $product
+     * @return string
+     */
+    private function getRichDescription(Product $product)
+    {
+        $description = $product->getDescription();
+        if (!$description) {
+            $description = $product->getShortDescription();
+        }
+        return $this->trimAttribute(self::ATTR_RICH_DESCRIPTION,
+            strip_tags($description, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION));
     }
 
     /**
@@ -504,6 +532,7 @@ class Builder
             self::ATTR_ITEM_GROUP_ID => $this->getItemGroupId($product),
             self::ATTR_NAME => $productTitle,
             self::ATTR_DESCRIPTION => $this->getDescription($product),
+            self::ATTR_RICH_DESCRIPTION => $this->getRichDescription($product),
             self::ATTR_AVAILABILITY => $inventory->getAvailability(),
             self::ATTR_INVENTORY => $inventory->getInventory(),
             self::ATTR_BRAND => $this->getBrand($product),
@@ -537,6 +566,7 @@ class Builder
             self::ATTR_ITEM_GROUP_ID,
             self::ATTR_NAME,
             self::ATTR_DESCRIPTION,
+            self::ATTR_RICH_DESCRIPTION,
             self::ATTR_AVAILABILITY,
             self::ATTR_INVENTORY,
             self::ATTR_BRAND,

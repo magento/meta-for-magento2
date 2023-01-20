@@ -17,22 +17,53 @@
 
 namespace Meta\Conversion\Block\Pixel;
 
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\View\Element\Template\Context;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Framework\Pricing\Helper\Data as PricingHelper;
+
 /**
  * @api
  */
 class InitiateCheckout extends Common
 {
     /**
+     * @var PricingHelper
+     */
+    protected $pricingHelper;
+
+    /**
+     * @param Context $context
+     * @param ObjectManagerInterface $objectManager
+     * @param FBEHelper $fbeHelper
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param SystemConfig $systemConfig
+     * @param PricingHelper $pricingHelper
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        ObjectManagerInterface $objectManager,
+        FBEHelper $fbeHelper,
+        MagentoDataHelper $magentoDataHelper,
+        SystemConfig $systemConfig,
+        PricingHelper $pricingHelper,
+        array $data = []
+    ) {
+        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $data);
+        $this->pricingHelper = $pricingHelper;
+    }
+
+    /**
      * @return string
      */
     public function getContentIDs()
     {
         $contentIds = [];
-        /** @var \Magento\Checkout\Model\Cart $cart */
-        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
-        $items = $cart->getQuote()->getAllVisibleItems();
+        $items = $this->magentoDataHelper->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
-            /** @var \Magento\Quote\Model\Quote\Item $item */
             $contentIds[] = $this->getContentId($item->getProduct());
         }
         return $this->arrayToCommaSeparatedStringValues($contentIds);
@@ -40,17 +71,7 @@ class InitiateCheckout extends Common
 
     public function getValue()
     {
-        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
-        if (!$cart || !$cart->getQuote()) {
-            return null;
-        }
-        $subtotal = $cart->getQuote()->getSubtotal();
-        if ($subtotal) {
-            $priceHelper = $this->fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
-            return $priceHelper->currency($subtotal, false, false);
-        } else {
-            return null;
-        }
+        return $this->magentoDataHelper->getCartTotal();
     }
 
     /**
@@ -58,16 +79,14 @@ class InitiateCheckout extends Common
      */
     public function getContents()
     {
-        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
-        if (!$cart || !$cart->getQuote()) {
+        if (!$this->magentoDataHelper->getQuote()) {
             return '';
         }
         $contents = [];
-        $items = $cart->getQuote()->getAllVisibleItems();
-        $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+        $items = $this->magentoDataHelper->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
             $product = $item->getProduct();
-            $price = $priceHelper->currency($product->getFinalPrice(), false, false);
+            $price = $this->pricingHelper->currency($product->getFinalPrice(), false, false);
             $content = '{id:"' . $product->getId() . '",quantity:' . (int)$item->getQty()
                     . ',item_price:' . $price . "}";
             $contents[] = $content;
@@ -80,16 +99,7 @@ class InitiateCheckout extends Common
      */
     public function getNumItems()
     {
-        $cart = $this->fbeHelper->getObject(\Magento\Checkout\Model\Cart::class);
-        if (!$cart || !$cart->getQuote()) {
-            return null;
-        }
-        $numItems = 0;
-        $items = $cart->getQuote()->getAllVisibleItems();
-        foreach ($items as $item) {
-            $numItems += $item->getQty();
-        }
-        return $numItems;
+        return $this->magentoDataHelper->getCartNumItems();
     }
 
     /**

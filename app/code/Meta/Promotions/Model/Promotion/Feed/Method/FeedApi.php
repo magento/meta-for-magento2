@@ -125,7 +125,7 @@ class FeedApi
 
         if (!$feedId) {
             $catalogId = $this->systemConfig->getCatalogId($this->storeId);
-            $offerFeeds = $this->graphApiAdapter->getOfferFeeds($catalogId);
+            $offerFeeds = $this->graphApiAdapter->getCatalogFeeds($catalogId);
             $magentoFeeds = array_filter($offerFeeds, function ($a) use ($feedName) {
                 return $a['name'] === $feedName;
             });

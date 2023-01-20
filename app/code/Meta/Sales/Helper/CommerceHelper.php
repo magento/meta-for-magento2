@@ -306,6 +306,15 @@ class CommerceHelper extends AbstractHelper
         $taxAmount = $item['tax_details']['estimated_tax']['amount'];
 
         $rowTotal = $pricePerUnit * $quantity;
+        $promotionDetails = $item['promotion_details']['data'] ?? null;
+        $discountAmount = 0;
+        if ($promotionDetails) {
+            foreach ($promotionDetails as $promotionDetail) {
+                if ($promotionDetail['target_granularity'] === 'order_level') {
+                    $discountAmount += $promotionDetail['applied_amount']['amount'];
+                }
+            }
+        }
 
         /** @var OrderItem $orderItem */
         $orderItem = $this->objectManager->create(OrderItem::class);
@@ -313,13 +322,13 @@ class CommerceHelper extends AbstractHelper
             ->setSku($product->getSku())
             ->setName($product->getName())
             ->setQtyOrdered($quantity)
-            ->setBasePrice($pricePerUnit)
+            ->setBasePrice($originalPrice)
             ->setOriginalPrice($originalPrice)
-            ->setPrice($pricePerUnit)
+            ->setPrice($originalPrice)
             ->setTaxAmount($taxAmount)
             ->setRowTotal($rowTotal)
-            ->setDiscountAmount(($originalPrice - $pricePerUnit) * $quantity)
-            ->setBaseDiscountAmount(($originalPrice - $pricePerUnit) * $quantity)
+            ->setDiscountAmount($discountAmount)
+            ->setBaseDiscountAmount($discountAmount)
             ->setProductType($product->getTypeId());
         if ($rowTotal != 0) {
             $orderItem->setTaxPercent(round(($taxAmount / $rowTotal) * 100, 2));
@@ -438,12 +447,8 @@ class CommerceHelper extends AbstractHelper
             $discountAmount = 0;
             $couponCodes = [];
             foreach ($promotionDetails['data'] as $promotionDetail) {
-                if ($promotionDetail['target_granularity'] === 'order_level' && $promotionDetail['sponsor'] === 'merchant') {
-                    $discountAmount -= $promotionDetail['applied_amount']['amount'];
-                }
-                if (array_key_exists('coupon_code', $promotionDetail)) {
-                    $couponCodes[] = $promotionDetail['coupon_code'];
-                }
+                $discountAmount -= $promotionDetail['applied_amount']['amount'];
+                $couponCodes[] = sprintf('[%s] %s', ucfirst($promotionDetail['sponsor']), $promotionDetail['campaign_name']);
             }
             $discountDescription = null;
             if (!empty($couponCodes)) {
