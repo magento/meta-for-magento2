@@ -21,7 +21,6 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
-use Magento\Framework\Registry;
 use Magento\Sales\Helper\Admin;
 use Magento\Sales\Model\Order;
 
@@ -35,13 +34,6 @@ class Facebook extends Template implements TabInterface
     protected $_template = 'Meta_Sales::order/view/tab/facebook.phtml';
 
     /**
-     * Core registry
-     *
-     * @var Registry
-     */
-    protected $_coreRegistry = null;
-
-    /**
      * @var SystemConfig
      */
     protected $systemConfig;
@@ -53,19 +45,16 @@ class Facebook extends Template implements TabInterface
 
     /**
      * @param Context $context
-     * @param Registry $registry
      * @param SystemConfig $systemConfig
      * @param Admin $adminHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
-        Registry $registry,
         SystemConfig $systemConfig,
         Admin $adminHelper,
         array $data = []
     ) {
-        $this->_coreRegistry = $registry;
         parent::__construct($context, $data);
         $this->systemConfig = $systemConfig;
         $this->adminHelper = $adminHelper;
@@ -78,7 +67,7 @@ class Facebook extends Template implements TabInterface
      */
     public function getOrder()
     {
-        return $this->_coreRegistry->registry('current_order');
+        return $this->getLayout()->getBlock('order_tab_info')->getOrder();
     }
 
     /**

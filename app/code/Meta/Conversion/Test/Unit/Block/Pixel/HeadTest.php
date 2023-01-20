@@ -27,8 +27,6 @@ class HeadTest extends \PHPUnit\Framework\TestCase
 
     protected $objectManager;
 
-    protected $registry;
-
     protected $fbeHelper;
 
     protected $magentoDataHelper;
@@ -53,7 +51,6 @@ class HeadTest extends \PHPUnit\Framework\TestCase
     {
         $this->context = $this->createMock(\Magento\Framework\View\Element\Template\Context::class);
         $this->objectManager = $this->createMock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->registry = $this->createMock(\Magento\Framework\Registry::class);
         $this->fbeHelper = $this->createMock(\Meta\BusinessExtension\Helper\FBEHelper::class);
         $this->magentoDataHelper = $this->createMock(\Meta\BusinessExtension\Helper\MagentoDataHelper::class);
         $this->aamFieldsExtractorHelper = $this->createMock(
@@ -64,7 +61,6 @@ class HeadTest extends \PHPUnit\Framework\TestCase
         new \Meta\Conversion\Block\Pixel\Head(
             $this->context,
             $this->objectManager,
-            $this->registry,
             $this->fbeHelper,
             $this->magentoDataHelper,
             $this->aamFieldsExtractorHelper,
