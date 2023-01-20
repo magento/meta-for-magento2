@@ -77,9 +77,13 @@ class AddToCart implements ObserverInterface
     {
         try {
             $eventId = $observer->getData('eventId');
-            $productSku = $this->request->getParam('product_sku', null);
-            $product = $this->magentoDataHelper->getProductBySku($productSku);
-
+            $productId = $this->request->getParam('product_id', null);
+            if ($productId) {
+                $product = $this->magentoDataHelper->getProductById($productId);
+            } else {
+                $productSku = $this->request->getParam('product_sku', null);
+                $product = $this->magentoDataHelper->getProductBySku($productSku);
+            }
             if ($product && $product->getId()) {
                 $customData = [
                     'currency'         => $this->magentoDataHelper->getCurrency(),

@@ -116,10 +116,15 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
      * @param $productSku
      * @return array
      */
-    private function getProductInfo($productSku)
+    private function getProductInfo($productSku, $productId = null)
     {
-        /** @var Product $product */
-        $product = $this->magentoDataHelper->getProductBySku($productSku);
+        if ($productId) {
+            /** @var Product $product */
+            $product = $this->magentoDataHelper->getProductById($productId);
+        } else {
+            /** @var Product $product */
+            $product = $this->magentoDataHelper->getProductBySku($productSku);
+        }
         if ($product && $product->getId()) {
             return [
                 'id'       => $this->magentoDataHelper->getContentId($product),
@@ -134,12 +139,11 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $result = $this->resultJsonFactory->create();
+        $productId = $this->getRequest()->getParam('product_id', null);
         $productSku = $this->getRequest()->getParam('product_sku', null);
-        if ($this->formKeyValidator->validate($this->getRequest()) && $productSku) {
-            $responseData = $this->getProductInfo($productSku);
-            // If the sku is valid
-            // The event id is added in the response
-            // And a CAPI event is created
+        if ($this->formKeyValidator->validate($this->getRequest()) && ($productSku || $productId)) {
+            $responseData = $this->getProductInfo($productSku, $productId);
+            // If the sku is valid, The event id is added in the response And a CAPI event is created
             if (count($responseData) > 0) {
                 $eventId = EventIdGenerator::guidv4();
                 $responseData['event_id'] = $eventId;
