@@ -26,12 +26,17 @@
             var product_info_url = '<?= $block->getProductInfoUrl() ?>';
 
             $(document).on('ajax:addToCart', function (event, data) {
+                var configurableProduct = data.form.data().mageConfigurable;
+                if(configurableProduct) {
+                    var simpleProductId = configurableProduct.simpleProduct;
+                }
                 var product_sku = data.sku;
                 var form_key = jQuery("[name='form_key']").val();
                 $.ajax({
                     url: product_info_url,
                     data: {
                         product_sku: product_sku,
+                        product_id: simpleProductId,
                         form_key: form_key
                     },
                     type: 'post',
