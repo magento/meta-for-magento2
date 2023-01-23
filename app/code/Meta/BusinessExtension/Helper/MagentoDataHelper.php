@@ -199,6 +199,19 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
+     * @param $productId
+     * @return false|\Magento\Catalog\Api\Data\ProductInterface
+     */
+    public function getProductById($productId): bool|\Magento\Catalog\Api\Data\ProductInterface
+    {
+        try {
+            return $this->productRepository->getById($productId);
+        } catch (NoSuchEntityException $e) {
+            return false;
+        }
+    }
+
+    /**
      * Return the categories for the given product
      *
      * @param \Magento\Catalog\Model\Product $product
