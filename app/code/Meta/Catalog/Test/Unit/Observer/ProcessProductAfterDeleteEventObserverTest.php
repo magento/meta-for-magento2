@@ -81,6 +81,7 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
         $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
         $this->_graphApi->expects($this->atLeastOnce())->method('catalogBatchRequest');
+        $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);
     }
 }
