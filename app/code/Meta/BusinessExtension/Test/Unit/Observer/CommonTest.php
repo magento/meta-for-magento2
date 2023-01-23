@@ -54,6 +54,7 @@ abstract class CommonTest extends TestCase
         $this->objectManager = new ObjectManager($this);
         $this->systemConfig->method('getAccessToken')->willReturn('');
         $this->systemConfig->method('getPixelId')->willReturn('123');
+
         $this->magentoDataHelper->method('getCurrency')->willReturn('USD');
     }
 
