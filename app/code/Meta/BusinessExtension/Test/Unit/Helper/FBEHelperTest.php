@@ -73,7 +73,6 @@ class FBEHelperTest extends TestCase
         $this->resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
         $this->systemConfig = $this->createMock(Config::class);
-
         $this->fbeHelper = new FBEHelper(
             $this->context,
             $this->objectManagerInterface,
