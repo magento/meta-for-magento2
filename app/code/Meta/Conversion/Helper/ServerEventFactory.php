@@ -78,7 +78,7 @@ class ServerEventFactory
         ];
         foreach ($HEADERS_TO_SCAN as $header) {
             if (array_key_exists($header, $_SERVER)) {
-                $ipList = explode(',', $_SERVER[$header]);
+                $ipList = explode(',', $_SERVER[$header] ?? '');
                 foreach ($ipList as $ip) {
                     $trimmedIp = trim($ip);
                     if (self::isValidIpAddress($trimmedIp)) {

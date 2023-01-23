@@ -19,7 +19,7 @@ namespace Meta\Catalog\Test\Unit\Observer;
 
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Test\Unit\Observer\CommonTest;
-use Meta\Catalog\Model\Product\Feed\Method\BatchApi;
+use Meta\Catalog\Helper\Product\Identifier;
 use Meta\Catalog\Observer\Product\DeleteAfter as ProcessProductAfterDeleteEventObserver;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event;
@@ -46,6 +46,11 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
     private $_graphApi;
 
     /**
+     * @var MockObject
+     */
+    private $identifier;
+
+    /**
      * Used to set the values before running a test
      *
      * @return void
@@ -62,14 +67,20 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
         $this->_eventObserverMock = $this->createMock(Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->_graphApi = $this->createMock(GraphAPIAdapter::class);
-        $this->processProductAfterDeleteEventObserver =
-            new ProcessProductAfterDeleteEventObserver($this->systemConfig, $this->_graphApi, $this->fbeHelper);
+        $this->identifier = $this->createMock(Identifier::class);
+        $this->processProductAfterDeleteEventObserver = new ProcessProductAfterDeleteEventObserver(
+            $this->systemConfig,
+            $this->_graphApi,
+            $this->fbeHelper,
+            $this->identifier
+        );
     }
 
     public function testExecution()
     {
+        $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
-        $this->fbeHelper->expects($this->atLeastOnce())->method('makeHttpRequest');
+        $this->_graphApi->expects($this->atLeastOnce())->method('catalogBatchRequest');
         $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);
     }
 }

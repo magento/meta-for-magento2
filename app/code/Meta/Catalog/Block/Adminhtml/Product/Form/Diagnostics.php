@@ -17,6 +17,7 @@
 
 namespace Meta\Catalog\Block\Adminhtml\Product\Form;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
@@ -27,32 +28,35 @@ use Magento\Framework\View\Element\Text;
 
 class Diagnostics extends Text
 {
-    protected $storeId;
+    /**
+     * @var string
+     */
+    private $storeId;
 
     /**
      * @var ProductInterface
      */
-    protected $product;
+    private $product;
 
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    private $graphApiAdapter;
 
     /**
      * @var ProductIdentifier
      */
-    protected $productIdentifier;
+    private $productIdentifier;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @param GraphAPIAdapter $graphApiAdapter
@@ -78,7 +82,7 @@ class Diagnostics extends Text
     }
 
     /**
-     * @param $storeId
+     * @param string $storeId
      * @return $this
      */
     public function setStoreId($storeId)
@@ -99,9 +103,9 @@ class Diagnostics extends Text
 
     /**
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
-    protected function getFacebookProductDiagnostics()
+    private function getFacebookProductDiagnostics()
     {
         try {
             $retailerId = $this->productIdentifier->getMagentoProductRetailerId($this->product);
@@ -123,6 +127,7 @@ class Diagnostics extends Text
      * Render html output
      *
      * @return string
+     * @throws GuzzleException
      */
     protected function _toHtml()
     {

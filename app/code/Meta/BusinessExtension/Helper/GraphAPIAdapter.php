@@ -30,11 +30,6 @@ class GraphAPIAdapter
     const GET_ORDERS_LIMIT = 25;
 
     /**
-     * @var SystemConfig
-     */
-    private $systemConfig;
-
-    /**
      * @var mixed
      */
     private $accessToken;
@@ -61,7 +56,6 @@ class GraphAPIAdapter
 
     public function __construct(SystemConfig $systemConfig, LoggerInterface $logger)
     {
-        $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->accessToken = $systemConfig->getAccessToken();
         $this->client = new Client([
@@ -107,7 +101,7 @@ class GraphAPIAdapter
      * @throws GuzzleException
      * @todo implement custom logger class, remove access token from logs
      */
-    protected function callApi($method, $endpoint, $request)
+    private function callApi($method, $endpoint, $request)
     {
         try {
             if ($this->debugMode) {

@@ -20,6 +20,7 @@ namespace Meta\BusinessExtension\Test\Unit\Observer;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\MagentoDataHelper;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
 
 abstract class CommonTest extends TestCase
@@ -48,11 +49,11 @@ abstract class CommonTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
-        $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
         $this->objectManager = new ObjectManager($this);
-        $this->fbeHelper->method('getAccessToken')->willReturn('');
-        $this->fbeHelper->method('getPixelId')->willReturn('123');
+        $this->systemConfig->method('getAccessToken')->willReturn('');
+        $this->systemConfig->method('getPixelId')->willReturn('123');
         $this->magentoDataHelper->method('getCurrency')->willReturn('USD');
     }
 

@@ -36,26 +36,27 @@ class Diagnostics extends Template
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
-    protected $storeId;
+    /**
+     * @var int
+     */
+    private $storeId;
 
-    protected $catalogId;
+    /**
+     * @var mixed|null
+     */
+    private $catalogId;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
-
-    /**
-     * @var array
-     */
-    private $exceptions = [];
+    private $graphApiAdapter;
 
     /**
      * @var LoggerInterface
@@ -65,7 +66,7 @@ class Diagnostics extends Template
     /**
      * @var CollectionFactory
      */
-    protected $productCollectionFactory;
+    private $productCollectionFactory;
 
     /**
      * @param Context $context
@@ -107,33 +108,9 @@ class Diagnostics extends Template
                 $report = $response['diagnostics']['data'];
             }
         } catch (Exception $e) {
-            $this->exceptions[] = $e->getMessage();
             $this->logger->critical($e->getMessage());
         }
         return $report;
-    }
-
-    /**
-     * @param array $retailerIds
-     * @return array
-     */
-    protected function getProducts(array $retailerIds)
-    {
-        $collection = $this->productCollectionFactory->create();
-        $collection->addAttributeToSelect('*')
-            ->addStoreFilter($this->storeId)
-            ->setStoreId($this->storeId);
-
-        $productIdentifierAttr = $this->systemConfig->getProductIdentifierAttr($this->storeId);
-        if ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            $collection->addAttributeToFilter('sku', ['in' => $retailerIds]);
-        } elseif ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            $collection->addIdFilter($retailerIds);
-        } else {
-            return [];
-        }
-
-        return $collection->getItems();
     }
 
     /**
@@ -158,7 +135,6 @@ class Diagnostics extends Template
 
             return $this->getProducts($retailerIds);
         } catch (Exception $e) {
-            $this->exceptions[] = $e->getMessage();
             $this->logger->critical($e->getMessage());
         }
 
@@ -176,5 +152,28 @@ class Diagnostics extends Template
             $params['store'] = $this->getRequest()->getParam('store');
         }
         return $this->getUrl('catalog/product/edit', $params);
+    }
+
+    /**
+     * @param array $retailerIds
+     * @return array
+     */
+    private function getProducts(array $retailerIds)
+    {
+        $collection = $this->productCollectionFactory->create();
+        $collection->addAttributeToSelect('*')
+            ->addStoreFilter($this->storeId)
+            ->setStoreId($this->storeId);
+
+        $productIdentifierAttr = $this->systemConfig->getProductIdentifierAttr($this->storeId);
+        if ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            $collection->addAttributeToFilter('sku', ['in' => $retailerIds]);
+        } elseif ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            $collection->addIdFilter($retailerIds);
+        } else {
+            return [];
+        }
+
+        return $collection->getItems();
     }
 }

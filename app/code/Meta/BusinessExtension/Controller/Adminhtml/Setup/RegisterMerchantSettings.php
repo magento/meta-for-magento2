@@ -17,7 +17,6 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Setup;
 
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -28,14 +27,9 @@ use Magento\Framework\Exception\LocalizedException;
 class RegisterMerchantSettings extends Action
 {
     /**
-     * @var GraphAPIAdapter
-     */
-    protected $graphApiAdapter;
-
-    /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var ResultFactory
@@ -46,18 +40,15 @@ class RegisterMerchantSettings extends Action
      * Constructor
      *
      * @param Context $context
-     * @param GraphAPIAdapter $graphApiAdapter
      * @param SystemConfig $systemConfig
      * @param ResultFactory $resultFactory
      */
     public function __construct(
         Context $context,
-        GraphAPIAdapter $graphApiAdapter,
         SystemConfig $systemConfig,
         ResultFactory $resultFactory)
     {
         parent::__construct($context);
-        $this->graphApiAdapter = $graphApiAdapter;
         $this->systemConfig = $systemConfig;
         $this->resultFactory = $resultFactory;
     }

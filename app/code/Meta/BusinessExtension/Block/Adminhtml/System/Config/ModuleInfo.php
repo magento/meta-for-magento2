@@ -86,7 +86,7 @@ class ModuleInfo extends Field
     /**
      * @return mixed
      */
-    protected function getStoreId()
+    private function getStoreId()
     {
         return $this->getRequest()->getParam('store');
     }

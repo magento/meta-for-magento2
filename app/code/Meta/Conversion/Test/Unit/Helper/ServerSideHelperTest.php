@@ -26,11 +26,11 @@ use PHPUnit\Framework\TestCase;
 
 class ServerSideHelperTest extends TestCase
 {
-    protected $fbeHelper;
+    private $fbeHelper;
 
-    protected $serverSideHelper;
+    private $serverSideHelper;
 
-    protected $aamFieldsExtractorHelper;
+    private $aamFieldsExtractorHelper;
 
     private $systemConfig;
 
@@ -54,12 +54,12 @@ class ServerSideHelperTest extends TestCase
         $this->aamFieldsExtractorHelper =
         $this->createMock(AAMFieldsExtractorHelper::class);
         $this->systemConfig = $this->createMock(SystemConfig::class);
+        $this->systemConfig->method('getAccessToken')->willReturn('abc');
         $this->serverSideHelper = new ServerSideHelper(
             $this->fbeHelper,
             $this->aamFieldsExtractorHelper,
             $this->systemConfig
         );
-        $this->fbeHelper->method('getAccessToken')->willReturn('abc');
     }
 
     public function testEventAddedToTrackedEvents()

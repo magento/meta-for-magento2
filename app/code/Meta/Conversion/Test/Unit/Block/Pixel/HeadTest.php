@@ -17,23 +17,34 @@
 
 namespace Meta\Conversion\Test\Unit\Block\Pixel;
 
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Element\Template\Context;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\BusinessExtension\Model\System\Config;
+use Meta\Conversion\Block\Pixel\Head;
+use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\Conversion\Helper\AAMSettingsFields;
+use PHPUnit\Framework\TestCase;
 
-class HeadTest extends \PHPUnit\Framework\TestCase
+class HeadTest extends TestCase
 {
-    protected $head;
+    private $head;
 
-    protected $context;
+    private $context;
 
-    protected $objectManager;
+    private $objectManager;
 
-    protected $registry;
+    private $registry;
 
-    protected $fbeHelper;
+    private $fbeHelper;
 
-    protected $magentoDataHelper;
+    private $magentoDataHelper;
 
-    protected $aamFieldsExtractorHelper;
+    private $aamFieldsExtractorHelper;
+
+    private $systemConfig;
 
     /**
      * Used to reset or change values after running a test
@@ -51,22 +62,24 @@ class HeadTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->context = $this->createMock(\Magento\Framework\View\Element\Template\Context::class);
-        $this->objectManager = $this->createMock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->registry = $this->createMock(\Magento\Framework\Registry::class);
-        $this->fbeHelper = $this->createMock(\Meta\BusinessExtension\Helper\FBEHelper::class);
-        $this->magentoDataHelper = $this->createMock(\Meta\BusinessExtension\Helper\MagentoDataHelper::class);
+        $this->context = $this->createMock(Context::class);
+        $this->objectManager = $this->createMock(ObjectManagerInterface::class);
+        $this->registry = $this->createMock(Registry::class);
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->aamFieldsExtractorHelper = $this->createMock(
-            \Meta\Conversion\Helper\AAMFieldsExtractorHelper::class
+            AAMFieldsExtractorHelper::class
         );
 
         $this->head =
-        new \Meta\Conversion\Block\Pixel\Head(
+        new Head(
             $this->context,
             $this->objectManager,
             $this->registry,
             $this->fbeHelper,
             $this->magentoDataHelper,
+            $this->systemConfig,
             $this->aamFieldsExtractorHelper,
             []
         );

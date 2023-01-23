@@ -30,12 +30,12 @@ class Setup extends Template
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @param Context $context

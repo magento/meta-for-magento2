@@ -18,9 +18,7 @@
 namespace Meta\BusinessExtension\Test\Unit\Helper;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Meta\BusinessExtension\Logger\Logger;
-use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\ResourceConnection;
@@ -28,30 +26,28 @@ use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Meta\BusinessExtension\Model\System\Config;
+use PHPUnit\Framework\TestCase;
 
-class FBEHelperTest extends \PHPUnit\Framework\TestCase
+class FBEHelperTest extends TestCase
 {
-    protected $fbeHelper;
+    private $fbeHelper;
 
-    protected $systemConfig;
+    private $systemConfig;
 
-    protected $context;
+    private $context;
 
-    protected $objectManagerInterface;
+    private $objectManagerInterface;
 
-    protected $logger;
+    private $logger;
 
-    protected $directorylist;
+    private $storeManager;
 
-    protected $storeManager;
+    private $curl;
 
-    protected $curl;
+    private $resourceConnection;
 
-    protected $resourceConnection;
-
-    protected $moduleList;
-
-    protected $productIdentifier;
+    private $moduleList;
 
     /**
      * Used to reset or change values after running a test
@@ -72,24 +68,20 @@ class FBEHelperTest extends \PHPUnit\Framework\TestCase
         $this->context = $this->createMock(Context::class);
         $this->objectManagerInterface = $this->createMock(ObjectManagerInterface::class);
         $this->logger = $this->createMock(Logger::class);
-        $this->directorylist = $this->createMock(DirectoryList::class);
         $this->storeManager = $this->createMock(StoreManagerInterface::class);
         $this->curl = $this->createMock(Curl::class);
         $this->resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
-        $this->productIdentifier = $this->createMock(ProductIdentifier::class);
-        $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
+        $this->systemConfig = $this->createMock(Config::class);
 
         $this->fbeHelper = new FBEHelper(
             $this->context,
             $this->objectManagerInterface,
             $this->logger,
-            $this->directorylist,
             $this->storeManager,
             $this->curl,
             $this->resourceConnection,
             $this->moduleList,
-            $this->productIdentifier,
             $this->systemConfig
         );
     }

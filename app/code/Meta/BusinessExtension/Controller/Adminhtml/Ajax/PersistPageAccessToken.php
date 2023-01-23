@@ -28,7 +28,12 @@ class PersistPageAccessToken extends AbstractAjax
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    private $graphApiAdapter;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param Context $context
@@ -44,8 +49,9 @@ class PersistPageAccessToken extends AbstractAjax
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->graphApiAdapter = $graphApiAdapter;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -78,26 +84,6 @@ class PersistPageAccessToken extends AbstractAjax
             $response['success'] = true;
             $response['access_token'] = $pageToken;
             return $response;
-
-            $commerceAccountData = $this->graphApiAdapter->getCommerceAccountData($commerceAccountId, $pageToken);
-
-            $pageId = $commerceAccountData['page_id'];
-            $catalogId = $commerceAccountData['catalog_id'];
-
-            if (!$pageId || !$catalogId) {
-                $response['success'] = false;
-                $response['message'] = __('Error persisting page and catalog ID');
-                return $response;
-            }
-
-            $this->graphApiAdapter->associateMerchantSettingsWithApp($commerceAccountId, $pageToken);
-
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId)
-                ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId)
-                ->cleanCache();
-
-            $response['success'] = true;
-            $response['access_token'] = $pageToken;
         }
         return $response;
     }

@@ -17,6 +17,9 @@
 
 namespace Meta\BusinessExtension\Helper;
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Customer\Api\CustomerMetadataInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
@@ -32,66 +35,50 @@ use Meta\Conversion\Helper\AAMSettingsFields;
 class MagentoDataHelper extends AbstractHelper
 {
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
-    protected $objectManager;
+    private $objectManager;
 
     /**
-     * @var \Meta\BusinessExtension\Logger\Logger
+     * @var StoreManagerInterface
      */
-    protected $logger;
+    private $storeManager;
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var CustomerMetadataInterface
      */
-    protected $productFactory;
+    private $customerMetadata;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var ProductRepositoryInterface
      */
-    protected $storeManager;
-
-    /**
-     * @var \Magento\Customer\Api\CustomerMetadataInterface
-     */
-    protected $customerMetadata;
-
-    /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    protected $productRepository;
+    private $productRepository;
 
     /**
      * @var ProductIdentifier
      */
-    protected $productIdentifier;
+    private $productIdentifier;
 
     /**
      * MagentoDataHelper constructor
      *
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
-     * @param \Meta\BusinessExtension\Logger\Logger $logger
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
-     * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     * @param StoreManagerInterface $storeManager
+     * @param CustomerMetadataInterface $customerMetadata
+     * @param ProductRepositoryInterface $productRepository
      * @param ProductIdentifier $productIdentifier
      */
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
-        \Meta\BusinessExtension\Logger\Logger $logger,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        StoreManagerInterface $storeManager,
+        CustomerMetadataInterface $customerMetadata,
+        ProductRepositoryInterface $productRepository,
         ProductIdentifier $productIdentifier
     ) {
         parent::__construct($context);
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
-        $this->productFactory = $productFactory;
         $this->storeManager = $storeManager;
         $this->customerMetadata = $customerMetadata;
         $this->productRepository = $productRepository;

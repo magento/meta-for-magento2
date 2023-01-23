@@ -17,15 +17,17 @@
 
 namespace Meta\BusinessExtension\Model\Config\Source;
 
+use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 
-class Store implements \Magento\Framework\Data\OptionSourceInterface
+class Store implements OptionSourceInterface
 {
     /**
      * @var StoreManagerInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @param StoreManagerInterface $storeManager
@@ -37,6 +39,7 @@ class Store implements \Magento\Framework\Data\OptionSourceInterface
 
     /**
      * @return array
+     * @throws NoSuchEntityException
      */
     public function getStores()
     {

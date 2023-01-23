@@ -17,9 +17,10 @@
 
 namespace Meta\BusinessExtension\Helper;
 
+use Magento\Newsletter\Model\Subscriber;
+use Magento\Newsletter\Model\SubscriptionManager;
 use Meta\BusinessExtension\Logger\Logger;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
-use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
@@ -53,44 +54,38 @@ class FBEHelper extends AbstractHelper
     const MODULE_NAME = "Meta_BusinessExtension";
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
-    protected $objectManager;
+    private $objectManager;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @var Logger
      */
-    protected $logger;
-
-    /**
-     * @var DirectoryList
-     */
-    protected $directoryList;
+    private $logger;
 
     /**
      * @var Curl
      */
-    protected $curl;
+    private $curl;
 
     /**
      * @var ResourceConnection
      */
-    protected $resourceConnection;
+    private $resourceConnection;
 
     /**
      * @var ModuleListInterface
      */
-    protected $moduleList;
-
+    private $moduleList;
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * FBEHelper constructor
@@ -98,7 +93,6 @@ class FBEHelper extends AbstractHelper
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
      * @param Logger $logger
-     * @param DirectoryList $directorylist
      * @param StoreManagerInterface $storeManager
      * @param Curl $curl
      * @param ResourceConnection $resourceConnection
@@ -109,7 +103,6 @@ class FBEHelper extends AbstractHelper
         Context $context,
         ObjectManagerInterface $objectManager,
         Logger $logger,
-        DirectoryList $directorylist,
         StoreManagerInterface $storeManager,
         Curl $curl,
         ResourceConnection $resourceConnection,
@@ -120,7 +113,6 @@ class FBEHelper extends AbstractHelper
         $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
-        $this->directoryList = $directorylist;
         $this->curl = $curl;
         $this->resourceConnection = $resourceConnection;
         $this->moduleList = $moduleList;
@@ -180,18 +172,7 @@ class FBEHelper extends AbstractHelper
      */
     public function getBaseUrlMedia()
     {
-        return $this->getStore()->getBaseUrl(
-            UrlInterface::URL_TYPE_MEDIA,
-            $this->maybeUseHTTPS()
-        );
-    }
-
-    /**
-     * @return bool
-     */
-    private function maybeUseHTTPS()
-    {
-        return isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
+        return $this->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
     }
 
     /**
@@ -236,10 +217,7 @@ class FBEHelper extends AbstractHelper
     public function getBaseUrl()
     {
         // Use this function to get a base url respect to host protocol
-        return $this->getStore()->getBaseUrl(
-            UrlInterface::URL_TYPE_WEB,
-            $this->maybeUseHTTPS()
-        );
+        return $this->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
     }
 
     /**
@@ -279,7 +257,7 @@ class FBEHelper extends AbstractHelper
             && $defaultStoreName !== self::MAIN_WEBSITE) {
             return $defaultStoreName;
         }
-        return parse_url(self::getBaseUrl(), PHP_URL_HOST);
+        return parse_url($this->getBaseUrl(), PHP_URL_HOST);
     }
 
     /**
@@ -552,13 +530,13 @@ class FBEHelper extends AbstractHelper
     {
         $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager';
         if (class_exists($subscriptionClass) && method_exists($subscriptionClass, 'subscribe')) {
-            /** @var \Magento\Newsletter\Model\SubscriptionManager $subscriptionManager */
-            $subscriptionManager = $this->createObject(\Magento\Newsletter\Model\SubscriptionManager::class);
+            /** @var SubscriptionManager $subscriptionManager */
+            $subscriptionManager = $this->createObject(SubscriptionManager::class);
             $subscriptionManager->subscribe($email, $storeId);
         } else {
             // for older Magento versions (2.3 and below)
-            /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
-            $subscriber = $this->createObject(\Magento\Newsletter\Model\Subscriber::class);
+            /** @var Subscriber $subscriber */
+            $subscriber = $this->createObject(Subscriber::class);
             $subscriber->subscribe($email);
         }
         return $this;

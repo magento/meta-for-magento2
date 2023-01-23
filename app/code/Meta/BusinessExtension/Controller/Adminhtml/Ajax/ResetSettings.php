@@ -18,7 +18,6 @@
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
@@ -26,26 +25,30 @@ use Magento\Framework\Controller\Result\JsonFactory;
 class ResetSettings extends AbstractAjax
 {
     /**
-     * @var GraphAPIAdapter
+     * @var FBEHelper
      */
-    protected $graphApiAdapter;
+    private $fbeHelper;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphApiAdapter
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
-        GraphAPIAdapter $graphApiAdapter
+        SystemConfig $systemConfig
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
-        $this->graphApiAdapter = $graphApiAdapter;
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        $this->fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -54,7 +57,7 @@ class ResetSettings extends AbstractAjax
     public function executeForJson()
     {
         $storeId = $this->getRequest()->getParam('store');
-        $defaultStoreId = $this->_fbeHelper->getStore()->getId();
+        $defaultStoreId = $this->fbeHelper->getStore()->getId();
         $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $storeId)
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $storeId)
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $storeId)
