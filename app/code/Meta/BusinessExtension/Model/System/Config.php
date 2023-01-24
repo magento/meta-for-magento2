@@ -452,7 +452,7 @@ class Config
      * @param null $scope
      * @return mixed
      */
-    public function getPixelId($scopeId = null, $scope = null)
+    public function getPixelId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID, $scopeId, $scope);
     }
