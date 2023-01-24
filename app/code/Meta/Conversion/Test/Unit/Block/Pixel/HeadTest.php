@@ -69,6 +69,7 @@ class HeadTest extends TestCase
         $this->aamFieldsExtractorHelper = $this->createMock(
             AAMFieldsExtractorHelper::class
         );
+        $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
 
         $this->head =
         new Head(
