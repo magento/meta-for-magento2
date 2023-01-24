@@ -13,26 +13,16 @@ $trackerUrl = $block->getTrackerUrl();
                 "payload": <?= json_encode([
                     "eventName" => $block->getEventToObserveName(),
                     "searchQuery" => $block->getSearchQuery()
+                ]) ?>,
+                "browserEventData": <?= json_encode([
+                    'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                    'fbPixelId' => $block->getFacebookPixelID(),
+                    'source' => $block->getSource(),
+                    'pluginVersion' => $block->getPluginVersion(),
+                    'track' => 'track',
+                    'event' => 'Search'
                 ]) ?>
             }
         }
     }
 </script>
-
-<?php
-if ($block->getFacebookPixelID()) {
-?>
-    <script>
-        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
-        fbq('track', 'Search', {
-                source: "<?= $block->getSource() ?>",
-                pluginVersion: "<?= $block->getPluginVersion() ?>",
-                search_string: "<?= $block->getSearchQuery() ?>"
-            }
-            , {
-                eventID: "<?= $block->getEventId() ?>"
-            }
-        );
-    </script>
-    <?php $block->logEvent($block->getFacebookPixelID(), 'Search') ?>
-<?php } ?>

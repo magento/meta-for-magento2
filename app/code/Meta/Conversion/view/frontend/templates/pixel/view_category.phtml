@@ -12,34 +12,17 @@ $trackerUrl = $block->getTrackerUrl();
                 "url" : "<?= $block->escapeJs($trackerUrl); ?>",
                 "payload": <?= json_encode([
                     "eventName" => $block->getEventToObserveName(),
-                    "categoryId" => $block->getCategoryId()
+                    "categoryId" => $block->getCategoryId(),
+                ]) ?>,
+                "browserEventData": <?= json_encode([
+                    'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                    'fbPixelId' => $block->getFacebookPixelID(),
+                    'source' => $block->getSource(),
+                    'pluginVersion' => $block->getPluginVersion(),
+                    'track' => 'trackCustom',
+                    'event' => 'ViewCategory'
                 ]) ?>
             }
         }
     }
 </script>
-
-<?php
-if ($block->getFacebookPixelID()) {
-    /**
-     * @var \Meta\Conversion\Block\Pixel\ViewCategory $block
-     * @var \Magento\Framework\Escaper $escaper
-     */
-    $categoryName = $block->getCategoryName();
-    ?>
-    <script>
-        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
-        fbq('trackCustom', 'ViewCategory', {
-                source: "<?= $block->getSource() ?>",
-                pluginVersion: "<?= $block->getPluginVersion() ?>"
-                <?php if ($block->getCategoryName()) { ?>
-                , content_category: "<?= $escaper->escapeHtmlAttr($categoryName) ?>"
-                <?php } ?>
-            }
-            , {
-                eventID: "<?= $block->getEventId() ?>"
-            }
-        );
-    </script>
-    <?php $block->logEvent($block->getFacebookPixelID(), 'ViewCategory') ?>
-<?php } ?>

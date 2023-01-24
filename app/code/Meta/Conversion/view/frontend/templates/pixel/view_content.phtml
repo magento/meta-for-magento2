@@ -13,37 +13,16 @@ $trackerUrl = $block->getTrackerUrl();
                 "payload": <?= json_encode([
                     "eventName" => $block->getEventToObserveName(),
                     "productId" => $block->getProductId()
+                ]) ?>,
+                "browserEventData": <?= json_encode([
+                    'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                    'fbPixelId' => $block->getFacebookPixelID(),
+                    'source' => $block->getSource(),
+                    'pluginVersion' => $block->getPluginVersion(),
+                    'track' => 'trackCustom',
+                    'event' => 'ViewContent'
                 ]) ?>
             }
         }
     }
 </script>
-
-<?php
-if ($block->getFacebookPixelID()) {
-?>
-    <script>
-        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
-        fbq('track', 'ViewContent', {
-                source: "<?= $block->getSource() ?>",
-                pluginVersion: "<?= $block->getPluginVersion() ?>",
-                content_type: "<?= $block->getContentType() ?>",
-                content_ids: [<?= $block->getContentIDs() ?>]
-                <?php if ($block->getContentName()) { ?>
-                , content_name: "<?= $block->getContentName() ?>"
-                <?php } ?>
-                <?php if ($block->getContentCategory()) { ?>
-                , content_category: "<?= $block->getContentCategory() ?>"
-                <?php } ?>
-                <?php if ($block->getValue() && $block->getCurrency()) { ?>
-                , value: <?= $block->getValue() ?>
-                , currency: "<?= $block->getCurrency() ?>"
-                <?php } ?>
-            }
-            , {
-                eventID: "<?= $block->getEventId() ?>"
-            }
-        );
-    </script>
-    <?php $block->logEvent($block->getFacebookPixelID(), 'ViewContent') ?>
-<?php } ?>
