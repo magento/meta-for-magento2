@@ -25,10 +25,19 @@ use Magento\Framework\Event\Observer;
 
 class InitiateCheckoutTest extends CommonTest
 {
+    /**
+     * @var InitiateCheckout
+     */
     protected $initiateCheckoutObserver;
 
+    /**
+     * @var ServerSideHelper
+     */
     protected $serverSideHelper;
 
+    /**
+     * @var AAMFieldsExtractorHelper
+     */
     private $aamFieldsExtractorHelper;
 
     /**
@@ -48,24 +57,21 @@ class InitiateCheckoutTest extends CommonTest
             $this->aamFieldsExtractorHelper,
             $this->systemConfig
         );
-        $this->initiateCheckoutObserver =
-            new InitiateCheckout(
-                $this->fbeHelper,
-                $this->magentoDataHelper,
-                $this->serverSideHelper
-            );
+        $this->initiateCheckoutObserver = new InitiateCheckout(
+            $this->fbeHelper,
+            $this->magentoDataHelper,
+            $this->serverSideHelper
+        );
     }
 
     public function testInitiateCheckoutEventCreated()
     {
         $this->magentoDataHelper->method('getCartTotal')->willReturn(170.00);
-        $this->magentoDataHelper->method('getCartContentIds')->willReturn(
-            [1, 2]
-        );
+        $this->magentoDataHelper->method('getCartContentIds')->willReturn([1, 2]);
         $this->magentoDataHelper->method('getCartContents')->willReturn(
             [
-            [ 'product_id'=>1, 'quantity'=>1, 'item_price' =>20 ],
-            [ 'product_id'=>2, 'quantity'=>3, 'item_price' =>50 ]
+                [ 'product_id' => 1, 'quantity' => 1, 'item_price' => 20 ],
+                [ 'product_id' => 2, 'quantity' => 3, 'item_price' => 50 ]
             ]
         );
         $this->magentoDataHelper->method('getCartNumItems')->willReturn(4);
@@ -81,15 +87,15 @@ class InitiateCheckoutTest extends CommonTest
         $this->assertEquals('1234', $event->getEventId());
 
         $customDataArray = [
-        'currency' => 'USD',
-        'value' => 170,
-        'content_type' => 'product',
-        'content_ids' => [1, 2],
-        'contents' => [
-        [ 'product_id'=>1, 'quantity'=>1, 'item_price' =>20 ],
-        [ 'product_id'=>2, 'quantity'=>3, 'item_price' =>50 ]
-        ],
-        'num_items' => 4
+            'currency' => 'USD',
+            'value' => 170,
+            'content_type' => 'product',
+            'content_ids' => [1, 2],
+            'contents' => [
+                [ 'product_id'=>1, 'quantity'=>1, 'item_price' =>20 ],
+                [ 'product_id'=>2, 'quantity'=>3, 'item_price' =>50 ]
+            ],
+            'num_items' => 4
         ];
 
         $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
