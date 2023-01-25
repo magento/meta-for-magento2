@@ -18,4 +18,5 @@
             <argument name="logger" xsi:type="object">Meta\Catalog\Model\Logger\ProductFeedLogger</argument>
         </arguments>
     </type>
+    <preference for="Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface" type="Meta\Catalog\Model\Product\Feed\Builder\MultiSourceInventory" />
 </config>
