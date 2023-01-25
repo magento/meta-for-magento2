@@ -51,26 +51,6 @@
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="use_multi_source_inventory" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Use Multi Source Inventory</label>
-                    <config_path>facebook/inventory_management/use_multi_source_inventory</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Set to 'Yes' if you'd like to use Magento's Multi Source Inventory for products sold on Facebook and Instagram</comment>
-                </field>
-                <field id="inventory_stock" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Inventory Stock</label>
-                    <config_path>facebook/inventory_management/inventory_stock</config_path>
-                    <source_model>Meta\Catalog\Model\Config\Source\Product\InventoryStock</source_model>
-                    <comment>Use this inventory stock for products sold on Facebook and Instagram</comment>
-                    <depends>
-                        <field id="facebook_business_extension/inventory_management/use_multi_source_inventory">1</field>
-                    </depends>
-                </field>
-                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Out-of-Stock Threshold</label>
-                    <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>
-                    <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
-                </field>
                 <field id="enable_inventory_upload" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Scheduled Inventory Upload</label>
                     <config_path>facebook/inventory_management/enable_inventory_upload</config_path>
