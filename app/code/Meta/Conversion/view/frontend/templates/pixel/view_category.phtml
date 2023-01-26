@@ -16,7 +16,6 @@ $trackerUrl = $block->getTrackerUrl();
                 ]) ?>,
                 "browserEventData": <?= json_encode([
                     'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                    'fbPixelId' => $block->getFacebookPixelID(),
                     'source' => $block->getSource(),
                     'pluginVersion' => $block->getPluginVersion(),
                     'track' => 'trackCustom',

@@ -14,12 +14,12 @@ define([
             data: config.payload,
             dataType: "json",
             success: function (response) {
-                if (response.eventId) {
+                if (response.eventId && response.pixelId) {
                     let browserPayload = response.payload;
                     browserPayload.source = browserEventData.source;
                     browserPayload.pluginVersion = browserEventData.pluginVersion;
 
-                    fbq('set', 'agent', browserEventData.fbAgentVersion, browserEventData.fbPixelId);
+                    fbq('set', 'agent', browserEventData.fbAgentVersion, response.pixelId);
                     fbq(browserEventData.track, browserEventData.event, browserPayload, {
                             eventID: response.eventId
                         }
