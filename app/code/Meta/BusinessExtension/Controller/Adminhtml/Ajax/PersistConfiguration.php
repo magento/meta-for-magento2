@@ -27,9 +27,19 @@ use Magento\Framework\Exception\LocalizedException;
 class PersistConfiguration extends AbstractAjax
 {
     /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    private $graphApiAdapter;
 
     /**
      * @param Context $context
@@ -45,8 +55,10 @@ class PersistConfiguration extends AbstractAjax
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->graphApiAdapter = $graphApiAdapter;
+        $this->fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     public function executeForJson()
@@ -67,7 +79,7 @@ class PersistConfiguration extends AbstractAjax
         } catch (\Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
-            $this->_fbeHelper->logException($e);
+            $this->fbeHelper->logException($e);
             return $response;
         }
     }
@@ -76,11 +88,11 @@ class PersistConfiguration extends AbstractAjax
      * @param $catalogId
      * @return $this
      */
-    public function saveCatalogId($catalogId)
+    private function saveCatalogId($catalogId)
     {
         if ($catalogId) {
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId);
-            $this->_fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
+            $this->fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
         }
         return $this;
     }
@@ -89,11 +101,11 @@ class PersistConfiguration extends AbstractAjax
      * @param $externalBusinessId
      * @return $this
      */
-    public function saveExternalBusinessId($externalBusinessId)
+    private function saveExternalBusinessId($externalBusinessId)
     {
         if ($externalBusinessId) {
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId);
-            $this->_fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
+            $this->fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
         }
         return $this;
     }
@@ -105,21 +117,21 @@ class PersistConfiguration extends AbstractAjax
      * @throws LocalizedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function completeOnsiteOnboarding($accessToken, $pageId)
+    private function completeOnsiteOnboarding($accessToken, $pageId)
     {
         if (!$accessToken) {
-            $this->_fbeHelper->log('No access token available, skipping onboarding to onsite checkout');
+            $this->fbeHelper->log('No access token available, skipping onboarding to onsite checkout');
             return $this;
         }
 
         if (!$pageId) {
-            $this->_fbeHelper->log('No FB page ID available, skipping onboarding to onsite checkout');
+            $this->fbeHelper->log('No FB page ID available, skipping onboarding to onsite checkout');
             return $this;
         }
 
         // save page ID
         $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId);
-        $this->_fbeHelper->log('Page ID saved on instance --- '. $pageId);
+        $this->fbeHelper->log('Page ID saved on instance --- '. $pageId);
 
         // retrieve page access token
         $pageAccessToken = $this->graphApiAdapter->getPageAccessToken($accessToken, $pageId);

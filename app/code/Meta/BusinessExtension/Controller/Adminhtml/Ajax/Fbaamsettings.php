@@ -17,8 +17,31 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
+
 class Fbaamsettings extends AbstractAjax
 {
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     */
+    public function __construct(
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        FBEHelper $fbeHelper
+    ) {
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        $this->fbeHelper = $fbeHelper;
+    }
+
     public function executeForJson()
     {
         $response = [
@@ -27,7 +50,7 @@ class Fbaamsettings extends AbstractAjax
         ];
         $pixelId = $this->getRequest()->getParam('pixelId');
         if ($pixelId) {
-            $settingsAsString = $this->_fbeHelper->fetchAndSaveAAMSettings($pixelId);
+            $settingsAsString = $this->fbeHelper->fetchAndSaveAAMSettings($pixelId);
             if ($settingsAsString) {
                 $response['success'] = true;
                 $response['settings'] = $settingsAsString;

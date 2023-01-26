@@ -31,7 +31,17 @@ class ProductFeedUpload extends AbstractAjax
     /**
      * @var Uploader
      */
-    protected $uploader;
+    private $uploader;
+
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param Context $context
@@ -47,8 +57,10 @@ class ProductFeedUpload extends AbstractAjax
         SystemConfig $systemConfig,
         Uploader $uploader
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->uploader = $uploader;
+        $this->fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -60,8 +72,8 @@ class ProductFeedUpload extends AbstractAjax
         $response = [];
 
         // get default store info
-        $storeId = $this->_fbeHelper->getStore()->getId();
-        $storeName = $this->_fbeHelper->getStore()->getName();
+        $storeId = $this->fbeHelper->getStore()->getId();
+        $storeName = $this->fbeHelper->getStore()->getName();
 
         // override store if user switched config scope to non-default
         $storeParam = $this->getRequest()->getParam('store');

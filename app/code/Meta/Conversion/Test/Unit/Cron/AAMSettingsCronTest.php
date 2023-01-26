@@ -24,9 +24,9 @@ use Meta\Conversion\Cron\AAMSettingsCron;
 /** Previously EventIdGeneratorTest */
 class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
 {
-    protected $aamSettingsCron;
+    private $aamSettingsCron;
 
-    protected $fbeHelper;
+    private $fbeHelper;
 
     private $systemConfig;
 
@@ -86,12 +86,12 @@ class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
     {
         $pixelId = '1234';
         $settingsAsArray = [
-        "enableAutomaticMatching"=>false,
-        "enabledAutomaticMatchingFields"=>['em'],
-        "pixelId"=>$pixelId
+            "enableAutomaticMatching" => false,
+            "enabledAutomaticMatchingFields" => ['em'],
+            "pixelId" => $pixelId
         ];
         $settingsAsString = json_encode($settingsAsArray);
-
+        $this->systemConfig->method('getPixelId')->willReturn($pixelId);
         $this->fbeHelper->method('fetchAndSaveAAMSettings')->willReturn($settingsAsString);
 
         $result = $this->aamSettingsCron->execute();

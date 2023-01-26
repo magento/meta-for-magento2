@@ -30,7 +30,17 @@ class PullOrders extends AbstractAjax
     /**
      * @var CommerceHelper
      */
-    protected $commerceHelper;
+    private $commerceHelper;
+
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param Context $context
@@ -46,8 +56,10 @@ class PullOrders extends AbstractAjax
         FBEHelper $fbeHelper,
         CommerceHelper $commerceHelper
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->commerceHelper = $commerceHelper;
+        $this->fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -57,7 +69,7 @@ class PullOrders extends AbstractAjax
     public function executeForJson()
     {
         // get default store info
-        $storeId = $this->_fbeHelper->getStore()->getId();
+        $storeId = $this->fbeHelper->getStore()->getId();
 
         // override store if user switched config scope to non-default
         $storeParam = $this->getRequest()->getParam('store');
@@ -78,7 +90,7 @@ class PullOrders extends AbstractAjax
         } catch (Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
-            $this->_fbeHelper->logException($e);
+            $this->fbeHelper->logException($e);
             return ['success' => false, 'error_message' => $e->getMessage()];
         }
     }

@@ -19,6 +19,9 @@ namespace Meta\BusinessExtension\Helper;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\Quote;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Customer\Api\CustomerMetadataInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
@@ -42,32 +45,27 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * @var \Meta\BusinessExtension\Logger\Logger
      */
-    protected $logger;
+    private $logger;
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var StoreManagerInterface
      */
-    protected $productFactory;
+    private $storeManager;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var CustomerMetadataInterface
      */
-    protected $storeManager;
+    private $customerMetadata;
 
     /**
-     * @var \Magento\Customer\Api\CustomerMetadataInterface
+     * @var ProductRepositoryInterface
      */
-    protected $customerMetadata;
-
-    /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    protected $productRepository;
+    private $productRepository;
 
     /**
      * @var ProductIdentifier
      */
-    protected $productIdentifier;
+    private $productIdentifier;
 
     /**
      * @var CheckoutSession

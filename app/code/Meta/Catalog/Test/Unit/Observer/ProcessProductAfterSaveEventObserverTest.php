@@ -87,8 +87,9 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
     public function testExecution()
     {
         $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
+        $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->_batchApi->expects($this->once())->method('buildRequestForIndividualProduct');
-        $this->fbeHelper->expects($this->atLeastOnce())->method('makeHttpRequest');
+        $this->_graphApi->expects($this->atLeastOnce())->method('catalogBatchRequest');
         $this->processProductAfterSaveEventObserver->execute($this->_eventObserverMock);
     }
 }

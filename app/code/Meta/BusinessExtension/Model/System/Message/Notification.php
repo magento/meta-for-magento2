@@ -27,17 +27,17 @@ class Notification implements MessageInterface
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var UrlInterface
      */
-    protected $urlBuilder;
+    private $urlBuilder;
 
     /**
      * @var RequestInterface
      */
-    protected $request;
+    private $request;
 
     /**
      * @param SystemConfig $systemConfig
@@ -60,20 +60,6 @@ class Notification implements MessageInterface
     public function getIdentity()
     {
         return 'facebook_notification';
-    }
-
-    /**
-     * @param $storeId
-     * @return bool
-     */
-    protected function isShippingMappingConfigured($storeId)
-    {
-        foreach ($this->systemConfig->getShippingMethodsMap($storeId) as $key => $value) {
-            if ($value !== null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -104,5 +90,19 @@ class Notification implements MessageInterface
     public function getSeverity()
     {
         return self::SEVERITY_MAJOR;
+    }
+
+    /**
+     * @param $storeId
+     * @return bool
+     */
+    private function isShippingMappingConfigured($storeId)
+    {
+        foreach ($this->systemConfig->getShippingMethodsMap($storeId) as $key => $value) {
+            if ($value !== null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

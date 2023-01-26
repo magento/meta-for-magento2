@@ -17,13 +17,36 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
+
 class Fbdeleteasset extends AbstractAjax
 {
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     */
+    public function __construct(
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        FBEHelper $fbeHelper
+    ) {
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        $this->fbeHelper = $fbeHelper;
+    }
+
     /**
      * @return array
      */
     public function executeForJson()
     {
-        return $this->_fbeHelper->deleteConfigKeys();
+        return $this->fbeHelper->deleteConfigKeys();
     }
 }

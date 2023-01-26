@@ -17,6 +17,7 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -28,7 +29,12 @@ class PersistAccessToken extends AbstractAjax
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    private $graphApiAdapter;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param Context $context
@@ -44,13 +50,14 @@ class PersistAccessToken extends AbstractAjax
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->graphApiAdapter = $graphApiAdapter;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function executeForJson()
     {

@@ -17,11 +17,40 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
-use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Fbtoken extends AbstractAjax
 {
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
+     */
+    public function __construct(
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        FBEHelper $fbeHelper,
+        SystemConfig $systemConfig
+    ) {
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        $this->fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
+    }
+
     public function executeForJson()
     {
         $oldAccessToken = $this->systemConfig->getAccessToken();
@@ -35,7 +64,7 @@ class Fbtoken extends AbstractAjax
             $response['success'] = true;
             $response['accessToken'] = $accessToken;
             if ($oldAccessToken && $oldAccessToken != $accessToken) {
-                $this->_fbeHelper->log('Updated Access token...');
+                $this->fbeHelper->log('Updated Access token...');
             }
         }
         return $response;

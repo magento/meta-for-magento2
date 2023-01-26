@@ -30,7 +30,12 @@ class CategoryUpload extends AbstractAjax
     /**
      * @var CategoryCollection
      */
-    protected $categoryCollection;
+    private $categoryCollection;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param Context $context
@@ -46,8 +51,9 @@ class CategoryUpload extends AbstractAjax
         SystemConfig $systemConfig,
         CategoryCollection $categoryCollection
     ) {
-        parent::__construct($context, $resultJsonFactory, $fbeHelper, $systemConfig);
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->categoryCollection = $categoryCollection;
+        $this->systemConfig = $systemConfig;
     }
 
     /**

@@ -17,16 +17,17 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Setup;
 
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 
-class Index extends \Magento\Backend\App\Action
+class Index extends Action
 {
   /**
    * @var PageFactory
    */
-    protected $resultPageFactory;
+    private $resultPageFactory;
 
   /**
    * Constructor
@@ -49,6 +50,6 @@ class Index extends \Magento\Backend\App\Action
    */
     public function execute()
     {
-        return $resultPage = $this->resultPageFactory->create();
+        return $this->resultPageFactory->create();
     }
 }

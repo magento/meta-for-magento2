@@ -17,12 +17,35 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Config\App\Config\Type\System;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 
 class Fbprofiles extends AbstractAjax
 {
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
+     */
+    public function __construct(
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        FBEHelper $fbeHelper,
+        SystemConfig $systemConfig
+    ) {
+        parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        $this->systemConfig = $systemConfig;
+    }
+
+
     public function executeForJson()
     {
         $oldProfiles = $this->systemConfig->getProfiles();

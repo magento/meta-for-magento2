@@ -90,14 +90,8 @@ You can install the extension with a bash script.
 - Give it execute permission with `chmod +x install-facebook-business-extension.sh` (you may have to log in as root user to do it).
 - Switch to Magento files owner user and run: `./install-facebook-business-extension.sh`.
 - You should read `Installation finished` when the script is done.
-- Optional. If you don't switch to Magento files owner user run:
-	  `chmod -R 755 ./`
-	  `chmod -R 777 var/`
-	  `chmod -R 777 pub/`
-	  `chmod -R 777 app/etc`
-	  `chmod -R 777 generated`
 ######  Enable Extension By Running Commands Manually
-7. Execute the following commands to manually install Meta Business Extension.
+Execute the following commands to manually install Meta Business Extension.
 - Install the Facebook Business SDK for PHP: `composer require facebook/php-business-sdk`. This dependency is used by the extension.
 - You will see a message similar to: `Installing facebook/php-business-sdk (8.0.0): Downloading (100%)`
 - Execute `php bin/magento module:status`
@@ -108,12 +102,6 @@ You can install the extension with a bash script.
 - Execute `php bin/magento setup:di:compile`
 - Execute `php bin/magento cache:clean`
 - Execute `php bin/magento cron:run` three times
-- Optional. If you are not the owner of Magento files:
-	  `chmod -R 755 ./`
-	  `chmod -R 777 var/`
-	  `chmod -R 777 pub/`
-	  `chmod -R 777 app/etc`
-	  `chmod -R 777 generated`
 ### Verify Installation
 - Upon successful installation, login to your Magento Admin panel.
 - Click the Stores icon in the main menu.
