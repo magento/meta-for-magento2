@@ -94,7 +94,7 @@ class PersistConfiguration extends AbstractAjax
     {
         if ($catalogId) {
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId, $storeId);
-            $this->_fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
+            $this->fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
         }
         return $this;
     }
@@ -108,7 +108,7 @@ class PersistConfiguration extends AbstractAjax
     {
         if ($externalBusinessId) {
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId, $storeId)->cleanCache();
-            $this->_fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
+            $this->fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
         }
         return $this;
     }
@@ -136,7 +136,7 @@ class PersistConfiguration extends AbstractAjax
 
         // save page ID
         $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId, $storeId);
-        $this->_fbeHelper->log('Page ID saved on instance --- '. $pageId);
+        $this->fbeHelper->log('Page ID saved on instance --- '. $pageId);
 
         // retrieve page access token
         $pageAccessToken = $this->graphApiAdapter->getPageAccessToken($accessToken, $pageId);

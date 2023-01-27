@@ -63,7 +63,7 @@ class Fbpixel extends AbstractAjax
         ];
         $pixelId = $this->getRequest()->getParam('pixelId');
 
-        if ($pixelId && $this->_fbeHelper->isValidFBID($pixelId)) {
+        if ($pixelId && $this->fbeHelper->isValidFBID($pixelId)) {
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID, $pixelId, $storeId);
             $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, true, $storeId);
             $response['success'] = true;
