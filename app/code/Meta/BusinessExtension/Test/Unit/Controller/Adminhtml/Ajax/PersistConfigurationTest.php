@@ -75,7 +75,7 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
     {
         $storeId = 1;
         $merchantSettingsId = 15964;
-        $pageAccessToken = 'EAACxonUmtyIBABauturPd4CRiZBQFBsbxp8B2VoHZCf5J8H2hfCZBc0PGQu8GW2Yr8361BdtzOKt0BInpqwaT8ZAk5AULW697NWEWRWEFSDF7jZAwDOhBwXwpxoMpABBUBVge8pXQflFOZBnArCxjv0jfkk3NQi7OmiDEWtyFgjpcgITfSDrrahBhBg7D2QwZDZD';
+        $pageAccessToken = 'EAACxonUmtyIBABauSDrrahBhBg7D2QwZDZD';
         $this->request->method('getParam')->willReturn($storeId);
         $externalBusinessId = 'fbe_magento_1_63c34a23324';
         $this->request->method('getParam')->willReturn($externalBusinessId);
