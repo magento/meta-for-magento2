@@ -20,7 +20,6 @@ namespace Meta\Catalog\Model\Product\Feed\Builder;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 
 class Tools
@@ -31,20 +30,13 @@ class Tools
     protected $priceCurrency;
 
     /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
      * Tools constructor
      *
      * @param PriceCurrencyInterface $priceCurrency
-     * @param ObjectManagerInterface $objectManager
      */
-    public function __construct(PriceCurrencyInterface $priceCurrency, ObjectManagerInterface $objectManager)
+    public function __construct(PriceCurrencyInterface $priceCurrency)
     {
         $this->priceCurrency = $priceCurrency;
-        $this->objectManager = $objectManager;
     }
 
     /**
