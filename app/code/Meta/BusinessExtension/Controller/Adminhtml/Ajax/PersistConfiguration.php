@@ -107,7 +107,7 @@ class PersistConfiguration extends AbstractAjax
     public function saveExternalBusinessId($externalBusinessId, $storeId)
     {
         if ($externalBusinessId) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId, $storeId)->cleanCache();
+            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId, $storeId);
             $this->fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
         }
         return $this;
