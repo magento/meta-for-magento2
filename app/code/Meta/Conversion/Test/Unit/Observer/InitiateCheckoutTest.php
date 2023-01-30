@@ -58,7 +58,7 @@ class InitiateCheckoutTest extends CommonTest
 
     public function testInitiateCheckoutEventCreated()
     {
-        $this->magentoDataHelper->method('getCartTotal')->willReturn(170);
+        $this->magentoDataHelper->method('getCartTotal')->willReturn(170.00);
         $this->magentoDataHelper->method('getCartContentIds')->willReturn(
             [1, 2]
         );

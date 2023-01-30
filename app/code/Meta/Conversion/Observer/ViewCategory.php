@@ -37,17 +37,14 @@ class ViewCategory implements ObserverInterface
     protected $serverSideHelper;
 
     /**
-     * \Magento\Framework\Registry
+     * @param FBEHelper $fbeHelper
+     * @param ServerSideHelper $serverSideHelper
      */
-    protected $registry;
-
     public function __construct(
         FBEHelper $fbeHelper,
         ServerSideHelper $serverSideHelper,
-        \Magento\Framework\Registry $registry
     ) {
         $this->fbeHelper = $fbeHelper;
-        $this->registry = $registry;
         $this->serverSideHelper = $serverSideHelper;
     }
 
@@ -56,9 +53,9 @@ class ViewCategory implements ObserverInterface
         try {
             $eventId = $observer->getData('eventId');
             $customData = [];
-            $category = $this->registry->registry('current_category');
-            if ($category) {
-                $customData['content_category'] = addslashes($category->getName());
+            $categoryName = $observer->getData('categoryName');
+            if ($categoryName) {
+                $customData['content_category'] = addslashes($categoryName);
             }
             $event = ServerEventFactory::createEvent('ViewCategory', $customData, $eventId);
             $this->serverSideHelper->sendEvent($event);

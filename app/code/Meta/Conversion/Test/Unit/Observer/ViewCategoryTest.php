@@ -22,12 +22,9 @@ use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Observer\ViewCategory;
 use Magento\Framework\Event\Observer;
-use Magento\Framework\Registry;
 
 class ViewCategoryTest extends CommonTest
 {
-    protected $registry;
-
     protected $viewCategoryObserver;
 
     protected $serverSideHelper;
@@ -51,12 +48,10 @@ class ViewCategoryTest extends CommonTest
             $this->aamFieldsExtractorHelper,
             $this->systemConfig
         );
-        $this->registry = $this->createMock(Registry::class);
         $this->viewCategoryObserver =
             new ViewCategory(
                 $this->fbeHelper,
                 $this->serverSideHelper,
-                $this->registry
             );
     }
 
@@ -64,9 +59,8 @@ class ViewCategoryTest extends CommonTest
     {
         $category = $this->objectManager->getObject('Magento\Catalog\Model\Category');
         $category->setName('Electronics');
-        $this->registry->method('registry')->willReturn($category);
 
-        $observer = new Observer(['eventId' => '1234']);
+        $observer = new Observer(['eventId' => '1234', 'category' => $category]);
 
         $this->viewCategoryObserver->execute($observer);
 
@@ -77,7 +71,7 @@ class ViewCategoryTest extends CommonTest
         $this->assertEquals('1234', $event->getEventId());
 
         $customDataArray = [
-        'content_category' => 'Electronics'
+            'categoryName' => 'Electronics'
         ];
 
         $this->assertEqualsCustomData($customDataArray, $event->getCustomData());

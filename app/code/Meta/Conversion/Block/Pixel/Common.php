@@ -22,7 +22,6 @@ use Meta\BusinessExtension\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template\Context;
 
 class Common extends \Magento\Framework\View\Element\Template
@@ -31,11 +30,6 @@ class Common extends \Magento\Framework\View\Element\Template
      * @var ObjectManagerInterface
      */
     protected $objectManager;
-
-    /**
-     * @var Registry
-     */
-    protected $registry;
 
     /**
      * @var FBEHelper
@@ -57,7 +51,6 @@ class Common extends \Magento\Framework\View\Element\Template
      *
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
-     * @param Registry $registry
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
@@ -66,7 +59,6 @@ class Common extends \Magento\Framework\View\Element\Template
     public function __construct(
         Context $context,
         ObjectManagerInterface $objectManager,
-        Registry $registry,
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
@@ -74,7 +66,6 @@ class Common extends \Magento\Framework\View\Element\Template
     ) {
         parent::__construct($context, $data);
         $this->objectManager = $objectManager;
-        $this->registry = $registry;
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->systemConfig = $systemConfig;

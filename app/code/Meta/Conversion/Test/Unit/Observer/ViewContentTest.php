@@ -22,12 +22,9 @@ use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Observer\ViewContent;
 use Magento\Framework\Event\Observer;
-use Magento\Framework\Registry;
 
 class ViewContentTest extends CommonTest
 {
-    protected $registry;
-
     protected $viewContentObserver;
 
     protected $serverSideHelper;
@@ -51,13 +48,11 @@ class ViewContentTest extends CommonTest
             $this->aamFieldsExtractorHelper,
             $this->systemConfig
         );
-        $this->registry = $this->createMock(Registry::class);
         $this->viewContentObserver =
             new ViewContent(
                 $this->fbeHelper,
                 $this->serverSideHelper,
                 $this->magentoDataHelper,
-                $this->registry
             );
     }
 
@@ -76,9 +71,8 @@ class ViewContentTest extends CommonTest
         $product = $this->objectManager->getObject('\Magento\Catalog\Model\Product');
         $product->setId($id)->setSku($sku);
         $product->setName('Earphones');
-        $this->registry->method('registry')->willReturn($product);
 
-        $observer = new Observer(['eventId' => $eventId]);
+        $observer = new Observer(['eventId' => $eventId, 'product' => $product]);
 
         $this->viewContentObserver->execute($observer);
 

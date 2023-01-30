@@ -1,16 +1,20 @@
 <?php
-/** @var \Meta\Conversion\Block\Pixel\ViewCategory $block */
+/**
+ * @var \Meta\Conversion\Block\Pixel\ViewCategory $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
 if ($block->getFacebookPixelID()) {
+    $categoryName = $block->getCategoryName();
     $eventId = \Meta\Conversion\Helper\EventIdGenerator::guidv4();
-    $block->trackServerEvent($eventId);
+    $block->trackServerEvent($eventId, $categoryName);
     ?>
     <script>
         fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
         fbq('trackCustom', 'ViewCategory', {
                 source: "<?= $block->getSource() ?>",
                 pluginVersion: "<?= $block->getPluginVersion() ?>"
-                <?php if ($block->getCategory()) { ?>
-                , content_category: "<?= $block->getCategory() ?>"
+                <?php if ($block->getCategoryName()) { ?>
+                , content_category: "<?= $escaper->escapeHtmlAttr($categoryName) ?>"
                 <?php } ?>
             }
             , {
