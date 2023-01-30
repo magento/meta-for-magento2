@@ -60,13 +60,4 @@ class ViewCategory extends Common
         $category = $this->getLayout()->getBlock('category.description')->getCurrentCategory();
         return $category->getId();
     }
-
-    /*
-     * @param $eventId
-     * @param $categoryName
-     */
-    public function trackServerEvent($eventId, $categoryName = null)
-    {
-        $this->_eventManager->dispatch($this->getEventToObserveName(), ['eventId' => $eventId, 'categoryName' => $categoryName]);
-    }
 }
