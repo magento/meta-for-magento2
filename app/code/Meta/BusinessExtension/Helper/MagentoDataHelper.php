@@ -42,7 +42,6 @@ use Magento\Customer\Model\Customer;
  */
 class MagentoDataHelper extends AbstractHelper
 {
-   
     /**
      * @var StoreManagerInterface
      */
@@ -128,8 +127,6 @@ class MagentoDataHelper extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->logger = $logger;
-        $this->productFactory = $productFactory;
         $this->storeManager = $storeManager;
         $this->customerMetadata = $customerMetadata;
         $this->productRepository = $productRepository;
