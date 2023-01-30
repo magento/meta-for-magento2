@@ -70,37 +70,37 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * @var CheckoutSession
      */
-    protected $checkoutSession;
+    private $checkoutSession;
 
     /**
      * @var Quote
      */
-    protected $quote;
+    private $quote;
 
     /**
      * @var CustomerSession
      */
-    protected $customerSession;
+    private $customerSession;
 
     /**
      * @var CategoryRepositoryInterface
      */
-    protected $categoryRepository;
+    private $categoryRepository;
 
     /**
      * @var PricingHelper
      */
-    protected $pricingHelper;
+    private $pricingHelper;
 
     /**
      * @var AddressFactory
      */
-    protected $addressFactory;
+    private $addressFactory;
 
     /**
      * @var RegionFactory
      */
-    protected $regionFactory;
+    private $regionFactory;
 
     /**
      * MagentoDataHelper constructor
@@ -111,6 +111,9 @@ class MagentoDataHelper extends AbstractHelper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     * @param StoreManagerInterface $storeManager
+     * @param CustomerMetadataInterface $customerMetadata
+     * @param ProductRepositoryInterface $productRepository
      * @param ProductIdentifier $productIdentifier
      * @param CheckoutSession $checkoutSession
      * @param CustomerSession $customerSession
@@ -123,9 +126,9 @@ class MagentoDataHelper extends AbstractHelper
         Context $context,
         \Meta\BusinessExtension\Logger\Logger $logger,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        StoreManagerInterface $storeManager,
+        CustomerMetadataInterface $customerMetadata,
+        ProductRepositoryInterface $productRepository,
         ProductIdentifier $productIdentifier,
         CheckoutSession $checkoutSession,
         CustomerSession $customerSession,
@@ -429,9 +432,9 @@ class MagentoDataHelper extends AbstractHelper
     {
         if (!$this->customerSession->isLoggedIn()) {
             return null;
-        } else {
-            return $this->customerSession->getCustomer();
         }
+
+        return $this->customerSession->getCustomer();
     }
 
     /**

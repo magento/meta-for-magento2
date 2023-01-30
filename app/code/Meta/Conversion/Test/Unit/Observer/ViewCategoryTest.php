@@ -71,7 +71,7 @@ class ViewCategoryTest extends CommonTest
         $this->assertEquals('1234', $event->getEventId());
 
         $customDataArray = [
-        'content_category' => 'Electronics'
+            'categoryName' => 'Electronics'
         ];
 
         $this->assertEqualsCustomData($customDataArray, $event->getCustomData());

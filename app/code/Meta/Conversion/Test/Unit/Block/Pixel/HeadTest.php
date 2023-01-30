@@ -36,8 +36,6 @@ class HeadTest extends TestCase
 
     private $objectManager;
 
-    private $registry;
-
     private $fbeHelper;
 
     private $magentoDataHelper;
