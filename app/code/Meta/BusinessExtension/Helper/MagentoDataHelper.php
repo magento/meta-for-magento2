@@ -17,11 +17,11 @@
 
 namespace Meta\BusinessExtension\Helper;
 
-use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Quote\Model\Quote;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Customer\Api\CustomerMetadataInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Quote\Model\Quote;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
@@ -42,11 +42,7 @@ use Magento\Customer\Model\Customer;
  */
 class MagentoDataHelper extends AbstractHelper
 {
-    /**
-     * @var \Meta\BusinessExtension\Logger\Logger
-     */
-    private $logger;
-
+   
     /**
      * @var StoreManagerInterface
      */
@@ -106,11 +102,6 @@ class MagentoDataHelper extends AbstractHelper
      * MagentoDataHelper constructor
      *
      * @param Context $context
-     * @param \Meta\BusinessExtension\Logger\Logger $logger
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Customer\Api\CustomerMetadataInterface $customerMetadata
-     * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
      * @param StoreManagerInterface $storeManager
      * @param CustomerMetadataInterface $customerMetadata
      * @param ProductRepositoryInterface $productRepository
@@ -124,8 +115,6 @@ class MagentoDataHelper extends AbstractHelper
      */
     public function __construct(
         Context $context,
-        \Meta\BusinessExtension\Logger\Logger $logger,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
         StoreManagerInterface $storeManager,
         CustomerMetadataInterface $customerMetadata,
         ProductRepositoryInterface $productRepository,
@@ -138,6 +127,7 @@ class MagentoDataHelper extends AbstractHelper
         RegionFactory $regionFactory
     ) {
         parent::__construct($context);
+
         $this->logger = $logger;
         $this->productFactory = $productFactory;
         $this->storeManager = $storeManager;
@@ -222,14 +212,14 @@ class MagentoDataHelper extends AbstractHelper
                 try {
                     $category = $this->categoryRepository->get($categoryId);
                 } catch (NoSuchEntityException $e) {
-                    return '';
+                    continue;
                 }
                 $categoryNames[] = $category->getName();
             }
             return addslashes(implode(',', $categoryNames));
-        } else {
-            return '';
         }
+
+        return '';
     }
 
     /**
