@@ -77,7 +77,6 @@ class AddToCartTest extends CommonTest
         $product->setName('Earphones');
         $this->request->method('getParam')->willReturn($sku);
         $this->magentoDataHelper->method('getProductBySku')->willReturn($product);
-        $this->magentoDataHelper->method('getProductById')->willReturn($product);
 
         $observer = new Observer(['eventId' => $eventId]);
 
