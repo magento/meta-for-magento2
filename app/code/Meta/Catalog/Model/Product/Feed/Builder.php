@@ -86,7 +86,7 @@ class Builder
     /**
      * @var InventoryInterface
      */
-    protected $inventory;
+    private $inventory;
 
     /**
      * @var ProductIdentifier
@@ -483,7 +483,7 @@ class Builder
      * @param Product $product
      * @return InventoryInterface
      */
-    protected function getInventory(Product $product): InventoryInterface
+    private function getInventory(Product $product): InventoryInterface
     {
         $this->inventory->initInventoryForProduct($product);
         return $this->inventory;

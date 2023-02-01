@@ -41,16 +41,6 @@ class MultiSourceInventory implements InventoryInterface
     private $getProductSalableQtyInterface;
 
     /**
-     * @var bool
-     */
-    protected $stockStatus = false;
-
-    /**
-     * @var int
-     */
-    protected $stockQty = 0;
-
-    /**
      * @var SystemConfig
      */
     protected $systemConfig;
@@ -58,7 +48,7 @@ class MultiSourceInventory implements InventoryInterface
     /**
      * @var StockByWebsiteIdResolverInterface
      */
-    protected $stockByWebsiteIdResolver;
+    private $stockByWebsiteIdResolver;
 
     /**
      * @param IsProductSalableInterface $isProductSalableInterface
@@ -82,7 +72,7 @@ class MultiSourceInventory implements InventoryInterface
      * @param Product $product
      * @return bool
      */
-    public function getStockStatus(Product $product, int $stockId): bool
+    private function getStockStatus(Product $product, int $stockId): bool
     {
         try {
             return $this->isProductSalableInterface->execute(
@@ -96,9 +86,10 @@ class MultiSourceInventory implements InventoryInterface
 
     /**
      * @param Product $product
-     * @return int
+     * @param int $stockId
+     * @return int|float
      */
-    public function getStockQty(Product $product, int $stockId): int
+    private function getStockQty(Product $product, int $stockId): int|float
     {
         try {
             return $this->getProductSalableQtyInterface->execute(
@@ -114,7 +105,7 @@ class MultiSourceInventory implements InventoryInterface
      * @param Product $product
      * @return $this
      */
-    public function initInventoryForProduct(Product $product)
+    public function initInventoryForProduct(Product $product): MultiSourceInventory
     {
         $websiteId = $product->getStore()->getWebsiteId();
         $stockId = $this->stockByWebsiteIdResolver->execute($websiteId)->getStockId();
@@ -145,6 +136,8 @@ class MultiSourceInventory implements InventoryInterface
         if (!$this->product) {
             return 0;
         }
-        return $this->stockQty;
+        $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
+        $quantityAvailableForCatalog = $this->stockQty - $outOfStockThreshold;
+        return $quantityAvailableForCatalog > 0 ? $quantityAvailableForCatalog : 0;
     }
 }
