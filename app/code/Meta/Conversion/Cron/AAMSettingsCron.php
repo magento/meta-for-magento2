@@ -58,7 +58,7 @@ class AAMSettingsCron
     /**
      * @return bool
      */
-    public function execute()
+    public function execute(): bool
     {
         $storeIds = array_keys($this->storeManager->getStores());
         $processed = false;
