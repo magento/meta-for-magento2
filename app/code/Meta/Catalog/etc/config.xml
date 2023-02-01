@@ -12,6 +12,7 @@
             </catalog_management>
             <inventory_management>
                 <enable_inventory_upload>0</enable_inventory_upload>
+                <out_of_stock_threshold>0</out_of_stock_threshold>
             </inventory_management>
         </facebook>
     </default>
