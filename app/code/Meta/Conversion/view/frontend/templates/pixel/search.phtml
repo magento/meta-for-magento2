@@ -2,26 +2,37 @@
 /** @var \Meta\Conversion\Block\Pixel\Search $block */
 
 $trackerUrl = $block->getTrackerUrl();
+
+if ($block->getFacebookPixelID()) {
 ?>
 
-<!-- Component to track server events -->
-<script type="text/x-magento-init">
-    {
-        "*": {
-            "Meta_Conversion/js/metaPixelTracker" : {
-                "url" : "<?= $block->escapeJs($trackerUrl); ?>",
-                "payload": <?= json_encode([
-                    "eventName" => $block->getEventToObserveName(),
-                    "searchQuery" => $block->getSearchQuery()
-                ]) ?>,
-                "browserEventData": <?= json_encode([
-                    'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                    'source' => $block->getSource(),
-                    'pluginVersion' => $block->getPluginVersion(),
-                    'track' => 'track',
-                    'event' => 'Search'
-                ]) ?>
+    <script>
+        window.eventId = crypto.randomUUID();
+        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
+        fbq('track', 'Search', {
+                source: "<?= $block->getSource() ?>",
+                pluginVersion: "<?= $block->getPluginVersion() ?>",
+                search_string: "<?= $block->getSearchQuery() ?>"
+            }
+            , {
+                eventID: window.eventId
+            }
+        );
+    </script>
+
+    <!-- Added the new component below to track server events -->
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Meta_Conversion/js/metaPixelTracker" : {
+                    "url" : "<?= $block->escapeJs($trackerUrl); ?>",
+                    "payload": <?= json_encode([
+                        "eventName" => $block->getEventToObserveName(),
+                        "searchQuery" => $block->getSearchQuery(),
+                    ]) ?>
+                }
             }
         }
-    }
-</script>
+    </script>
+
+<?php } ?>

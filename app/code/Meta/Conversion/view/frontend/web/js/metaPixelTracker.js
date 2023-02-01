@@ -4,32 +4,23 @@ define([
     'use strict';
 
     return function (config) {
-
-        var browserEventData = config.browserEventData;
-
-        $.ajax({
-            showLoader: true,
-            url: config.url,
-            type: "POST",
-            data: config.payload,
-            dataType: "json",
-            success: function (response) {
-                if (response.eventId && response.pixelId) {
-                    let browserPayload = response.payload;
-                    browserPayload.source = browserEventData.source;
-                    browserPayload.pluginVersion = browserEventData.pluginVersion;
-
-                    fbq('set', 'agent', browserEventData.fbAgentVersion, response.pixelId);
-                    fbq(browserEventData.track, browserEventData.event, browserPayload, {
-                            eventID: response.eventId
-                        }
-                    );
+        var eventId = window.eventId;
+        if (eventId) {
+            config.payload.eventId = eventId
+            $.ajax({
+                showLoader: true,
+                url: config.url,
+                type: "POST",
+                data: config.payload,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response)
+                },
+                error: function (error) {
+                    console.log(error)
                 }
-            },
-            error: function (error) {
-                console.log(error)
-            }
 
-        });
+            });
+        }
     }
 });

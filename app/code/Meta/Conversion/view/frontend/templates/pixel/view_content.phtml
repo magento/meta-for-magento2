@@ -2,26 +2,48 @@
 /* @var \Meta\Conversion\Block\Pixel\ViewContent $block */
 
 $trackerUrl = $block->getTrackerUrl();
+
+if ($block->getFacebookPixelID()) {
 ?>
 
-<!-- Added the new component below to track server events -->
-<script type="text/x-magento-init">
-    {
-        "*": {
-            "Meta_Conversion/js/metaPixelTracker" : {
-                "url" : "<?= $block->escapeJs($trackerUrl); ?>",
-                "payload": <?= json_encode([
-                    "eventName" => $block->getEventToObserveName(),
-                    "productId" => $block->getProductId()
-                ]) ?>,
-                "browserEventData": <?= json_encode([
-                    'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                    'source' => $block->getSource(),
-                    'pluginVersion' => $block->getPluginVersion(),
-                    'track' => 'trackCustom',
-                    'event' => 'ViewContent'
-                ]) ?>
+    <script>
+        window.eventId = crypto.randomUUID();
+        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
+        fbq('track', 'ViewContent', {
+                source: "<?= $block->getSource() ?>",
+                pluginVersion: "<?= $block->getPluginVersion() ?>",
+                content_type: "<?= $block->getContentType() ?>",
+                content_ids: [<?= $block->getContentIDs() ?>]
+                <?php if ($block->getContentName()) { ?>
+                , content_name: "<?= $block->getContentName() ?>"
+                <?php } ?>
+                <?php if ($block->getContentCategory()) { ?>
+                , content_category: "<?= $block->getContentCategory() ?>"
+                <?php } ?>
+                <?php if ($block->getValue() && $block->getCurrency()) { ?>
+                , value: <?= $block->getValue() ?>
+                , currency: "<?= $block->getCurrency() ?>"
+                <?php } ?>
+            }
+            , {
+                eventID: window.eventId
+            }
+        );
+    </script>
+
+    <!-- Added the new component below to track server events -->
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Meta_Conversion/js/metaPixelTracker" : {
+                    "url" : "<?= $block->escapeJs($trackerUrl); ?>",
+                    "payload": <?= json_encode([
+                        "eventName" => $block->getEventToObserveName(),
+                        "productId" => $block->getProductId()
+                    ]) ?>
+                }
             }
         }
-    }
-</script>
+    </script>
+    <?php $block->logEvent($block->getFacebookPixelID(), 'ViewContent') ?>
+<?php } ?>

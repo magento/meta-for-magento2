@@ -9,7 +9,6 @@ use Magento\Framework\App\RequestInterface;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Helper\ServerEventFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\Conversion\Helper\EventIdGenerator;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
 use Meta\BusinessExtension\Model\System\Config as ConfigProvider;
@@ -79,15 +78,12 @@ class Tracker implements HttpPostActionInterface
             try {
                 $params = $this->request->getParams();
                 $eventName = $params['eventName'];
+                $eventId = $params['eventId'];
 
                 if ($eventName) {
                     $payload = $this->pixelEvents[$eventName]->getPayload($params);
-                    $response['payload'] = $payload;
                     if (count($payload)) {
                         $eventType = $this->pixelEvents[$eventName]->getEventType();
-                        $eventId = EventIdGenerator::guidv4();
-                        $response['eventId'] = $eventId;
-                        $response['pixelId'] = $pixelId;
 
                         $event = ServerEventFactory::createEvent($eventType, array_filter($payload), $eventId);
                         $this->serverSideHelper->sendEvent($event);
