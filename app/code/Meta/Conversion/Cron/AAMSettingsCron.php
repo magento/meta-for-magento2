@@ -26,17 +26,17 @@ class AAMSettingsCron
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var StoreManager
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * AAMSettingsCron constructor
