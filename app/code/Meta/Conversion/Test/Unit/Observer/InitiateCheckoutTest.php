@@ -28,12 +28,12 @@ class InitiateCheckoutTest extends CommonTest
     /**
      * @var InitiateCheckout
      */
-    protected $initiateCheckoutObserver;
+    private $initiateCheckoutObserver;
 
     /**
      * @var ServerSideHelper
      */
-    protected $serverSideHelper;
+    private $serverSideHelper;
 
     /**
      * @var AAMFieldsExtractorHelper
