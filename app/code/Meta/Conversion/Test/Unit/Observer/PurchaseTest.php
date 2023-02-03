@@ -25,10 +25,19 @@ use Magento\Framework\Event\Observer;
 
 class PurchaseTest extends CommonTest
 {
+    /**
+     * @var Purchase
+     */
     protected $purchaseObserver;
 
+    /**
+     * @var ServerSideHelper
+     */
     protected $serverSideHelper;
 
+    /**
+     * @var AAMFieldsExtractorHelper
+     */
     private $aamFieldsExtractorHelper;
 
     /**
