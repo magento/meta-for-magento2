@@ -120,6 +120,7 @@ class InitiateCheckout extends Common
 
     /**
      * Get event name
+     *
      * @return string
      */
     public function getEventToObserveName()
