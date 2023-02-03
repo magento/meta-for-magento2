@@ -102,5 +102,6 @@ class PurchaseTest extends CommonTest
         ];
 
         $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+        $this->assertEqualsCustomDataContents($customDataArray, $event->getCustomData());
     }
 }

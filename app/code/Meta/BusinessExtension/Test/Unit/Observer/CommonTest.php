@@ -108,21 +108,27 @@ abstract class CommonTest extends TestCase
         if (!empty($customDataArray['order_id'])) {
             $this->assertEquals($customData->getOrderId(), $customDataArray['order_id']);
         }
+    }
 
-        if (!empty($customDataArray['contents'])) {
-            $contents = $customData->getContents();
-            $this->assertNotNull($contents);
-            $this->assertEquals(count($customDataArray['contents']), count($contents));
-            for ($i = 0; $i < count($contents); $i++) {
-                if (!empty($customDataArray['contents'][$i]['product_id'])) {
-                    $this->assertEquals($customDataArray['contents'][$i]['product_id'], $contents[$i]->getProductId());
-                }
-                if (!empty($customDataArray['contents'][$i]['quantity'])) {
-                    $this->assertEquals($customDataArray['contents'][$i]['quantity'], $contents[$i]->getQuantity());
-                }
-                if (!empty($customDataArray['contents'][$i]['item_price'])) {
-                    $this->assertEquals($customDataArray['contents'][$i]['item_price'], $contents[$i]->getItemPrice());
-                }
+    /**
+     * @param array $customDataArray
+     * @param object $customData
+     * @return void
+     */
+    public function assertEqualsCustomDataContents($customDataArray, $customData)
+    {
+        $contents = $customData->getContents();
+        $this->assertNotNull($contents);
+        $this->assertEquals(count($customDataArray['contents']), count($contents));
+        for ($i = 0; $i < count($contents); $i++) {
+            if (!empty($customDataArray['contents'][$i]['product_id'])) {
+                $this->assertEquals($customDataArray['contents'][$i]['product_id'], $contents[$i]->getProductId());
+            }
+            if (!empty($customDataArray['contents'][$i]['quantity'])) {
+                $this->assertEquals($customDataArray['contents'][$i]['quantity'], $contents[$i]->getQuantity());
+            }
+            if (!empty($customDataArray['contents'][$i]['item_price'])) {
+                $this->assertEquals($customDataArray['contents'][$i]['item_price'], $contents[$i]->getItemPrice());
             }
         }
     }
