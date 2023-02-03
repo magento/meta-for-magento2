@@ -120,16 +120,29 @@ abstract class CommonTest extends TestCase
         $contents = $customData->getContents();
         $this->assertNotNull($contents);
         $this->assertEquals(count($customDataArray['contents']), count($contents));
-        for ($i = 0; $i < count($contents); $i++) {
-            if (!empty($customDataArray['contents'][$i]['product_id'])) {
-                $this->assertEquals($customDataArray['contents'][$i]['product_id'], $contents[$i]->getProductId());
-            }
-            if (!empty($customDataArray['contents'][$i]['quantity'])) {
-                $this->assertEquals($customDataArray['contents'][$i]['quantity'], $contents[$i]->getQuantity());
-            }
-            if (!empty($customDataArray['contents'][$i]['item_price'])) {
-                $this->assertEquals($customDataArray['contents'][$i]['item_price'], $contents[$i]->getItemPrice());
-            }
+
+        if (!empty($customDataArray['contents'][0]['product_id'])) {
+            $this->assertEquals($customDataArray['contents'][0]['product_id'], $contents[0]->getProductId());
+        }
+
+        if (!empty($customDataArray['contents'][0]['quantity'])) {
+            $this->assertEquals($customDataArray['contents'][0]['quantity'], $contents[0]->getQuantity());
+        }
+
+        if (!empty($customDataArray['contents'][0]['item_price'])) {
+            $this->assertEquals($customDataArray['contents'][0]['item_price'], $contents[0]->getItemPrice());
+        }
+
+        if (!empty($customDataArray['contents'][1]['product_id'])) {
+            $this->assertEquals($customDataArray['contents'][1]['product_id'], $contents[1]->getProductId());
+        }
+
+        if (!empty($customDataArray['contents'][1]['quantity'])) {
+            $this->assertEquals($customDataArray['contents'][1]['quantity'], $contents[1]->getQuantity());
+        }
+
+        if (!empty($customDataArray['contents'][1]['item_price'])) {
+            $this->assertEquals($customDataArray['contents'][1]['item_price'], $contents[1]->getItemPrice());
         }
     }
 }
