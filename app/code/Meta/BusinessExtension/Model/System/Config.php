@@ -200,7 +200,8 @@ class Config
      */
     public function getPromotionsUrl($storeId = null)
     {
-        return sprintf('https://www.facebook.com/commerce/%s/promotions/discounts/',
+        return sprintf(
+            'https://www.facebook.com/commerce/%s/promotions/discounts/',
             $this->getCommerceAccountId($storeId)
         );
     }
@@ -271,8 +272,10 @@ class Config
      */
     public function isActiveIncrementalProductUpdates($scopeId = null, $scope = null)
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES,
-            $scopeId, $scope
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES,
+            $scopeId,
+            $scope
         );
     }
 
@@ -321,8 +324,10 @@ class Config
      */
     public function getOutOfStockThreshold($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD,
-            $scopeId, $scope
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD,
+            $scopeId,
+            $scope
         );
     }
 
@@ -373,27 +378,33 @@ class Config
     {
         $address = [];
 
-        $address['street_1'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1,
+        $address['street_1'] = $this->getConfig(
+            self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1,
             $scopeId,
             $scope
         );
-        $address['street_2'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_2,
+        $address['street_2'] = $this->getConfig(
+            self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_2,
             $scopeId,
             $scope
         );
-        $address['country'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_COUNTRY_ID,
+        $address['country'] = $this->getConfig(
+            self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_COUNTRY_ID,
             $scopeId,
             $scope
         );
-        $address['state'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STATE,
+        $address['state'] = $this->getConfig(
+            self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STATE,
             $scopeId,
             $scope
         );
-        $address['city'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_CITY,
+        $address['city'] = $this->getConfig(
+            self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_CITY,
             $scopeId,
             $scope
         );
-        $address['postal_code'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_ZIP_CODE,
+        $address['postal_code'] = $this->getConfig(
+            self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_ZIP_CODE,
             $scopeId,
             $scope
         );
@@ -440,7 +451,7 @@ class Config
             return $this->scopeConfig->getValue($configPath);
         }
         try {
-            $value = $this->scopeConfig->getValue($configPath, $scope ?: ScopeInterface::SCOPE_STORE, is_null($scopeId)
+            $value = $this->scopeConfig->getValue($configPath, $scope ?: ScopeInterface::SCOPE_STORE, $scopeId === null
                 ? $this->storeManager->getStore()->getId() : $scopeId);
         } catch (NoSuchEntityException $e) {
             return null;
@@ -534,8 +545,10 @@ class Config
      */
     public function getExternalBusinessId($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID,
-            $scopeId, $scope
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID,
+            $scopeId,
+            $scope
         );
     }
 
@@ -560,8 +573,10 @@ class Config
      */
     public function getPixelAamSettings($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS,
-            $scopeId, $scope
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS,
+            $scopeId,
+            $scope
         );
     }
 
@@ -610,8 +625,10 @@ class Config
      */
     public function getCommerceAccountId($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
-            $scopeId, $scope
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
+            $scopeId,
+            $scope
         );
     }
 
@@ -624,8 +641,10 @@ class Config
      */
     public function isDebugMode($scopeId = null, $scope = null)
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE,
-            $scopeId, $scope
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE,
+            $scopeId,
+            $scope
         );
     }
 
@@ -650,7 +669,8 @@ class Config
      */
     public function getApiVersionLastUpdate($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
             $scopeId,
             $scope
         );
@@ -752,7 +772,8 @@ class Config
      */
     public function isActiveCollectionsSync($scopeId = null, $scope = null)
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE,
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE,
             $scopeId = null,
             $scope = null
         );
