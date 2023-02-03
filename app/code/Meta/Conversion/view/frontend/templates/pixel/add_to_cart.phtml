@@ -6,12 +6,12 @@
         ], function ($) {
 
             function trackAddToCart(content_ids, content_name, content_category, value, eventId) {
-                fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
+                fbq('set', 'agent', '<?= /* @escapeNotVerified */ $block->getFacebookAgentVersion() ?>', '<?= /* @escapeNotVerified */ $block->getFacebookPixelID() ?>');
                 fbq('track', 'AddToCart', {
-                        source: "<?= $block->getSource() ?>",
-                        pluginVersion: "<?= $block->getPluginVersion() ?>",
-                        content_type: "<?= $block->getContentType() ?>",
-                        currency: "<?= $block->getCurrency() ?>",
+                        source: "<?= /* @escapeNotVerified */ $block->getSource() ?>",
+                        pluginVersion: "<?= /* @escapeNotVerified */ $block->getPluginVersion() ?>",
+                        content_type: "<?= /* @escapeNotVerified */ $block->getContentType() ?>",
+                        currency: "<?= /* @escapeNotVerified */ $block->getCurrency() ?>",
                         content_ids: content_ids,
                         content_name: content_name,
                         content_category: content_category,
@@ -23,7 +23,7 @@
                 );
             }
 
-            var product_info_url = '<?= $block->getProductInfoUrl() ?>';
+            var product_info_url = '<?= /* @escapeNotVerified */ $block->getProductInfoUrl() ?>';
 
             $(document).on('ajax:addToCart', function (event, data) {
                 var configurableProduct = data.form.data().mageConfigurable;
@@ -54,5 +54,4 @@
             });
         });
     </script>
-    <?php $block->logEvent($block->getFacebookPixelID(), 'AddToCart') ?>
 <?php } ?>

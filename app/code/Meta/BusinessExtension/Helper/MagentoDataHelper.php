@@ -17,8 +17,10 @@
 
 namespace Meta\BusinessExtension\Helper;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Customer\Api\CustomerMetadataInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\Quote;
@@ -50,57 +52,57 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var CustomerMetadataInterface
      */
-    private $customerMetadata;
+    private CustomerMetadataInterface $customerMetadata;
 
     /**
      * @var ProductRepositoryInterface
      */
-    private $productRepository;
+    private ProductRepositoryInterface $productRepository;
 
     /**
      * @var ProductIdentifier
      */
-    private $productIdentifier;
+    private ProductIdentifier $productIdentifier;
 
     /**
      * @var CheckoutSession
      */
-    private $checkoutSession;
+    private CheckoutSession $checkoutSession;
 
     /**
-     * @var Quote
+     * @var Quote|null
      */
     private $quote;
 
     /**
      * @var CustomerSession
      */
-    private $customerSession;
+    private CustomerSession $customerSession;
 
     /**
      * @var CategoryRepositoryInterface
      */
-    private $categoryRepository;
+    private CategoryRepositoryInterface $categoryRepository;
 
     /**
      * @var PricingHelper
      */
-    private $pricingHelper;
+    private PricingHelper $pricingHelper;
 
     /**
      * @var AddressFactory
      */
-    private $addressFactory;
+    private AddressFactory $addressFactory;
 
     /**
      * @var RegionFactory
      */
-    private $regionFactory;
+    private RegionFactory $regionFactory;
 
     /**
      * MagentoDataHelper constructor
@@ -174,22 +176,12 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Return currently logged in users' Date of Birth.
-     *
-     * @return string
-     */
-    public function getDateOfBirth(): string
-    {
-        return $this->customerSession->getCustomer()->getDob();
-    }
-
-    /**
      * Return the product by the given sku
      *
      * @param string $productSku
-     * @return \Magento\Catalog\Api\Data\ProductInterface | bool
+     * @return ProductInterface | bool
      */
-    public function getProductBySku($productSku)
+    public function getProductBySku(string $productSku)
     {
         try {
             return $this->productRepository->get($productSku);
@@ -199,10 +191,12 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * @param $productId
-     * @return false|\Magento\Catalog\Api\Data\ProductInterface
+     * Get Product by ID
+     *
+     * @param mixed $productId
+     * @return false|ProductInterface
      */
-    public function getProductById($productId): bool|\Magento\Catalog\Api\Data\ProductInterface
+    public function getProductById($productId)
     {
         try {
             return $this->productRepository->getById($productId);
@@ -214,7 +208,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the categories for the given product
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param Product $product
      * @return string
      */
     public function getCategoriesForProduct($product): string
@@ -248,7 +242,7 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Get content id
+     * Get Content IDs (Product IDs)
      *
      * @param Product $product
      * @return bool|int|string
@@ -261,10 +255,10 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the price for the given product
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param Product $product
      * @return float
      */
-    public function getValueForProduct($product): float
+    public function getValueForProduct(Product $product): float
     {
         $price = $product->getFinalPrice();
         return $this->pricingHelper->currency($price, false, false);
@@ -274,7 +268,8 @@ class MagentoDataHelper extends AbstractHelper
      * Return the currency used in the store
      *
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
+     * @throws LocalizedException
      */
     public function getCurrency(): string
     {
@@ -389,7 +384,7 @@ class MagentoDataHelper extends AbstractHelper
      *
      * @return float|null
      */
-    public function getOrderTotal()
+    public function getOrderTotal(): ?float
     {
         $order = $this->checkoutSession->getLastRealOrder();
         if (!$order) {
@@ -405,7 +400,6 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return information about the last order items
-     *
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
      *
      * @return array
@@ -465,7 +459,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the address of a given customer
      *
-     * @param object $customer
+     * @param mixed $customer
      * @return Address
      */
     public function getCustomerAddress($customer): Address
@@ -475,41 +469,11 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Return the region's code for the given address
-     *
-     * @param object $address
-     * @return string|null
-     */
-    public function getRegionCodeForAddress($address): ?string
-    {
-        $region = $this->regionFactory->create()->load($address->getRegionId());
-        if ($region) {
-            return $region->getCode();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Return the string representation of the customer gender
-     *
-     * @param object $customer
-     * @return string|null
-     */
-    public function getGenderAsString($customer): ?string
-    {
-        if ($customer->getGender()) {
-            return $customer->getResource()->getAttribute('gender')->getSource()->getOptionText($customer->getGender());
-        }
-        return null;
-    }
-
-    /**
      * Return all of the match keys that can be extracted from order information
      *
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getUserDataFromOrder(): array
     {
@@ -550,8 +514,8 @@ class MagentoDataHelper extends AbstractHelper
      * Return all of the match keys that can be extracted from user session
      *
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getUserDataFromSession(): array
     {
@@ -589,9 +553,9 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
-     * Hash value
+     * Get Hash value
      *
-     * @param string $string
+     * @param $string
      * @return string
      */
     private function hashValue($string): string
@@ -603,6 +567,8 @@ class MagentoDataHelper extends AbstractHelper
      * Get active quote
      *
      * @return Quote
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getQuote(): Quote
     {
