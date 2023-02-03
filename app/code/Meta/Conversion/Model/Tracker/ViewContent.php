@@ -12,7 +12,7 @@ use Meta\Conversion\Api\TrackerInterface;
 class ViewContent implements TrackerInterface
 {
 
-    const EVENT_TYPE = "ViewContent";
+    private const EVENT_TYPE = "ViewContent";
 
     /**
      * @var MagentoDataHelper

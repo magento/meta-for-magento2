@@ -23,6 +23,8 @@ namespace Meta\Conversion\Block\Pixel;
 class ViewCategory extends Common
 {
     /**
+     * Get Category name
+     *
      * @return string|null
      */
     public function getCategoryName()
@@ -31,6 +33,8 @@ class ViewCategory extends Common
     }
 
     /**
+     * Get Event name
+     *
      * @return string
      */
     public function getEventToObserveName()
@@ -39,6 +43,8 @@ class ViewCategory extends Common
     }
 
     /**
+     * Get Category Id
+     *
      * @return mixed
      */
     public function getCategoryId()

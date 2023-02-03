@@ -9,7 +9,7 @@ use Meta\Conversion\Api\TrackerInterface;
 class Search implements TrackerInterface
 {
 
-    const EVENT_TYPE = 'Search';
+    private const EVENT_TYPE = 'Search';
 
     /**
      * @inheritDoc

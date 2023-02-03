@@ -41,10 +41,13 @@ class Tracker implements HttpPostActionInterface
     private $jsonFactory;
 
     /**
+     * Constructor
+     *
      * @param RequestInterface $request
      * @param ServerSideHelper $serverSideHelper
      * @param FBEHelper $fbeHelper
-     * @param $pixelEvents
+     * @param JsonFactory $jsonFactory
+     * @param array $pixelEvents
      */
     public function __construct(
         RequestInterface $request,
@@ -52,7 +55,7 @@ class Tracker implements HttpPostActionInterface
         FBEHelper $fbeHelper,
         JsonFactory $jsonFactory,
         array $pixelEvents = []
-    ){
+    ) {
         $this->request = $request;
         $this->serverSideHelper = $serverSideHelper;
         $this->fbeHelper = $fbeHelper;
@@ -60,6 +63,11 @@ class Tracker implements HttpPostActionInterface
         $this->pixelEvents = $pixelEvents;
     }
 
+    /**
+     * Send server event
+     *
+     * @return Json
+     */
     public function execute(): Json
     {
         $response = [];

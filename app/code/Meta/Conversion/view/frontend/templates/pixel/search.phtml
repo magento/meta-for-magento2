@@ -4,27 +4,27 @@
 $trackerUrl = $block->getTrackerUrl();
 
 if ($block->getFacebookPixelID()) {
-?>
+    ?>
 
-<script type="text/x-magento-init">
-    {
-        "*": {
-            "Meta_Conversion/js/metaPixelTracker" : {
-                "url" : "<?= $block->escapeJs($trackerUrl); ?>",
-                "payload": <?= json_encode([
-                    "eventName" => $block->getEventToObserveName(),
-                    "searchQuery" => $block->getSearchQuery()
-                ]) ?>,
-                "browserEventData": <?= json_encode([
-                    'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                    'fbPixelId' => $block->getFacebookPixelID(),
-                    'source' => $block->getSource(),
-                    'pluginVersion' => $block->getPluginVersion(),
-                    'track' => 'track',
-                    'event' => 'Search'
-                ]) ?>
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Meta_Conversion/js/metaPixelTracker" : {
+                    "url" : "<?= $block->escapeJs($trackerUrl); ?>",
+                    "payload": <?= $block->escapeHtml(json_encode([
+                        "eventName" => $block->getEventToObserveName(),
+                        "searchQuery" => $block->getSearchQuery()
+                    ])) ?>,
+                    "browserEventData": <?= $block->escapeHtml(json_encode([
+                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                        'fbPixelId' => $block->getFacebookPixelID(),
+                        'source' => $block->getSource(),
+                        'pluginVersion' => $block->getPluginVersion(),
+                        'track' => 'track',
+                        'event' => 'Search'
+                    ])) ?>
+                }
             }
         }
-    }
-</script>
+    </script>
 <?php } ?>
