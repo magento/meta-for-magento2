@@ -10,6 +10,8 @@ use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
 class MetaCatalogAttributes
 {
     /**
+     * Returns array of product attributes to be created
+     *
      * @return array[]
      */
     public function execute(): array
@@ -20,7 +22,7 @@ class MetaCatalogAttributes
                 'type' => 'varchar',
                 'label' => 'Google Product Category',
                 'input' => 'select',
-                'source' => 'Meta\Catalog\Model\Config\Source\Product\GoogleProductCategory',
+                'source' => Meta\Catalog\Model\Config\Source\Product\GoogleProductCategory::class,
                 'required' => false,
                 'sort_order' => 10,
                 'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
@@ -35,7 +37,7 @@ class MetaCatalogAttributes
                 'type' => 'int',
                 'label' => 'Sync to Facebook Catalog',
                 'input' => 'boolean',
-                'source' => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+                'source' => Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
                 'visible' => true,
                 'default' => "1",
                 'required' => false,

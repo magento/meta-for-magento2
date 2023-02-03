@@ -44,6 +44,8 @@ class AddProductAttributes implements DataPatchInterface
     }
 
     /**
+     * Get dependencies for the data patch
+     *
      * @return array
      */
     public static function getDependencies(): array
@@ -52,6 +54,8 @@ class AddProductAttributes implements DataPatchInterface
     }
 
     /**
+     * Get alias for the data patch
+     *
      * @return array
      */
     public function getAliases(): array
@@ -60,6 +64,8 @@ class AddProductAttributes implements DataPatchInterface
     }
 
     /**
+     * Create product attributes
+     *
      * @return void
      */
     public function apply(): void
@@ -88,6 +94,8 @@ class AddProductAttributes implements DataPatchInterface
     }
 
     /**
+     * Revert the created product attributes
+     *
      * @return void
      */
     public function revert(): void
@@ -97,7 +105,7 @@ class AddProductAttributes implements DataPatchInterface
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
-        foreach ($catalogAttributes as $attributeCode => $attributeData) {
+        foreach (array_keys($catalogAttributes) as $attributeCode) {
             $eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
         }
 
