@@ -18,21 +18,43 @@
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var MockObject
+     */
     protected $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     protected $systemConfig;
 
+    /**
+     * @var MockObject
+     */
     protected $context;
 
+    /**
+     * @var MockObject
+     */
     protected $resultJsonFactory;
 
+    /**
+     * @var \Meta\BusinessExtension\Controller\Adminhtml\Ajax\PersistConfiguration
+     */
     protected $fbFeedPush;
 
+    /**
+     * @var MockObject
+     */
     protected $request;
 
+    /**
+     * @var MockObject
+     */
     protected $graphApiAdapter;
 
     /**

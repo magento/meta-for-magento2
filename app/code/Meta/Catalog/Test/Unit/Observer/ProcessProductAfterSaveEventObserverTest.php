@@ -29,6 +29,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterSaveEventObserverTest extends CommonTest
 {
+    /**
+     * @var ProcessProductAfterSaveEventObserver
+     */
     protected $processProductAfterSaveEventObserver;
 
     /**
@@ -50,7 +53,6 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
      * @var MockObject
      */
     private $_batchApi;
-
 
     /**
      * @var MockObject

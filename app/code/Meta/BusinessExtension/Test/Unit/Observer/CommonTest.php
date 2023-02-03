@@ -22,15 +22,28 @@ use Meta\BusinessExtension\Helper\MagentoDataHelper;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 abstract class CommonTest extends TestCase
 {
+    /**
+     * @var MockObject
+     */
     protected $magentoDataHelper;
 
+    /**
+     * @var MockObject
+     */
     protected $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     protected $systemConfig;
 
+    /**
+     * @var ObjectManager
+     */
     protected $objectManager;
     /**
      * Used to reset or change values after running a test

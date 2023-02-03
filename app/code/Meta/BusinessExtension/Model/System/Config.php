@@ -140,6 +140,8 @@ class Config
     }
 
     /**
+     * Get app id
+     *
      * @return string
      */
     public function getAppId()
@@ -148,6 +150,8 @@ class Config
     }
 
     /**
+     * Get module version
+     *
      * @return mixed
      */
     public function getModuleVersion()
@@ -156,7 +160,9 @@ class Config
     }
 
     /**
-     * @param null $storeId
+     * Get commerce manager url
+     *
+     * @param int $storeId
      * @return string
      */
     public function getCommerceManagerUrl($storeId = null)
@@ -165,7 +171,9 @@ class Config
     }
 
     /**
-     * @param null $storeId
+     * Get catalog manager url
+     *
+     * @param int $storeId
      * @return string
      */
     public function getCatalogManagerUrl($storeId = null)
@@ -174,7 +182,9 @@ class Config
     }
 
     /**
-     * @param null $storeId
+     * Get support url
+     *
+     * @param int $storeId
      * @return string
      */
     public function getSupportUrl($storeId = null)
@@ -183,15 +193,21 @@ class Config
     }
 
     /**
-     * @param null $storeId
+     * Get promotions url
+     *
+     * @param int $storeId
      * @return string
      */
     public function getPromotionsUrl($storeId = null)
     {
-        return sprintf('https://www.facebook.com/commerce/%s/promotions/discounts/', $this->getCommerceAccountId($storeId));
+        return sprintf('https://www.facebook.com/commerce/%s/promotions/discounts/',
+            $this->getCommerceAccountId($storeId)
+        );
     }
 
     /**
+     * Is single store mode
+     *
      * @method isSingleStoreMode
      * @return bool
      */
@@ -201,7 +217,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Is active extension
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return bool
      */
@@ -211,7 +229,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Is fbe installed
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return bool
      */
@@ -221,6 +241,8 @@ class Config
     }
 
     /**
+     * Get store manager
+     *
      * @return StoreManagerInterface
      */
     public function getStoreManager()
@@ -229,6 +251,8 @@ class Config
     }
 
     /**
+     * Get store id
+     *
      * @return int
      * @throws NoSuchEntityException
      */
@@ -239,18 +263,24 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Is active incremental product updates
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function isActiveIncrementalProductUpdates($scopeId = null, $scope = null)
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES, $scopeId, $scope);
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES,
+            $scopeId, $scope
+        );
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Is active inventory upload
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function isActiveInventoryUpload($scopeId = null, $scope = null)
@@ -259,8 +289,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Use multi source inventory
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function useMultiSourceInventory($scopeId = null, $scope = null)
@@ -269,8 +301,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get inventory stock
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getInventoryStock($scopeId = null, $scope = null)
@@ -279,18 +313,24 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get out of stock threshold
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getOutOfStockThreshold($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD,
+            $scopeId, $scope
+        );
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Is active order sync
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function isActiveOrderSync($scopeId = null, $scope = null)
@@ -299,8 +339,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get default order status
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function getDefaultOrderStatus($scopeId = null, $scope = null)
@@ -309,8 +351,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Should use default fulfillment address
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function shouldUseDefaultFulfillmentAddress($scopeId = null, $scope = null)
@@ -319,27 +363,49 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get fulfillment address
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORE)
     {
         $address = [];
 
-        $address['street_1'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1, $scopeId, $scope);
-        $address['street_2'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_2, $scopeId, $scope);
-        $address['country'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_COUNTRY_ID, $scopeId, $scope);
-        $address['state'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STATE, $scopeId, $scope);
-        $address['city'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_CITY, $scopeId, $scope);
-        $address['postal_code'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_ZIP_CODE, $scopeId, $scope);
+        $address['street_1'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1,
+            $scopeId,
+            $scope
+        );
+        $address['street_2'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_2,
+            $scopeId,
+            $scope
+        );
+        $address['country'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_COUNTRY_ID,
+            $scopeId,
+            $scope
+        );
+        $address['state'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STATE,
+            $scopeId,
+            $scope
+        );
+        $address['city'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_CITY,
+            $scopeId,
+            $scope
+        );
+        $address['postal_code'] = $this->getConfig(self::XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_ZIP_CODE,
+            $scopeId,
+            $scope
+        );
 
         return $address;
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Is auto newsletter subscription on
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function isAutoNewsletterSubscriptionOn($scopeId = null, $scope = null)
@@ -348,8 +414,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get order ship event
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function getOrderShipEvent($scopeId = null, $scope = null)
@@ -358,9 +426,11 @@ class Config
     }
 
     /**
-     * @param $configPath
-     * @param null $scopeId
-     * @param null $scope
+     * Get config
+     *
+     * @param string $configPath
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      * @todo implement method for getting boolean values
      */
@@ -379,9 +449,11 @@ class Config
     }
 
     /**
-     * @param $path
-     * @param $value
-     * @param null $storeId
+     * Save config
+     *
+     * @param string $path
+     * @param string|int $value
+     * @param int $storeId
      * @return $this
      */
     public function saveConfig($path, $value, $storeId = null)
@@ -395,8 +467,10 @@ class Config
     }
 
     /**
-     * @param $path
-     * @param null $storeId
+     * Delete config
+     *
+     * @param string $path
+     * @param int $storeId
      * @return $this
      */
     public function deleteConfig($path, $storeId = null)
@@ -410,6 +484,8 @@ class Config
     }
 
     /**
+     * Clean cache
+     *
      * @return $this
      */
     public function cleanCache()
@@ -419,6 +495,8 @@ class Config
     }
 
     /**
+     * Disable extension for non default stores
+     *
      * @return $this
      */
     public function disableExtensionForNonDefaultStores()
@@ -436,7 +514,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Get access token
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return mixed
      */
@@ -446,18 +526,24 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get external business id
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getExternalBusinessId($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID,
+            $scopeId, $scope
+        );
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get pixel id
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getPixelId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -466,18 +552,24 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get pixel aam settings
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getPixelAamSettings($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS,
+            $scopeId, $scope
+        );
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get profiles
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getProfiles($scopeId = null, $scope = null)
@@ -486,8 +578,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get page id
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getPageId($scopeId = null, $scope = null)
@@ -496,7 +590,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Get catalog id
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return mixed
      */
@@ -506,28 +602,38 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get commerce account id
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getCommerceAccountId($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
+            $scopeId, $scope
+        );
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Is debug mode
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function isDebugMode($scopeId = null, $scope = null)
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE, $scopeId, $scope);
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DEBUG_MODE,
+            $scopeId, $scope
+        );
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get api version
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getApiVersion($scopeId = null, $scope = null)
@@ -536,17 +642,24 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get api version last update
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getApiVersionLastUpdate($scopeId = null, $scope = null)
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
+            $scopeId,
+            $scope
+        );
     }
 
     /**
-     * @param null $storeId
+     * Get shipping methods map
+     *
+     * @param int $storeId
      * @return array
      */
     public function getShippingMethodsMap($storeId = null)
@@ -559,7 +672,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Is active daily product feed
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return bool
      */
@@ -569,7 +684,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Get feed upload method
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return mixed
      */
@@ -579,7 +696,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Get feed id
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return mixed
      */
@@ -589,7 +708,9 @@ class Config
     }
 
     /**
-     * @param null $scopeId
+     * Get offers feed id
+     *
+     * @param int $scopeId
      * @param string $scope
      * @return mixed
      */
@@ -599,8 +720,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Get product identifier attr
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed
      */
     public function getProductIdentifierAttr($scopeId = null, $scope = null)
@@ -609,8 +732,10 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Is price incl tax
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function isPriceInclTax($scopeId = null, $scope = null)
@@ -619,12 +744,17 @@ class Config
     }
 
     /**
-     * @param null $scopeId
-     * @param null $scope
+     * Is active collections sync
+     *
+     * @param int $scopeId
+     * @param int $scope
      * @return bool
      */
     public function isActiveCollectionsSync($scopeId = null, $scope = null)
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE, $scopeId = null, $scope = null);
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE,
+            $scopeId = null,
+            $scope = null
+        );
     }
 }

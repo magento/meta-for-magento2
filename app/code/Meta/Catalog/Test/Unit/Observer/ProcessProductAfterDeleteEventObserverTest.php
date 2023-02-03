@@ -28,6 +28,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterDeleteEventObserverTest extends CommonTest
 {
+    /**
+     * @var ProcessProductAfterDeleteEventObserver
+     */
     protected $processProductAfterDeleteEventObserver;
 
     /**

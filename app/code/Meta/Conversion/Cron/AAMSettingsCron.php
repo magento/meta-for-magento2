@@ -56,6 +56,8 @@ class AAMSettingsCron
     }
 
     /**
+     * Execute
+     *
      * @return bool
      */
     public function execute(): bool
