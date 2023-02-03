@@ -5,10 +5,4 @@
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>
-    <type name="Magento\Sales\Model\ResourceModel\Order\Grid\Collection">
-        <plugin name="facebookSalesOrderGrid"
-                type="Meta\Sales\Plugin\SalesOrderGridPlugin"
-                sortOrder="10"
-                disabled="false"/>
-    </type>
 </config>
