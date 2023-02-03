@@ -21,6 +21,7 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Escaper;
 
 class Tools
 {
@@ -30,13 +31,22 @@ class Tools
     protected $priceCurrency;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * Tools constructor
      *
      * @param PriceCurrencyInterface $priceCurrency
+     * @param Escaper $escaper
      */
-    public function __construct(PriceCurrencyInterface $priceCurrency)
-    {
+    public function __construct(
+        PriceCurrencyInterface $priceCurrency,
+        Escaper $escaper
+    ) {
         $this->priceCurrency = $priceCurrency;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -64,7 +74,7 @@ class Tools
      */
     public function htmlDecode($value)
     {
-        return strip_tags(html_entity_decode($value));
+        return strip_tags($this->escaper->escapeHtml($value));
     }
 
     /**
