@@ -51,6 +51,16 @@ class MultiSourceInventory implements InventoryInterface
     private $stockByWebsiteIdResolver;
 
     /**
+     * @var bool
+     */
+    private $stockStatus;
+
+    /**
+     * @var int|float
+     */
+    private $stockQty;
+
+    /**
      * @param IsProductSalableInterface $isProductSalableInterface
      * @param GetProductSalableQtyInterface $getProductSalableQtyInterface
      * @param SystemConfig $systemConfig
@@ -69,7 +79,10 @@ class MultiSourceInventory implements InventoryInterface
     }
 
     /**
+     * Fetch the stock status for product
+     *
      * @param Product $product
+     * @param int $stockId
      * @return bool
      */
     private function getStockStatus(Product $product, int $stockId): bool
@@ -85,6 +98,8 @@ class MultiSourceInventory implements InventoryInterface
     }
 
     /**
+     * Fetch stock quantity for product
+     *
      * @param Product $product
      * @param int $stockId
      * @return int|float
@@ -102,6 +117,8 @@ class MultiSourceInventory implements InventoryInterface
     }
 
     /**
+     * Initiate inventory for the product
+     *
      * @param Product $product
      * @return $this
      */

@@ -40,7 +40,9 @@ class Tools
     }
 
     /**
-     * @param $string
+     * Change casing of string
+     *
+     * @param string $string
      * @return false|string|string[]|null
      */
     public function lowercaseIfAllCaps($string)
@@ -55,7 +57,9 @@ class Tools
     }
 
     /**
-     * @param $value
+     * Returns html decoded string
+     *
+     * @param string $value
      * @return string
      */
     public function htmlDecode($value)
@@ -66,8 +70,8 @@ class Tools
     /**
      * Return formatted price with currency code. Examples: "9.99 USD", "27.02 GBP"
      *
-     * @param $price
-     * @param null $storeId
+     * @param float $price
+     * @param int $storeId
      * @return string
      */
     public function formatPrice($price, $storeId = null)
@@ -86,6 +90,8 @@ class Tools
     }
 
     /**
+     * Returns product unit price
+     *
      * @param Product $product
      * @return string
      */
