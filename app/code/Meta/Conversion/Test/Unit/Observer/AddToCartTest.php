@@ -23,15 +23,28 @@ use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Observer\AddToCart;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class AddToCartTest extends CommonTest
 {
+    /**
+     * @var MockObject
+     */
     protected $request;
 
+    /**
+     * @var AddToCart
+     */
     protected $addToCartObserver;
 
+    /**
+     * @var ServerSideHelper
+     */
     protected $serverSideHelper;
 
+    /**
+     * @var AAMFieldsExtractorHelper
+     */
     protected $aamFieldsExtractorHelper;
 
     /**
