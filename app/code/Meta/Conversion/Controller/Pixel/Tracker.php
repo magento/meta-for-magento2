@@ -78,7 +78,6 @@ class Tracker implements HttpPostActionInterface
 
             if ($eventName) {
                 $payload = $this->pixelEvents[$eventName]->getPayload($params);
-                $response['payload'] = $payload;
                 if (count($payload)) {
                     $eventType = $this->pixelEvents[$eventName]->getEventType();
 

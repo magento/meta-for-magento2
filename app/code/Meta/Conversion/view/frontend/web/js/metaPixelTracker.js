@@ -10,27 +10,26 @@ define([
 
         config.payload.eventId = eventId;
 
+        let browserPayload = config.browserEventData.payload
+        browserPayload.source = browserEventData.source;
+
+        browserPayload.pluginVersion = browserEventData.pluginVersion;
+
+        fbq('set', 'agent', browserEventData.fbAgentVersion, browserEventData.fbPixelId);
+        fbq(browserEventData.track, browserEventData.event, browserPayload, {
+                eventID: eventId
+            }
+        );
+
         $.ajax({
             showLoader: true,
             url: config.url,
             type: "POST",
             data: config.payload,
             dataType: "json",
-            success: function (response) {
-                let browserPayload = response.payload;
-                browserPayload.source = browserEventData.source;
-                browserPayload.pluginVersion = browserEventData.pluginVersion;
-
-                fbq('set', 'agent', browserEventData.fbAgentVersion, browserEventData.fbPixelId);
-                fbq(browserEventData.track, browserEventData.event, browserPayload, {
-                        eventID: eventId
-                    }
-                );
-            },
             error: function (error) {
                 console.log(error)
             }
-
         });
     }
 });

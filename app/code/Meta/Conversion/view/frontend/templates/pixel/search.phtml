@@ -11,18 +11,19 @@ if ($block->getFacebookPixelID()) {
             "*": {
                 "Meta_Conversion/js/metaPixelTracker" : {
                     "url" : "<?= $block->escapeJs($trackerUrl); ?>",
-                    "payload": <?= $block->escapeHtml(json_encode([
+                    "payload": <?= json_encode([
                         "eventName" => $block->getEventToObserveName(),
                         "searchQuery" => $block->getSearchQuery()
-                    ])) ?>,
-                    "browserEventData": <?= $block->escapeHtml(json_encode([
+                    ]) ?>,
+                    "browserEventData": <?= json_encode([
                         'fbAgentVersion' => $block->getFacebookAgentVersion(),
                         'fbPixelId' => $block->getFacebookPixelID(),
                         'source' => $block->getSource(),
                         'pluginVersion' => $block->getPluginVersion(),
                         'track' => 'track',
-                        'event' => 'Search'
-                    ])) ?>
+                        'event' => 'Search',
+                        'payload' => ['search_string' => $block->getSearchQuery()]
+                    ]) ?>
                 }
             }
         }
