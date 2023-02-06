@@ -51,13 +51,4 @@ class ViewCategory extends Common
     {
         return $this->getLayout()->getBlock('category.description')->getCurrentCategory()->getId();
     }
-
-    /*
-     * @return mixed
-     */
-    public function getCategoryId()
-    {
-        $category = $this->getLayout()->getBlock('category.description')->getCurrentCategory();
-        return $category->getId();
-    }
 }
