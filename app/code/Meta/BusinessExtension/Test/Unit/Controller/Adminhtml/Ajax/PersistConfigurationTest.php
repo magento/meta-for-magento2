@@ -18,21 +18,43 @@
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var MockObject
+     */
     protected $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     protected $systemConfig;
 
+    /**
+     * @var MockObject
+     */
     protected $context;
 
+    /**
+     * @var MockObject
+     */
     protected $resultJsonFactory;
 
+    /**
+     * @var \Meta\BusinessExtension\Controller\Adminhtml\Ajax\PersistConfiguration
+     */
     protected $fbFeedPush;
 
+    /**
+     * @var MockObject
+     */
     protected $request;
 
+    /**
+     * @var MockObject
+     */
     protected $graphApiAdapter;
 
     /**
@@ -69,38 +91,22 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the case when external biz id already saved
-     *
      * @return void
      */
-    public function testExternalBizIdExists()
+    public function testExecuteForJson()
     {
-        // @todo Temporarily disabling FB feed push in this version (see https://fburl.com/707tgrel)
-        $this->markTestSkipped('must be revisited');
+        $storeId = 1;
+        $merchantSettingsId = 15964;
+        $pageAccessToken = 'EAACxonUmtyIBABauSDrrahBhBg7D2QwZDZD';
+        $this->request->method('getParam')->willReturn($storeId);
+        $externalBusinessId = 'fbe_magento_1_63c34a23324';
+        $this->request->method('getParam')->willReturn($externalBusinessId);
+        $this->systemConfig->method('saveConfig')->willReturn($this->systemConfig);
+        $this->graphApiAdapter->method('getPageAccessToken')->willReturn($pageAccessToken);
+        $this->graphApiAdapter->method('getPageMerchantSettingsId')->willReturn($merchantSettingsId);
 
-        $this->fbeHelper->method('getConfigValue')->willReturn('bizID');
         $result = $this->fbFeedPush->executeForJson();
-        $this->assertFalse($result['success']);
-        $this->assertNotNull($result['message']);
-        $this->assertEquals('One time feed push is completed at the time of setup', $result['message']);
-    }
-
-    /**
-     * Test the case when external biz id already saved
-     *
-     * @return void
-     */
-    public function testExternalBizIdNotExists()
-    {
-        // @todo Temporarily disabling FB feed push in this version (see https://fburl.com/707tgrel)
-        $this->markTestSkipped('must be revisited');
-
-        $this->fbeHelper->method('getConfigValue')->willReturn(null);
-        $this->request->method('getParam')->willReturn('randomStr');
-        $this->fbeHelper->method('saveConfig')->willReturn(null);
-        $result = $this->fbFeedPush->executeForJson();
+        $this->assertNotNull($result);
         $this->assertTrue($result['success']);
-        $this->assertNotNull($result['feed_push_response']);
-        $this->assertEquals('feed push successfully', $result['feed_push_response']);
     }
 }

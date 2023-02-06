@@ -28,25 +28,53 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class FBEHelperTest extends TestCase
 {
+    /**
+     * @var FBEHelper
+     */
     private $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     private $systemConfig;
 
+    /**
+     * @var MockObject
+     */
     private $context;
 
+    /**
+     * @var MockObject
+     */
     private $objectManagerInterface;
 
+    /**
+     * @var MockObject
+     */
     private $logger;
 
+    /**
+     * @var MockObject
+     */
     private $storeManager;
 
+    /**
+     * @var MockObject
+     */
     private $curl;
 
+    /**
+     * @var MockObject
+     */
     private $resourceConnection;
 
+    /**
+     * @var MockObject
+     */
     private $moduleList;
 
     /**
@@ -73,7 +101,6 @@ class FBEHelperTest extends TestCase
         $this->resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
         $this->systemConfig = $this->createMock(Config::class);
-
         $this->fbeHelper = new FBEHelper(
             $this->context,
             $this->objectManagerInterface,
