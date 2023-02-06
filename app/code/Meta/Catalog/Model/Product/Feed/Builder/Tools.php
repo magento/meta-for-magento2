@@ -20,8 +20,8 @@ namespace Meta\Catalog\Model\Product\Feed\Builder;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Escaper;
 
 class Tools
 {
@@ -31,24 +31,28 @@ class Tools
     protected $priceCurrency;
 
     /**
-     * @var ObjectManagerInterface
+     * @var Escaper
      */
-    protected $objectManager;
+    private $escaper;
 
     /**
      * Tools constructor
      *
      * @param PriceCurrencyInterface $priceCurrency
-     * @param ObjectManagerInterface $objectManager
+     * @param Escaper $escaper
      */
-    public function __construct(PriceCurrencyInterface $priceCurrency, ObjectManagerInterface $objectManager)
-    {
+    public function __construct(
+        PriceCurrencyInterface $priceCurrency,
+        Escaper $escaper
+    ) {
         $this->priceCurrency = $priceCurrency;
-        $this->objectManager = $objectManager;
+        $this->escaper = $escaper;
     }
 
     /**
-     * @param $string
+     * Change casing of string
+     *
+     * @param string $string
      * @return false|string|string[]|null
      */
     public function lowercaseIfAllCaps($string)
@@ -63,19 +67,21 @@ class Tools
     }
 
     /**
-     * @param $value
+     * Returns html decoded string
+     *
+     * @param string $value
      * @return string
      */
     public function htmlDecode($value)
     {
-        return strip_tags(html_entity_decode($value));
+        return strip_tags($this->escaper->escapeHtml($value));
     }
 
     /**
      * Return formatted price with currency code. Examples: "9.99 USD", "27.02 GBP"
      *
-     * @param $price
-     * @param null $storeId
+     * @param float $price
+     * @param int $storeId
      * @return string
      */
     public function formatPrice($price, $storeId = null)
@@ -94,6 +100,8 @@ class Tools
     }
 
     /**
+     * Returns product unit price
+     *
      * @param Product $product
      * @return string
      */
@@ -131,16 +139,5 @@ class Tools
     public function replaceLocalUrlWithDummyUrl($url)
     {
         return str_replace('localhost', 'magento.com', $url);
-    }
-
-    /**
-     * @param int $useMultiSource
-     * @return InventoryInterface
-     */
-    public function getInventoryObject($useMultiSource = 0)
-    {
-        return $useMultiSource
-            ? $this->objectManager->get('Meta\Catalog\Model\Product\Feed\Builder\MultiSourceInventory')
-            : $this->objectManager->get('Meta\Catalog\Model\Product\Feed\Builder\Inventory');
     }
 }
