@@ -134,13 +134,4 @@ class ViewContent extends Common
     {
         return $this->getLayout()->getBlock('product.info')->getProduct();
     }
-
-    /**
-     * @return mixed
-     */
-    public function getProductId()
-    {
-        $product = $this->getLayout()->getBlock('product.info')->getProduct();
-        return $product->getId();
-    }
 }
