@@ -23,6 +23,8 @@ namespace Meta\Conversion\Block\Pixel;
 class ViewCategory extends Common
 {
     /**
+     * Get Category name
+     *
      * @return string|null
      */
     public function getCategoryName()
@@ -31,6 +33,8 @@ class ViewCategory extends Common
     }
 
     /**
+     * Get Event name
+     *
      * @return string
      */
     public function getEventToObserveName()
@@ -39,11 +43,12 @@ class ViewCategory extends Common
     }
 
     /**
-     * @param $eventId
-     * @param $categoryName
+     * Get Category Id
+     *
+     * @return mixed
      */
-    public function trackServerEvent($eventId, $categoryName = null)
+    public function getCategoryId()
     {
-        $this->_eventManager->dispatch($this->getEventToObserveName(), ['eventId' => $eventId, 'categoryName' => $categoryName]);
+        return $this->getLayout()->getBlock('category.description')->getCurrentCategory()->getId();
     }
 }

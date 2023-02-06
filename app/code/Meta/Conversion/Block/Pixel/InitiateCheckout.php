@@ -17,6 +17,7 @@
 
 namespace Meta\Conversion\Block\Pixel;
 
+use Magento\Framework\Escaper;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -35,12 +36,15 @@ class InitiateCheckout extends Common
     protected $pricingHelper;
 
     /**
+     * Constructor
+     *
      * @param Context $context
      * @param ObjectManagerInterface $objectManager
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
      * @param PricingHelper $pricingHelper
+     * @param Escaper $escaper
      * @param array $data
      */
     public function __construct(
@@ -50,13 +54,16 @@ class InitiateCheckout extends Common
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
         PricingHelper $pricingHelper,
+        Escaper $escaper,
         array $data = []
     ) {
-        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $data);
+        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $escaper, $data);
         $this->pricingHelper = $pricingHelper;
     }
 
     /**
+     * Get content ids
+     *
      * @return string
      */
     public function getContentIDs()
@@ -69,12 +76,19 @@ class InitiateCheckout extends Common
         return $this->arrayToCommaSeparatedStringValues($contentIds);
     }
 
+    /**
+     * Get value
+     *
+     * @return float|null
+     */
     public function getValue()
     {
         return $this->magentoDataHelper->getCartTotal();
     }
 
     /**
+     * Get all contents
+     *
      * @return string
      */
     public function getContents()
@@ -95,6 +109,8 @@ class InitiateCheckout extends Common
     }
 
     /**
+     * Get number of items
+     *
      * @return int|null
      */
     public function getNumItems()
@@ -103,6 +119,8 @@ class InitiateCheckout extends Common
     }
 
     /**
+     * Get event name
+     *
      * @return string
      */
     public function getEventToObserveName()

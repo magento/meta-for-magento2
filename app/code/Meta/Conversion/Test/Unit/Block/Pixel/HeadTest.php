@@ -60,6 +60,7 @@ class HeadTest extends TestCase
      */
     public function setUp(): void
     {
+
         $this->context = $this->createMock(Context::class);
         $this->objectManager = $this->createMock(ObjectManagerInterface::class);
         $this->registry = $this->createMock(Registry::class);
