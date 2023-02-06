@@ -42,6 +42,8 @@ class PersistConfiguration extends AbstractAjax
     private $graphApiAdapter;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -61,6 +63,12 @@ class PersistConfiguration extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
+    /**
+     * Execute for json
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function executeForJson()
     {
         try {
@@ -86,37 +94,51 @@ class PersistConfiguration extends AbstractAjax
     }
 
     /**
-     * @param $catalogId
-     * @param $storeId
+     * Save catalog id
+     *
+     * @param int $catalogId
+     * @param int $storeId
      * @return $this
      */
     public function saveCatalogId($catalogId, $storeId)
     {
         if ($catalogId) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId, $storeId);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID,
+                $catalogId,
+                $storeId
+            );
             $this->fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
         }
         return $this;
     }
 
     /**
-     * @param $externalBusinessId
-     * @param $storeId
+     * Save external business id
+     *
+     * @param int $externalBusinessId
+     * @param int $storeId
      * @return $this
      */
     public function saveExternalBusinessId($externalBusinessId, $storeId)
     {
         if ($externalBusinessId) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID, $externalBusinessId, $storeId);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID,
+                $externalBusinessId,
+                $storeId
+            );
             $this->fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
         }
         return $this;
     }
 
     /**
-     * @param $accessToken
-     * @param $pageId
-     * @param $storeId
+     * Complete onsite onboarding
+     *
+     * @param string $accessToken
+     * @param int $pageId
+     * @param int storeId
      * @return $this
      * @throws LocalizedException
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -135,7 +157,11 @@ class PersistConfiguration extends AbstractAjax
         }
 
         // save page ID
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId, $storeId);
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID,
+            $pageId,
+            $storeId
+        );
         $this->fbeHelper->log('Page ID saved on instance --- '. $pageId);
 
         // retrieve page access token
@@ -144,7 +170,11 @@ class PersistConfiguration extends AbstractAjax
             throw new LocalizedException(__('Cannot retrieve page access token'));
         }
         // save page access token
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN, $pageAccessToken, $storeId);
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN,
+            $pageAccessToken,
+            $storeId
+        );
 
         // retrieve commerce account ID
         $commerceAccountId = $this->graphApiAdapter->getPageMerchantSettingsId($pageAccessToken, $pageId);
@@ -154,7 +184,11 @@ class PersistConfiguration extends AbstractAjax
         }
 
         // save commerce account ID
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId, $storeId);
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
+            $commerceAccountId,
+            $storeId
+        );
 
         // enable API integration
         $this->graphApiAdapter->associateMerchantSettingsWithApp($commerceAccountId, $accessToken);

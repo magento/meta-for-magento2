@@ -219,6 +219,8 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
+     * Get content type
+     *
      * @param Product $product
      * @return string
      */
@@ -228,6 +230,8 @@ class MagentoDataHelper extends AbstractHelper
     }
 
     /**
+     * Get content id
+     *
      * @param Product $product
      * @return bool|int|string
      */
@@ -261,6 +265,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the ids of the items added to the cart
+     *
      * @return array
      */
     public function getCartContentIds(): array
@@ -278,6 +283,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the cart total value
+     *
      * @return float|null
      */
     public function getCartTotal(): ?float
@@ -295,6 +301,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the amount of items in the cart
+     *
      * @return int
      */
     public function getCartNumItems(): int
@@ -313,6 +320,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return information about the cart items
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
+     *
      * @return array
      */
     public function getCartContents(): array
@@ -328,7 +336,11 @@ class MagentoDataHelper extends AbstractHelper
             $contents[] = [
                 'id' => $this->getContentId($product),
                 'quantity' => $item->getQty(),
-                'item_price' => $this->pricingHelper->currency($product->getFinalPrice(), false, false)
+                'item_price' => $this->pricingHelper->currency(
+                    $product->getFinalPrice(),
+                    false,
+                    false
+                )
             ];
         }
         return $contents;
@@ -336,6 +348,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the ids of the items in the last order
+     *
      * @return array
      */
     public function getOrderContentIds(): array
@@ -354,6 +367,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return the last order total value
+     *
      * @return float|null
      */
     public function getOrderTotal()
@@ -374,6 +388,7 @@ class MagentoDataHelper extends AbstractHelper
      * Return information about the last order items
      *
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
+     *
      * @return array
      */
     public function getOrderContents(): array
@@ -389,7 +404,11 @@ class MagentoDataHelper extends AbstractHelper
             $contents[] = [
                 'id' => $this->getContentId($product),
                 'quantity' => (int)$item->getQtyOrdered(),
-                'item_price' => $this->pricingHelper->currency($product->getFinalPrice(), false, false)
+                'item_price' => $this->pricingHelper->currency(
+                    $product->getFinalPrice(),
+                    false,
+                    false
+                )
             ];
         }
         return $contents;
@@ -427,6 +446,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the address of a given customer
      *
+     * @param object $customer
      * @return Address
      */
     public function getCustomerAddress($customer): Address
@@ -438,6 +458,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the region's code for the given address
      *
+     * @param object $address
      * @return string|null
      */
     public function getRegionCodeForAddress($address): ?string
@@ -453,6 +474,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Return the string representation of the customer gender
      *
+     * @param object $customer
      * @return string|null
      */
     public function getGenderAsString($customer): ?string
@@ -547,6 +569,12 @@ class MagentoDataHelper extends AbstractHelper
         return array_filter($userData);
     }
 
+    /**
+     * Hash value
+     *
+     * @param string $string
+     * @return string
+     */
     private function hashValue($string): string
     {
         return hash('sha256', strtolower($string ?? ''));

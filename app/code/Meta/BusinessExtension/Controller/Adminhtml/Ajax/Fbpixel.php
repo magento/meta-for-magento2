@@ -36,6 +36,8 @@ class Fbpixel extends AbstractAjax
     private $systemConfig;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -52,7 +54,12 @@ class Fbpixel extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
-    // Yet to verify how to use the pii info, hence have commented the part of code.
+    /**
+     * Execute for json
+     * Yet to verify how to use the pii info, hence have commented the part of code.
+     *
+     * @return array
+     */
     public function executeForJson()
     {
         $storeId = $this->getRequest()->getParam('storeId');
@@ -64,8 +71,16 @@ class Fbpixel extends AbstractAjax
         $pixelId = $this->getRequest()->getParam('pixelId');
 
         if ($pixelId && $this->fbeHelper->isValidFBID($pixelId)) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID, $pixelId, $storeId);
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, true, $storeId);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID,
+                $pixelId,
+                $storeId
+            );
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
+                true,
+                $storeId
+            );
             $response['success'] = true;
             $response['pixelId'] = $pixelId;
             if ($oldPixelId && $oldPixelId != $pixelId) {

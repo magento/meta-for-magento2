@@ -64,6 +64,8 @@ class Setup extends Template
     }
 
     /**
+     * Get pixel ajax route
+     *
      * @return mixed
      */
     public function getPixelAjaxRoute()
@@ -72,6 +74,8 @@ class Setup extends Template
     }
 
     /**
+     * Get access token ajax route
+     *
      * @return mixed
      */
     public function getAccessTokenAjaxRoute()
@@ -80,6 +84,8 @@ class Setup extends Template
     }
 
     /**
+     * Get profiles ajax route
+     *
      * @return mixed
      */
     public function getProfilesAjaxRoute()
@@ -88,6 +94,8 @@ class Setup extends Template
     }
 
     /**
+     * Get aam settings route
+     *
      * @return mixed
      */
     public function getAAMSettingsRoute()
@@ -96,6 +104,8 @@ class Setup extends Template
     }
 
     /**
+     * Fetch pixel id
+     *
      * @param int $storeId
      * @return string|null
      */
@@ -105,6 +115,8 @@ class Setup extends Template
     }
 
     /**
+     * Get external business id
+     *
      * @param int $storeId
      * @return string|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -115,6 +127,8 @@ class Setup extends Template
     }
 
     /**
+     * Fetch configuration ajax route
+     *
      * @return mixed
      */
     public function fetchConfigurationAjaxRoute()
@@ -123,6 +137,8 @@ class Setup extends Template
     }
 
     /**
+     * Get delete asset ids ajax route
+     *
      * @return mixed
      */
     public function getDeleteAssetIdsAjaxRoute()
@@ -131,6 +147,8 @@ class Setup extends Template
     }
 
     /**
+     * Get currency code
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -140,6 +158,8 @@ class Setup extends Template
     }
 
     /**
+     * Is fbe installed
+     *
      * @param int $storeId
      * @return string
      */
@@ -149,6 +169,8 @@ class Setup extends Template
     }
 
     /**
+     * Get app id
+     *
      * @return string
      */
     public function getAppId()
@@ -157,6 +179,8 @@ class Setup extends Template
     }
 
     /**
+     * Get stores
+     *
      * @return \Magento\Store\Api\Data\StoreInterface[]
      */
     public function getStores()

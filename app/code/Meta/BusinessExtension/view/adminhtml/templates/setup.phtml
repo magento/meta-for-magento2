@@ -1,17 +1,22 @@
-<?php /** @var Meta\BusinessExtension\Block\Adminhtml\Setup $block */ ?>
+<?php
+/**
+ * @var Meta\BusinessExtension\Block\Adminhtml\Setup $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
+?>
 <select id="store">
-    <option value=""><?= $block->escapeHtml(__('Select store')) ?></option>
-    <?php foreach($block->getStores() as $key => $store): ?>
+    <option value=""><?= $escaper->escapeHtml(__('Select store')) ?></option>
+    <?php foreach ($block->getStores() as $key => $store): ?>
         <?php if ($key == 'admin'): ?>
             <?php continue; ?>
         <?php endif; ?>
         <option
-            value="<?= $block->escapeHtmlAttr($store['store_id']) ?>"
-            data-installed="<?= $block->isFBEInstalled($store['store_id']) ?>"
-            data-pixel-id="<?= $block->fetchPixelId($store['store_id']) ?>"
-            data-system-user-name="<?= $block->getExternalBusinessId($store['store_id']) ?>"
-            data-external-business-id="<?= $block->getExternalBusinessId($store['store_id']) ?>"
-        ><?= $block->escapeHtml(__($store['name'])) ?></option>
+            value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
+            data-installed="<?= $escaper->escapeHtmlAttr($block->isFBEInstalled($store['store_id'])) ?>"
+            data-pixel-id="<?= $escaper->escapeHtmlAttr($block->fetchPixelId($store['store_id'])) ?>"
+            data-system-user-name="<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
+            data-external-business-id="<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
+        ><?= $escaper->escapeHtml(__($store['name'])) ?></option>
     <?php endforeach; ?>
 </select>
 <div>
@@ -22,20 +27,20 @@
 <script>
     window.facebookBusinessExtensionConfig = {
         popupOrigin: "https://business.facebook.com"
-        , setPixelId: '<?= $block->getPixelAjaxRoute() ?>'
-        , setAccessToken: '<?= $block->getAccessTokenAjaxRoute() ?>'
-        , setProfilesData: '<?= $block->getProfilesAjaxRoute()?>'
-        , saveConfig: '<?= $block->fetchConfigurationAjaxRoute() ?>'
+        , setPixelId: '<?= $escaper->escapeHtml($block->getPixelAjaxRoute()) ?>'
+        , setAccessToken: '<?= $escaper->escapeHtml($block->getAccessTokenAjaxRoute()) ?>'
+        , setProfilesData: '<?= $escaper->escapeHtml($block->getProfilesAjaxRoute()) ?>'
+        , saveConfig: '<?= $escaper->escapeHtml($block->fetchConfigurationAjaxRoute()) ?>'
         , fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?"
-        , deleteConfigKeys: '<?= $block->getDeleteAssetIdsAjaxRoute() ?>'
-        , appId: '<?= $block->getAppId() ?>'
+        , deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>'
+        , appId: '<?= $escaper->escapeHtml($block->getAppId()) ?>'
         , timeZone: 'America/Los_Angeles'
         , businessVertical: 'ECOMMERCE'
         , channel: 'DEFAULT'
-        , currency: '<?= $block->getCurrencyCode() ?>'
+        , currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>'
         , businessName: 'Magento'
         , debug: true
-        , setAAMSettings: '<?= $block->getAAMSettingsRoute() ?>'
+        , setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>'
     };
 </script>
 <script>

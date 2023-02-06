@@ -36,6 +36,8 @@ class Fbtoken extends AbstractAjax
     private $systemConfig;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -52,6 +54,11 @@ class Fbtoken extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
+    /**
+     * Execute for json
+     *
+     * @return array
+     */
     public function executeForJson()
     {
         $storeId = $this->getRequest()->getParam('storeId');
@@ -62,7 +69,11 @@ class Fbtoken extends AbstractAjax
         ];
         $accessToken = $this->getRequest()->getParam('accessToken');
         if ($accessToken) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $accessToken, $storeId);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN,
+                $accessToken,
+                $storeId
+            );
             $response['success'] = true;
             $response['accessToken'] = $accessToken;
             if ($oldAccessToken && $oldAccessToken != $accessToken) {

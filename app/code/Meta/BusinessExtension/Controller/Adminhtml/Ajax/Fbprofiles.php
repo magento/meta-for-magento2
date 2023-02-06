@@ -31,6 +31,8 @@ class Fbprofiles extends AbstractAjax
     private $systemConfig;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -46,7 +48,11 @@ class Fbprofiles extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
-
+    /**
+     * Execute for json
+     *
+     * @return array
+     */
     public function executeForJson()
     {
         $storeId = $this->getRequest()->getParam('storeId');
@@ -57,7 +63,11 @@ class Fbprofiles extends AbstractAjax
         ];
         $profiles = $this->getRequest()->getParam('profiles');
         if ($profiles) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES, $profiles, $storeId);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES,
+                $profiles,
+                $storeId
+            );
             $response['success'] = true;
             $response['profiles'] = $profiles;
         }

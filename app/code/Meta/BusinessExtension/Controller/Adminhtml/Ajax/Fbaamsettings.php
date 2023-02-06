@@ -29,6 +29,8 @@ class Fbaamsettings extends AbstractAjax
     private $fbeHelper;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -42,6 +44,11 @@ class Fbaamsettings extends AbstractAjax
         $this->fbeHelper = $fbeHelper;
     }
 
+    /**
+     * Execute for json
+     *
+     * @return array
+     */
     public function executeForJson()
     {
         $response = [
