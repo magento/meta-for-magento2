@@ -583,7 +583,7 @@ class MagentoDataHelper extends AbstractHelper
      */
     private function hashValue($string): string
     {
-        return hash('sha256', strtolower($string ?? ''));
+        return hash('sha256', strtolower($string));
     }
 
     /**

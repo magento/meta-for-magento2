@@ -67,6 +67,11 @@ class HeadTest extends TestCase
     private $systemConfig;
 
     /**
+     * @var MockObject
+     */
+    private $escaper
+
+    /**
      * Used to reset or change values after running a test
      *
      * @return void
