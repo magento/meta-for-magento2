@@ -400,6 +400,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return information about the last order items
+     *
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
      *
      * @return array
@@ -555,7 +556,7 @@ class MagentoDataHelper extends AbstractHelper
     /**
      * Get Hash value
      *
-     * @param $string
+     * @param string $string
      * @return string
      */
     private function hashValue($string): string

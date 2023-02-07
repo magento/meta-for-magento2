@@ -25,6 +25,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
 use Magento\Framework\Pricing\Helper\Data;
+use Magento\Framework\View\Asset\File\NotFoundException;
 use Meta\BusinessExtension\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\EventIdGenerator;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -108,7 +109,7 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
                 $category = $categoryModel->load($categoryId);
                 $categoryNames[] = $category->getName();
             }
-            return addslashes(implode(',', $categoryNames));
+            return addslashes(implode(',', $categoryNames)); // phpcs: ignore
         } else {
             return null;
         }
@@ -117,7 +118,7 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     /**
      * Get formatted price
      *
-     * @param $product
+     * @param Product $product
      * @return float|string
      */
     private function getPriceValue($product)
@@ -128,8 +129,8 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     /**
      * Get Product Info
      *
-     * @param $productSku
-     * @param null $productId
+     * @param mixed $productSku
+     * @param mixed $productId
      * @return array
      */
     private function getProductInfo($productSku, $productId = null): array
@@ -153,7 +154,10 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @ingeritdoc
+     * Execute function
+     *
+     * @returns ResultInterface
+     * @throws NotFoundException
      */
     public function execute()
     {
@@ -178,7 +182,7 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     /**
      * Track the server event
      *
-     * @param $eventId
+     * @param string $eventId
      * @return void
      */
     public function trackServerEvent($eventId): void
