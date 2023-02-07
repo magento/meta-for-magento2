@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="OrderSelectCheckMoneyOrderPaymentActionGroup">
+        <annotations>
+            <description>Selects the 'Check / Money Order' Payment Method on the Admin 'Create New Order for' page.</description>
+        </annotations>
+
+        <click selector="{{AdminOrderFormPaymentSection.header}}" stepKey="unfocus"/>
+        <click selector="{{AdminOrderFormPaymentSection.linkPaymentOptions}}" stepKey="clickPaymentMethods"/>
+        <waitForElementVisible selector="{{AdminOrderFormPaymentSection.checkMoneyOrderPaymentOption}}" stepKey="waitForPaymentOptions"/>
+        <selectOption selector="{{AdminOrderFormPaymentSection.checkMoneyOrderPaymentOption}}" userInput="checkmo" stepKey="checkCheckMoneyOrder"/>
+        <waitForPageLoad stepKey="waitForPageLoadOrder" />
+    </actionGroup>
+</actionGroups>
