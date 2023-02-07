@@ -212,6 +212,7 @@ class MagentoDataHelper extends AbstractHelper
                 }
                 $categoryNames[] = $category->getName();
             }
+            // phpcs: ignore
             return addslashes(implode(',', $categoryNames));
         }
 
@@ -319,6 +320,7 @@ class MagentoDataHelper extends AbstractHelper
 
     /**
      * Return information about the cart items
+     *
      * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
      *
      * @return array

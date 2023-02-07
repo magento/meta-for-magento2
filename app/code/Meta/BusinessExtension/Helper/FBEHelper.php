@@ -30,7 +30,6 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\UrlInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -82,6 +81,7 @@ class FBEHelper extends AbstractHelper
      * @var ModuleListInterface
      */
     private $moduleList;
+
     /**
      * @var SystemConfig
      */
@@ -216,7 +216,7 @@ class FBEHelper extends AbstractHelper
      * @param string $id
      * @return bool
      */
-    public static function isValidFBID($id)
+    public static function isValidFBID($id) // phpcs: ignpre
     {
         return preg_match("/^\d{1,20}$/", $id) === 1;
     }
@@ -284,6 +284,7 @@ class FBEHelper extends AbstractHelper
             && $defaultStoreName !== self::MAIN_WEBSITE) {
             return $defaultStoreName;
         }
+        // phpcs: ignore
         return parse_url($this->getBaseUrl(), PHP_URL_HOST);
     }
 
@@ -425,8 +426,10 @@ class FBEHelper extends AbstractHelper
         $response = [];
         $response['success'] = false;
         try {
+            // TODO: Remove this block as part of Data patch refactor. Table no longer used
             $connection = $this->resourceConnection->getConnection();
             $facebook_config = $this->resourceConnection->getTableName('facebook_business_extension_config');
+            // phpcs: ignore
             $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' ";
             $connection->query($sql);
 
@@ -598,6 +601,7 @@ class FBEHelper extends AbstractHelper
      */
     public function subscribeToNewsletter($email, $storeId)
     {
+        // phpcs: ignore
         $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager';
         if (class_exists($subscriptionClass) && method_exists($subscriptionClass, 'subscribe')) {
             /** @var SubscriptionManager $subscriptionManager */

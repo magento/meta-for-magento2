@@ -56,6 +56,7 @@ class Fbpixel extends AbstractAjax
 
     /**
      * Execute for json
+     *
      * Yet to verify how to use the pii info, hence have commented the part of code.
      *
      * @return array

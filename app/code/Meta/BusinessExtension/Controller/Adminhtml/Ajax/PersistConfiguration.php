@@ -138,7 +138,7 @@ class PersistConfiguration extends AbstractAjax
      *
      * @param string $accessToken
      * @param int $pageId
-     * @param int storeId
+     * @param int $storeId
      * @return $this
      * @throws LocalizedException
      * @throws \GuzzleHttp\Exception\GuzzleException
