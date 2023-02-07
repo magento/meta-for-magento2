@@ -7,15 +7,16 @@
 <select id="store">
     <option value=""><?= $escaper->escapeHtml(__('Select store')) ?></option>
     <?php foreach ($block->getStores() as $key => $store): ?>
-        <?php if ($key == 'admin'): continue; endif; ?>
-        <option
-            value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
-            data-installed="<?= $escaper->escapeHtmlAttr($block->isFBEInstalled($store['store_id'])) ?>"
-            data-pixel-id="<?= $escaper->escapeHtmlAttr($block->fetchPixelId($store['store_id'])) ?>"
-            data-system-user-name="<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
-            data-external-business-id=
-                "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
-        ><?= $escaper->escapeHtml(__($store['name'])) ?></option>
+        <?php if ($key !== 'admin'): ?>
+            <option
+                value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
+                data-installed="<?= $escaper->escapeHtmlAttr($block->isFBEInstalled($store['store_id'])) ?>"
+                data-pixel-id="<?= $escaper->escapeHtmlAttr($block->fetchPixelId($store['store_id'])) ?>"
+                data-system-user-name="<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
+                data-external-business-id=
+                    "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
+            ><?= $escaper->escapeHtml(__($store['name'])) ?></option>
+       <?php endif; ?>
     <?php endforeach; ?>
 </select>
 <div>
