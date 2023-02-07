@@ -383,6 +383,7 @@ class FBEHelper extends AbstractHelper
      * "ad_account_id":"111","catalog_id":"111","pages":["111"],"instagram_profiles":["111"]}]}
      *  usage: $_bm = $_assets['business_manager_ids'];
      *
+     * @param int $storeId
      * @param string $external_business_id
      * @return void
      */

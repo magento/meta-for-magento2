@@ -8,10 +8,7 @@
     <option value=""><?= $escaper->escapeHtml(__('Select store')) ?></option>
     <?php foreach ($block->getStores() as $key => $store): ?>
         <?php if ($key == 'admin'): ?>
-            <?php
-                // phpcs:ignore
-                continue;
-            ?>
+            <?php continue; // phpcs:ignore ?>
         <?php endif; ?>
         <option
             value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
