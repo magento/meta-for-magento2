@@ -124,6 +124,7 @@ class Config
      * @param ResourceConfig $resourceConfig
      * @param ModuleListInterface $moduleList
      * @param TypeListInterface $cacheTypeList
+     * @SuppressWarnings(PHPMD.ExcessivePublicCount)
      */
     public function __construct(
         StoreManagerInterface $storeManager,
@@ -345,6 +346,7 @@ class Config
     /**
      * Get default order status
      *
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      * @param int $scopeId
      * @param int $scope
      * @return bool
@@ -426,6 +428,7 @@ class Config
     /**
      * Get order ship event
      *
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      * @param int $scopeId
      * @param int $scope
      * @return bool

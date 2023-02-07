@@ -34,6 +34,9 @@ use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class FBEHelper extends AbstractHelper
 {
     private const MAIN_WEBSITE_STORE = 'Main Website Store';
@@ -399,7 +402,6 @@ class FBEHelper extends AbstractHelper
             $response = $this->curl->getBody();
             $this->log("The FBE Install reponse : " . json_encode($response));
             $decodeResponse = json_decode($response, true);
-            $assets = $decodeResponse['data'][0];
         } catch (\Exception $e) {
             $this->log("Failed to query FBEInstalls" . $e->getMessage());
         }
@@ -563,6 +565,7 @@ class FBEHelper extends AbstractHelper
     /**
      * Generates a map of the form : 4 => "Root > Mens > Shoes"
      *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @return array
      */
     public function generateCategoryNameMap()

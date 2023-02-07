@@ -23,6 +23,9 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Store\Model\ScopeInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class Fbpixel extends AbstractAjax
 {
     /**

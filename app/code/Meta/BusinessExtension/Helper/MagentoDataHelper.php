@@ -39,6 +39,10 @@ use Magento\Customer\Model\Customer;
 
 /**
  * Helper class to get data using Magento Platform methods.
+ *
+ * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+ * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class MagentoDataHelper extends AbstractHelper
 {
