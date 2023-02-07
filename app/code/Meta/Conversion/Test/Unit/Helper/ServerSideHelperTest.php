@@ -22,16 +22,29 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Conversion\Helper\ServerEventFactory;
 use Meta\Conversion\Helper\ServerSideHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ServerSideHelperTest extends TestCase
 {
+    /**
+     * @var MockObject
+     */
     private $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     private $serverSideHelper;
 
+    /**
+     * @var MockObject
+     */
     private $aamFieldsExtractorHelper;
 
+    /**
+     * @var MockObject
+     */
     private $systemConfig;
 
     /**
@@ -62,7 +75,10 @@ class ServerSideHelperTest extends TestCase
         );
     }
 
-    public function testEventAddedToTrackedEvents()
+    /**
+     * @return void
+     */
+    public function testEventAddedToTrackedEvents(): void
     {
         $event = ServerEventFactory::createEvent('ViewContent', []);
         $this->aamFieldsExtractorHelper->method('setUserData')->willReturn($event);

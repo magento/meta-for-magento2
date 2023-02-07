@@ -30,28 +30,30 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\UrlInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class FBEHelper extends AbstractHelper
 {
-    const MAIN_WEBSITE_STORE = 'Main Website Store';
-    const MAIN_STORE = 'Main Store';
-    const MAIN_WEBSITE = 'Main Website';
+    private const MAIN_WEBSITE_STORE = 'Main Website Store';
+    private const MAIN_STORE = 'Main Store';
+    private const MAIN_WEBSITE = 'Main Website';
 
-    const FB_GRAPH_BASE_URL = "https://graph.facebook.com/";
+    public const FB_GRAPH_BASE_URL = "https://graph.facebook.com/";
 
-    const DELETE_SUCCESS_MESSAGE = "You have successfully deleted Meta Business Extension.
+    private const DELETE_SUCCESS_MESSAGE = "You have successfully deleted Meta Business Extension.
     The pixel installed on your website is now deleted.";
 
-    const DELETE_FAILURE_MESSAGE = "There was a problem deleting the connection.
+    private const DELETE_FAILURE_MESSAGE = "There was a problem deleting the connection.
       Please try again.";
 
-    const CURRENT_API_VERSION = "v15.0";
+    private const CURRENT_API_VERSION = "v15.0";
 
-    const MODULE_NAME = "Meta_BusinessExtension";
+    private const MODULE_NAME = "Meta_BusinessExtension";
 
     /**
      * @var ObjectManagerInterface
@@ -82,6 +84,7 @@ class FBEHelper extends AbstractHelper
      * @var ModuleListInterface
      */
     private $moduleList;
+
     /**
      * @var SystemConfig
      */
@@ -120,6 +123,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get magento version
+     *
      * @return mixed
      */
     public function getMagentoVersion()
@@ -128,6 +133,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get plugin version
+     *
      * @return mixed
      */
     public function getPluginVersion()
@@ -136,6 +143,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get source
+     *
      * @return string
      */
     public function getSource()
@@ -144,6 +153,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get partner agent
+     *
      * @param bool $withMagentoVersion
      * @return string
      */
@@ -158,7 +169,9 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $partialURL
+     * Get url
+     *
+     * @param string $partialURL
      * @return mixed
      */
     public function getUrl($partialURL)
@@ -168,6 +181,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get base url media
+     *
      * @return mixed
      */
     public function getBaseUrlMedia()
@@ -176,7 +191,9 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $fullClassName
+     * Create object
+     *
+     * @param string $fullClassName
      * @param array $arguments
      * @return mixed
      */
@@ -186,7 +203,9 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $fullClassName
+     * Get object
+     *
+     * @param string $fullClassName
      * @return mixed
      */
     public function getObject($fullClassName)
@@ -195,15 +214,19 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $id
+     * Is valid fbid
+     *
+     * @param string $id
      * @return bool
      */
-    public static function isValidFBID($id)
+    public static function isValidFBID($id) // phpcs:ignore
     {
         return preg_match("/^\d{1,20}$/", $id) === 1;
     }
 
     /**
+     * Get store
+     *
      * @return StoreInterface
      */
     public function getStore()
@@ -212,6 +235,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get base url
+     *
      * @return mixed
      */
     public function getBaseUrl()
@@ -221,11 +246,14 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get fbe external business id
+     *
+     * @param int $storeId
      * @return mixed|string|null
      */
-    public function getFBEExternalBusinessId()
+    public function getFBEExternalBusinessId($storeId)
     {
-        $storedExternalId = $this->systemConfig->getExternalBusinessId();
+        $storedExternalId = $this->systemConfig->getExternalBusinessId($storeId);
         if ($storedExternalId) {
             return $storedExternalId;
         }
@@ -235,6 +263,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get store name
+     *
      * @return array|false|int|string|null
      */
     public function getStoreName()
@@ -257,11 +287,13 @@ class FBEHelper extends AbstractHelper
             && $defaultStoreName !== self::MAIN_WEBSITE) {
             return $defaultStoreName;
         }
-        return parse_url($this->getBaseUrl(), PHP_URL_HOST);
+        return parse_url($this->getBaseUrl(), PHP_URL_HOST); // phpcs:ignore
     }
 
     /**
-     * @param $info
+     * Log
+     *
+     * @param string $info
      */
     public function log($info)
     {
@@ -269,7 +301,9 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $message
+     * Log critical
+     *
+     * @param string $message
      */
     public function logCritical($message)
     {
@@ -277,6 +311,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Log exception
+     *
      * @param \Exception $e
      */
     public function logException(\Exception $e)
@@ -287,6 +323,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get api version
+     *
      * @return string|void|null
      */
     public function getAPIVersion()
@@ -315,10 +353,15 @@ class FBEHelper extends AbstractHelper
             $decodeResponse = json_decode($response);
             $apiVersion = $decodeResponse->api_version;
             //$this->log("The version fetched via API call: ".$apiVersion);
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION, $apiVersion);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION,
+                $apiVersion
+            );
             $date = new \DateTime();
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
-                $date->format('Y-m-d H:i:s'));
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
+                $date->format('Y-m-d H:i:s')
+            );
 
         } catch (\Exception $e) {
             $this->log("Failed to fetch latest api version with error " . $e->getMessage());
@@ -327,8 +370,10 @@ class FBEHelper extends AbstractHelper
         return $apiVersion ? $apiVersion : self::CURRENT_API_VERSION;
     }
 
-    /*
-     * TODO decide which ids we want to return for commerce feature
+    /**
+     * Query fbe installs
+     *
+     * * TODO decide which ids we want to return for commerce feature
      * This function queries FBE assets and other commerce related assets. We have stored most of them during FBE setup,
      * such as BM, Pixel, catalog, profiles, ad_account_id. We might want to store or query ig_profiles,
      * commerce_merchant_settings_id, pages in the future.
@@ -337,11 +382,15 @@ class FBEHelper extends AbstractHelper
      * {"data":[{"business_manager_id":"12345","onsite_eligible":false,"pixel_id":"12333","profiles":["112","111"],
      * "ad_account_id":"111","catalog_id":"111","pages":["111"],"instagram_profiles":["111"]}]}
      *  usage: $_bm = $_assets['business_manager_ids'];
+     *
+     * @param int $storeId
+     * @param string $external_business_id
+     * @return void
      */
-    public function queryFBEInstalls($external_business_id = null)
+    public function queryFBEInstalls($storeId, $external_business_id = null)
     {
         if ($external_business_id == null) {
-            $external_business_id = $this->getFBEExternalBusinessId();
+            $external_business_id = $this->getFBEExternalBusinessId($storeId);
         }
         $accessToken = $this->systemConfig->getAccessToken();
         $urlSuffix = "/fbe_business/fbe_installs?fbe_external_business_id=" . $external_business_id;
@@ -352,16 +401,16 @@ class FBEHelper extends AbstractHelper
             $this->curl->get($url);
             $response = $this->curl->getBody();
             $this->log("The FBE Install reponse : " . json_encode($response));
-            $decodeResponse = json_decode($response, true);
-            $assets = $decodeResponse['data'][0];
         } catch (\Exception $e) {
             $this->log("Failed to query FBEInstalls" . $e->getMessage());
         }
     }
 
     /**
-     * @param $pixelId
-     * @param $pixelEvent
+     * Log pixel event
+     *
+     * @param string $pixelId
+     * @param string $pixelEvent
      */
     public function logPixelEvent($pixelId, $pixelEvent)
     {
@@ -369,6 +418,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Delete config keys
+     *
      * @return array
      */
     public function deleteConfigKeys()
@@ -376,13 +427,15 @@ class FBEHelper extends AbstractHelper
         $response = [];
         $response['success'] = false;
         try {
+            // TODO: Remove this block as part of Data patch refactor. Table no longer used
             $connection = $this->resourceConnection->getConnection();
             $facebook_config = $this->resourceConnection->getTableName('facebook_business_extension_config');
-            $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' ";
+            $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' "; // phpcs:ignore
             $connection->query($sql);
 
-            $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID)
+            $this->systemConfig->deleteConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID
+            )->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID)
                 ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS)
                 ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES)
                 ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID)
@@ -400,7 +453,9 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $versionLastUpdate
+     * Is updated version
+     *
+     * @param string $versionLastUpdate
      * @return bool|null
      */
     public function isUpdatedVersion($versionLastUpdate)
@@ -425,6 +480,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get store currency code
+     *
      * @return mixed
      */
     public function getStoreCurrencyCode()
@@ -433,7 +490,9 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $pixelId
+     * Fetch aam settings
+     *
+     * @param string $pixelId
      * @return mixed
      */
     private function fetchAAMSettings($pixelId)
@@ -442,6 +501,8 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
+     * Get aam settings
+     *
      * @return AdsPixelSettings|null
      */
     public function getAAMSettings()
@@ -461,10 +522,13 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $settings
+     * Save aam settings
+     *
+     * @param object $settings
+     * @param int $storeId
      * @return false|string
      */
-    private function saveAAMSettings($settings)
+    private function saveAAMSettings($settings, $storeId)
     {
         $settingsAsArray = [
             'enableAutomaticMatching' => $settings->getEnableAutomaticMatching(),
@@ -472,19 +536,26 @@ class FBEHelper extends AbstractHelper
             'pixelId' => $settings->getPixelId(),
         ];
         $settingsAsString = json_encode($settingsAsArray);
-        $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS, $settingsAsString);
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS,
+            $settingsAsString,
+            $storeId
+        );
         return $settingsAsString;
     }
 
     /**
-     * @param $pixelId
+     * Fetch and save aam settings
+     *
+     * @param string $pixelId
+     * @param int $storeId
      * @return false|string|null
      */
-    public function fetchAndSaveAAMSettings($pixelId)
+    public function fetchAndSaveAAMSettings($pixelId, $storeId)
     {
         $settings = $this->fetchAAMSettings($pixelId);
         if ($settings) {
-            return $this->saveAAMSettings($settings);
+            return $this->saveAAMSettings($settings, $storeId);
         }
         return null;
     }
@@ -492,6 +563,7 @@ class FBEHelper extends AbstractHelper
     /**
      * Generates a map of the form : 4 => "Root > Mens > Shoes"
      *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @return array
      */
     public function generateCategoryNameMap()
@@ -522,13 +594,15 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * @param $email
-     * @param $storeId
+     * Subscribe to newsletter
+     *
+     * @param string $email
+     * @param int $storeId
      * @return $this
      */
     public function subscribeToNewsletter($email, $storeId)
     {
-        $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager';
+        $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager'; // phpcs:ignore
         if (class_exists($subscriptionClass) && method_exists($subscriptionClass, 'subscribe')) {
             /** @var SubscriptionManager $subscriptionManager */
             $subscriptionManager = $this->createObject(SubscriptionManager::class);
