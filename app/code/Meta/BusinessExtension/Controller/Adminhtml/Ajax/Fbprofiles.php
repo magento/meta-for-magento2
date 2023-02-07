@@ -21,7 +21,11 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Store\Model\ScopeInterface;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class Fbprofiles extends AbstractAjax
 {
     /**
@@ -30,6 +34,8 @@ class Fbprofiles extends AbstractAjax
     private $systemConfig;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -45,17 +51,26 @@ class Fbprofiles extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
-
+    /**
+     * Execute for json
+     *
+     * @return array
+     */
     public function executeForJson()
     {
-        $oldProfiles = $this->systemConfig->getProfiles();
+        $storeId = $this->getRequest()->getParam('storeId');
+        $oldProfiles = $this->systemConfig->getProfiles($storeId, ScopeInterface::SCOPE_STORES);
         $response = [
             'success' => false,
             'profiles' => $oldProfiles
         ];
         $profiles = $this->getRequest()->getParam('profiles');
         if ($profiles) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES, $profiles);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES,
+                $profiles,
+                $storeId
+            );
             $response['success'] = true;
             $response['profiles'] = $profiles;
         }

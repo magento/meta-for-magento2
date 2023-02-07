@@ -18,7 +18,6 @@
 namespace Meta\Conversion\Test\Unit\Block\Pixel;
 
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\MagentoDataHelper;
@@ -27,22 +26,50 @@ use Meta\Conversion\Block\Pixel\Head;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\Conversion\Helper\AAMSettingsFields;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Magento\Framework\Escaper;
 
 class HeadTest extends TestCase
 {
+    /**
+     * @var Head
+     */
     private $head;
 
+    /**
+     * @var MockObject
+     */
     private $context;
 
+    /**
+     * @var MockObject
+     */
     private $objectManager;
 
+    /**
+     * @var MockObject
+     */
     private $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     private $magentoDataHelper;
 
+    /**
+     * @var MockObject
+     */
     private $aamFieldsExtractorHelper;
 
+    /**
+     * @var MockObject
+     */
     private $systemConfig;
+
+    /**
+     * @var MockObject
+     */
+    private $escaper;
 
     /**
      * Used to reset or change values after running a test
@@ -63,10 +90,11 @@ class HeadTest extends TestCase
 
         $this->context = $this->createMock(Context::class);
         $this->objectManager = $this->createMock(ObjectManagerInterface::class);
-        $this->registry = $this->createMock(Registry::class);
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
         $this->systemConfig = $this->createMock(Config::class);
+        $this->escaper = $this->createMock(Escaper::class);
+
         $this->aamFieldsExtractorHelper = $this->createMock(
             AAMFieldsExtractorHelper::class
         );
@@ -78,6 +106,7 @@ class HeadTest extends TestCase
             $this->fbeHelper,
             $this->magentoDataHelper,
             $this->systemConfig,
+            $this->escaper,
             $this->aamFieldsExtractorHelper,
             []
         );

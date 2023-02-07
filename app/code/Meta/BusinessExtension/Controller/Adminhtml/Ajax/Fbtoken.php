@@ -21,7 +21,11 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Store\Model\ScopeInterface;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class Fbtoken extends AbstractAjax
 {
     /**
@@ -35,6 +39,8 @@ class Fbtoken extends AbstractAjax
     private $systemConfig;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -51,16 +57,26 @@ class Fbtoken extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
+    /**
+     * Execute for json
+     *
+     * @return array
+     */
     public function executeForJson()
     {
-        $oldAccessToken = $this->systemConfig->getAccessToken();
+        $storeId = $this->getRequest()->getParam('storeId');
+        $oldAccessToken = $this->systemConfig->getAccessToken($storeId, ScopeInterface::SCOPE_STORES);
         $response = [
             'success' => false,
             'accessToken' => $oldAccessToken
         ];
         $accessToken = $this->getRequest()->getParam('accessToken');
         if ($accessToken) {
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $accessToken);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN,
+                $accessToken,
+                $storeId
+            );
             $response['success'] = true;
             $response['accessToken'] = $accessToken;
             if ($oldAccessToken && $oldAccessToken != $accessToken) {
