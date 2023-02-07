@@ -217,8 +217,7 @@ class MagentoDataHelper extends AbstractHelper
                 }
                 $categoryNames[] = $category->getName();
             }
-            // phpcs: ignore
-            return addslashes(implode(',', $categoryNames));
+            return addslashes(implode(',', $categoryNames)); // phpcs:ignore
         }
 
         return '';

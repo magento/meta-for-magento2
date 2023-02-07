@@ -287,8 +287,7 @@ class FBEHelper extends AbstractHelper
             && $defaultStoreName !== self::MAIN_WEBSITE) {
             return $defaultStoreName;
         }
-        // phpcs: ignore
-        return parse_url($this->getBaseUrl(), PHP_URL_HOST);
+        return parse_url($this->getBaseUrl(), PHP_URL_HOST); // phpcs:ignore
     }
 
     /**
@@ -430,8 +429,7 @@ class FBEHelper extends AbstractHelper
             // TODO: Remove this block as part of Data patch refactor. Table no longer used
             $connection = $this->resourceConnection->getConnection();
             $facebook_config = $this->resourceConnection->getTableName('facebook_business_extension_config');
-            // phpcs: ignore
-            $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' ";
+            $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' "; // phpcs:ignore
             $connection->query($sql);
 
             $this->systemConfig->deleteConfig(
@@ -603,8 +601,7 @@ class FBEHelper extends AbstractHelper
      */
     public function subscribeToNewsletter($email, $storeId)
     {
-        // phpcs: ignore
-        $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager';
+        $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager'; // phpcs:ignore
         if (class_exists($subscriptionClass) && method_exists($subscriptionClass, 'subscribe')) {
             /** @var SubscriptionManager $subscriptionManager */
             $subscriptionManager = $this->createObject(SubscriptionManager::class);
