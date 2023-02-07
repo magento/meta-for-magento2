@@ -59,6 +59,8 @@ class PersistAccessToken extends AbstractAjax
     }
 
     /**
+     * Execute for json
+     *
      * @return array
      * @throws GuzzleException
      */
@@ -71,8 +73,11 @@ class PersistAccessToken extends AbstractAjax
 
             // @todo Implement OBO
 
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $accessToken, $storeId)
-                ->cleanCache();
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN,
+                $accessToken,
+                $storeId
+            )->cleanCache();
 
             $pageId = $this->graphApiAdapter->getPageIdFromUserToken($accessToken);
             if (!$pageId) {
@@ -90,7 +95,11 @@ class PersistAccessToken extends AbstractAjax
                     $response['message'] = __('Cannot fetch commerce account ID');
                     return $response;
                 }
-                $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId, $storeId);
+                $this->systemConfig->saveConfig(
+                    SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
+                    $commerceAccountId,
+                    $storeId
+                );
             }
 
             $commerceAccountData = $this->graphApiAdapter->getCommerceAccountData($commerceAccountId, $accessToken);
@@ -105,9 +114,15 @@ class PersistAccessToken extends AbstractAjax
 
             $this->graphApiAdapter->associateMerchantSettingsWithApp($commerceAccountId, $accessToken);
 
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $pageId, $storeId)
-                ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $catalogId, $storeId)
-                ->cleanCache();
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID,
+                $pageId,
+                $storeId
+            )->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID,
+                $catalogId,
+                $storeId
+            )->cleanCache();
 
             $response['success'] = true;
             $response['access_token'] = $accessToken;

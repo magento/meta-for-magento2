@@ -219,7 +219,7 @@ class FBEHelper extends AbstractHelper
      * @param string $id
      * @return bool
      */
-    public static function isValidFBID($id) // phpcs: ignpre
+    public static function isValidFBID($id) // phpcs:ignore
     {
         return preg_match("/^\d{1,20}$/", $id) === 1;
     }
@@ -386,10 +386,10 @@ class FBEHelper extends AbstractHelper
      * @param string $external_business_id
      * @return void
      */
-    public function queryFBEInstalls($external_business_id = null)
+    public function queryFBEInstalls($storeId, $external_business_id = null)
     {
         if ($external_business_id == null) {
-            $external_business_id = $this->getFBEExternalBusinessId();
+            $external_business_id = $this->getFBEExternalBusinessId($storeId);
         }
         $accessToken = $this->systemConfig->getAccessToken();
         $urlSuffix = "/fbe_business/fbe_installs?fbe_external_business_id=" . $external_business_id;

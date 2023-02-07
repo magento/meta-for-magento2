@@ -24,7 +24,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 
 /**
- * @SuppressWarnings(PHPMD
+ * @SuppressWarnings(PHPMD)
  */
 class PersistPageAccessToken extends AbstractAjax
 {
