@@ -98,6 +98,7 @@ class HeadTest extends TestCase
         $this->aamFieldsExtractorHelper = $this->createMock(
             AAMFieldsExtractorHelper::class
         );
+        $this->escaper = $this->createMock(Escaper::class);
 
         $this->head =
         new Head(
@@ -114,7 +115,6 @@ class HeadTest extends TestCase
 
     /**
      * Test if the json string returned by the Head block
-     * is empty when the user is not logged in
      *
      * @return void
      */
@@ -128,7 +128,6 @@ class HeadTest extends TestCase
 
     /**
      * Test if the json string returned by the Head block
-     * is not empty when the user is logged in
      *
      * @return void
      */
