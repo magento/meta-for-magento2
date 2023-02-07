@@ -7,9 +7,7 @@
 <select id="store">
     <option value=""><?= $escaper->escapeHtml(__('Select store')) ?></option>
     <?php foreach ($block->getStores() as $key => $store): ?>
-        <?php if ($key == 'admin'): ?>
-            <?php continue; // phpcs:ignore ?>
-        <?php endif; ?>
+        <?php if ($key == 'admin'): continue; endif; ?>
         <option
             value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
             data-installed="<?= $escaper->escapeHtmlAttr($block->isFBEInstalled($store['store_id'])) ?>"
