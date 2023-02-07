@@ -69,7 +69,7 @@ class HeadTest extends TestCase
     /**
      * @var MockObject
      */
-    private $escaper
+    private $escaper;
 
     /**
      * Used to reset or change values after running a test

@@ -401,7 +401,6 @@ class FBEHelper extends AbstractHelper
             $this->curl->get($url);
             $response = $this->curl->getBody();
             $this->log("The FBE Install reponse : " . json_encode($response));
-            $decodeResponse = json_decode($response, true);
         } catch (\Exception $e) {
             $this->log("Failed to query FBEInstalls" . $e->getMessage());
         }

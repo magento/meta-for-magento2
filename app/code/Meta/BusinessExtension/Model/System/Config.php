@@ -25,6 +25,9 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ */
 class Config
 {
     private const MODULE_NAME = 'Meta_BusinessExtension';

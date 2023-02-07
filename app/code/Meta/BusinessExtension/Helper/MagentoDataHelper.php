@@ -43,6 +43,7 @@ use Magento\Customer\Model\Customer;
  * @SuppressWarnings(PHPMD.UnusedLocalVariable)
  * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class MagentoDataHelper extends AbstractHelper
 {

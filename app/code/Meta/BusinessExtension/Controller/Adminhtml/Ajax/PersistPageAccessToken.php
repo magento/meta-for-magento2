@@ -23,6 +23,9 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 
+/**
+ * @SuppressWarnings(PHPMD
+ */
 class PersistPageAccessToken extends AbstractAjax
 {
     /**
