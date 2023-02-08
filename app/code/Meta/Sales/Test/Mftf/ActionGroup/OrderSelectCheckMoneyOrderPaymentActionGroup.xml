@@ -8,9 +8,14 @@
         </annotations>
 
         <click selector="{{AdminOrderFormPaymentSection.header}}" stepKey="unfocus"/>
-        <click selector="{{AdminOrderFormPaymentSection.linkPaymentOptions}}" stepKey="clickPaymentMethods"/>
-        <waitForElementVisible selector="{{AdminOrderFormPaymentSection.checkMoneyOrderPaymentOption}}" stepKey="waitForPaymentOptions"/>
-        <selectOption selector="{{AdminOrderFormPaymentSection.checkMoneyOrderPaymentOption}}" userInput="checkmo" stepKey="checkCheckMoneyOrder"/>
+        <conditionalClick
+            selector="AdminOrderFormPaymentSection.linkPaymentOptions"
+            dependentSelector="AdminOrderFormPaymentSection.linkPaymentOptions"
+            visible="true"
+            stepKey="showPaymentOptions"
+        />
+        <waitForElementVisible selector="{{AdminOrderFormPaymentSection.checkMoneyOption}}" stepKey="waitForPaymentOptions"/>
+        <selectOption selector="{{AdminOrderFormPaymentSection.checkMoneyOption}}" userInput="checkmo" stepKey="checkCheckMoneyOrder"/>
         <waitForPageLoad stepKey="waitForPageLoadOrder" />
     </actionGroup>
 </actionGroups>
