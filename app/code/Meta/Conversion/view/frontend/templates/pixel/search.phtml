@@ -1,20 +1,31 @@
 <?php
 /** @var \Meta\Conversion\Block\Pixel\Search $block */
+
+$trackerUrl = $block->getTrackerUrl();
+
 if ($block->getFacebookPixelID()) {
-    $eventId = \Meta\Conversion\Helper\EventIdGenerator::guidv4();
-    $block->trackServerEvent($eventId);
-?>
-    <script>
-        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
-        fbq('track', 'Search', {
-                source: "<?= $block->getSource() ?>",
-                pluginVersion: "<?= $block->getPluginVersion() ?>",
-                search_string: "<?= $block->getSearchQuery() ?>"
+    ?>
+
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Meta_Conversion/js/metaPixelTracker" : {
+                    "url" : "<?= $block->escapeJs($trackerUrl); ?>",
+                    "payload": <?= json_encode([
+                        "eventName" => $block->getEventToObserveName(),
+                        "searchQuery" => $block->getSearchQuery()
+                    ]) ?>,
+                    "browserEventData": <?= json_encode([
+                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                        'fbPixelId' => $block->getFacebookPixelID(),
+                        'source' => $block->getSource(),
+                        'pluginVersion' => $block->getPluginVersion(),
+                        'track' => 'track',
+                        'event' => 'Search',
+                        'payload' => ['search_string' => $block->getSearchQuery()]
+                    ]) ?>
+                }
             }
-            , {
-                eventID: "<?= $eventId ?>"
-            }
-        );
+        }
     </script>
-    <?php $block->logEvent($block->getFacebookPixelID(), 'Search') ?>
 <?php } ?>

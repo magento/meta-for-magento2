@@ -17,6 +17,16 @@
 
 namespace Meta\Conversion\Controller\Pixel;
 
+use Magento\Catalog\Model\ProductFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Data\Form\FormKey\Validator;
+use Magento\Framework\Pricing\Helper\Data;
+use Magento\Framework\View\Asset\File\NotFoundException;
+use Meta\BusinessExtension\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\EventIdGenerator;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Catalog\Model\Product;
@@ -24,54 +34,54 @@ use Magento\Catalog\Model\Product;
 class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
 {
     /**
-     * @var \Magento\Framework\Controller\Result\JsonFactory
+     * @var JsonFactory
      */
-    protected $resultJsonFactory;
+    private JsonFactory $resultJsonFactory;
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var ProductFactory
      */
-    protected $productFactory;
+    private ProductFactory $productFactory;
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
-     * @var \Magento\Framework\Data\Form\FormKey\Validator
+     * @var Validator
      */
-    protected $formKeyValidator;
+    private Validator $formKeyValidator;
 
     /**
-     * @var \Meta\BusinessExtension\Helper\MagentoDataHelper
+     * @var MagentoDataHelper
      */
-    protected $magentoDataHelper;
+    private MagentoDataHelper $magentoDataHelper;
 
     /**
-     * @var \Magento\Framework\Pricing\Helper\Data
+     * @var Data
      */
-    protected $priceHelper;
+    private Data $priceHelper;
 
     /**
      * ProductInfoForAddToCart constructor
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param ProductFactory $productFactory
      * @param FBEHelper $helper
-     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
-     * @param \Meta\BusinessExtension\Helper\MagentoDataHelper $magentoDataHelper
-     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param Validator $formKeyValidator
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param Data $priceHelper
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        ProductFactory $productFactory,
         FBEHelper $helper,
-        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
-        \Meta\BusinessExtension\Helper\MagentoDataHelper $magentoDataHelper,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper
+        Validator $formKeyValidator,
+        MagentoDataHelper $magentoDataHelper,
+        Data $priceHelper
     ) {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
@@ -83,10 +93,12 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Get Category
+     *
      * @param Product $product
      * @return string|null
      */
-    private function getCategory(Product $product)
+    private function getCategory(Product $product): ?string
     {
         $categoryIds = $product->getCategoryIds();
         if (count($categoryIds) > 0) {
@@ -97,15 +109,17 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
                 $category = $categoryModel->load($categoryId);
                 $categoryNames[] = $category->getName();
             }
-            return addslashes(implode(',', $categoryNames));
+            return addslashes(implode(',', $categoryNames)); // phpcs: ignore
         } else {
             return null;
         }
     }
 
     /**
-     * @param $product
-     * @return mixed
+     * Get formatted price
+     *
+     * @param Product $product
+     * @return float|string
      */
     private function getPriceValue($product)
     {
@@ -113,13 +127,21 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $productSku
+     * Get Product Info
+     *
+     * @param mixed $productSku
+     * @param mixed $productId
      * @return array
      */
-    private function getProductInfo($productSku)
+    private function getProductInfo($productSku, $productId = null): array
     {
-        /** @var Product $product */
-        $product = $this->magentoDataHelper->getProductBySku($productSku);
+        if ($productId) {
+            /** @var Product $product */
+            $product = $this->magentoDataHelper->getProductById($productId);
+        } else {
+            /** @var Product $product */
+            $product = $this->magentoDataHelper->getProductBySku($productSku);
+        }
         if ($product && $product->getId()) {
             return [
                 'id'       => $this->magentoDataHelper->getContentId($product),
@@ -131,15 +153,20 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
         return [];
     }
 
+    /**
+     * Execute function
+     *
+     * @returns ResultInterface
+     * @throws NotFoundException
+     */
     public function execute()
     {
         $result = $this->resultJsonFactory->create();
+        $productId = $this->getRequest()->getParam('product_id', null);
         $productSku = $this->getRequest()->getParam('product_sku', null);
-        if ($this->formKeyValidator->validate($this->getRequest()) && $productSku) {
-            $responseData = $this->getProductInfo($productSku);
-            // If the sku is valid
-            // The event id is added in the response
-            // And a CAPI event is created
+        if ($this->formKeyValidator->validate($this->getRequest()) && ($productSku || $productId)) {
+            $responseData = $this->getProductInfo($productSku, $productId);
+            // If the sku is valid, The event id is added in the response And a CAPI event is created
             if (count($responseData) > 0) {
                 $eventId = EventIdGenerator::guidv4();
                 $responseData['event_id'] = $eventId;
@@ -152,7 +179,13 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
         return $result;
     }
 
-    public function trackServerEvent($eventId)
+    /**
+     * Track the server event
+     *
+     * @param string $eventId
+     * @return void
+     */
+    public function trackServerEvent($eventId): void
     {
         $this->_eventManager->dispatch(
             'facebook_businessextension_ssapi_add_to_cart',

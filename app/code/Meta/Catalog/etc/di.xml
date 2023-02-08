@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface" type="Meta\Catalog\Model\Product\Feed\Builder\MultiSourceInventory" />
+    
     <virtualType name="Meta\Catalog\Model\Logger\ProductFeedDebugger" type="Magento\Framework\Logger\Handler\Base">
         <arguments>
             <argument name="fileName" xsi:type="string">/var/log/facebook/product-feed.log</argument>

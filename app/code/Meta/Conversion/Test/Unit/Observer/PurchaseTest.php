@@ -25,10 +25,19 @@ use Magento\Framework\Event\Observer;
 
 class PurchaseTest extends CommonTest
 {
+    /**
+     * @var Purchase
+     */
     protected $purchaseObserver;
 
+    /**
+     * @var ServerSideHelper
+     */
     protected $serverSideHelper;
 
+    /**
+     * @var AAMFieldsExtractorHelper
+     */
     private $aamFieldsExtractorHelper;
 
     /**
@@ -58,7 +67,7 @@ class PurchaseTest extends CommonTest
 
     public function testPurchaseEventCreated()
     {
-        $this->magentoDataHelper->method('getOrderTotal')->willReturn(170);
+        $this->magentoDataHelper->method('getOrderTotal')->willReturn(170.00);
         $this->magentoDataHelper->method('getOrderContentIds')->willReturn(
             [1, 2]
         );
@@ -93,5 +102,6 @@ class PurchaseTest extends CommonTest
         ];
 
         $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+        $this->assertEqualsCustomDataContents($customDataArray, $event->getCustomData());
     }
 }

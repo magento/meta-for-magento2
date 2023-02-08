@@ -6,12 +6,12 @@
         ], function ($) {
 
             function trackAddToCart(content_ids, content_name, content_category, value, eventId) {
-                fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
+                fbq('set', 'agent', '<?= /* @noEscape */ $ $block->getFacebookAgentVersion() ?>', '<?= /* @noEscape */ $block->getFacebookPixelID() ?>');
                 fbq('track', 'AddToCart', {
-                        source: "<?= $block->getSource() ?>",
-                        pluginVersion: "<?= $block->getPluginVersion() ?>",
-                        content_type: "<?= $block->getContentType() ?>",
-                        currency: "<?= $block->getCurrency() ?>",
+                        source: "<?= /* @noEscape */ $block->getSource() ?>",
+                        pluginVersion: "<?= /* @noEscape */ $block->getPluginVersion() ?>",
+                        content_type: "<?= /* @noEscape */ $block->getContentType() ?>",
+                        currency: "<?= /* @noEscape */ $block->getCurrency() ?>",
                         content_ids: content_ids,
                         content_name: content_name,
                         content_category: content_category,
@@ -23,15 +23,20 @@
                 );
             }
 
-            var product_info_url = '<?= $block->getProductInfoUrl() ?>';
+            var product_info_url = '<?= /* @noEscape */ $block->getProductInfoUrl() ?>';
 
             $(document).on('ajax:addToCart', function (event, data) {
+                var configurableProduct = data.form.data().mageConfigurable;
+                if(configurableProduct) {
+                    var simpleProductId = configurableProduct.simpleProduct;
+                }
                 var product_sku = data.sku;
                 var form_key = jQuery("[name='form_key']").val();
                 $.ajax({
                     url: product_info_url,
                     data: {
                         product_sku: product_sku,
+                        product_id: simpleProductId,
                         form_key: form_key
                     },
                     type: 'post',
@@ -49,5 +54,4 @@
             });
         });
     </script>
-    <?php $block->logEvent($block->getFacebookPixelID(), 'AddToCart') ?>
 <?php } ?>

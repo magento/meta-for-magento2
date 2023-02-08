@@ -20,15 +20,31 @@ namespace Meta\Conversion\Test\Unit\Cron;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Cron\AAMSettingsCron;
+use PHPUnit\Framework\MockObject\MockObject;
+use Magento\Store\Model\StoreManager;
 
 /** Previously EventIdGeneratorTest */
 class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var MockObject
+     */
     private $aamSettingsCron;
 
+    /**
+     * @var MockObject
+     */
     private $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     private $systemConfig;
+
+    /**
+     * @var MockObject
+     */
+    private $storeManager;
 
     /**
      * Used to reset or change values after running a test
@@ -48,23 +64,25 @@ class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->systemConfig = $this->createMock(SystemConfig::class);
-        $this->aamSettingsCron = new AAMSettingsCron($this->fbeHelper, $this->systemConfig);
+        $this->storeManager = $this->createMock(StoreManager::class);
+        $this->aamSettingsCron = new AAMSettingsCron($this->fbeHelper, $this->systemConfig, $this->storeManager);
+        $this->storeManager->method('getStores')->willReturn([1 => ['store 1'], 2 => ['store 2']]);
     }
 
     /**
-     * Test that the settings returned by the cron object are null when there is no pixel in the db
+     * Test that return is false when there is no pixel in the db
      *
      * @return void
      */
-    public function testNullSettingsWhenNoPixelPresent()
+    public function testFalseSettingsWhenNoPixelPresent()
     {
         $result = $this->aamSettingsCron->execute();
 
-        $this->assertNull($result);
+        $this->assertFalse($result);
     }
 
     /**
-     * Test that the settings returned by the cron object are null when they cannot be fetched
+     * Test return is false when settings cannot be fetched
      *
      * @return void
      */
@@ -74,7 +92,7 @@ class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
 
         $result = $this->aamSettingsCron->execute();
 
-        $this->assertNull($result);
+        $this->assertFalse($result);
     }
 
     /**
@@ -92,10 +110,10 @@ class AAMSettingsCronTest extends \PHPUnit\Framework\TestCase
         ];
         $settingsAsString = json_encode($settingsAsArray);
         $this->systemConfig->method('getPixelId')->willReturn($pixelId);
-        $this->fbeHelper->method('fetchAndSaveAAMSettings')->willReturn($settingsAsString);
+        $this->fbeHelper->method('fetchAndSaveAAMSettings')->with($pixelId)->willReturn($settingsAsString);
 
         $result = $this->aamSettingsCron->execute();
 
-        $this->assertEquals($settingsAsString, $result);
+        $this->assertTrue($result);
     }
 }

@@ -30,6 +30,7 @@ class Logger extends \Monolog\Logger
         ObjectManagerInterface $objectManager
     ) {
         $handler = $objectManager->create(Handler::class);
+
         parent::__construct('FBE', [$handler]);
     }
 }
