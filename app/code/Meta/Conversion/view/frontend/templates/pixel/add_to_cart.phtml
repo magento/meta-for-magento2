@@ -6,7 +6,7 @@
         ], function ($) {
 
             function trackAddToCart(content_ids, content_name, content_category, value, eventId) {
-                fbq('set', 'agent', '<?= /* @noEscape */ $ $block->getFacebookAgentVersion() ?>', '<?= /* @noEscape */ $block->getFacebookPixelID() ?>');
+                fbq('set', 'agent', '<?= /* @noEscape */ $block->getFacebookAgentVersion() ?>', '<?= /* @noEscape */ $block->getFacebookPixelID() ?>');
                 fbq('track', 'AddToCart', {
                         source: "<?= /* @noEscape */ $block->getSource() ?>",
                         pluginVersion: "<?= /* @noEscape */ $block->getPluginVersion() ?>",
