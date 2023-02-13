@@ -26,7 +26,7 @@ if ($block->getFacebookPixelID()) {
                         'payload' => [
                             'content_type' => $block->getContentType(),
                             'content_ids' => $block->getContentIDs(),
-                            'content_name' => $block->getContentName() ?? '',
+                            'content_name' => $block->escapeXssInUrl($block->getContentName()) ?? '',
                             'content_category' => $block->getContentCategory() ?? '',
                             'value' => $block->getValue() ?? '',
                             'currency' => $block->getCurrency() ?? ''

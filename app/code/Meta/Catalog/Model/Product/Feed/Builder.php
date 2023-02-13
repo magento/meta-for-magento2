@@ -28,6 +28,7 @@ use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Escaper;
 
 class Builder
 {
@@ -108,12 +109,21 @@ class Builder
     private $inventoryOnly = false;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
+     * Constructor
+     *
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
      * @param ProductIdentifier $productIdentifier
      * @param CatalogHelper $catalogHelper
+     * @param InventoryInterface $inventory
+     * @param Escaper $escaper
      */
     public function __construct(
         FBEHelper                 $fbeHelper,
@@ -122,7 +132,8 @@ class Builder
         BuilderTools              $builderTools,
         ProductIdentifier         $productIdentifier,
         CatalogHelper             $catalogHelper,
-        InventoryInterface        $inventory
+        InventoryInterface        $inventory,
+        Escaper                   $escaper
     )
     {
         $this->fbeHelper = $fbeHelper;
@@ -132,6 +143,7 @@ class Builder
         $this->productIdentifier = $productIdentifier;
         $this->catalogHelper = $catalogHelper;
         $this->inventory = $inventory;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -527,7 +539,7 @@ class Builder
         $entry = [
             self::ATTR_RETAILER_ID => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
             self::ATTR_ITEM_GROUP_ID => $this->getItemGroupId($product),
-            self::ATTR_NAME => $productTitle,
+            self::ATTR_NAME => $this->escaper->escapeXssInUrl($productTitle),
             self::ATTR_DESCRIPTION => $this->getDescription($product),
             self::ATTR_RICH_DESCRIPTION => $this->getRichDescription($product),
             self::ATTR_AVAILABILITY => $inventory->getAvailability(),

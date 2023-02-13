@@ -23,6 +23,7 @@ use Meta\Conversion\Helper\ServerSideHelper;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Escaper;
 
 use Meta\Conversion\Helper\ServerEventFactory;
 
@@ -49,22 +50,31 @@ class AddToCart implements ObserverInterface
     protected $request;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * Constructor
+     *
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param ServerSideHelper $serverSideHelper
      * @param RequestInterface $request
+     * @param Escaper $escaper
      */
     public function __construct(
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         ServerSideHelper $serverSideHelper,
-        RequestInterface $request
+        RequestInterface $request,
+        Escaper $escaper
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->serverSideHelper = $serverSideHelper;
         $this->request = $request;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -91,7 +101,7 @@ class AddToCart implements ObserverInterface
                     'content_type'     => $this->magentoDataHelper->getContentType($product),
                     'content_ids'      => [$this->magentoDataHelper->getContentId($product)],
                     'content_category' => $this->magentoDataHelper->getCategoriesForProduct($product),
-                    'content_name'     => $product->getName()
+                    'content_name'     => $this->escaper->escapeXssInUrl($product->getName())
                 ];
                 $event = ServerEventFactory::createEvent('AddToCart', $customData, $eventId);
                 $this->serverSideHelper->sendEvent($event);
