@@ -8,6 +8,7 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Logger\Logger;
 use Magento\Store\Model\StoreManagerInterface;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 class UpdateConfigurations implements DataPatchInterface
 {
@@ -35,6 +36,11 @@ class UpdateConfigurations implements DataPatchInterface
     private $moduleDataSetup;
 
     /**
+     * @var FBEHelper
+     */
+    private $FBEHelper;
+
+    /**
      * Constructor
      *
      * @param ModuleDataSetupInterface $moduleDataSetup
@@ -46,12 +52,14 @@ class UpdateConfigurations implements DataPatchInterface
         ModuleDataSetupInterface $moduleDataSetup,
         SystemConfig $config,
         StoreManagerInterface $storeManager,
-        Logger $logger
+        Logger $logger,
+        FBEHelper $FBEHelper
     ) {
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->moduleDataSetup = $moduleDataSetup;
+        $this->FBEHelper = $FBEHelper;
     }
 
     /**
@@ -101,8 +109,8 @@ class UpdateConfigurations implements DataPatchInterface
         $connection->startSetup();
 
         $connection->dropTable(self::OLD_CONFIG_TABLE_NAME);
-        $connection->delete('core_config_data', "path LIKE 'facebook/%'");
 
+        $this->FBEHelper->deleteConfigKeys();
         $connection->endSetup();
     }
 

@@ -376,11 +376,6 @@ class FBEHelper extends AbstractHelper
         $response = [];
         $response['success'] = false;
         try {
-            $connection = $this->resourceConnection->getConnection();
-            $facebook_config = $this->resourceConnection->getTableName('facebook_business_extension_config');
-            $sql = "DELETE FROM $facebook_config WHERE config_key NOT LIKE 'permanent%' ";
-            $connection->query($sql);
-
             $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID)
                 ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID)
                 ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS)
