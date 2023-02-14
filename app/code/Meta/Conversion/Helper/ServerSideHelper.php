@@ -90,6 +90,7 @@ class ServerSideHelper
                 $serverTestCode = $this->systemConfig->getServerTestCode();
                 if ($serverTestCode) {
                     $request->setTestEventCode($serverTestCode);
+                    $this->fbeHelper->log('test code '.$serverTestCode.' attached to event request');
                 }
             }
 
