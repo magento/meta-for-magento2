@@ -23,6 +23,8 @@ namespace Meta\Conversion\Block\Pixel;
 class ViewContent extends Common
 {
     /**
+     * Return content ids
+     *
      * @return string
      */
     public function getContentIDs()
@@ -36,6 +38,8 @@ class ViewContent extends Common
     }
 
     /**
+     * Returns content name
+     *
      * @return string|null
      */
     public function getContentName()
@@ -49,6 +53,8 @@ class ViewContent extends Common
     }
 
     /**
+     * Returns content type
+     *
      * @return string
      */
     public function getContentType()
@@ -59,6 +65,8 @@ class ViewContent extends Common
     }
 
     /**
+     * Returns content's category
+     *
      * @return string|null
      */
     public function getContentCategory()
@@ -79,6 +87,11 @@ class ViewContent extends Common
         }
     }
 
+    /**
+     * Return currency
+     *
+     * @return string
+     */
     public function getValue()
     {
         $product = $this->getCurrentProduct();
@@ -92,6 +105,8 @@ class ViewContent extends Common
     }
 
     /**
+     * Returns event name
+     *
      * @return string
      */
     public function getEventToObserveName()
@@ -100,19 +115,23 @@ class ViewContent extends Common
     }
 
     /**
+     * Returns Product id
+     *
      * @return mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function getCurrentProduct()
+    public function getProductId()
     {
-        return $this->getLayout()->getBlock('product.info')->getProduct();
+        return $this->getCurrentProduct()->getId();
     }
 
     /**
-     * @param $eventId
+     * Returns current product
+     *
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function trackServerEvent($eventId)
+    public function getCurrentProduct()
     {
-        $this->_eventManager->dispatch($this->getEventToObserveName(), ['eventId' => $eventId, 'product' => $this->getCurrentProduct()]);
+        return $this->getLayout()->getBlock('product.info')->getProduct();
     }
 }

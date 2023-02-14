@@ -23,6 +23,9 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class PersistPageAccessToken extends AbstractAjax
 {
     /**
@@ -55,6 +58,8 @@ class PersistPageAccessToken extends AbstractAjax
     }
 
     /**
+     * Execute for json
+     *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -62,11 +67,15 @@ class PersistPageAccessToken extends AbstractAjax
     {
         $response = [];
         $accessToken = $this->getRequest()->getParam('accessToken');
+        $storeId = $this->getRequest()->getParam('storeId');
         if ($accessToken) {
             $pageToken = $this->graphApiAdapter->getPageTokenFromUserToken($accessToken);
 
-            $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $pageToken)
-                ->cleanCache();
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN,
+                $pageToken,
+                $storeId
+            )->cleanCache();
 
             $commerceAccountId = $this->systemConfig->getCommerceAccountId();
 
@@ -77,7 +86,11 @@ class PersistPageAccessToken extends AbstractAjax
                     $response['message'] = __('Cannot fetch commerce account ID');
                     return $response;
                 }
-                $this->systemConfig->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $commerceAccountId);
+                $this->systemConfig->saveConfig(
+                    SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
+                    $commerceAccountId,
+                    $storeId
+                );
             }
 
             // @todo we're missing permission for Commerce API for now, so just return

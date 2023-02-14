@@ -22,15 +22,28 @@ use Meta\BusinessExtension\Helper\MagentoDataHelper;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 abstract class CommonTest extends TestCase
 {
+    /**
+     * @var MockObject
+     */
     protected $magentoDataHelper;
 
+    /**
+     * @var MockObject
+     */
     protected $fbeHelper;
 
+    /**
+     * @var MockObject
+     */
     protected $systemConfig;
 
+    /**
+     * @var ObjectManager
+     */
     protected $objectManager;
     /**
      * Used to reset or change values after running a test
@@ -54,6 +67,7 @@ abstract class CommonTest extends TestCase
         $this->objectManager = new ObjectManager($this);
         $this->systemConfig->method('getAccessToken')->willReturn('');
         $this->systemConfig->method('getPixelId')->willReturn('123');
+
         $this->magentoDataHelper->method('getCurrency')->willReturn('USD');
     }
 
@@ -94,22 +108,41 @@ abstract class CommonTest extends TestCase
         if (!empty($customDataArray['order_id'])) {
             $this->assertEquals($customData->getOrderId(), $customDataArray['order_id']);
         }
+    }
 
-        if (!empty($customDataArray['contents'])) {
-            $contents = $customData->getContents();
-            $this->assertNotNull($contents);
-            $this->assertEquals(count($customDataArray['contents']), count($contents));
-            for ($i = 0; $i < count($contents); $i++) {
-                if (!empty($customDataArray['contents'][$i]['product_id'])) {
-                    $this->assertEquals($customDataArray['contents'][$i]['product_id'], $contents[$i]->getProductId());
-                }
-                if (!empty($customDataArray['contents'][$i]['quantity'])) {
-                    $this->assertEquals($customDataArray['contents'][$i]['quantity'], $contents[$i]->getQuantity());
-                }
-                if (!empty($customDataArray['contents'][$i]['item_price'])) {
-                    $this->assertEquals($customDataArray['contents'][$i]['item_price'], $contents[$i]->getItemPrice());
-                }
-            }
+    /**
+     * @param array $customDataArray
+     * @param object $customData
+     * @return void
+     */
+    public function assertEqualsCustomDataContents($customDataArray, $customData)
+    {
+        $contents = $customData->getContents();
+        $this->assertNotNull($contents);
+        $this->assertEquals(count($customDataArray['contents']), count($contents));
+
+        if (!empty($customDataArray['contents'][0]['product_id'])) {
+            $this->assertEquals($customDataArray['contents'][0]['product_id'], $contents[0]->getProductId());
+        }
+
+        if (!empty($customDataArray['contents'][0]['quantity'])) {
+            $this->assertEquals($customDataArray['contents'][0]['quantity'], $contents[0]->getQuantity());
+        }
+
+        if (!empty($customDataArray['contents'][0]['item_price'])) {
+            $this->assertEquals($customDataArray['contents'][0]['item_price'], $contents[0]->getItemPrice());
+        }
+
+        if (!empty($customDataArray['contents'][1]['product_id'])) {
+            $this->assertEquals($customDataArray['contents'][1]['product_id'], $contents[1]->getProductId());
+        }
+
+        if (!empty($customDataArray['contents'][1]['quantity'])) {
+            $this->assertEquals($customDataArray['contents'][1]['quantity'], $contents[1]->getQuantity());
+        }
+
+        if (!empty($customDataArray['contents'][1]['item_price'])) {
+            $this->assertEquals($customDataArray['contents'][1]['item_price'], $contents[1]->getItemPrice());
         }
     }
 }

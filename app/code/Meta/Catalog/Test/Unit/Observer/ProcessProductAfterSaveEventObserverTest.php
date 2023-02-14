@@ -29,6 +29,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterSaveEventObserverTest extends CommonTest
 {
+    /**
+     * @var ProcessProductAfterSaveEventObserver
+     */
     protected $processProductAfterSaveEventObserver;
 
     /**
@@ -50,7 +53,6 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
      * @var MockObject
      */
     private $_batchApi;
-
 
     /**
      * @var MockObject
@@ -75,13 +77,12 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->_graphApi = $this->createMock(GraphAPIAdapter::class);
         $this->_batchApi = $this->createMock(BatchApi::class);
-        $this->processProductAfterSaveEventObserver =
-            new ProcessProductAfterSaveEventObserver(
-                $this->systemConfig,
-                $this->fbeHelper,
-                $this->_batchApi,
-                $this->_graphApi,
-            );
+        $this->processProductAfterSaveEventObserver = new ProcessProductAfterSaveEventObserver(
+            $this->systemConfig,
+            $this->fbeHelper,
+            $this->_batchApi,
+            $this->_graphApi,
+        );
     }
 
     public function testExecution()

@@ -23,15 +23,28 @@ use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Observer\AddToCart;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class AddToCartTest extends CommonTest
 {
+    /**
+     * @var MockObject
+     */
     protected $request;
 
+    /**
+     * @var AddToCart
+     */
     protected $addToCartObserver;
 
+    /**
+     * @var ServerSideHelper
+     */
     protected $serverSideHelper;
 
+    /**
+     * @var AAMFieldsExtractorHelper
+     */
     protected $aamFieldsExtractorHelper;
 
     /**
@@ -77,6 +90,7 @@ class AddToCartTest extends CommonTest
         $product->setName('Earphones');
         $this->request->method('getParam')->willReturn($sku);
         $this->magentoDataHelper->method('getProductBySku')->willReturn($product);
+        $this->magentoDataHelper->method('getProductById')->willReturn($product);
 
         $observer = new Observer(['eventId' => $eventId]);
 

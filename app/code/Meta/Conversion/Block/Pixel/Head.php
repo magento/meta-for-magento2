@@ -17,6 +17,7 @@
 
 namespace Meta\Conversion\Block\Pixel;
 
+use Magento\Framework\Escaper;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\MagentoDataHelper;
@@ -42,6 +43,7 @@ class Head extends Common
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
+     * @param Escaper $escaper
      * @param AAMFieldsExtractorHelper $aamFieldsExtractorHelper
      * @param array $data
      */
@@ -51,15 +53,17 @@ class Head extends Common
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
+        Escaper $escaper,
         AAMFieldsExtractorHelper $aamFieldsExtractorHelper,
         array $data = []
     ) {
-        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $data);
+        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $escaper, $data);
         $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
     }
 
     /**
      * Returns the user data that will be added in the pixel init code
+     *
      * @return string
      */
     public function getPixelInitCode()
@@ -76,6 +80,7 @@ class Head extends Common
      * Create JS code with the data processing options if required
      * To learn about this options in Meta Pixel, read:
      * https://developers.facebook.com/docs/marketing-apis/data-processing-options
+     *
      * @return string
      */
     public function getDataProcessingOptionsJSCode()
@@ -87,6 +92,7 @@ class Head extends Common
      * Create the data processing options passed in the Pixel image tag
      * Read about this options in:
      * https://developers.facebook.com/docs/marketing-apis/data-processing-options
+     *
      * @return string
      */
     public function getDataProcessingOptionsImgTag()
