@@ -26,10 +26,26 @@
             var product_info_url = '<?= /* @noEscape */ $block->getProductInfoUrl() ?>';
 
             $(document).on('ajax:addToCart', function (event, data) {
-                var configurableProduct = data.form.data().mageConfigurable;
-                if(configurableProduct) {
-                    var simpleProductId = configurableProduct.simpleProduct;
+                // check product data from swatch widget
+                var swatchData = $('[data-role=swatch-options]').data('mage-SwatchRenderer');
+                if (swatchData) {
+                    var simpleProductId = swatchData.getProductId();
+                } else {
+                    // In case product is added from category page get options using added product's id
+                    // Get id of last added product
+                    var productId = data.productIds[data.productIds.length - 1];
+                    var categorySwatchData = $('[data-role=swatch-option-'+productId+']').data('mage-SwatchRenderer');
+                    if (categorySwatchData) {
+                        var simpleProductId = categorySwatchData.getProductId();
+                    } else {
+                        // else check product data from configurable options
+                        var configurableProduct = data.form.data().mageConfigurable;
+                        if(configurableProduct) {
+                            var simpleProductId = configurableProduct.simpleProduct;
+                        }
+                    }
                 }
+                // otherwise use the product sku
                 var product_sku = data.sku;
                 var form_key = jQuery("[name='form_key']").val();
                 $.ajax({
