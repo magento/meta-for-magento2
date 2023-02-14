@@ -115,7 +115,7 @@ class Configurable implements ProductRetrieverInterface
                     $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
                     $configurableSettings[$attributeCode] = $attributeLabel;
                 }
-                // Set parent product's name as child product's name (used as variant name is Meta catalog)
+                // Assign parent product name to all child products' name (used as variant name is Meta catalog)
                 // https://developers.facebook.com/docs/commerce-platform/catalog/variants
                 $childProduct->setName($product->getName());
                 $childProduct->setConfigurableSettings($configurableSettings);
