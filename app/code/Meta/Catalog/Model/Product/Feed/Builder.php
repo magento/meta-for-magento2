@@ -539,7 +539,7 @@ class Builder
         $entry = [
             self::ATTR_RETAILER_ID => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
             self::ATTR_ITEM_GROUP_ID => $this->getItemGroupId($product),
-            self::ATTR_NAME => $this->escaper->escapeXssInUrl($productTitle),
+            self::ATTR_NAME => $this->escaper->escapeUrl($productTitle),
             self::ATTR_DESCRIPTION => $this->getDescription($product),
             self::ATTR_RICH_DESCRIPTION => $this->getRichDescription($product),
             self::ATTR_AVAILABILITY => $inventory->getAvailability(),

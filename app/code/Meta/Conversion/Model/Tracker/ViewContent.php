@@ -66,7 +66,7 @@ class ViewContent implements TrackerInterface
                 'value' => $this->magentoDataHelper->getValueForProduct($product),
                 'content_ids' => [$contentId],
                 'content_category' => $this->magentoDataHelper->getCategoriesForProduct($product),
-                'content_name' => $this->escaper->escapeXssInUrl($product->getName()),
+                'content_name' => $this->escaper->escapeUrl($product->getName()),
                 'contents' => [
                     [
                         'id' => $contentId,
