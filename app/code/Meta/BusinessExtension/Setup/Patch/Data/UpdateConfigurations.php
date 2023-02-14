@@ -9,6 +9,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Logger\Logger;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Magento\Framework\DB\Adapter\AdapterInterface;
 
 class UpdateConfigurations implements DataPatchInterface
 {
@@ -47,6 +48,7 @@ class UpdateConfigurations implements DataPatchInterface
      * @param SystemConfig $config
      * @param StoreManagerInterface $storeManager
      * @param Logger $logger
+     * @param FBEHelper $FBEHelper
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
@@ -117,10 +119,10 @@ class UpdateConfigurations implements DataPatchInterface
     /**
      * Migrate configuration from old table to core_config_data
      *
-     * @param $connection
+     * @param AdapterInterface $connection
      * @return void
      */
-    private function migrateOldConfigs($connection): void
+    private function migrateOldConfigs(AdapterInterface $connection): void
     {
         $facebookConfig = $connection->getTableName(self::OLD_CONFIG_TABLE_NAME);
         if ($facebookConfig) {
@@ -154,13 +156,13 @@ class UpdateConfigurations implements DataPatchInterface
     /**
      * Remove configurations from old table
      *
-     * @param $connection
+     * @param AdapterInterface $connection
      * @return void
      */
-    private function deleteOldConfigs($connection): void
+    private function deleteOldConfigs(AdapterInterface $connection): void
     {
         $facebookConfig = $connection->getTableName(self::OLD_CONFIG_TABLE_NAME);
-        if($facebookConfig) {
+        if ($facebookConfig) {
             try {
                 $connection->delete($facebookConfig, "config_key NOT LIKE 'permanent%'");
             } catch (\Exception $e) {
