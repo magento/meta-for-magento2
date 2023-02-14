@@ -17,15 +17,6 @@
                     <config_path>facebook/business_extension/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="store" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Store</label>
-                    <depends>
-                        <field id="facebook_business_extension/business_extension/active">1</field>
-                    </depends>
-                    <config_path>facebook/business_extension/store</config_path>
-                    <source_model>Meta\BusinessExtension\Model\Config\Source\Store</source_model>
-                    <comment>Magento store used as a purchase point for FB/IG orders</comment>
-                </field>
                 <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Module Info</label>
                     <depends>

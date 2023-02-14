@@ -21,6 +21,7 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Template;
+use Magento\Store\Api\StoreRepositoryInterface;
 
 /**
  * @api
@@ -38,23 +39,33 @@ class Setup extends Template
     private $systemConfig;
 
     /**
+     * @var StoreRepositoryInterface
+     */
+    public $storeRepo;
+
+    /**
      * @param Context $context
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
+     * @param StoreRepositoryInterface $storeRepo
      * @param array $data
      */
     public function __construct(
         Context $context,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
+        StoreRepositoryInterface $storeRepo,
         array $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
         $this->systemConfig = $systemConfig;
+        $this->storeRepo = $storeRepo;
     }
 
     /**
+     * Get pixel ajax route
+     *
      * @return mixed
      */
     public function getPixelAjaxRoute()
@@ -63,6 +74,8 @@ class Setup extends Template
     }
 
     /**
+     * Get access token ajax route
+     *
      * @return mixed
      */
     public function getAccessTokenAjaxRoute()
@@ -71,6 +84,8 @@ class Setup extends Template
     }
 
     /**
+     * Get profiles ajax route
+     *
      * @return mixed
      */
     public function getProfilesAjaxRoute()
@@ -79,6 +94,8 @@ class Setup extends Template
     }
 
     /**
+     * Get aam settings route
+     *
      * @return mixed
      */
     public function getAAMSettingsRoute()
@@ -87,23 +104,31 @@ class Setup extends Template
     }
 
     /**
+     * Fetch pixel id
+     *
+     * @param int $storeId
      * @return string|null
      */
-    public function fetchPixelId()
+    public function fetchPixelId($storeId)
     {
-        return $this->systemConfig->getPixelId();
+        return $this->systemConfig->getPixelId($storeId);
     }
 
     /**
+     * Get external business id
+     *
+     * @param int $storeId
      * @return string|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getExternalBusinessId()
+    public function getExternalBusinessId($storeId)
     {
-        return $this->fbeHelper->getFBEExternalBusinessId();
+        return $this->fbeHelper->getFBEExternalBusinessId($storeId);
     }
 
     /**
+     * Fetch configuration ajax route
+     *
      * @return mixed
      */
     public function fetchConfigurationAjaxRoute()
@@ -112,6 +137,8 @@ class Setup extends Template
     }
 
     /**
+     * Get delete asset ids ajax route
+     *
      * @return mixed
      */
     public function getDeleteAssetIdsAjaxRoute()
@@ -120,6 +147,8 @@ class Setup extends Template
     }
 
     /**
+     * Get currency code
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -129,18 +158,33 @@ class Setup extends Template
     }
 
     /**
+     * Is fbe installed
+     *
+     * @param int $storeId
      * @return string
      */
-    public function isFBEInstalled()
+    public function isFBEInstalled($storeId)
     {
-        return $this->systemConfig->isFBEInstalled() ? 'true' : 'false';
+        return $this->systemConfig->isFBEInstalled($storeId) ? 'true' : 'false';
     }
 
     /**
+     * Get app id
+     *
      * @return string
      */
     public function getAppId()
     {
         return $this->systemConfig->getAppId();
+    }
+
+    /**
+     * Get stores
+     *
+     * @return \Magento\Store\Api\Data\StoreInterface[]
+     */
+    public function getStores()
+    {
+        return $this->storeRepo->getList();
     }
 }

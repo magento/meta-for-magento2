@@ -19,43 +19,64 @@ namespace Meta\Conversion\Cron;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Store\Model\StoreManager;
 
 class AAMSettingsCron
 {
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
+
+    /**
+     * @var StoreManager
+     */
+    private $storeManager;
 
     /**
      * AAMSettingsCron constructor
      *
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
+     * @param StoreManager $storeManager
      */
     public function __construct(
         FBEHelper $fbeHelper,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        StoreManager $storeManager
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
+        $this->storeManager = $storeManager;
     }
 
-    public function execute()
+    /**
+     * Execute
+     *
+     * @return bool
+     */
+    public function execute(): bool
     {
-        $pixelId = $this->systemConfig->getPixelId();
-        $settingsAsString = null;
-        if ($pixelId) {
-            $settingsAsString = $this->fbeHelper->fetchAndSaveAAMSettings($pixelId);
-            if (!$settingsAsString) {
-                $this->fbeHelper->log('Error saving settings. Currently:', $settingsAsString);
+        $storeIds = array_keys($this->storeManager->getStores());
+        $processed = false;
+        foreach ($storeIds as $storeId) {
+            $pixelId = $this->systemConfig->getPixelId($storeId);
+            $settingsAsString = null;
+            if ($pixelId) {
+                $settingsAsString = $this->fbeHelper->fetchAndSaveAAMSettings($pixelId, $storeId);
+                if (!$settingsAsString) {
+                    $this->fbeHelper->log('Error saving settings. Currently:', $settingsAsString);
+                } else {
+                    $processed = true;
+                }
             }
         }
-        return $settingsAsString;
+
+        return $processed;
     }
 }

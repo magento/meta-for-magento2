@@ -21,7 +21,6 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
-use Meta\Catalog\Model\Product\Feed\Builder\Inventory;
 use Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface;
 use Meta\Catalog\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Magento\Catalog\Api\Data\CategoryInterface;
@@ -85,9 +84,9 @@ class Builder
     protected $builderTools;
 
     /**
-     * @var Inventory
+     * @var InventoryInterface
      */
-    protected $inventory = null;
+    private $inventory;
 
     /**
      * @var ProductIdentifier
@@ -122,7 +121,8 @@ class Builder
         CategoryCollectionFactory $categoryCollectionFactory,
         BuilderTools              $builderTools,
         ProductIdentifier         $productIdentifier,
-        CatalogHelper             $catalogHelper
+        CatalogHelper             $catalogHelper,
+        InventoryInterface        $inventory
     )
     {
         $this->fbeHelper = $fbeHelper;
@@ -131,6 +131,7 @@ class Builder
         $this->builderTools = $builderTools;
         $this->productIdentifier = $productIdentifier;
         $this->catalogHelper = $catalogHelper;
+        $this->inventory = $inventory;
     }
 
     /**
@@ -482,12 +483,8 @@ class Builder
      * @param Product $product
      * @return InventoryInterface
      */
-    protected function getInventory(Product $product)
+    private function getInventory(Product $product): InventoryInterface
     {
-        if ($this->inventory === null) {
-            $useMultiSource = $this->systemConfig->useMultiSourceInventory($this->storeId);
-            $this->inventory = $this->builderTools->getInventoryObject($useMultiSource);
-        }
         $this->inventory->initInventoryForProduct($product);
         return $this->inventory;
     }

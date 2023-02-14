@@ -21,6 +21,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
 use Magento\InventorySalesApi\Api\IsProductSalableInterface;
+use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 
 class MultiSourceInventory implements InventoryInterface
 {
@@ -40,45 +41,56 @@ class MultiSourceInventory implements InventoryInterface
     private $getProductSalableQtyInterface;
 
     /**
-     * @var bool
-     */
-    protected $stockStatus = false;
-
-    /**
-     * @var int|float
-     */
-    protected $stockQty = 0;
-
-    /**
      * @var SystemConfig
      */
     protected $systemConfig;
 
     /**
+     * @var StockByWebsiteIdResolverInterface
+     */
+    private $stockByWebsiteIdResolver;
+
+    /**
+     * @var bool
+     */
+    private $stockStatus;
+
+    /**
+     * @var int|float
+     */
+    private $stockQty;
+
+    /**
      * @param IsProductSalableInterface $isProductSalableInterface
      * @param GetProductSalableQtyInterface $getProductSalableQtyInterface
      * @param SystemConfig $systemConfig
+     * @param StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver
      */
     public function __construct(
         IsProductSalableInterface $isProductSalableInterface,
         GetProductSalableQtyInterface $getProductSalableQtyInterface,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver
     ) {
         $this->isProductSalableInterface = $isProductSalableInterface;
         $this->getProductSalableQtyInterface = $getProductSalableQtyInterface;
         $this->systemConfig = $systemConfig;
+        $this->stockByWebsiteIdResolver = $stockByWebsiteIdResolver;
     }
 
     /**
+     * Fetch the stock status for product
+     *
      * @param Product $product
+     * @param int $stockId
      * @return bool
      */
-    public function getStockStatus(Product $product)
+    private function getStockStatus(Product $product, int $stockId): bool
     {
         try {
             return $this->isProductSalableInterface->execute(
-                $this->product->getSku(),
-                $this->systemConfig->getInventoryStock($product->getStoreId())
+                $product->getSku(),
+                $stockId
             );
         } catch (\Exception $e) {
             return false;
@@ -86,15 +98,18 @@ class MultiSourceInventory implements InventoryInterface
     }
 
     /**
+     * Fetch stock quantity for product
+     *
      * @param Product $product
-     * @return float|int
+     * @param int $stockId
+     * @return int|float
      */
-    public function getStockQty(Product $product)
+    private function getStockQty(Product $product, int $stockId): int|float
     {
         try {
             return $this->getProductSalableQtyInterface->execute(
-                $this->product->getSku(),
-                $this->systemConfig->getInventoryStock($product->getStoreId())
+                $product->getSku(),
+                $stockId
             );
         } catch (\Exception $e) {
             return 0;
@@ -102,14 +117,19 @@ class MultiSourceInventory implements InventoryInterface
     }
 
     /**
+     * Initiate inventory for the product
+     *
      * @param Product $product
      * @return $this
      */
-    public function initInventoryForProduct(Product $product)
+    public function initInventoryForProduct(Product $product): MultiSourceInventory
     {
+        $websiteId = $product->getStore()->getWebsiteId();
+        $stockId = $this->stockByWebsiteIdResolver->execute($websiteId)->getStockId();
+
         $this->product = $product;
-        $this->stockStatus = $this->getStockStatus($product);
-        $this->stockQty = $this->getStockQty($product);
+        $this->stockStatus = $this->getStockStatus($product, $stockId);
+        $this->stockQty = $this->getStockQty($product, $stockId);
         return $this;
     }
 
@@ -118,7 +138,7 @@ class MultiSourceInventory implements InventoryInterface
      *
      * @return string
      */
-    public function getAvailability()
+    public function getAvailability(): string
     {
         return $this->getInventory() && $this->stockStatus ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
@@ -128,13 +148,13 @@ class MultiSourceInventory implements InventoryInterface
      *
      * @return int
      */
-    public function getInventory()
+    public function getInventory(): int
     {
         if (!$this->product) {
             return 0;
         }
-
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
-        return (int)max($this->stockQty - $outOfStockThreshold, 0);
+        $quantityAvailableForCatalog = $this->stockQty - $outOfStockThreshold;
+        return $quantityAvailableForCatalog > 0 ? $quantityAvailableForCatalog : 0;
     }
 }

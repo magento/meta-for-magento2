@@ -21,6 +21,9 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class Fbaamsettings extends AbstractAjax
 {
     /**
@@ -29,6 +32,8 @@ class Fbaamsettings extends AbstractAjax
     private $fbeHelper;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -42,6 +47,11 @@ class Fbaamsettings extends AbstractAjax
         $this->fbeHelper = $fbeHelper;
     }
 
+    /**
+     * Execute for json
+     *
+     * @return array
+     */
     public function executeForJson()
     {
         $response = [
@@ -49,8 +59,9 @@ class Fbaamsettings extends AbstractAjax
             'settings' => null,
         ];
         $pixelId = $this->getRequest()->getParam('pixelId');
+        $storeId = $this->getRequest()->getParam('storeId');
         if ($pixelId) {
-            $settingsAsString = $this->fbeHelper->fetchAndSaveAAMSettings($pixelId);
+            $settingsAsString = $this->fbeHelper->fetchAndSaveAAMSettings($pixelId, $storeId);
             if ($settingsAsString) {
                 $response['success'] = true;
                 $response['settings'] = $settingsAsString;

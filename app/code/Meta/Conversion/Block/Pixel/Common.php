@@ -23,6 +23,8 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
+use Meta\Conversion\Helper\EventIdGenerator;
+use Magento\Framework\Escaper;
 
 class Common extends \Magento\Framework\View\Element\Template
 {
@@ -47,6 +49,11 @@ class Common extends \Magento\Framework\View\Element\Template
     protected $systemConfig;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * Common constructor
      *
      * @param Context $context
@@ -54,6 +61,7 @@ class Common extends \Magento\Framework\View\Element\Template
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
+     * @param Escaper $escaper
      * @param array $data
      */
     public function __construct(
@@ -62,6 +70,7 @@ class Common extends \Magento\Framework\View\Element\Template
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
+        Escaper $escaper,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -69,10 +78,13 @@ class Common extends \Magento\Framework\View\Element\Template
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->systemConfig = $systemConfig;
+        $this->escaper = $escaper;
     }
 
     /**
-     * @param $a
+     * Convert array to string
+     *
+     * @param array $a
      * @return string
      */
     public function arrayToCommaSeparatedStringValues($a)
@@ -83,15 +95,19 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param $string
+     * Escape quotes
+     *
+     * @param string $string
      * @return string
      */
     public function escapeQuotes($string)
     {
-        return addslashes($string);
+        return $this->escaper->escapeQuote($string);
     }
 
     /**
+     * Get pixel id
+     *
      * @return mixed|null
      */
     public function getFacebookPixelID()
@@ -100,6 +116,8 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get source
+     *
      * @return string
      */
     public function getSource()
@@ -108,6 +126,8 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get Magento version
+     *
      * @return mixed
      */
     public function getMagentoVersion()
@@ -116,6 +136,8 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get plugin version
+     *
      * @return mixed
      */
     public function getPluginVersion()
@@ -124,6 +146,8 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get FB agent version
+     *
      * @return string
      */
     public function getFacebookAgentVersion()
@@ -132,6 +156,8 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get Content type
+     *
      * @return string
      */
     public function getContentType()
@@ -140,6 +166,8 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get currency
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -149,8 +177,10 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param $pixelId
-     * @param $pixelEvent
+     * Log event data
+     *
+     * @param string $pixelId
+     * @param string $pixelEvent
      */
     public function logEvent($pixelId, $pixelEvent)
     {
@@ -158,7 +188,9 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param $eventId
+     * Track server event
+     *
+     * @param string $eventId
      */
     public function trackServerEvent($eventId)
     {
@@ -166,6 +198,8 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get event name
+     *
      * @return string
      */
     public function getEventToObserveName()
@@ -174,11 +208,33 @@ class Common extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get content id
+     *
      * @param Product $product
      * @return bool|int|string
      */
     public function getContentId(Product $product)
     {
         return $this->magentoDataHelper->getContentId($product);
+    }
+
+    /**
+     * Get tracker url
+     *
+     * @return string
+     */
+    public function getTrackerUrl(): string
+    {
+        return $this->getUrl('fbe/pixel/tracker');
+    }
+
+    /**
+     * Get event id
+     *
+     * @return string
+     */
+    public function getEventId(): string
+    {
+        return EventIdGenerator::guidv4();
     }
 }

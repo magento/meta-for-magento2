@@ -28,6 +28,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterDeleteEventObserverTest extends CommonTest
 {
+    /**
+     * @var ProcessProductAfterDeleteEventObserver
+     */
     protected $processProductAfterDeleteEventObserver;
 
     /**
@@ -81,6 +84,7 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
         $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
         $this->_graphApi->expects($this->atLeastOnce())->method('catalogBatchRequest');
+        $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);
     }
 }
