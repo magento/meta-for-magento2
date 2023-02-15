@@ -28,6 +28,7 @@ use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Filter\StripTagsFactory;
 
 class Builder
 {
@@ -108,12 +109,18 @@ class Builder
     private $inventoryOnly = false;
 
     /**
+     * @var StripTagsFactory
+     */
+    private $stripTags;
+
+    /**
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
      * @param ProductIdentifier $productIdentifier
      * @param CatalogHelper $catalogHelper
+     * @param StripTagsFactory $stripTags
      */
     public function __construct(
         FBEHelper                 $fbeHelper,
@@ -122,7 +129,8 @@ class Builder
         BuilderTools              $builderTools,
         ProductIdentifier         $productIdentifier,
         CatalogHelper             $catalogHelper,
-        InventoryInterface        $inventory
+        InventoryInterface        $inventory,
+        StripTagsFactory          $stripTags
     )
     {
         $this->fbeHelper = $fbeHelper;
@@ -132,6 +140,7 @@ class Builder
         $this->productIdentifier = $productIdentifier;
         $this->catalogHelper = $catalogHelper;
         $this->inventory = $inventory;
+        $this->stripTags = $stripTags;
     }
 
     /**
@@ -390,8 +399,12 @@ class Builder
         if (!$description) {
             $description = $product->getShortDescription();
         }
+        if (!$description) {
+            return '';
+        }
+        $stripTags = $this->stripTags->create([$this->escaper, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION]);
         return $this->trimAttribute(self::ATTR_RICH_DESCRIPTION,
-            strip_tags($description, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION));
+        $stripTags->filter($description));
     }
 
     /**
