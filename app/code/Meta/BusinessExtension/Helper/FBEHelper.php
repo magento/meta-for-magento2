@@ -24,6 +24,7 @@ use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollectio
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\ProductMetadata as FrameworkProductMetaData;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\Module\ModuleListInterface;
@@ -91,6 +92,11 @@ class FBEHelper extends AbstractHelper
     private $systemConfig;
 
     /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetadata;
+
+    /**
      * FBEHelper constructor
      *
      * @param Context $context
@@ -101,6 +107,7 @@ class FBEHelper extends AbstractHelper
      * @param ResourceConnection $resourceConnection
      * @param ModuleListInterface $moduleList
      * @param SystemConfig $systemConfig
+     * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
         Context $context,
@@ -110,7 +117,8 @@ class FBEHelper extends AbstractHelper
         Curl $curl,
         ResourceConnection $resourceConnection,
         ModuleListInterface $moduleList,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        ProductMetadataInterface $productMetadata
     ) {
         parent::__construct($context);
         $this->objectManager = $objectManager;
@@ -120,16 +128,17 @@ class FBEHelper extends AbstractHelper
         $this->resourceConnection = $resourceConnection;
         $this->moduleList = $moduleList;
         $this->systemConfig = $systemConfig;
+        $this->productMetadata = $productMetadata;
     }
 
     /**
      * Get magento version
      *
-     * @return mixed
+     * @return string
      */
-    public function getMagentoVersion()
+    public function getMagentoVersion(): string
     {
-        return $this->objectManager->get(ProductMetadataInterface::class)->getVersion();
+        return $this->productMetadata->getVersion();
     }
 
     /**
@@ -147,9 +156,9 @@ class FBEHelper extends AbstractHelper
      *
      * @return string
      */
-    public function getSource()
+    public function getSource(): string
     {
-        return 'magento2';
+        return $this->productMetadata->getEdition() == FrameworkProductMetaData::EDITION_NAME ? 'magento_opensource' : 'adobe_commerce';
     }
 
     /**
