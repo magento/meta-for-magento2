@@ -114,15 +114,16 @@ class Configurable implements ProductRetrieverInterface
             $configurableAttributes = $configurableType->getConfigurableAttributes($product);
 
             foreach ($configurableType->getUsedProducts($product) as $childProduct) {
-                /** @var Product $childProduct */
-                $configurableSettings = ['item_group_id' => $product->getId()];
-                foreach ($configurableAttributes as $attribute) {
-                    $productAttribute = $attribute->getProductAttribute();
-                    $attributeCode = $productAttribute->getAttributeCode();
-                    $attributeValue = $childProduct->getData($productAttribute->getAttributeCode());
-                    $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
-                    $configurableSettings[$attributeCode] = $attributeLabel;
-                }
+                if ($childProduct->getStatus() == Status::STATUS_ENABLED) {
+                    /** @var Product $childProduct */
+                    $configurableSettings = ['item_group_id' => $product->getId()];
+                    foreach ($configurableAttributes as $attribute) {
+                        $productAttribute = $attribute->getProductAttribute();
+                        $attributeCode = $productAttribute->getAttributeCode();
+                        $attributeValue = $childProduct->getData($productAttribute->getAttributeCode());
+                        $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
+                        $configurableSettings[$attributeCode] = $attributeLabel;
+                    }
                 // Assign parent product name to all child products' name (used as variant name is Meta catalog)
                 // https://developers.facebook.com/docs/commerce-platform/catalog/variants
                 $childProduct->setName($product->getName());
@@ -132,6 +133,7 @@ class Configurable implements ProductRetrieverInterface
                     $childProduct->setDescription($product->getDescription());
                 }
                 $simpleProducts[] = $childProduct;
+                }
             }
         }
 
