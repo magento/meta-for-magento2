@@ -2,10 +2,11 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="facebook_business_extension">
-            <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="0" showInWebsite="0" showInStore="0">
                 <label>Promotions [Beta]</label>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
+                    <field id="facebook_business_extension/business_extension/onsite">1</field>
                 </depends>
                 <field id="push_promotions" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Push Promotions</label>

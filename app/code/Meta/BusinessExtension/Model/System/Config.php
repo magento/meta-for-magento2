@@ -101,6 +101,8 @@ class Config
     private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST = 'facebook/conversion_management/enable_server_test';
     private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE = 'facebook/conversion_management/server_test_code';
 
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG = 'facebook/business_extension/onsite';
+
     /**
      * @var StoreManagerInterface
      */
@@ -275,6 +277,18 @@ class Config
     public function isFBEInstalled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, $scopeId, $scope);
+    }
+
+    /**
+     * Is onsite checkout enabled
+     *
+     * @param null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isOnsiteCheckoutEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
+    {
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG, $scopeId, $scope);
     }
 
     /**

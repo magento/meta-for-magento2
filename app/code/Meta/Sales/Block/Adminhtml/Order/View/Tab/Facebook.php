@@ -75,7 +75,7 @@ class Facebook extends Template implements TabInterface
      */
     public function canShowTab()
     {
-        return true;
+        return $this->systemConfig->isOnsiteCheckoutEnabled();
     }
 
     /**
