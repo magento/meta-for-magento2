@@ -27,8 +27,11 @@ use Magento\Framework\Exception\LocalizedException;
 
 class Configurable implements ProductRetrieverInterface
 {
-    const LIMIT = 200;
+    private const LIMIT = 200;
 
+    /**
+     * @var int
+     */
     protected $storeId;
 
     /**
@@ -42,6 +45,8 @@ class Configurable implements ProductRetrieverInterface
     protected $productCollectionFactory;
 
     /**
+     * Constructor
+     *
      * @param FBEHelper $fbeHelper
      * @param CollectionFactory $productCollectionFactory
      */
@@ -52,7 +57,9 @@ class Configurable implements ProductRetrieverInterface
     }
 
     /**
-     * @param $storeId
+     * Set store id
+     *
+     * @param int $storeId
      * @return ProductRetrieverInterface|void
      */
     public function setStoreId($storeId)
@@ -71,6 +78,7 @@ class Configurable implements ProductRetrieverInterface
 
     /**
      * @inheritDoc
+     *
      * @throws LocalizedException
      */
     public function retrieve($offset = 1, $limit = self::LIMIT): array
@@ -115,6 +123,9 @@ class Configurable implements ProductRetrieverInterface
                     $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
                     $configurableSettings[$attributeCode] = $attributeLabel;
                 }
+                // Assign parent product name to all child products' name (used as variant name is Meta catalog)
+                // https://developers.facebook.com/docs/commerce-platform/catalog/variants
+                $childProduct->setName($product->getName());
                 $childProduct->setConfigurableSettings($configurableSettings);
                 $childProduct->setParentProductUrl($product->getProductUrl());
                 if (!$childProduct->getDescription()) {
