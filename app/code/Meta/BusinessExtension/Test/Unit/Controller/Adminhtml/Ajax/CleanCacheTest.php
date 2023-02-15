@@ -17,9 +17,9 @@
 
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
-use Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbdeleteasset;
+use Meta\BusinessExtension\Controller\Adminhtml\Ajax\CleanCache;
 
-class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
+class CleanCacheTest extends \PHPUnit\Framework\TestCase
 {
     protected $fbeHelper;
 
@@ -29,9 +29,9 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
 
     protected $resultJsonFactory;
 
-    protected $fbdeleteasset;
-
     protected $request;
+
+    private $controller;
 
     /**
      * Used to reset or change values after running a test
@@ -55,7 +55,7 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
         $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
-        $this->fbdeleteasset = new Fbdeleteasset(
+        $this->controller = new CleanCache(
             $this->context,
             $this->resultJsonFactory,
             $this->fbeHelper,
@@ -69,12 +69,12 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecuteForJson()
     {
-        $this->fbeHelper->expects($this->once())
-            ->method('deleteConfigKeys');
+        $this->systemConfig->expects($this->once())
+            ->method('cleanCache');
 
-        $result = $this->fbdeleteasset->executeForJson();
+        $result = $this->controller->executeForJson();
         $this->assertNotNull($result);
         $this->assertTrue($result['success']);
-        $this->assertEquals(Fbdeleteasset::DELETE_SUCCESS_MESSAGE, $result['message']);
+        $this->assertEquals('Config cache successfully cleaned', $result['message']);
     }
 }
