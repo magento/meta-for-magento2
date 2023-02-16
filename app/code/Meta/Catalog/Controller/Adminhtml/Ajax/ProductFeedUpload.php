@@ -44,6 +44,8 @@ class ProductFeedUpload extends AbstractAjax
     private $systemConfig;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -64,6 +66,8 @@ class ProductFeedUpload extends AbstractAjax
     }
 
     /**
+     * Execute for json
+     *
      * @return array
      * @throws NoSuchEntityException
      */
@@ -82,9 +86,11 @@ class ProductFeedUpload extends AbstractAjax
             $storeName = $this->systemConfig->getStoreManager()->getStore($storeId)->getName();
         }
 
-        if (!$this->systemConfig->getAccessToken()) {
+        if (!$this->systemConfig->getAccessToken($storeId)) {
             $response['success'] = false;
-            $response['message'] = __(sprintf('Before uploading products, set up the extension for \'%s\'.', $storeName));
+            $response['message'] = __(
+                sprintf('Before uploading products, set up the extension for \'%s\'.', $storeName)
+            );
             return $response;
         }
 
