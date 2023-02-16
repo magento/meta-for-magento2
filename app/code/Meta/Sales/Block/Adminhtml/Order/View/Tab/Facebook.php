@@ -75,7 +75,7 @@ class Facebook extends Template implements TabInterface
      */
     public function canShowTab()
     {
-        return true;
+        return $this->systemConfig->isOnsiteCheckoutEnabled();
     }
 
     /**
@@ -91,7 +91,7 @@ class Facebook extends Template implements TabInterface
      */
     public function getTabLabel()
     {
-        return __('Facebook');
+        return __('Meta');
     }
 
     /**
@@ -99,37 +99,7 @@ class Facebook extends Template implements TabInterface
      */
     public function getTabTitle()
     {
-        return __('Facebook');
-    }
-
-    /**
-     * Get Tab Class
-     *
-     * @return string
-     */
-    public function getTabClass()
-    {
-        return 'ajax only';
-    }
-
-    /**
-     * Get Class
-     *
-     * @return string
-     */
-    public function getClass()
-    {
-        return $this->getTabClass();
-    }
-
-    /**
-     * Get Tab Url
-     *
-     * @return string
-     */
-    public function getTabUrl()
-    {
-        return $this->getUrl('sales/*/facebook', ['_current' => true]);
+        return __('Meta');
     }
 
     /**

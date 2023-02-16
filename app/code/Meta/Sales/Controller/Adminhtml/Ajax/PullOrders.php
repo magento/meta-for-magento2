@@ -28,11 +28,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 class PullOrders extends AbstractAjax
 {
     /**
-     * @var CommerceHelper
-     */
-    private $commerceHelper;
-
-    /**
      * @var FBEHelper
      */
     private $fbeHelper;
@@ -41,6 +36,11 @@ class PullOrders extends AbstractAjax
      * @var SystemConfig
      */
     private $systemConfig;
+
+    /**
+     * @var CommerceHelper
+     */
+    private $commerceHelper;
 
     /**
      * @param Context $context
@@ -57,9 +57,9 @@ class PullOrders extends AbstractAjax
         CommerceHelper $commerceHelper
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
-        $this->commerceHelper = $commerceHelper;
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
+        $this->commerceHelper = $commerceHelper;
     }
 
     /**

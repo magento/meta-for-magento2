@@ -60,7 +60,7 @@
                     <label>Scheduled Inventory Upload</label>
                     <config_path>facebook/inventory_management/enable_inventory_upload</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Enable hourly product inventory upload from Magento to your Facebook catalog</comment>
+                    <comment>Enable product inventory upload from Magento to your Meta catalog every 15 minutes</comment>
                 </field>
             </group>
         </section>

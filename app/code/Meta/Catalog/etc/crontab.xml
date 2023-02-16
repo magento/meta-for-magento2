@@ -5,7 +5,7 @@
             <schedule>0 1 * * *</schedule>
         </job>
         <job name="facebook_automation_upload_inventory" instance="Meta\Catalog\Cron\UploadInventory" method="execute">
-            <schedule>33 * * * *</schedule>
+            <schedule>*/15 * * * *</schedule>
         </job>
 <!--        <job name="facebook_business_extension_category_sync_cronjob" instance="Meta\Catalog\Cron\CategorySyncCron" method="execute">-->
 <!--            &lt;!&ndash; daily at 0:0&ndash;&gt;-->

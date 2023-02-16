@@ -19,9 +19,11 @@ namespace Meta\BusinessExtension\Model\System;
 
 use Magento\Config\Model\ResourceModel\Config as ResourceConfig;
 use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\CacheInterface;
+use Magento\Framework\App\Config as AppConfig;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Composer\ComposerInformation;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -30,7 +32,8 @@ use Magento\Store\Model\StoreManagerInterface;
  */
 class Config
 {
-    private const MODULE_NAME = 'Meta_BusinessExtension';
+    private const VERSION_CACHE_KEY = 'meta-business-extension-version';
+    private const EXTENSION_PACKAGE_NAME = 'meta/meta-for-magento2';
 
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE = 'facebook/business_extension/active';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED = 'facebook/business_extension/installed';
@@ -95,6 +98,11 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION = 'facebook/api/version';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE = 'facebook/api/version_last_update';
 
+    private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST = 'facebook/conversion_management/enable_server_test';
+    private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE = 'facebook/conversion_management/server_test_code';
+
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG = 'facebook/business_extension/onsite';
+
     /**
      * @var StoreManagerInterface
      */
@@ -111,36 +119,51 @@ class Config
     private $resourceConfig;
 
     /**
-     * @var ModuleListInterface
-     */
-    private $moduleList;
-
-    /**
      * @var TypeListInterface
      */
     private $cacheTypeList;
+
+    /**
+     * @var CacheInterface
+     */
+    private $cache;
+
+    /**
+     * @var ComposerInformation
+     */
+    private $composerInformation;
+
+    /**
+     * Extension version
+     *
+     * @var string
+     */
+    private $version;
 
     /**
      * @method __construct
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param ResourceConfig $resourceConfig
-     * @param ModuleListInterface $moduleList
      * @param TypeListInterface $cacheTypeList
+     * @param CacheInterface $cache
+     * @param ComposerInformation $composerInformation
      * @SuppressWarnings(PHPMD.ExcessivePublicCount)
      */
     public function __construct(
         StoreManagerInterface $storeManager,
         ScopeConfigInterface  $scopeConfig,
         ResourceConfig        $resourceConfig,
-        ModuleListInterface   $moduleList,
-        TypeListInterface     $cacheTypeList
+        TypeListInterface     $cacheTypeList,
+        CacheInterface $cache,
+        ComposerInformation $composerInformation
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;
-        $this->moduleList = $moduleList;
         $this->cacheTypeList = $cacheTypeList;
+        $this->cache = $cache;
+        $this->composerInformation = $composerInformation;
     }
 
     /**
@@ -154,13 +177,24 @@ class Config
     }
 
     /**
-     * Get module version
+     * Get extension version
      *
-     * @return mixed
+     * @return string
      */
-    public function getModuleVersion()
+    public function getModuleVersion(): string
     {
-        return $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
+        $this->version = $this->version ?: $this->cache->load(self::VERSION_CACHE_KEY);
+        if (!$this->version) {
+            $installedPackages = $this->composerInformation->getInstalledMagentoPackages();
+            $extensionVersion = $installedPackages[self::EXTENSION_PACKAGE_NAME]['version'] ?? null;
+            if (!empty($extensionVersion)) {
+                $this->version = $extensionVersion;
+            } else {
+                $this->version = 'dev';
+            }
+            $this->cache->save($this->version, self::VERSION_CACHE_KEY, [AppConfig::CACHE_TAG]);
+        }
+        return $this->version;
     }
 
     /**
@@ -243,6 +277,18 @@ class Config
     public function isFBEInstalled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, $scopeId, $scope);
+    }
+
+    /**
+     * Is onsite checkout enabled
+     *
+     * @param null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isOnsiteCheckoutEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
+    {
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG, $scopeId, $scope);
     }
 
     /**
@@ -782,5 +828,29 @@ class Config
             $scopeId = null,
             $scope = null
         );
+    }
+
+    /**
+     * Check if test mode enabled for the server events
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return bool
+     */
+    public function isServerTestModeEnabled(int $scopeId = null, string $scope = null): bool
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST, $scopeId, $scope);
+    }
+
+    /**
+     * Get server event test code
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return string
+     */
+    public function getServerTestCode(int $scopeId = null, string $scope = null): string
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE, $scopeId, $scope);
     }
 }
