@@ -17,12 +17,12 @@
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
-use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
-class ResetSettings extends AbstractAjax
+class CleanCache extends AbstractAjax
 {
     /**
      * @var FBEHelper
@@ -35,6 +35,8 @@ class ResetSettings extends AbstractAjax
     private $systemConfig;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -51,28 +53,24 @@ class ResetSettings extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
-    /**
-     * @return array
-     */
     public function executeForJson()
     {
-        $storeId = $this->getRequest()->getParam('store');
-        $defaultStoreId = $this->fbeHelper->getStore()->getId();
-        $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $defaultStoreId)
-            ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, 0, $storeId)
-            ->cleanCache();
+        try {
+            // clean Magento config cache
+            $this->systemConfig->cleanCache();
 
-        $successMessage = __('Successfully removed core configuration data.');
-        $this->messageManager->addSuccessMessage($successMessage);
+            $response['success'] = true;
+            $response['message'] = __('Config cache successfully cleaned');
 
-        return [
-            'success' => true,
-            'message' => $successMessage,
-        ];
+            if ($this->systemConfig->isDebugMode()) {
+                $this->fbeHelper->log($response['message']);
+            }
+            return $response;
+        } catch (\Exception $e) {
+            $response['success'] = false;
+            $response['message'] = $e->getMessage();
+            $this->fbeHelper->logException($e);
+            return $response;
+        }
     }
 }

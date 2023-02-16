@@ -6,6 +6,7 @@
                 <label>Orders Sync</label>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
+                    <field id="facebook_business_extension/business_extension/onsite">1</field>
                 </depends>
                 <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Enable Orders Sync</label>
@@ -86,6 +87,7 @@
                 <label>Shipping Methods Mapping</label>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
+                    <field id="facebook_business_extension/business_extension/onsite">1</field>
                 </depends>
                 <field id="standard" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Standard</label>

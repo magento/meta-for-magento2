@@ -183,6 +183,7 @@ class PersistConfiguration extends AbstractAjax
         $commerceAccountId = $this->graphApiAdapter->getPageMerchantSettingsId($pageAccessToken, $pageId);
         if (!$commerceAccountId) {
             // commerce account may not be created at this point
+            $this->fbeHelper->log('No commerce account available, skipping onboarding to onsite checkout');
             return $this;
         }
 

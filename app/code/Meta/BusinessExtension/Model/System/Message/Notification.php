@@ -68,7 +68,9 @@ class Notification implements MessageInterface
     public function isDisplayed()
     {
         $storeId = $this->request->getParam('store');
-        if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->getAccessToken($storeId))) {
+        if (!($this->systemConfig->isActiveExtension($storeId)
+            && $this->systemConfig->getAccessToken($storeId)
+            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return false;
         }
 

@@ -2,13 +2,7 @@
 /**
  * @var \Meta\Sales\Block\Adminhtml\Order\View\Tab\Facebook $block
  */
-$order = $block->getOrder();
 
-$baseCurrencyCode = (string)$order->getBaseCurrencyCode();
-$globalCurrencyCode = (string)$order->getGlobalCurrencyCode();
-$orderCurrencyCode = (string)$order->getOrderCurrencyCode();
-
-$orderFacebookUrl = $block->getOrderFacebookUrl();
 $optInFlag = $block->isEmailRemarketingAllowedForOrder() ? 'Yes' : 'No';
 
 ?>
@@ -33,7 +27,7 @@ $optInFlag = $block->isEmailRemarketingAllowedForOrder() ? 'Yes' : 'No';
             </div>
         <?php else: ?>
             <div class="admin__page-section-item order-not-a-facebook-order">
-                <?= __('Not a Facebook order') ?>
+                <?= __('Not a Meta order') ?>
             </div>
         <?php endif; ?>
     </div>
