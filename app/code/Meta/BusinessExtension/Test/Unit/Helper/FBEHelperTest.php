@@ -80,7 +80,7 @@ class FBEHelperTest extends TestCase
             $curl,
             $resourceConnection,
             $this->moduleList,
-            $systemConfig .
+            $systemConfig,
             $productMetaData
         );
     }
