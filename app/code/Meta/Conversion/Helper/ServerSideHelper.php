@@ -85,6 +85,15 @@ class ServerSideHelper
                 ->setEvents($events)
                 ->setPartnerAgent($this->fbeHelper->getPartnerAgent(true));
 
+            // Set server test code to the event
+            if ($this->systemConfig->isServerTestModeEnabled()) {
+                $serverTestCode = $this->systemConfig->getServerTestCode();
+                if ($serverTestCode) {
+                    $request->setTestEventCode($serverTestCode);
+                    $this->fbeHelper->log('test code '.$serverTestCode.' attached to event request');
+                }
+            }
+
             $this->fbeHelper->log('Sending event ' . $event->getEventId());
 
             $request->execute()

@@ -28,7 +28,9 @@ use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Escaper;
 use Magento\Framework\Filter\StripTagsFactory;
+use Magento\Customer\Model\GroupManagement;
 
 class Builder
 {
@@ -109,6 +111,11 @@ class Builder
     private $inventoryOnly = false;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * @var StripTagsFactory
      */
     private $stripTags;
@@ -130,6 +137,7 @@ class Builder
         ProductIdentifier         $productIdentifier,
         CatalogHelper             $catalogHelper,
         InventoryInterface        $inventory,
+        Escaper                   $escaper,
         StripTagsFactory          $stripTags
     )
     {
@@ -140,6 +148,7 @@ class Builder
         $this->productIdentifier = $productIdentifier;
         $this->catalogHelper = $catalogHelper;
         $this->inventory = $inventory;
+        $this->escaper = $escaper;
         $this->stripTags = $stripTags;
     }
 
@@ -240,14 +249,13 @@ class Builder
      */
     protected function getProductSalePrice(Product $product)
     {
-        if (!$product->getSpecialPrice()) {
-            return '';
+        if ($product->getFinalPrice() > 0 && $product->getPrice() > $product->getFinalPrice()) {
+            $price = $this->systemConfig->isPriceInclTax()
+                ? $this->catalogHelper->getTaxPrice($product, $product->getFinalPrice(), true)
+                : $product->getFinalPrice();
+            return $this->builderTools->formatPrice($price, $product->getStoreId());
         }
-
-        $price = $this->systemConfig->isPriceInclTax()
-            ? $this->catalogHelper->getTaxPrice($product, $product->getSpecialPrice(), true)
-            : $product->getSpecialPrice();
-        return $this->builderTools->formatPrice($price, $product->getStoreId());
+        return '';
     }
 
     /**
@@ -509,6 +517,8 @@ class Builder
      */
     public function buildProductEntry(Product $product)
     {
+        $product->setCustomerGroupId(GroupManagement::NOT_LOGGED_IN_ID);
+
         $inventory = $this->getInventory($product);
         $retailerId = $this->trimAttribute(
             self::ATTR_RETAILER_ID,

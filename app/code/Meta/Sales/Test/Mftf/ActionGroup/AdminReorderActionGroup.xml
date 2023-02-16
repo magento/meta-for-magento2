@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="AdminReorderActionGroup">
+        <click selector="{{AdminOrderFormPaymentSection.header}}" stepKey="unfocus" before="clickSubmitOrder"/>
+        <conditionalClick
+            selector="{{AdminOrderFormPaymentSection.linkPaymentOptions}}"
+            dependentSelector="{{AdminOrderFormPaymentSection.linkPaymentOptions}}"
+            visible="true"
+            stepKey="showPaymentOptions"
+            after="unfocus"
+        />
+        <waitForElementVisible selector="{{AdminOrderFormPaymentSection.checkMoneyOption}}" stepKey="waitForPaymentOptions" after="showPaymentOptions"/>
+        <selectOption selector="{{AdminOrderFormPaymentSection.checkMoneyOption}}" userInput="{{PaymentMethodCheckMoneyOrder.method}}" stepKey="checkCheckMoneyOrder" after="waitForPaymentOptions"/>
+        <waitForPageLoad stepKey="waitForOrderPageLoad2" after="checkCheckMoneyOrder" />
+    </actionGroup>
+</actionGroups>

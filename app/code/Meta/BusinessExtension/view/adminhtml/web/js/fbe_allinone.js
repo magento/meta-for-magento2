@@ -238,6 +238,7 @@ jQuery('#store').on('change', function() {
               _this.saveProfilesData(profiles);
               _this.saveAAMSettings(pixelId);
               _this.saveConfig(accessToken, catalogId, pageId);
+              _this.cleanConfigCache();
               _this.setState({installed: 'true'});
             }
           }else {
@@ -338,6 +339,22 @@ jQuery('#store').on('change', function() {
           }
         });
       },
+      cleanConfigCache : function cleanConfigCache() {
+        var _this = this;
+        jQuery.ajax({
+          type: 'post',
+          url: ajaxify(window.facebookBusinessExtensionConfig.cleanConfigCacheUrl),
+          data: ajaxParam({}),
+          success: function onSuccess(data, _textStatus, _jqXHR) {
+            if (data.success) {
+              _this.consoleLog('Config cache successfully cleaned');
+            }
+          },
+          error: function() {
+            console.error('There was a problem cleaning config cache');
+          }
+        });
+      },
       saveConfig: function saveConfig(accessToken, catalogId, pageId) {
         var _this = this;
         jQuery.ajax({
@@ -372,6 +389,7 @@ jQuery('#store').on('change', function() {
             }else {
               msg = data.error_message;
             }
+            _this.cleanConfigCache();
             _this.consoleLog(msg);
             _this.setState({installed: 'false'});
           },

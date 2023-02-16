@@ -4,6 +4,7 @@
         <facebook>
             <business_extension>
                 <active>1</active>
+                <onsite>0</onsite>
             </business_extension>
             <debug>
                 <debug_mode>1</debug_mode>
