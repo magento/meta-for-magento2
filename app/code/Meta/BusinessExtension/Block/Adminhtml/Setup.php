@@ -141,6 +141,14 @@ class Setup extends Template
      *
      * @return mixed
      */
+    public function getCleanCacheAjaxRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/cleanCache');
+    }
+
+    /**
+     * @return mixed
+     */
     public function getDeleteAssetIdsAjaxRoute()
     {
         return $this->fbeHelper->getUrl('fbeadmin/ajax/fbdeleteasset');

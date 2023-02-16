@@ -98,6 +98,11 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION = 'facebook/api/version';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE = 'facebook/api/version_last_update';
 
+    private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST = 'facebook/conversion_management/enable_server_test';
+    private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE = 'facebook/conversion_management/server_test_code';
+
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG = 'facebook/business_extension/onsite';
+
     /**
      * @var StoreManagerInterface
      */
@@ -272,6 +277,18 @@ class Config
     public function isFBEInstalled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, $scopeId, $scope);
+    }
+
+    /**
+     * Is onsite checkout enabled
+     *
+     * @param null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isOnsiteCheckoutEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
+    {
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG, $scopeId, $scope);
     }
 
     /**
@@ -811,5 +828,29 @@ class Config
             $scopeId = null,
             $scope = null
         );
+    }
+
+    /**
+     * Check if test mode enabled for the server events
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return bool
+     */
+    public function isServerTestModeEnabled(int $scopeId = null, string $scope = null): bool
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST, $scopeId, $scope);
+    }
+
+    /**
+     * Get server event test code
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return string
+     */
+    public function getServerTestCode(int $scopeId = null, string $scope = null): string
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE, $scopeId, $scope);
     }
 }

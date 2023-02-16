@@ -29,6 +29,11 @@ use Magento\Store\Model\ScopeInterface;
 class Fbprofiles extends AbstractAjax
 {
     /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
      * @var SystemConfig
      */
     private $systemConfig;
@@ -48,6 +53,7 @@ class Fbprofiles extends AbstractAjax
         SystemConfig $systemConfig
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
+        $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
     }
 

@@ -45,12 +45,6 @@ class FBEHelper extends AbstractHelper
 
     public const FB_GRAPH_BASE_URL = "https://graph.facebook.com/";
 
-    private const DELETE_SUCCESS_MESSAGE = "You have successfully deleted Meta Business Extension.
-    The pixel installed on your website is now deleted.";
-
-    private const DELETE_FAILURE_MESSAGE = "There was a problem deleting the connection.
-      Please try again.";
-
     private const CURRENT_API_VERSION = "v15.0";
 
     private const MODULE_NAME = "Meta_BusinessExtension";
@@ -420,30 +414,22 @@ class FBEHelper extends AbstractHelper
     /**
      * Delete config keys
      *
-     * @return array
+     * @return FBEHelper
      */
     public function deleteConfigKeys()
     {
-        $response = [];
-        $response['success'] = false;
-        try {
-            $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION)
-                ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE);
+        $this->systemConfig->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION)
+            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE);
 
-            $response['success'] = true;
-            $response['message'] = self::DELETE_SUCCESS_MESSAGE;
-        } catch (\Exception $e) {
-            $this->log($e->getMessage());
-            $response['error_message'] = self::DELETE_FAILURE_MESSAGE;
-        }
-        return $response;
+        return $this;
     }
+
 
     /**
      * Is updated version
