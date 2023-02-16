@@ -24,6 +24,7 @@ use Meta\Conversion\Observer\AddToCart;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
 use PHPUnit\Framework\MockObject\MockObject;
+use Magento\Framework\Escaper;
 
 class AddToCartTest extends CommonTest
 {
@@ -48,6 +49,11 @@ class AddToCartTest extends CommonTest
     protected $aamFieldsExtractorHelper;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * Used to set the values before running a test
      *
      * @return void
@@ -65,11 +71,14 @@ class AddToCartTest extends CommonTest
             $this->aamFieldsExtractorHelper,
             $this->systemConfig
         );
+        $this->escaper = $this->createMock(Escaper::class);
+
         $this->addToCartObserver = new AddToCart(
             $this->fbeHelper,
             $this->magentoDataHelper,
             $this->serverSideHelper,
-            $this->request
+            $this->request,
+            $this->escaper
         );
     }
 
