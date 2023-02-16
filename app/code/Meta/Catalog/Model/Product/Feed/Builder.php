@@ -389,7 +389,7 @@ class Builder
         $description = $description ?: $productTitle;
         // description can't be all uppercase
         $description = $this->builderTools->htmlDecode($description);
-        return addslashes($this->builderTools->lowercaseIfAllCaps($description));
+        return html_entity_decode(addslashes($this->builderTools->lowercaseIfAllCaps($description)));
     }
 
     /**
