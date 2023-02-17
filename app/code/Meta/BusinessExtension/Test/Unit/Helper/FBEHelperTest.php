@@ -48,6 +48,11 @@ class FBEHelperTest extends TestCase
     private $moduleList;
 
     /**
+     * @var ProductMetadataInterface|MockObject
+     */
+    private $productMetaData;
+
+    /**
      * Used to reset or change values after running a test
      *
      * @return void
@@ -71,7 +76,7 @@ class FBEHelperTest extends TestCase
         $resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
         $systemConfig = $this->createMock(Config::class);
-        $productMetaData = $this->createMock(ProductMetadataInterface::class);
+        $this->productMetaData = $this->createMock(ProductMetadataInterface::class);
         $this->fbeHelper = new FBEHelper(
             $context,
             $this->objectManagerInterface,
@@ -81,7 +86,7 @@ class FBEHelperTest extends TestCase
             $resourceConnection,
             $this->moduleList,
             $systemConfig,
-            $productMetaData
+            $this->productMetaData
         );
     }
 
@@ -104,7 +109,7 @@ class FBEHelperTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getVersion', 'getEdition', 'getName'])
             ->getMock();
-        $this->productMetadata->expects($this->once())->method('getVersion')->willReturn($magentoVersion);
+        $this->productMetaData->expects($this->once())->method('getVersion')->willReturn($magentoVersion);
         $this->objectManagerInterface->method('get')->willReturn($productMetadata);
         $this->assertEquals(
             sprintf('%s-%s-%s', $source, $magentoVersion, $pluginVersion),
