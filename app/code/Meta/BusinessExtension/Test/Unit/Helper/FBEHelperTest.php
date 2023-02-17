@@ -101,6 +101,7 @@ class FBEHelperTest extends TestCase
         $this->resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
         $this->systemConfig = $this->createMock(Config::class);
+        $this->productMetadata = $this->createMock(ProductMetadataInterface::class);
         $this->fbeHelper = new FBEHelper(
             $this->context,
             $this->objectManagerInterface,
@@ -109,7 +110,8 @@ class FBEHelperTest extends TestCase
             $this->curl,
             $this->resourceConnection,
             $this->moduleList,
-            $this->systemConfig
+            $this->systemConfig,
+            $this->productMetadata
         );
     }
 
@@ -132,8 +134,7 @@ class FBEHelperTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getVersion', 'getEdition', 'getName'])
             ->getMock();
-        $productMetadata->method('getVersion')->willReturn($magentoVersion);
-        $productMetadata->method('getVersion')->willReturn($magentoVersion);
+        $this->productMetadata->expects($this->once())->method('getVersion')->willReturn($magentoVersion);
         $this->objectManagerInterface->method('get')->willReturn($productMetadata);
         $this->assertEquals(
             sprintf('%s-%s-%s', $source, $magentoVersion, $pluginVersion),
