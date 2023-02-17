@@ -35,42 +35,12 @@ class FBEHelperTest extends TestCase
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
-
-    /**
-     * @var MockObject
-     */
-    private $systemConfig;
-
-    /**
-     * @var MockObject
-     */
-    private $context;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var MockObject
      */
     private $objectManagerInterface;
-
-    /**
-     * @var MockObject
-     */
-    private $logger;
-
-    /**
-     * @var MockObject
-     */
-    private $storeManager;
-
-    /**
-     * @var MockObject
-     */
-    private $curl;
-
-    /**
-     * @var MockObject
-     */
-    private $resourceConnection;
 
     /**
      * @var MockObject
@@ -93,25 +63,25 @@ class FBEHelperTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->context = $this->createMock(Context::class);
+        $context = $this->createMock(Context::class);
         $this->objectManagerInterface = $this->createMock(ObjectManagerInterface::class);
-        $this->logger = $this->createMock(Logger::class);
-        $this->storeManager = $this->createMock(StoreManagerInterface::class);
-        $this->curl = $this->createMock(Curl::class);
-        $this->resourceConnection = $this->createMock(ResourceConnection::class);
+        $logger = $this->createMock(Logger::class);
+        $storeManager = $this->createMock(StoreManagerInterface::class);
+        $curl = $this->createMock(Curl::class);
+        $resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
-        $this->systemConfig = $this->createMock(Config::class);
-        $this->productMetadata = $this->createMock(ProductMetadataInterface::class);
+        $systemConfig = $this->createMock(Config::class);
+        $productMetaData = $this->createMock(ProductMetadataInterface::class);
         $this->fbeHelper = new FBEHelper(
-            $this->context,
+            $context,
             $this->objectManagerInterface,
-            $this->logger,
-            $this->storeManager,
-            $this->curl,
-            $this->resourceConnection,
+            $logger,
+            $storeManager,
+            $curl,
+            $resourceConnection,
             $this->moduleList,
-            $this->systemConfig,
-            $this->productMetadata
+            $systemConfig,
+            $productMetaData
         );
     }
 
