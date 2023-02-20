@@ -8,13 +8,11 @@
 <tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="AdminCheckResultsOfColorAndOtherFiltersTest">
-        <before>
-            <actionGroup ref="AdminAddUnassignedAttributeToGroupActionGroup" stepKey="createDefaultAttributeSet">
-                <argument name="label" value="mySet"/>
-                <argument name="firstOption" value="$$createConfigProductAttribute.attribute_code$$"/>
-                <argument name="secondOption" value="$$createConfigProductAttribute2.attribute_code$$"/>
-                <argument name="group" value="General"/>
-            </actionGroup>
-        </before>
+        <actionGroup ref="AdminAddUnassignedAttributeToGroupActionGroup" stepKey="createDefaultAttributeSet">
+            <argument name="label" value="mySet"/>
+            <argument name="firstOption" value="$$createConfigProductAttribute.attribute_code$$"/>
+            <argument name="secondOption" value="$$createConfigProductAttribute2.attribute_code$$"/>
+            <argument name="group" value="General"/>
+        </actionGroup>
     </test>
 </tests>
