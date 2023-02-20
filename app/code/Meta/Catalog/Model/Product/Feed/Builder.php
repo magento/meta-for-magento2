@@ -29,6 +29,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Escaper;
+use Magento\Framework\Filter\StripTagsFactory;
 use Magento\Customer\Model\GroupManagement;
 
 class Builder
@@ -115,6 +116,11 @@ class Builder
     private $escaper;
 
     /**
+     * @var StripTagsFactory
+     */
+    private $stripTags;
+
+    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
@@ -125,6 +131,7 @@ class Builder
      * @param CatalogHelper $catalogHelper
      * @param InventoryInterface $inventory
      * @param Escaper $escaper
+     * @param StripTagsFactory $stripTags
      */
     public function __construct(
         FBEHelper                 $fbeHelper,
@@ -134,9 +141,9 @@ class Builder
         ProductIdentifier         $productIdentifier,
         CatalogHelper             $catalogHelper,
         InventoryInterface        $inventory,
-        Escaper                   $escaper
-    )
-    {
+        Escaper                   $escaper,
+        StripTagsFactory          $stripTags
+    ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -145,6 +152,7 @@ class Builder
         $this->catalogHelper = $catalogHelper;
         $this->inventory = $inventory;
         $this->escaper = $escaper;
+        $this->stripTags = $stripTags;
     }
 
     /**
@@ -402,8 +410,12 @@ class Builder
         if (!$description) {
             $description = $product->getShortDescription();
         }
+        if (!$description) {
+            return '';
+        }
+        $stripTags = $this->stripTags->create([$this->escaper, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION]);
         return $this->trimAttribute(self::ATTR_RICH_DESCRIPTION,
-            strip_tags($description, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION));
+        $stripTags->filter($description));
     }
 
     /**
