@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Meta\Conversion\Model\Tracker;
 
 use Magento\Framework\Exception\NoSuchEntityException;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Meta\Conversion\Api\TrackerInterface;
 use Magento\Framework\Escaper;

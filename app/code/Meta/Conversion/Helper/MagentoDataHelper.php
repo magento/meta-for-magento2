@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Meta\BusinessExtension\Helper;
+namespace Meta\Conversion\Helper;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -30,7 +30,6 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Meta\Conversion\Helper\AAMSettingsFields;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;

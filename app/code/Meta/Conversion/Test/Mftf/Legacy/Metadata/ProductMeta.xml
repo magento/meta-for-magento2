@@ -14,7 +14,7 @@
             <field key="type_id">string</field>
             <field key="attribute_set_id">integer</field>
             <field key="weight">integer</field>
-            <field key="extension_attributes">productExtensionAttribute</field>
+            <field key="extension_attributes">product_extension_attribute</field>
             <array key="custom_attributes">
                 <value>customAttributeArray</value>
             </array>

@@ -11,8 +11,8 @@
         "magento/module-backend": "*",
         "magento/module-catalog": "*",
         "magento/module-configurable-product": "*",
-        "magento/module-catalog-inventory": "*",
         "magento/module-config": "*",
+        "magento/module-customer": "*",
         "magento/module-eav": "*",
         "magento/module-store": "*",
         "meta/module-business-extension": "*"

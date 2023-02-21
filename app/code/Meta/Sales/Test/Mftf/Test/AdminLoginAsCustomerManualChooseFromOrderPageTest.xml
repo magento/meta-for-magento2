@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminLoginAsCustomerManualChooseFromOrderPageTest">
+        <!-- Create order -->
+        <actionGroup ref="CreateOrderInStoreSelectPaymentActionGroup" stepKey="createOrder">
+            <argument name="product" value="$$createProduct$$"/>
+            <argument name="customer" value="$$createCustomer$$"/>
+            <argument name="storeView" value="customStoreFR"/>
+        </actionGroup>
+    </test>
+</tests>

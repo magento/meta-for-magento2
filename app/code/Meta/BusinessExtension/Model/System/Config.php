@@ -839,7 +839,7 @@ class Config
      */
     public function isServerTestModeEnabled(int $scopeId = null, string $scope = null): bool
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST, $scopeId, $scope);
+        return (bool) $this->getConfig(self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST, $scopeId, $scope);
     }
 
     /**

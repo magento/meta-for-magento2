@@ -19,14 +19,12 @@ namespace Meta\Conversion\Controller\Pixel;
 
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
 use Magento\Framework\Pricing\Helper\Data;
 use Magento\Framework\View\Asset\File\NotFoundException;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\EventIdGenerator;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Catalog\Model\Product;

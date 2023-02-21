@@ -17,21 +17,33 @@
 
 namespace Meta\Catalog\Test\Unit\Observer;
 
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
-use Meta\BusinessExtension\Test\Unit\Observer\CommonTest;
+use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Helper\Product\Identifier;
 use Meta\Catalog\Observer\Product\DeleteAfter as ProcessProductAfterDeleteEventObserver;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event;
 use Magento\Framework\Event\Observer;
+use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class ProcessProductAfterDeleteEventObserverTest extends CommonTest
+class ProcessProductAfterDeleteEventObserverTest extends TestCase
 {
+    /**
+     * @var MockObject
+     */
+    private MockObject $fbeHelper;
+
+    /**
+     * @var MockObject
+     */
+    private MockObject $systemConfig;
+
     /**
      * @var ProcessProductAfterDeleteEventObserver
      */
-    protected $processProductAfterDeleteEventObserver;
+    private $processProductAfterDeleteEventObserver;
 
     /**
      * @var MockObject
@@ -60,7 +72,8 @@ class ProcessProductAfterDeleteEventObserverTest extends CommonTest
      */
     public function setUp(): void
     {
-        parent::setUp();
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->_product = $this->createMock(Product::class);
         $this->_product->expects($this->atLeastOnce())->method('getId')->will($this->returnValue("1234"));
         $this->_product->expects($this->never())->method('getSku');

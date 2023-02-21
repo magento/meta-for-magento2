@@ -35,17 +35,7 @@ class FBEHelperTest extends TestCase
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
-
-    /**
-     * @var MockObject
-     */
-    private $systemConfig;
-
-    /**
-     * @var MockObject
-     */
-    private $context;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var MockObject
@@ -55,27 +45,12 @@ class FBEHelperTest extends TestCase
     /**
      * @var MockObject
      */
-    private $logger;
-
-    /**
-     * @var MockObject
-     */
-    private $storeManager;
-
-    /**
-     * @var MockObject
-     */
-    private $curl;
-
-    /**
-     * @var MockObject
-     */
-    private $resourceConnection;
-
-    /**
-     * @var MockObject
-     */
     private $moduleList;
+
+    /**
+     * @var ProductMetadataInterface|MockObject
+     */
+    private $productMetaData;
 
     /**
      * Used to reset or change values after running a test
@@ -93,23 +68,25 @@ class FBEHelperTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->context = $this->createMock(Context::class);
+        $context = $this->createMock(Context::class);
         $this->objectManagerInterface = $this->createMock(ObjectManagerInterface::class);
-        $this->logger = $this->createMock(Logger::class);
-        $this->storeManager = $this->createMock(StoreManagerInterface::class);
-        $this->curl = $this->createMock(Curl::class);
-        $this->resourceConnection = $this->createMock(ResourceConnection::class);
+        $logger = $this->createMock(Logger::class);
+        $storeManager = $this->createMock(StoreManagerInterface::class);
+        $curl = $this->createMock(Curl::class);
+        $resourceConnection = $this->createMock(ResourceConnection::class);
         $this->moduleList = $this->createMock(ModuleListInterface::class);
-        $this->systemConfig = $this->createMock(Config::class);
+        $systemConfig = $this->createMock(Config::class);
+        $this->productMetaData = $this->createMock(ProductMetadataInterface::class);
         $this->fbeHelper = new FBEHelper(
-            $this->context,
+            $context,
             $this->objectManagerInterface,
-            $this->logger,
-            $this->storeManager,
-            $this->curl,
-            $this->resourceConnection,
+            $logger,
+            $storeManager,
+            $curl,
+            $resourceConnection,
             $this->moduleList,
-            $this->systemConfig
+            $systemConfig,
+            $this->productMetaData
         );
     }
 
@@ -132,8 +109,7 @@ class FBEHelperTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getVersion', 'getEdition', 'getName'])
             ->getMock();
-        $productMetadata->method('getVersion')->willReturn($magentoVersion);
-        $productMetadata->method('getVersion')->willReturn($magentoVersion);
+        $this->productMetaData->expects($this->once())->method('getVersion')->willReturn($magentoVersion);
         $this->objectManagerInterface->method('get')->willReturn($productMetadata);
         $this->assertEquals(
             sprintf('%s-%s-%s', $source, $magentoVersion, $pluginVersion),

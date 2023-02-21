@@ -20,7 +20,7 @@ namespace Meta\Conversion\Test\Unit\Helper;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\Conversion\Helper\AAMSettingsFields;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\ServerEventFactory;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;

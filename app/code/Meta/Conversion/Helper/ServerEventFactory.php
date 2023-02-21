@@ -18,7 +18,6 @@
 namespace Meta\Conversion\Helper;
 
 use FacebookAds\Object\ServerSide\Event;
-use FacebookAds\Object\ServerSide\EventRequest;
 use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\CustomData;
 use FacebookAds\Object\ServerSide\Content;

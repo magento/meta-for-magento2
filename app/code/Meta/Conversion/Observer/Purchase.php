@@ -18,7 +18,7 @@
 namespace Meta\Conversion\Observer;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;

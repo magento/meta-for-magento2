@@ -20,7 +20,7 @@ namespace Meta\Conversion\Block\Pixel;
 use Magento\Framework\Escaper;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;

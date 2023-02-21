@@ -18,15 +18,30 @@
 namespace Meta\Catalog\Test\Unit\Observer;
 
 use Magento\Framework\Event\Observer;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Model\Feed\CategoryCollection;
-use Meta\BusinessExtension\Test\Unit\Observer\CommonTest;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Event;
 use Meta\Catalog\Observer\ProcessCategoryAfterDeleteEventObserver;
+use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
+class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
 {
+    /**
+     * @var MockObject
+     */
+    private MockObject $fbeHelper;
+
+    /**
+     * @var MockObject
+     */
+    private MockObject $systemConfig;
+
+    /**
+     * @var ProcessCategoryAfterDeleteEventObserver
+     */
     private $processCategoryAfterDeleteEventObserver;
 
     /**
@@ -46,7 +61,8 @@ class ProcessCategoryAfterDeleteEventObserverTest extends CommonTest
      */
     public function setUp(): void
     {
-        parent::setUp();
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->_category = $this->createMock(Category::class);
         $event = $this->getMockBuilder(Event::class)->addMethods(['getCategory'])->getMock();
         $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->_category));
