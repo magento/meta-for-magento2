@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-namespace Meta\BusinessExtension\Test\Unit\Observer;
+namespace Meta\Conversion\Test\Unit\Observer;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
@@ -45,6 +45,7 @@ abstract class CommonTest extends TestCase
      * @var ObjectManager
      */
     protected $objectManager;
+
     /**
      * Used to reset or change values after running a test
      *

@@ -20,7 +20,7 @@ namespace Meta\Conversion\Test\Unit\Block\Pixel;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config;
 use Meta\Conversion\Block\Pixel\Head;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;

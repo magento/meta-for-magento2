@@ -18,7 +18,6 @@
 namespace Meta\Conversion\Helper;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
 use FacebookAds\Object\ServerSide\Normalizer;
 use FacebookAds\Object\ServerSide\Util;
 

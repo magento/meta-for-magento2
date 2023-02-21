@@ -21,7 +21,7 @@ use Magento\Framework\Escaper;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\MagentoDataHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 
@@ -43,8 +43,8 @@ class InitiateCheckout extends Common
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
-     * @param PricingHelper $pricingHelper
      * @param Escaper $escaper
+     * @param PricingHelper $pricingHelper
      * @param array $data
      */
     public function __construct(
@@ -53,8 +53,8 @@ class InitiateCheckout extends Common
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
-        PricingHelper $pricingHelper,
         Escaper $escaper,
+        PricingHelper $pricingHelper,
         array $data = []
     ) {
         parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $escaper, $data);

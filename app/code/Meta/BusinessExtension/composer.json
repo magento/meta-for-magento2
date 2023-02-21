@@ -9,15 +9,11 @@
         "magento/framework": "*",
         "magento/module-backend": "*",
         "magento/module-catalog": "*",
-        "magento/module-configurable-product": "*",
         "magento/module-config": "*",
         "magento/module-security": "*",
         "magento/module-store": "*",
         "magento/module-newsletter": "*",
-        "magento/module-customer": "*",
-        "magento/module-checkout": "*",
-        "magento/module-directory": "*",
-        "magento/module-eav": "*",
+        "meta/module-sales": "*",
         "facebook/php-business-sdk": "^15.0.0"
     },
     "autoload": {

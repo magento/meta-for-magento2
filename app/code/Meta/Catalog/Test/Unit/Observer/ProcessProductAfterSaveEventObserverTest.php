@@ -17,22 +17,34 @@
 
 namespace Meta\Catalog\Test\Unit\Observer;
 
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
-use Meta\BusinessExtension\Test\Unit\Observer\CommonTest;
+use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Model\Product\Feed\Method\BatchApi;
 use Meta\Catalog\Observer\Product\SaveAfter as ProcessProductAfterSaveEventObserver;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event;
 use Magento\Framework\Event\Observer;
 use Magento\Store\Api\Data\StoreInterface;
+use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class ProcessProductAfterSaveEventObserverTest extends CommonTest
+class ProcessProductAfterSaveEventObserverTest extends TestCase
 {
+    /**
+     * @var MockObject
+     */
+    private MockObject $fbeHelper;
+
+    /**
+     * @var MockObject
+     */
+    private MockObject $systemConfig;
+
     /**
      * @var ProcessProductAfterSaveEventObserver
      */
-    protected $processProductAfterSaveEventObserver;
+    private $processProductAfterSaveEventObserver;
 
     /**
      * @var MockObject
@@ -66,7 +78,8 @@ class ProcessProductAfterSaveEventObserverTest extends CommonTest
      */
     public function setUp(): void
     {
-        parent::setUp();
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->store = $this->createMock(StoreInterface::class);
         $this->fbeHelper->expects($this->once())->method('getStore')->will($this->returnValue($this->store));
         $this->_product = $this->createMock(Product::class);

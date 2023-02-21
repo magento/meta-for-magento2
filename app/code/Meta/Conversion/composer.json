@@ -6,9 +6,15 @@
         "php": "~7.4.0||~8.1.0",
         "magento/framework": "*",
         "magento/module-catalog": "*",
+        "magento/module-configurable-product": "*",
         "magento/module-checkout": "*",
+        "magento/module-customer": "*",
+        "magento/module-directory": "*",
         "magento/module-sales": "*",
-        "meta/module-business-extension": "*"
+        "magento/module-store": "*",
+        "magento/module-quote": "*",
+        "meta/module-business-extension": "*",
+        "meta/module-catalog": "*"
     },
     "license": "Apache-2.0",
     "autoload": {
