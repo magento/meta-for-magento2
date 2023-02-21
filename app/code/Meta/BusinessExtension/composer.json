@@ -13,7 +13,6 @@
         "magento/module-security": "*",
         "magento/module-store": "*",
         "magento/module-newsletter": "*",
-        "meta/module-sales": "*",
         "facebook/php-business-sdk": "^15.0.0"
     },
     "autoload": {

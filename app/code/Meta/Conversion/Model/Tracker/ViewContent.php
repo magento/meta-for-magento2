@@ -7,6 +7,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Meta\Conversion\Api\TrackerInterface;
+use Magento\Framework\Escaper;
 
 class ViewContent implements TrackerInterface
 {
@@ -24,15 +25,23 @@ class ViewContent implements TrackerInterface
     private $productRepository;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * @param MagentoDataHelper $magentoDataHelper
      * @param ProductRepositoryInterface $productRepository
+     * @param Escaper $escaper
      */
     public function __construct(
         MagentoDataHelper $magentoDataHelper,
-        ProductRepositoryInterface $productRepository
+        ProductRepositoryInterface $productRepository,
+        Escaper $escaper
     ) {
         $this->magentoDataHelper = $magentoDataHelper;
         $this->productRepository = $productRepository;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -57,7 +66,7 @@ class ViewContent implements TrackerInterface
                 'value' => $this->magentoDataHelper->getValueForProduct($product),
                 'content_ids' => [$contentId],
                 'content_category' => $this->magentoDataHelper->getCategoriesForProduct($product),
-                'content_name' => $product->getName(),
+                'content_name' => $this->escaper->escapeUrl($product->getName()),
                 'contents' => [
                     [
                         'id' => $contentId,
