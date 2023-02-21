@@ -17,7 +17,6 @@
 
 namespace Meta\Conversion\Test\Unit\Observer;
 
-use Meta\BusinessExtension\Test\Unit\Observer\CommonTest;
 use Meta\Conversion\Observer\AddToCart;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Magento\Framework\App\RequestInterface;
