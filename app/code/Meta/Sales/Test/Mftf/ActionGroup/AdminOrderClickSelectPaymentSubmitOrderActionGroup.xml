@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="AdminOrderClickSelectPaymentSubmitOrderActionGroup">
+        <annotations>
+            <description>Click "Submit Order" button for order.</description>
+        </annotations>
+        <conditionalClick
+            selector="{{AdminOrderFormPaymentSection.linkPaymentOptions}}"
+            dependentSelector="{{AdminOrderFormPaymentSection.linkPaymentOptions}}"
+            visible="true"
+            stepKey="showPaymentOptions"
+            before="clickSubmitOrder"
+        />
+        <waitForElementVisible selector="{{AdminOrderFormPaymentSection.checkMoneyOption}}" stepKey="waitForPaymentOptions" after="showPaymentOptions"/>
+        <selectOption selector="{{AdminOrderFormPaymentSection.checkMoneyOption}}" userInput="{{PaymentMethodCheckMoneyOrder.method}}" stepKey="checkCheckMoneyOrder" after="waitForPaymentOptions"/>
+        <waitForPageLoad stepKey="waitForPaymentMethodSelected" after="checkCheckMoneyOrder" />
+        <click selector="{{AdminOrderFormActionSection.SubmitOrder}}" stepKey="clickSubmitOrder"/>
+        <waitForPageLoad stepKey="waitForOrderPageToLoad"/>
+    </actionGroup>
+</actionGroups>
