@@ -124,15 +124,15 @@ class Configurable implements ProductRetrieverInterface
                         $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
                         $configurableSettings[$attributeCode] = $attributeLabel;
                     }
-                // Assign parent product name to all child products' name (used as variant name is Meta catalog)
-                // https://developers.facebook.com/docs/commerce-platform/catalog/variants
-                $childProduct->setName($product->getName());
-                $childProduct->setConfigurableSettings($configurableSettings);
-                $childProduct->setParentProductUrl($product->getProductUrl());
-                if (!$childProduct->getDescription()) {
-                    $childProduct->setDescription($product->getDescription());
-                }
-                $simpleProducts[] = $childProduct;
+                    // Assign parent product name to all child products' name (used as variant name is Meta catalog)
+                    // https://developers.facebook.com/docs/commerce-platform/catalog/variants
+                    $childProduct->setName($product->getName());
+                    $childProduct->setConfigurableSettings($configurableSettings);
+                    $childProduct->setParentProductUrl($product->getProductUrl());
+                    if (!$childProduct->getDescription()) {
+                        $childProduct->setDescription($product->getDescription());
+                    }
+                    $simpleProducts[] = $childProduct;
                 }
             }
         }
