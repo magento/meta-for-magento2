@@ -121,12 +121,16 @@ class Builder
     private $stripTags;
 
     /**
+     * Constructor
+     *
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
      * @param ProductIdentifier $productIdentifier
      * @param CatalogHelper $catalogHelper
+     * @param InventoryInterface $inventory
+     * @param Escaper $escaper
      * @param StripTagsFactory $stripTags
      */
     public function __construct(
@@ -139,8 +143,7 @@ class Builder
         InventoryInterface        $inventory,
         Escaper                   $escaper,
         StripTagsFactory          $stripTags
-    )
-    {
+    ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -392,9 +395,11 @@ class Builder
         $productTitle = $this->trimAttribute(self::ATTR_NAME, $title);
 
         $description = $description ?: $productTitle;
-        // description can't be all uppercase
-        $description = $this->builderTools->htmlDecode($description);
-        return addslashes($this->builderTools->lowercaseIfAllCaps($description));
+        // phpcs:ignore
+        $description =  html_entity_decode($description);
+        // phpcs:ignore
+        $description = html_entity_decode(preg_replace( '/<[^<]+?>/', '', $description));
+        return $this->builderTools->lowercaseIfAllCaps($description);
     }
 
     /**
@@ -550,7 +555,7 @@ class Builder
         $entry = [
             self::ATTR_RETAILER_ID => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
             self::ATTR_ITEM_GROUP_ID => $this->getItemGroupId($product),
-            self::ATTR_NAME => $productTitle,
+            self::ATTR_NAME => $this->escaper->escapeUrl($productTitle),
             self::ATTR_DESCRIPTION => $this->getDescription($product),
             self::ATTR_RICH_DESCRIPTION => $this->getRichDescription($product),
             self::ATTR_AVAILABILITY => $inventory->getAvailability(),

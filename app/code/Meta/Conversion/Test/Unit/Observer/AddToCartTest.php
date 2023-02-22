@@ -17,34 +17,40 @@
 
 namespace Meta\Conversion\Test\Unit\Observer;
 
-use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
-use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Observer\AddToCart;
+use Meta\Conversion\Helper\ServerSideHelper;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Escaper;
 use Magento\Framework\Event\Observer;
-use PHPUnit\Framework\MockObject\MockObject;
+use Magento\Catalog\Model\Product;
 
 class AddToCartTest extends CommonTest
 {
-    /**
-     * @var MockObject
-     */
-    protected $request;
-
-    /**
-     * @var AddToCart
-     */
-    protected $addToCartObserver;
 
     /**
      * @var ServerSideHelper
      */
-    protected $serverSideHelper;
+    private $serverSideHelper;
 
     /**
-     * @var AAMFieldsExtractorHelper
+     * @var RequestInterface
      */
-    protected $aamFieldsExtractorHelper;
+    private $request;
+
+    /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
+     * @var ObserverInterface
+     */
+    private $observer;
+
+    /**
+     * @var AddToCart
+     */
+    private $addToCartObserver;
 
     /**
      * Used to set the values before running a test
@@ -54,62 +60,102 @@ class AddToCartTest extends CommonTest
     public function setUp(): void
     {
         parent::setUp();
-        $this->request = $this->createMock(RequestInterface::class);
-        $this->aamFieldsExtractorHelper = new AAMFieldsExtractorHelper(
-            $this->magentoDataHelper,
-            $this->fbeHelper
-        );
-        $this->serverSideHelper = new ServerSideHelper(
-            $this->fbeHelper,
-            $this->aamFieldsExtractorHelper,
-            $this->systemConfig
-        );
-        $this->addToCartObserver = new AddToCart(
-            $this->fbeHelper,
-            $this->magentoDataHelper,
-            $this->serverSideHelper,
-            $this->request
-        );
+
+        $this->serverSideHelper = $this->getMockBuilder(ServerSideHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->request = $this->getMockBuilder(RequestInterface::class)
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        $this->escaper = $this->getMockBuilder(Escaper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->observer = $this->getMockBuilder(Observer::class)
+            ->onlyMethods(['getData'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->addToCartObserver = $this->objectManager->getObject(AddToCart::class, [
+            'fbeHelper' => $this->fbeHelper,
+            'magentoDataHelper' => $this->magentoDataHelper,
+            'serverSideHelper' => $this->serverSideHelper,
+            'request' => $this->request,
+            'escaper' => $this->escaper
+        ]);
     }
 
-    public function testAddToCartEventCreated()
+    /**
+     * Test execute methood
+     *
+     * @return void
+     */
+    public function testExecute()
     {
-        $id = 123;
-        $sku = 'SKU-123';
+        $eventId = '12ghjs-34vcv1-dfff3v-43kj97';
+        $productId = 12;
+        $productName = 'Test Product';
+        $currency = 'USD';
+        $value = 100.00;
         $contentType = 'product';
-        $eventId = '1234';
+        $contentIds = 'test-product';
+        $contentCategory = 'Test Category';
 
-        $this->magentoDataHelper->method('getValueForProduct')->willReturn(12.99);
-        $this->magentoDataHelper->method('getCategoriesForProduct')->willReturn('Electronics');
-        $this->magentoDataHelper->method('getContentId')->willReturn($sku);
-        $this->magentoDataHelper->method('getContentType')->willReturn($contentType);
+        $productMock = $this->getMockBuilder(Product::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $product = $this->objectManager->getObject('\Magento\Catalog\Model\Product');
-        $product->setId($id)->setSku($sku);
-        $product->setName('Earphones');
-        $this->request->method('getParam')->willReturn($sku);
-        $this->magentoDataHelper->method('getProductBySku')->willReturn($product);
-        $this->magentoDataHelper->method('getProductById')->willReturn($product);
+        $this->observer->expects($this->once())
+            ->method('getData')
+            ->with('eventId')
+            ->willReturn($eventId);
 
-        $observer = new Observer(['eventId' => $eventId]);
+        $this->request->expects($this->once())
+            ->method('getParam')
+            ->with('product_id', null)
+            ->willReturn($productId);
 
-        $this->addToCartObserver->execute($observer);
+        $this->magentoDataHelper->expects($this->once())
+            ->method('getProductById')
+            ->with($productId)
+            ->willReturn($productMock);
 
-        $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));
+        $productMock->expects($this->once())
+            ->method('getId')
+            ->willReturn($productId);
 
-        $event = $this->serverSideHelper->getTrackedEvents()[0];
+        $this->magentoDataHelper->expects($this->once())
+            ->method('getCurrency')
+            ->willReturn($currency);
 
-        $this->assertEquals($eventId, $event->getEventId());
+        $this->magentoDataHelper->expects($this->once())
+            ->method('getValueForProduct')
+            ->with($productMock)
+            ->willReturn($value);
 
-        $customDataArray = [
-            'currency' => 'USD',
-            'value' => 12.99,
-            'content_type' => $contentType,
-            'content_ids' => [$sku],
-            'content_category' => 'Electronics',
-            'content_name' => 'Earphones'
-        ];
+        $this->magentoDataHelper->expects($this->once())
+            ->method('getContentType')
+            ->with($productMock)
+            ->willReturn($contentType);
 
-        $this->assertEqualsCustomData($customDataArray, $event->getCustomData());
+        $this->magentoDataHelper->expects($this->once())
+            ->method('getContentId')
+            ->with($productMock)
+            ->willReturn($contentIds);
+
+        $this->magentoDataHelper->expects($this->once())
+            ->method('getCategoriesForProduct')
+            ->with($productMock)
+            ->willReturn($contentCategory);
+
+        $productMock->expects($this->once())
+            ->method('getName')
+            ->willReturn($productName);
+
+        $this->escaper->expects($this->once())
+            ->method('escapeUrl')
+            ->with($productName)
+            ->willReturn($productName);
+
+        $this->addToCartObserver->execute($this->observer);
     }
 }

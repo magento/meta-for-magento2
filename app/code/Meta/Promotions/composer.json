@@ -7,7 +7,6 @@
         "magento/framework": "*",
         "magento/module-backend": "*",
         "magento/module-config": "*",
-        "magento/module-store": "*",
         "magento/module-sales-rule": "*",
         "magento/module-offline-shipping": "*",
         "meta/module-business-extension": "*"
