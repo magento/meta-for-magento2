@@ -18,7 +18,6 @@
 namespace Meta\BusinessExtension\Helper;
 
 use CURLFile;
-use Meta\Sales\Model\FacebookOrder;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
@@ -28,6 +27,9 @@ use Psr\Log\LoggerInterface;
 class GraphAPIAdapter
 {
     const GET_ORDERS_LIMIT = 25;
+
+    /** @var string */
+    private const ORDER_STATE_CREATED = 'STATE_CREATED';
 
     /**
      * @var mixed
@@ -375,7 +377,7 @@ class GraphAPIAdapter
         ];
         $request = [
             'access_token' => $this->accessToken,
-            'state' => FacebookOrder::STATE_CREATED,
+            'state' => self::ORDER_STATE_CREATED,
             'fields' => implode(',', $requestFields),
             'limit' => self::GET_ORDERS_LIMIT,
         ];
