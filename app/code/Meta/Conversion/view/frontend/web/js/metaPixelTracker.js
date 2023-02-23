@@ -1,16 +1,17 @@
+/* global fbq */
 define([
     'jquery'
 ], function ($) {
     'use strict';
 
     return function (config) {
-
-        var browserEventData = config.browserEventData;
-        var eventId = crypto.randomUUID();
+        var browserEventData = config.browserEventData,
+            eventId = crypto.randomUUID();
 
         config.payload.eventId = eventId;
 
-        let browserPayload = config.browserEventData.payload
+        let browserPayload = config.browserEventData.payload;
+
         browserPayload.source = browserEventData.source;
 
         browserPayload.pluginVersion = browserEventData.pluginVersion;
@@ -24,12 +25,12 @@ define([
         $.ajax({
             showLoader: true,
             url: config.url,
-            type: "POST",
+            type: 'POST',
             data: config.payload,
-            dataType: "json",
+            dataType: 'json',
             error: function (error) {
-                console.log(error)
+                console.log(error);
             }
         });
-    }
+    };
 });
