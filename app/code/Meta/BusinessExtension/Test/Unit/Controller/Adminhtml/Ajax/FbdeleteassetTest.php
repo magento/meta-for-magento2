@@ -69,8 +69,10 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecuteForJson()
     {
+        $storeId = 2;
+        $this->request->method('getParam')->willReturn($storeId);
         $this->fbeHelper->expects($this->once())
-            ->method('deleteConfigKeys');
+            ->method('deleteConfigKeys')->with($storeId)->willReturnSelf();
 
         $result = $this->fbdeleteasset->executeForJson();
         $this->assertNotNull($result);
