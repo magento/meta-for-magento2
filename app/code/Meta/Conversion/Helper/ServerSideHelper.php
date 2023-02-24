@@ -17,6 +17,7 @@
 
 namespace Meta\Conversion\Helper;
 
+use Magento\Store\Model\ScopeInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Api;
@@ -58,7 +59,7 @@ class ServerSideHelper
     public function __construct(
         FBEHelper $fbeHelper,
         AAMFieldsExtractorHelper $aamFieldsExtractorHelper,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
@@ -86,8 +87,8 @@ class ServerSideHelper
                 ->setPartnerAgent($this->fbeHelper->getPartnerAgent(true));
 
             // Set server test code to the event
-            if ($this->systemConfig->isServerTestModeEnabled()) {
-                $serverTestCode = $this->systemConfig->getServerTestCode();
+            if ($this->systemConfig->isServerTestModeEnabled(null, ScopeInterface::SCOPE_STORES)) {
+                $serverTestCode = $this->systemConfig->getServerTestCode(null, ScopeInterface::SCOPE_STORES);
                 if ($serverTestCode) {
                     $request->setTestEventCode($serverTestCode);
                     $this->fbeHelper->log('test code '.$serverTestCode.' attached to event request');

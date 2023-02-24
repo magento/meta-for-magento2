@@ -347,13 +347,8 @@ class MagentoDataHelper extends AbstractHelper
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contents[] = [
-                'id' => $this->getContentId($product),
-                'quantity' => $item->getQty(),
-                'item_price' => $this->pricingHelper->currency(
-                    $product->getFinalPrice(),
-                    false,
-                    false
-                )
+                'product_id' => $this->getContentId($product),
+                'quantity' => (int) $item->getQty(),
             ];
         }
         return $contents;
@@ -415,13 +410,8 @@ class MagentoDataHelper extends AbstractHelper
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contents[] = [
-                'id' => $this->getContentId($product),
-                'quantity' => (int)$item->getQtyOrdered(),
-                'item_price' => $this->pricingHelper->currency(
-                    $product->getFinalPrice(),
-                    false,
-                    false
-                )
+                'product_id' => $this->getContentId($product),
+                'quantity' => (int)$item->getQtyOrdered()
             ];
         }
         return $contents;
@@ -488,7 +478,7 @@ class MagentoDataHelper extends AbstractHelper
         $userData[AAMSettingsFields::EMAIL] = $this->hashValue($order->getCustomerEmail());
         $userData[AAMSettingsFields::FIRST_NAME] = $this->hashValue($order->getCustomerFirstname());
         $userData[AAMSettingsFields::LAST_NAME] = $this->hashValue($order->getCustomerLastname());
-        $userData[AAMSettingsFields::DATE_OF_BIRTH] = $this->hashValue($order->getCustomerDob());
+        $userData[AAMSettingsFields::DATE_OF_BIRTH] = $this->hashValue($order->getCustomerDob() ?? '');
         if ($order->getCustomerGender()) {
             $genderId = $order->getCustomerGender();
             $userData[AAMSettingsFields::GENDER] =

@@ -17,6 +17,7 @@
 
 namespace Meta\Conversion\Test\Unit\Helper;
 
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -71,7 +72,7 @@ class ServerSideHelperTest extends TestCase
         $this->serverSideHelper = new ServerSideHelper(
             $this->fbeHelper,
             $this->aamFieldsExtractorHelper,
-            $this->systemConfig
+            $this->systemConfig,
         );
     }
 
