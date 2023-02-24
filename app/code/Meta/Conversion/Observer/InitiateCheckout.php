@@ -75,7 +75,11 @@ class InitiateCheckout implements ObserverInterface
                 'content_type' => 'product',
                 'content_ids'  => $this->magentoDataHelper->getCartContentIds(),
                 'num_items'    => $this->magentoDataHelper->getCartNumItems(),
-                'contents'     => $this->magentoDataHelper->getCartContents()
+                'contents'     => $this->magentoDataHelper->getCartContents(),
+                'custom_properties' => [
+                    'source'           => $this->fbeHelper->getSource(),
+                    'pluginVersion'    => $this->fbeHelper->getPluginVersion()
+                ]
             ];
             $event = ServerEventFactory::createEvent('InitiateCheckout', array_filter($customData), $eventId);
             $this->serverSideHelper->sendEvent($event);

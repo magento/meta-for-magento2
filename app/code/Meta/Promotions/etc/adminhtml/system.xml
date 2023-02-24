@@ -4,6 +4,7 @@
         <section id="facebook_business_extension">
             <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="0" showInWebsite="0" showInStore="0">
                 <label>Promotions [Beta]</label>
+                <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                     <field id="facebook_business_extension/business_extension/onsite">1</field>

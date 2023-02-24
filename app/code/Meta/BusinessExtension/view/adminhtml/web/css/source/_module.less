@@ -1,0 +1,29 @@
+div.meta-section-config {
+    border-bottom: 0;
+
+    &:last-child {
+        > .entry-edit-head {
+            > a {
+                border-bottom: 0;
+            }
+        }
+    }
+
+    &.active {
+        > fieldset.config {
+            border-bottom: 1px solid @collapsible__border-color;
+        }
+
+        > .entry-edit-head {
+            > a {
+                border-bottom: 0;
+            }
+        }
+    }
+
+    > .entry-edit-head {
+        > a {
+            border-bottom: 1px solid @collapsible__border-color;
+        }
+    }
+}

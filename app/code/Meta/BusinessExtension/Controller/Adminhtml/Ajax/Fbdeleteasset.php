@@ -23,10 +23,10 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 
 class Fbdeleteasset extends AbstractAjax
 {
-    const DELETE_SUCCESS_MESSAGE = "You have successfully deleted Meta Business Extension.
+    public const DELETE_SUCCESS_MESSAGE = "You have successfully deleted Meta Business Extension.
     The pixel installed on your website is now deleted.";
 
-    const DELETE_FAILURE_MESSAGE = "There was a problem deleting the connection.
+    private const DELETE_FAILURE_MESSAGE = "There was a problem deleting the connection.
       Please try again.";
 
     /**
@@ -51,12 +51,21 @@ class Fbdeleteasset extends AbstractAjax
     }
 
     /**
+     * Execute for json
+     *
      * @return array
      */
     public function executeForJson()
     {
+        $storeId = $this->getRequest()->getParam('storeId');
+        if ($storeId === null) {
+            return [
+                'success' => false,
+                'error_message' => __(self::DELETE_FAILURE_MESSAGE)
+            ];
+        }
         try {
-            $this->fbeHelper->deleteConfigKeys();
+            $this->fbeHelper->deleteConfigKeys($storeId);
             $response = [
                 'success' => true,
                 'message' => __(self::DELETE_SUCCESS_MESSAGE),

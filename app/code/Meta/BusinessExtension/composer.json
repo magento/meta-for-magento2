@@ -10,6 +10,7 @@
         "magento/module-backend": "*",
         "magento/module-catalog": "*",
         "magento/module-config": "*",
+        "magento/module-eav": "*",
         "magento/module-security": "*",
         "magento/module-store": "*",
         "magento/module-newsletter": "*",
