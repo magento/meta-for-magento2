@@ -4,6 +4,7 @@
         <section id="facebook_business_extension">
             <group id="orders_sync" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Orders Sync</label>
+                <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                     <field id="facebook_business_extension/business_extension/onsite">1</field>
@@ -85,6 +86,7 @@
             </group>
             <group id="shipping_methods" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Shipping Methods Mapping</label>
+                <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                     <field id="facebook_business_extension/business_extension/onsite">1</field>

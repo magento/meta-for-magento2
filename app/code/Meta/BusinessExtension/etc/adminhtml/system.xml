@@ -11,6 +11,7 @@
             <resource>Meta_BusinessExtension::system_config</resource>
             <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Setup</label>
+                <fieldset_css>meta-section-config</fieldset_css>
                 <attribute type="expanded">1</attribute>
                 <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Activate Integration</label>
@@ -32,6 +33,7 @@
             </group>
             <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Debug</label>
+                <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
