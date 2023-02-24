@@ -29,7 +29,7 @@ class GraphAPIAdapter
     const GET_ORDERS_LIMIT = 25;
 
     /** @var string */
-    private const ORDER_STATE_CREATED = 'STATE_CREATED';
+    private const ORDER_STATE_CREATED = 'CREATED';
 
     /**
      * @var mixed
