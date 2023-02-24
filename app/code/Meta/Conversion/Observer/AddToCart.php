@@ -101,7 +101,11 @@ class AddToCart implements ObserverInterface
                     'content_type'     => $this->magentoDataHelper->getContentType($product),
                     'content_ids'      => [$this->magentoDataHelper->getContentId($product)],
                     'content_category' => $this->magentoDataHelper->getCategoriesForProduct($product),
-                    'content_name'     => $this->escaper->escapeUrl($product->getName())
+                    'content_name'     => $this->escaper->escapeUrl($product->getName()),
+                    'custom_properties' => [
+                        'source'           => $this->fbeHelper->getSource(),
+                        'pluginVersion'    => $this->fbeHelper->getPluginVersion()
+                    ]
                 ];
                 $event = ServerEventFactory::createEvent('AddToCart', $customData, $eventId);
                 $this->serverSideHelper->sendEvent($event);

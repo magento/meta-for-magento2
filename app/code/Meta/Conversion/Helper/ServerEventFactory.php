@@ -162,6 +162,10 @@ class ServerEventFactory
             $custom_data->setOrderId($data['order_id']);
         }
 
+        if (!empty($data['custom_properties']) && is_array($data['custom_properties'])) {
+            $custom_data->setCustomProperties($data['custom_properties']);
+        }
+
         return $event;
     }
 

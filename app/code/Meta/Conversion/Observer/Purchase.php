@@ -75,7 +75,11 @@ class Purchase implements ObserverInterface
                 'content_type' => 'product',
                 'content_ids'  => $this->magentoDataHelper->getOrderContentIds(),
                 'contents'     => $this->magentoDataHelper->getOrderContents(),
-                'order_id'     => (string)$this->magentoDataHelper->getOrderId()
+                'order_id'     => (string)$this->magentoDataHelper->getOrderId(),
+                'custom_properties' => [
+                    'source'           => $this->fbeHelper->getSource(),
+                    'pluginVersion'    => $this->fbeHelper->getPluginVersion()
+                ]
             ];
             $event = ServerEventFactory::createEvent('Purchase', array_filter($customData), $eventId);
             $userDataFromOrder = $this->magentoDataHelper->getUserDataFromOrder();
