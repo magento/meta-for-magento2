@@ -12,7 +12,7 @@
                     <label>Enable Orders Sync</label>
                     <config_path>facebook/orders_sync/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Orders are pulled from FB Commerce Account every 15 minutes by default (schedule can be edited in crontab.xml), order updates are sent from Magento to Facebook in real time</comment>
+                    <comment>Orders are pulled from Meta Commerce Account every 15 minutes by default (schedule can be edited in crontab.xml), order updates are sent from Adobe Commerce to Meta in real time</comment>
                 </field>
                 <field id="default_order_status" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Default Order Status</label>
@@ -29,7 +29,7 @@
                     <depends>
                         <field id="facebook_business_extension/orders_sync/active">1</field>
                     </depends>
-                    <comment>Pull orders awaiting acknowledgement from your FB Commerce Account</comment>
+                    <comment>Pull orders awaiting acknowledgement from your Meta Commerce Account</comment>
                 </field>
                 <field id="auto_subscribe_to_newsletter" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Subscribe to Newsletter</label>
@@ -38,7 +38,7 @@
                     <depends>
                         <field id="facebook_business_extension/orders_sync/active">1</field>
                     </depends>
-                    <comment>Automatically subscribe buyers to the Magento newsletter. Note: only works if the buyer agreed to use their email for marketing purposes on FB/IG</comment>
+                    <comment>Automatically subscribe buyers to the Adobe Commerce newsletter. Note: only works if the buyer agreed to use their email for marketing purposes on Meta</comment>
                 </field>
                 <field id="default_fulfillment_location" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Use Default Fulfillment Location</label>
