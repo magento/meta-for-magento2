@@ -5,7 +5,7 @@
  */
 ?>
 <select id="store">
-    <option value=""><?= $escaper->escapeHtml(__('Select store')) ?></option>
+    <option value="select-store"><?= $escaper->escapeHtml(__('Select store')) ?></option>
     <?php foreach ($block->getStores() as $key => $store): ?>
         <?php if ($key !== 'admin'): ?>
             <option
