@@ -23,7 +23,6 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\HTTP\Client\Curl;
-use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Model\System\Config;
@@ -43,9 +42,9 @@ class FBEHelperTest extends TestCase
     private $objectManagerInterface;
 
     /**
-     * @var MockObject
+     * @var Config
      */
-    private $moduleList;
+    private $systemConfig;
 
     /**
      * @var ProductMetadataInterface|MockObject
@@ -74,8 +73,7 @@ class FBEHelperTest extends TestCase
         $storeManager = $this->createMock(StoreManagerInterface::class);
         $curl = $this->createMock(Curl::class);
         $resourceConnection = $this->createMock(ResourceConnection::class);
-        $this->moduleList = $this->createMock(ModuleListInterface::class);
-        $systemConfig = $this->createMock(Config::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->productMetaData = $this->createMock(ProductMetadataInterface::class);
         $this->fbeHelper = new FBEHelper(
             $context,
@@ -84,8 +82,7 @@ class FBEHelperTest extends TestCase
             $storeManager,
             $curl,
             $resourceConnection,
-            $this->moduleList,
-            $systemConfig,
+            $this->systemConfig,
             $this->productMetaData
         );
     }
@@ -99,11 +96,6 @@ class FBEHelperTest extends TestCase
     {
         $magentoVersion = '2.3.5';
         $pluginVersion = '1.0.0';
-        $this->moduleList->method('getOne')->willReturn(
-            [
-                'setup_version' => $pluginVersion
-            ]
-        );
         $source = $this->fbeHelper->getSource();
         $productMetadata = $this->getMockBuilder(ProductMetadataInterface::class)
             ->disableOriginalConstructor()
@@ -111,6 +103,7 @@ class FBEHelperTest extends TestCase
             ->getMock();
         $this->productMetaData->expects($this->once())->method('getVersion')->willReturn($magentoVersion);
         $this->objectManagerInterface->method('get')->willReturn($productMetadata);
+        $this->systemConfig->method('getModuleVersion')->willReturn($pluginVersion);
         $this->assertEquals(
             sprintf('%s-%s-%s', $source, $magentoVersion, $pluginVersion),
             $this->fbeHelper->getPartnerAgent(true)
