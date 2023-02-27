@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Setup\Patch\Data;
 
-use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Category;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Meta\Catalog\Setup\MetaCatalogAttributes;
 
-class AddProductAttributes implements DataPatchInterface
+class AddCategoryAttributes implements DataPatchInterface
 {
-
     /**
      * @var ModuleDataSetupInterface
      */
@@ -64,32 +63,21 @@ class AddProductAttributes implements DataPatchInterface
     }
 
     /**
-     * Create product attributes
+     * Create category attributes
      *
      * @return void
      */
     public function apply(): void
     {
-        $productAttributes = $this->metaCatalogAttributes->getProductAttributes();
+        $categoryAttributes = $this->metaCatalogAttributes->getCategoryAttributes();
 
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
-        $entityTypeId = $eavSetup->getEntityTypeId(Product::ENTITY);
-        $attributeSetId = $eavSetup->getDefaultAttributeSetId($entityTypeId);
-
-        foreach ($productAttributes as $attributeCode => $attributeData) {
-
-            if (!$eavSetup->getAttributeId(Product::ENTITY, $attributeCode)) {
-                $eavSetup->addAttribute(Product::ENTITY, $attributeCode, $attributeData);
+        foreach ($categoryAttributes as $attributeCode => $attributeData) {
+            if (!$eavSetup->getAttributeId(Category::ENTITY, $attributeCode)) {
+                $eavSetup->addAttribute(Category::ENTITY, $attributeCode, $attributeData);
             }
-            // Assign attributes to default attribute set
-            $eavSetup->addAttributeToGroup(
-                $entityTypeId,
-                $attributeSetId,
-                $attributeData['group'],
-                $attributeCode
-            );
         }
     }
 
@@ -100,13 +88,13 @@ class AddProductAttributes implements DataPatchInterface
      */
     public function revert(): void
     {
-        $productAttributes = $this->metaCatalogAttributes->getProductAttributes();
+        $categoryAttributes = $this->metaCatalogAttributes->getCategoryAttributes();
         $this->moduleDataSetup->getConnection()->startSetup();
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
-        foreach (array_keys($productAttributes) as $attributeCode) {
-            $eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
+        foreach (array_keys($categoryAttributes) as $attributeCode) {
+            $eavSetup->removeAttribute(Category::ENTITY, $attributeCode);
         }
 
         $this->moduleDataSetup->getConnection()->endSetup();
