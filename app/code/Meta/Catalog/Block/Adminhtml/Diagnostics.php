@@ -97,6 +97,8 @@ class Diagnostics extends Template
     }
 
     /**
+     * Get report
+     *
      * @return array
      */
     public function getReport()
@@ -114,6 +116,8 @@ class Diagnostics extends Template
     }
 
     /**
+     * Get sample affected items
+     *
      * @param array $diagnosticItem
      * @return array
      */
@@ -142,6 +146,8 @@ class Diagnostics extends Template
     }
 
     /**
+     * Get admin url
+     *
      * @param ProductInterface $product
      * @return string
      */
@@ -155,6 +161,8 @@ class Diagnostics extends Template
     }
 
     /**
+     * Get products
+     *
      * @param array $retailerIds
      * @return array
      */

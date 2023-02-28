@@ -5,4 +5,518 @@
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>
+    <type name="Meta\Sales\Helper\ShippingHelper">
+        <arguments>
+            <argument name="supportedShippingCarriers" xsi:type="array">
+                <item name="AUSTRALIA_POST" xsi:type="string">Australia Post</item>
+                <item name="CANADA_POST" xsi:type="string">Canada Post</item>
+                <item name="DHL" xsi:type="string">DHL</item>
+                <item name="DHL_ECOMMERCE_US" xsi:type="string">DHL eCommerce US</item>
+                <item name="EAGLE" xsi:type="string">Eagle</item>
+                <item name="FEDEX" xsi:type="string">FedEx</item>
+                <item name="FEDEX_UK" xsi:type="string">FedEx UK</item>
+                <item name="NEW_ZEALAND_POST" xsi:type="string">New Zealand Post</item>
+                <item name="ONTRAC" xsi:type="string">OnTrac</item>
+                <item name="POST_DANMARK" xsi:type="string">Post Danmark</item>
+                <item name="PUROLATOR" xsi:type="string">Purolator</item>
+                <item name="ROYAL_MAIL" xsi:type="string">Royal Mail</item>
+                <item name="SPEE_DEE" xsi:type="string">Spee-Dee</item>
+                <item name="TNT" xsi:type="string">TNT</item>
+                <item name="TNT_POST" xsi:type="string">TNT Post</item>
+                <item name="UPS" xsi:type="string">UPS</item>
+                <item name="USPS" xsi:type="string">USPS</item>
+                <item name="OTHER" xsi:type="string">Other tracking number</item>
+                <item name="ABF_FREIGHT" xsi:type="string">ABF Freight</item>
+                <item name="ABX_EXPRESS" xsi:type="string">ABX Express</item>
+                <item name="AB_CUSTOM_GROUP" xsi:type="string">AB Custom Group</item>
+                <item name="ACOMMERCE" xsi:type="string">aCommerce</item>
+                <item name="ACS_COURIER" xsi:type="string">ACS Courier</item>
+                <item name="ACS_WORLDWIDE_EXPRESS" xsi:type="string">ACS Worldwide Express</item>
+                <item name="ADICIONAL_LOGISTICS" xsi:type="string">Adicional Logistics</item>
+                <item name="ADSONE" xsi:type="string">ADSOne</item>
+                <item name="AIR21" xsi:type="string">AIR21</item>
+                <item name="AIRPAK_EXPRESS" xsi:type="string">Airpak Express</item>
+                <item name="AIRSPEED_INTERNATIONAL_CORPORATION" xsi:type="string">Airspeed International Corporation</item>
+                <item name="ALFATREX" xsi:type="string">AlfaTrex</item>
+                <item name="ALLIED_EXPRESS" xsi:type="string">Allied Express</item>
+                <item name="ALLJOY_SUPPLY_CHAIN_CO_LTD" xsi:type="string">ALLJOY SUPPLY CHAIN CO., LTD</item>
+                <item name="ALPHAFAST" xsi:type="string">alphaFAST</item>
+                <item name="AMAZON_FBA_USA" xsi:type="string">Amazon FBA USA</item>
+                <item name="AMAZON_LOGISTICS" xsi:type="string">Amazon Logistics</item>
+                <item name="AN_POST" xsi:type="string">An Post</item>
+                <item name="APC_OVERNIGHT" xsi:type="string">APC Overnight</item>
+                <item name="APC_OVERNIGHT_REFERENCE" xsi:type="string">APC Overnight Reference</item>
+                <item name="APC_POSTAL_LOGISTICS" xsi:type="string">APC Postal Logistics</item>
+                <item name="APRISA_EXPRESS" xsi:type="string">Aprisa Express</item>
+                <item name="ARAMEX" xsi:type="string">Aramex</item>
+                <item name="ARROW_XL" xsi:type="string">Arrow XL</item>
+                <item name="ASENDIA_GERMANY" xsi:type="string">Asendia Germany</item>
+                <item name="ASENDIA_HK" xsi:type="string">Asendia HK</item>
+                <item name="ASENDIA_HK_PREMIUM_SERVICE_LATAM" xsi:type="string">Asendia HK - Premium Service (LATAM)</item>
+                <item name="ASENDIA_UK" xsi:type="string">Asendia UK</item>
+                <item name="ASENDIA_USA" xsi:type="string">Asendia USA</item>
+                <item name="ASM" xsi:type="string">ASM</item>
+                <item name="AUPOST_CHINA" xsi:type="string">AuPost China</item>
+                <item name="AUSTRALIA_POST_SFTP" xsi:type="string">Australia Post Sftp</item>
+                <item name="AUSTRIAN_POST_EXPRESS" xsi:type="string">Austrian Post (Express)</item>
+                <item name="AUSTRIAN_POST_REGISTERED" xsi:type="string">Austrian Post (Registered)</item>
+                <item name="AXL_EXPRESS_LOGISTICS" xsi:type="string">AXL Express &amp; Logistics</item>
+                <item name="A_DUIE_PYLE" xsi:type="string">A Duie Pyle</item>
+                <item name="A_J_EXPRESS" xsi:type="string">a j express</item>
+                <item name="B2C_EUROPE" xsi:type="string">B2C Europe</item>
+                <item name="BELPOST" xsi:type="string">Belpost</item>
+                <item name="BERT_TRANSPORT" xsi:type="string">Bert Transport</item>
+                <item name="BEST_EXPRESS" xsi:type="string">Best Express</item>
+                <item name="BEST_WAY_PARCEL" xsi:type="string">Best Way Parcel</item>
+                <item name="BIRDSYSTEM" xsi:type="string">BirdSystem</item>
+                <item name="BJS_DISTRIBUTION_STORAGE_COURIERS" xsi:type="string">BJS Distribution, Storage &amp; Couriers</item>
+                <item name="BJS_DISTRIBUTION_STORAGE_COURIERS_FTP" xsi:type="string">BJS Distribution, Storage &amp; Couriers - FTP</item>
+                <item name="BLUECARE_EXPRESS_LTD" xsi:type="string">Bluecare Express Ltd</item>
+                <item name="BLUEDART" xsi:type="string">Bluedart</item>
+                <item name="BLUE_STAR" xsi:type="string">Blue Star</item>
+                <item name="BNEED" xsi:type="string">Bneed</item>
+                <item name="BONDS_COURIERS" xsi:type="string">Bonds Couriers</item>
+                <item name="BOXC" xsi:type="string">BoxC</item>
+                <item name="BPOST" xsi:type="string">Bpost</item>
+                <item name="BPOST_INTERNATIONAL" xsi:type="string">Bpost international</item>
+                <item name="BRAZIL_CORREIOS" xsi:type="string">Brazil Correios</item>
+                <item name="BRT_BARTOLINI" xsi:type="string">BRT Bartolini</item>
+                <item name="BRT_BARTOLINI_PARCEL_ID" xsi:type="string">BRT Bartolini(Parcel ID)</item>
+                <item name="BULGARIAN_POSTS" xsi:type="string">Bulgarian Posts</item>
+                <item name="BUYLOGIC" xsi:type="string">Buylogic</item>
+                <item name="CAMBODIA_POST" xsi:type="string">Cambodia Post</item>
+                <item name="CANPAR_COURIER" xsi:type="string">Canpar Courier</item>
+                <item name="CAPITAL_TRANSPORT" xsi:type="string">Capital Transport</item>
+                <item name="CARRIER_007EX" xsi:type="string">007EX</item>
+                <item name="CARRIER_17_POST_SERVICE" xsi:type="string">17 Post Service</item>
+                <item name="CARRIER_2GO" xsi:type="string">2GO</item>
+                <item name="CARRIER_360_LION_EXPRESS" xsi:type="string">360 Lion Express</item>
+                <item name="CARRIER_4PX" xsi:type="string">4PX</item>
+                <item name="CARRIER_4_72_ENTREGANDO" xsi:type="string">4-72 Entregando</item>
+                <item name="CARRIER_ECHO" xsi:type="string">Echo</item>
+                <item name="CBL_LOGISTICS" xsi:type="string">CBL Logistics</item>
+                <item name="CELERITAS_TRANSPORTE_SL" xsi:type="string">Celeritas Transporte, S.L</item>
+                <item name="CESKA_POSTA" xsi:type="string">Česká Poš</item>
+                <item name="CHINA_EMS_EPACKET" xsi:type="string">China EMS (ePacket)</item>
+                <item name="CHINA_POST" xsi:type="string">China Post</item>
+                <item name="CHIT_CHATS" xsi:type="string">Chit Chats</item>
+                <item name="CHRONOPOST_FRANCE" xsi:type="string">Chronopost France</item>
+                <item name="CHRONOPOST_PORTUGAL" xsi:type="string">Chronopost Portugal</item>
+                <item name="CH_ROBINSON_WORLDWIDE_INC" xsi:type="string">C.H. Robinson Worldwide, Inc.</item>
+                <item name="CITY_LINK_EXPRESS" xsi:type="string">City-Link Express</item>
+                <item name="CJ_CENTURY" xsi:type="string">CJ Century</item>
+                <item name="CJ_CENTURY_INTERNATIONAL" xsi:type="string">CJ Century (International)</item>
+                <item name="CJ_GLS" xsi:type="string">CJ GLS</item>
+                <item name="CJ_KOREA_EXPRESS" xsi:type="string">CJ Korea Express</item>
+                <item name="CJ_LOGISTICS_INTERNATIONAL" xsi:type="string">CJ Logistics International</item>
+                <item name="CJ_TRANSNATIONAL_PHILIPPINES" xsi:type="string">CJ Transnational Philippines</item>
+                <item name="CLEVY_LINKS" xsi:type="string">Clevy Links</item>
+                <item name="CLOUDWISH_ASIA" xsi:type="string">Cloudwish Asia</item>
+                <item name="CNE_EXPRESS" xsi:type="string">CNE Express</item>
+                <item name="COLISSIMO" xsi:type="string">Colissimo</item>
+                <item name="COLIS_PRIVE" xsi:type="string">Colis Privé</item>
+                <item name="COLLECTCO" xsi:type="string">CollectCo</item>
+                <item name="COLLECT_PLUS" xsi:type="string">Collect+</item>
+                <item name="CON_WAY_FREIGHT" xsi:type="string">Con-way Freight</item>
+                <item name="COPA_AIRLINES_COURIER" xsi:type="string">Copa Airlines Courier</item>
+                <item name="CORREOS_CHILE" xsi:type="string">Correos Chile</item>
+                <item name="CORREOS_DE_COSTA_RICA" xsi:type="string">Correos de Costa Rica</item>
+                <item name="CORREOS_DE_ESPANA" xsi:type="string">Correos de España</item>
+                <item name="CORREOS_DE_MEXICO" xsi:type="string">Correos de Mexico</item>
+                <item name="CORREOS_EXPRESS" xsi:type="string">Correos Express</item>
+                <item name="CORREO_ARGENTINO" xsi:type="string">Correo Argentino</item>
+                <item name="COSMETICS_NOW" xsi:type="string">Cosmetics Now</item>
+                <item name="COUREX" xsi:type="string">Courex</item>
+                <item name="COURIERPOST" xsi:type="string">CourierPost</item>
+                <item name="COURIERS_PLEASE" xsi:type="string">Couriers Please</item>
+                <item name="COURIER_IT" xsi:type="string">Courier IT</item>
+                <item name="COURIER_PLUS" xsi:type="string">Courier Plus</item>
+                <item name="CPACKET" xsi:type="string">cPacket</item>
+                <item name="CUCKOO_EXPRESS" xsi:type="string">Cuckoo Express</item>
+                <item name="CYPRUS_POST" xsi:type="string">Cyprus Post</item>
+                <item name="DACHSER" xsi:type="string">DACHSER</item>
+                <item name="DAWN_WING" xsi:type="string">Dawn Wing</item>
+                <item name="DAYLIGHT_TRANSPORT_LLC" xsi:type="string">Daylight Transport, LLC</item>
+                <item name="DB_SCHENKER" xsi:type="string">DB Schenker</item>
+                <item name="DB_SCHENKER_SWEDEN" xsi:type="string">DB Schenker Sweden</item>
+                <item name="DD_EXPRESS_COURIER" xsi:type="string">DD Express Courier</item>
+                <item name="DELCART" xsi:type="string">Delcart</item>
+                <item name="DELHIVERY" xsi:type="string">Delhivery</item>
+                <item name="DELIVERYONTIME_LOGISTICS_PVT_LTD" xsi:type="string">DELIVERYONTIME LOGISTICS PVT LTD</item>
+                <item name="DELTEC_COURIER" xsi:type="string">Deltec Courier</item>
+                <item name="DEMANDSHIP" xsi:type="string">DemandShip</item>
+                <item name="DETRACK" xsi:type="string">Detrack</item>
+                <item name="DEUTSCHE_POST_DHL" xsi:type="string">Deutsche Post DHL</item>
+                <item name="DEUTSCHE_POST_MAIL" xsi:type="string">Deutsche Post Mail</item>
+                <item name="DEX_I" xsi:type="string">DEX-I</item>
+                <item name="DHL_2_MANN_HANDLING" xsi:type="string">DHL 2-Mann-Handling</item>
+                <item name="DHL_ACTIVE_TRACING" xsi:type="string">DHL Active Tracing</item>
+                <item name="DHL_BENELUX" xsi:type="string">DHL Benelux</item>
+                <item name="DHL_ECOMMERCE_ASIA" xsi:type="string">DHL eCommerce Asia</item>
+                <item name="DHL_EXPRESS_PIECE_ID" xsi:type="string">DHL Express (Piece ID)</item>
+                <item name="DHL_GLOBAL_FORWARDING" xsi:type="string">DHL Global Forwarding</item>
+                <item name="DHL_HONG_KONG" xsi:type="string">DHL Hong Kong</item>
+                <item name="DHL_NETHERLANDS" xsi:type="string">DHL Netherlands</item>
+                <item name="DHL_PARCEL_NL" xsi:type="string">DHL Parcel NL</item>
+                <item name="DHL_PARCEL_SPAIN" xsi:type="string">DHL Parcel Spain</item>
+                <item name="DHL_POLAND_DOMESTIC" xsi:type="string">DHL Poland Domestic</item>
+                <item name="DHL_SPAIN_DOMESTIC" xsi:type="string">DHL Spain Domestic</item>
+                <item name="DIMERCO_EXPRESS_GROUP" xsi:type="string">Dimerco Express Group</item>
+                <item name="DIRECTLOG" xsi:type="string">Directlog</item>
+                <item name="DIRECT_FREIGHT_EXPRESS" xsi:type="string">Direct Freight Express</item>
+                <item name="DIRECT_LINK" xsi:type="string">Direct Link</item>
+                <item name="DMM_NETWORK" xsi:type="string">DMM Network</item>
+                <item name="DOORA_LOGISTICS" xsi:type="string">Doora Logistics</item>
+                <item name="DOTZOT" xsi:type="string">Dotzot</item>
+                <item name="DPD" xsi:type="string">DPD</item>
+                <item name="DPD_FRANCE" xsi:type="string">DPD France</item>
+                <item name="DPD_GERMANY" xsi:type="string">DPD Germany</item>
+                <item name="DPD_HK" xsi:type="string">DPD HK</item>
+                <item name="DPD_IRELAND" xsi:type="string">DPD Ireland</item>
+                <item name="DPD_LOCAL" xsi:type="string">DPD Local</item>
+                <item name="DPD_LOCAL_REFERENCE" xsi:type="string">DPD Local reference</item>
+                <item name="DPD_POLAND" xsi:type="string">DPD Poland</item>
+                <item name="DPD_ROMANIA" xsi:type="string">DPD Romania</item>
+                <item name="DPD_RUSSIA" xsi:type="string">DPD Russia</item>
+                <item name="DPD_UK" xsi:type="string">DPD UK</item>
+                <item name="DPEX" xsi:type="string">DPEX</item>
+                <item name="DPEX_CHINA" xsi:type="string">DPEX China</item>
+                <item name="DPE_EXPRESS" xsi:type="string">DPE Express</item>
+                <item name="DPE_SOUTH_AFRICA" xsi:type="string">DPE South Africa</item>
+                <item name="DSV" xsi:type="string">DSV</item>
+                <item name="DTDC_AUSTRALIA" xsi:type="string">DTDC Australia</item>
+                <item name="DTDC_EXPRESS_GLOBAL_PTE_LTD" xsi:type="string">DTDC Express Global PTE LTD</item>
+                <item name="DTDC_INDIA" xsi:type="string">DTDC India</item>
+                <item name="DX" xsi:type="string">DX</item>
+                <item name="DX_FREIGHT" xsi:type="string">DX Freight</item>
+                <item name="DYNALOGIC_BENELUX_BV" xsi:type="string">Dynalogic Benelux BV</item>
+                <item name="DYNAMIC_LOGISTICS" xsi:type="string">Dynamic Logistics</item>
+                <item name="EASY_MAIL" xsi:type="string">Easy Mail</item>
+                <item name="ECARGO" xsi:type="string">Ecargo</item>
+                <item name="ECMS_INTERNATIONAL_LOGISTICS_CO_LTD" xsi:type="string">ECMS International Logistics Co., Ltd.</item>
+                <item name="ECOM_EXPRESS" xsi:type="string">Ecom Express</item>
+                <item name="EC_FIRSTCLASS" xsi:type="string">EC-Firstclass</item>
+                <item name="EFS_E_COMMERCE_FULFILLMENT_SERVICE" xsi:type="string">EFS (E-commerce Fulfillment Service)</item>
+                <item name="EKART" xsi:type="string">Ekart</item>
+                <item name="ELTA_HELLENIC_POST" xsi:type="string">ELTA Hellenic Post</item>
+                <item name="EMIRATES_POST" xsi:type="string">Emirates Post</item>
+                <item name="EMPS_EXPRESS" xsi:type="string">EMPS Express</item>
+                <item name="ENSENDA" xsi:type="string">Ensenda</item>
+                <item name="ENVIALIA" xsi:type="string">Envialia</item>
+                <item name="EPARCEL_KOREA" xsi:type="string">eParcel Korea</item>
+                <item name="EP_BOX" xsi:type="string">EP-Box</item>
+                <item name="EQUICK_CHINA" xsi:type="string">Equick China</item>
+                <item name="ESTAFETA" xsi:type="string">Estafeta</item>
+                <item name="ESTES" xsi:type="string">Estes</item>
+                <item name="ETOTAL_SOLUTION_LIMITED" xsi:type="string">eTotal Solution Limited</item>
+                <item name="EURODIS" xsi:type="string">Eurodis</item>
+                <item name="EXPEDITORS" xsi:type="string">Expeditors</item>
+                <item name="EZSHIP" xsi:type="string">EZship</item>
+                <item name="FASTRAK_SERVICES" xsi:type="string">Fastrak Services</item>
+                <item name="FASTWAY_AUSTRALIA" xsi:type="string">Fastway Australia</item>
+                <item name="FASTWAY_IRELAND" xsi:type="string">Fastway Ireland</item>
+                <item name="FASTWAY_NEW_ZEALAND" xsi:type="string">Fastway New Zealand</item>
+                <item name="FASTWAY_SOUTH_AFRICA" xsi:type="string">Fastway South Africa</item>
+                <item name="FEDEX_CROSS_BORDER" xsi:type="string">Fedex Cross Border</item>
+                <item name="FEDEX_FREIGHT" xsi:type="string">FedEx Freight</item>
+                <item name="FEDEX_POLAND_DOMESTIC" xsi:type="string">FedEx Poland Domestic</item>
+                <item name="FERCAM_LOGISTICS_TRANSPORT" xsi:type="string">FERCAM Logistics &amp; Transport</item>
+                <item name="FIRST_FLIGHT_COURIERS" xsi:type="string">First Flight Couriers</item>
+                <item name="FIRST_LOGISTICS" xsi:type="string">First Logistics</item>
+                <item name="FLYT_EXPRESS" xsi:type="string">Flyt Express</item>
+                <item name="GATI_KWE" xsi:type="string">Gati-KWE</item>
+                <item name="GDEX" xsi:type="string">GDEX</item>
+                <item name="GENIKI_TAXYDROMIKI" xsi:type="string">Geniki Taxydromiki</item>
+                <item name="GEODIS_E_SPACE" xsi:type="string">Geodis E-space</item>
+                <item name="GEODIS_DISTRIBUTION_EXPRESS" xsi:type="string">GEODIS - Distribution &amp; Express</item>
+                <item name="GIAO_HANG_NHANH" xsi:type="string">Giao hàng nhanh</item>
+                <item name="GLOBEGISTICS_INC" xsi:type="string">Globegistics Inc.</item>
+                <item name="GLS" xsi:type="string">GLS</item>
+                <item name="GLS_CZECH_REPUBLIC" xsi:type="string">GLS Czech Republic</item>
+                <item name="GLS_ITALY" xsi:type="string">GLS Italy</item>
+                <item name="GLS_NETHERLANDS" xsi:type="string">GLS Netherlands</item>
+                <item name="GOFLY" xsi:type="string">GoFly</item>
+                <item name="GOJAVAS" xsi:type="string">GoJavas</item>
+                <item name="GREYHOUND" xsi:type="string">Greyhound</item>
+                <item name="GSI_EXPRESS" xsi:type="string">GSI EXPRESS</item>
+                <item name="HERMESWORLD" xsi:type="string">Hermesworld</item>
+                <item name="HERMES_GERMANY" xsi:type="string">Hermes Germany</item>
+                <item name="HERMES_ITALY" xsi:type="string">Hermes Italy</item>
+                <item name="HOLISOL" xsi:type="string">Holisol</item>
+                <item name="HOMEDIRECT_LOGISTICS" xsi:type="string">Homedirect Logistics</item>
+                <item name="HONG_KONG_POST" xsi:type="string">Hong Kong Post</item>
+                <item name="HRVATSKA_POSTA" xsi:type="string">Hrvatska Pošta</item>
+                <item name="HUA_HAN_LOGISTICS" xsi:type="string">Hua Han Logistics</item>
+                <item name="HUNTER_EXPRESS" xsi:type="string">Hunter Express</item>
+                <item name="ICELAND_POST" xsi:type="string">Iceland Post</item>
+                <item name="IDEX" xsi:type="string">IDEX</item>
+                <item name="IMEX_GLOBAL_SOLUTIONS" xsi:type="string">IMEX Global Solutions</item>
+                <item name="IMX_MAIL" xsi:type="string">IMX Mail</item>
+                <item name="INDIA_POST_DOMESTIC" xsi:type="string">India Post Domestic</item>
+                <item name="INDIA_POST_INTERNATIONAL" xsi:type="string">India Post International</item>
+                <item name="INPOST_PACZKOMATY" xsi:type="string">InPost Paczkomaty</item>
+                <item name="INSTANT_TIONG_NAM_EBIZ_EXPRESS_SDN_BHD" xsi:type="string">INSTANT (Tiong Nam Ebiz Express Sdn Bhd)</item>
+                <item name="INTERNATIONAL_SEUR" xsi:type="string">International Seur</item>
+                <item name="INTERNET_EXPRESS" xsi:type="string">Internet Express</item>
+                <item name="ISRAEL_POST" xsi:type="string">Israel Post</item>
+                <item name="ISRAEL_POST_DOMESTIC" xsi:type="string">Israel Post Domestic</item>
+                <item name="ITALY_SDA" xsi:type="string">Italy SDA</item>
+                <item name="I_PARCEL" xsi:type="string">i-parcel</item>
+                <item name="J_T_EXPRESS" xsi:type="string">J&amp;T EXPRESS</item>
+                <item name="JAM_EXPRESS" xsi:type="string">Jam Express</item>
+                <item name="JANCO_ECOMMERCE" xsi:type="string">Janco Ecommerce</item>
+                <item name="JAPAN_POST" xsi:type="string">Japan Post</item>
+                <item name="JAYON_EXPRESS_JEX" xsi:type="string">Jayon Express (JEX)</item>
+                <item name="JCEX" xsi:type="string">JCEX</item>
+                <item name="JERSEY_POST" xsi:type="string">Jersey Post</item>
+                <item name="JET_SHIP_WORLDWIDE" xsi:type="string">Jet-Ship Worldwide</item>
+                <item name="JINSUNG_TRADING" xsi:type="string">JINSUNG TRADING</item>
+                <item name="JNE" xsi:type="string">JNE</item>
+                <item name="JOCOM" xsi:type="string">Jocom</item>
+                <item name="JP_BH_POSTA" xsi:type="string">JP BH Pošta</item>
+                <item name="JX" xsi:type="string">JX</item>
+                <item name="J_NET" xsi:type="string">J-Net</item>
+                <item name="K1_EXPRESS" xsi:type="string">K1 Express</item>
+                <item name="KANGAROO_WORLDWIDE_EXPRESS" xsi:type="string">Kangaroo Worldwide Express</item>
+                <item name="KERRY_EXPRESS_HONG_KONG" xsi:type="string">Kerry Express Hong Kong</item>
+                <item name="KERRY_EXPRESS_THAILAND" xsi:type="string">Kerry Express Thailand</item>
+                <item name="KERRY_EXPRESS_VIETNAM_CO_LTD" xsi:type="string">Kerry Express (Vietnam) Co Ltd</item>
+                <item name="KGM_HUB" xsi:type="string">KGM Hub</item>
+                <item name="KIALA" xsi:type="string">Kiala</item>
+                <item name="KOREA_POST" xsi:type="string">Korea Post</item>
+                <item name="KOREA_POST_EMS" xsi:type="string">Korea Post EMS</item>
+                <item name="KRONOS_EXPRESS" xsi:type="string">Kronos Express</item>
+                <item name="KUEHNE_NAGEL" xsi:type="string">Kuehne + Nagel</item>
+                <item name="LANDMARK_GLOBAL" xsi:type="string">Landmark Global</item>
+                <item name="LAO_POST" xsi:type="string">Lao Post</item>
+                <item name="LASERSHIP" xsi:type="string">LaserShip</item>
+                <item name="LA_POSTE" xsi:type="string">La Poste</item>
+                <item name="LBC_EXPRESS" xsi:type="string">LBC Express</item>
+                <item name="LHT_EXPRESS" xsi:type="string">LHT Express</item>
+                <item name="LIETUVOS_PASTAS" xsi:type="string">Lietuvos Paštas</item>
+                <item name="LINE_CLEAR_EXPRESS_LOGISTICS_SDN_BHD" xsi:type="string">Line Clear Express &amp; Logistics Sdn Bhd</item>
+                <item name="LINK_BRIDGE_BEIJING_INTERNATIONAL_LOGISTICS_COLTD" xsi:type="string">Link Bridge(BeiJing)international logistics co.,ltd</item>
+                <item name="LION_PARCEL" xsi:type="string">Lion Parcel</item>
+                <item name="LOGISTIC_WORLDWIDE_EXPRESS" xsi:type="string">Logistic Worldwide Express</item>
+                <item name="LOGWIN_LOGISTICS" xsi:type="string">Logwin Logistics</item>
+                <item name="LONE_STAR_OVERNIGHT" xsi:type="string">Lone Star Overnight</item>
+                <item name="MAGYAR_POSTA" xsi:type="string">Magyar Posta</item>
+                <item name="MAILAMERICAS" xsi:type="string">MailAmericas</item>
+                <item name="MAILPLUS" xsi:type="string">MailPlus</item>
+                <item name="MAINFREIGHT" xsi:type="string">Mainfreight</item>
+                <item name="MALAYSIA_POST_EMS_POS_LAJU" xsi:type="string">Malaysia Post EMS / Pos Laju</item>
+                <item name="MALAYSIA_POST_REGISTERED" xsi:type="string">Malaysia Post - Registered</item>
+                <item name="MARA_XPRESS" xsi:type="string">Mara Xpress</item>
+                <item name="MATDESPATCH" xsi:type="string">Matdespatch</item>
+                <item name="MATKAHUOLTO" xsi:type="string">Matkahuolto</item>
+                <item name="MDS_COLLIVERY_PTY_LTD" xsi:type="string">MDS Collivery Pty (Ltd)</item>
+                <item name="MEGASAVE" xsi:type="string">Megasave</item>
+                <item name="MEXICO_AEROFLASH" xsi:type="string">Mexico AeroFlash</item>
+                <item name="MEXICO_REDPACK" xsi:type="string">Mexico Redpack</item>
+                <item name="MEXICO_SENDA_EXPRESS" xsi:type="string">Mexico Senda Express</item>
+                <item name="MIKROPAKKET" xsi:type="string">Mikropakket</item>
+                <item name="MONDIAL_RELAY" xsi:type="string">Mondial Relay</item>
+                <item name="MRW" xsi:type="string">MRW</item>
+                <item name="MUDITA" xsi:type="string">MUDITA</item>
+                <item name="MXE_EXPRESS" xsi:type="string">MXE Express</item>
+                <item name="MYHERMES_UK" xsi:type="string">myHermes UK</item>
+                <item name="MYPOSTONLINE" xsi:type="string">Mypostonline</item>
+                <item name="M_XPRESS_SDN_BHD" xsi:type="string">M Xpress Sdn Bhd</item>
+                <item name="NACEX_SPAIN" xsi:type="string">NACEX Spain</item>
+                <item name="NANJING_WOYUAN" xsi:type="string">Nanjing Woyuan</item>
+                <item name="NATIONAL_SAMEDAY" xsi:type="string">National Sameday</item>
+                <item name="NATIONWIDE_EXPRESS" xsi:type="string">Nationwide Express</item>
+                <item name="NEWGISTICS" xsi:type="string">Newgistics</item>
+                <item name="NEWGISTICS_API" xsi:type="string">Newgistics API</item>
+                <item name="NEXIVE_TNT_POST_ITALY" xsi:type="string">Nexive (TNT Post Italy)</item>
+                <item name="NHANS_SOLUTIONS" xsi:type="string">Nhans Solutions</item>
+                <item name="NIGHTLINE" xsi:type="string">Nightline</item>
+                <item name="NIM_EXPRESS" xsi:type="string">Nim Express</item>
+                <item name="NINJA_VAN" xsi:type="string">Ninja Van</item>
+                <item name="NINJA_VAN_INDONESIA" xsi:type="string">Ninja Van Indonesia</item>
+                <item name="NINJA_VAN_MALAYSIA" xsi:type="string">Ninja Van Malaysia</item>
+                <item name="NINJA_VAN_PHILIPPINES" xsi:type="string">Ninja Van Philippines</item>
+                <item name="NINJA_VAN_THAILAND" xsi:type="string">Ninja Van Thailand</item>
+                <item name="NIPOST" xsi:type="string">NiPost</item>
+                <item name="NORSK_GLOBAL" xsi:type="string">Norsk Global</item>
+                <item name="NOVA_POSHTA" xsi:type="string">Nova Poshta</item>
+                <item name="NOVA_POSHTA_INTERNATIONAL" xsi:type="string">Nova Poshta (International)</item>
+                <item name="OCA_ARGENTINA" xsi:type="string">OCA Argentina</item>
+                <item name="OLD_DOMINION_FREIGHT_LINE" xsi:type="string">Old Dominion Freight Line</item>
+                <item name="OMNIVA" xsi:type="string">Omniva</item>
+                <item name="OMNI_PARCEL" xsi:type="string">Omni Parcel</item>
+                <item name="ONE_WORLD_EXPRESS" xsi:type="string">One World Express</item>
+                <item name="PACKLINK" xsi:type="string">Packlink</item>
+                <item name="PAL_EXPRESS_LIMITED" xsi:type="string">PAL Express Limited</item>
+                <item name="PANDU_LOGISTICS" xsi:type="string">Pandu Logistics</item>
+                <item name="PANTHER" xsi:type="string">Panther</item>
+                <item name="PANTHER_ORDER_NUMBER" xsi:type="string">Panther Order Number</item>
+                <item name="PANTHER_REFERENCE" xsi:type="string">Panther Reference</item>
+                <item name="PAQUETEXPRESS" xsi:type="string">Paquetexpress</item>
+                <item name="PARCELLEDIN" xsi:type="string">Parcelled.in</item>
+                <item name="PARCELPOINT_PTY_LTD" xsi:type="string">ParcelPoint Pty Ltd</item>
+                <item name="PARCEL_FORCE" xsi:type="string">Parcel Force</item>
+                <item name="PARCEL_POST_SINGAPORE" xsi:type="string">Parcel Post Singapore</item>
+                <item name="PAYPAL_PACKAGE" xsi:type="string">PayPal Package</item>
+                <item name="PFC_EXPRESS" xsi:type="string">PFC Express</item>
+                <item name="PICKUPP" xsi:type="string">Pickupp</item>
+                <item name="PICK_UPP_MYS_SGP" xsi:type="string">PICK UPP</item>
+                <item name="PILOT_FREIGHT_SERVICES" xsi:type="string">Pilot Freight Services</item>
+                <item name="PITNEY_BOWES" xsi:type="string">Pitney Bowes</item>
+                <item name="PIXSELL_LOGISTICS" xsi:type="string">PIXSELL LOGISTICS</item>
+                <item name="POCZTA_POLSKA" xsi:type="string">Poczta Polska</item>
+                <item name="PORTUGAL_CTT" xsi:type="string">Portugal CTT</item>
+                <item name="PORTUGAL_SEUR" xsi:type="string">Portugal Seur</item>
+                <item name="POST56" xsi:type="string">Post56</item>
+                <item name="POSTEN_NORGE_BRING" xsi:type="string">Posten Norge / Bring</item>
+                <item name="POSTE_ITALIANE" xsi:type="string">Poste Italiane</item>
+                <item name="POSTE_ITALIANE_PACCOCELERE" xsi:type="string">Poste Italiane Paccocelere</item>
+                <item name="POSTI" xsi:type="string">Posti</item>
+                <item name="POSTNL_DOMESTIC" xsi:type="string">PostNL Domestic</item>
+                <item name="POSTNL_INTERNATIONAL" xsi:type="string">PostNL International</item>
+                <item name="POSTNL_INTERNATIONAL_3S" xsi:type="string">PostNL International 3S</item>
+                <item name="POSTNORD_DENMARK" xsi:type="string">PostNord Denmark</item>
+                <item name="POSTNORD_LOGISTICS" xsi:type="string">PostNord Logistics</item>
+                <item name="POSTNORD_SWEDEN" xsi:type="string">PostNord Sweden</item>
+                <item name="POST_OF_SLOVENIA" xsi:type="string">Post of Slovenia</item>
+                <item name="POST_SERBIA" xsi:type="string">Post Serbia</item>
+                <item name="POS_INDONESIA_DOMESTIC" xsi:type="string">Pos Indonesia Domestic</item>
+                <item name="POS_INDONESIA_INTL" xsi:type="string">Pos Indonesia Int'l</item>
+                <item name="POSTA_ROMANA" xsi:type="string">Poșta Română</item>
+                <item name="PROFESSIONAL_COURIERS" xsi:type="string">Professional Couriers</item>
+                <item name="PTT_POSTA" xsi:type="string">PTT Posta</item>
+                <item name="QUALITYPOST" xsi:type="string">QualityPost</item>
+                <item name="QUANTIUM" xsi:type="string">Quantium</item>
+                <item name="QXPRESS" xsi:type="string">Qxpress</item>
+                <item name="RABEN_GROUP" xsi:type="string">Raben Group</item>
+                <item name="RAF_PHILIPPINES" xsi:type="string">RAF Philippines</item>
+                <item name="RAIDEREX" xsi:type="string">RaidereX</item>
+                <item name="RAM" xsi:type="string">RAM</item>
+                <item name="REDUR_SPAIN" xsi:type="string">Redur Spain</item>
+                <item name="RED_CARPET_LOGISTICS" xsi:type="string">Red Carpet Logistics</item>
+                <item name="RINCOS" xsi:type="string">Rincos</item>
+                <item name="RL_CARRIERS" xsi:type="string">RL Carriers</item>
+                <item name="ROADBULL_LOGISTICS" xsi:type="string">Roadbull Logistics</item>
+                <item name="ROCKET_PARCEL_INTERNATIONAL" xsi:type="string">Rocket Parcel International</item>
+                <item name="RPD2MAN_DELIVERIES" xsi:type="string">RPD2man Deliveries</item>
+                <item name="RPX_INDONESIA" xsi:type="string">RPX Indonesia</item>
+                <item name="RPX_ONLINE" xsi:type="string">RPX Online</item>
+                <item name="RRD_INTERNATIONAL_LOGISTICS_USA" xsi:type="string">RRD International Logistics U.S.A</item>
+                <item name="RUSSIAN_POST" xsi:type="string">Russian Post</item>
+                <item name="RUSTON" xsi:type="string">Ruston</item>
+                <item name="RZY_EXPRESS" xsi:type="string">RZY Express</item>
+                <item name="SAFEXPRESS" xsi:type="string">Safexpress</item>
+                <item name="SAGAWA" xsi:type="string">Sagawa</item>
+                <item name="SAIA_LTL_FREIGHT" xsi:type="string">Saia LTL Freight</item>
+                <item name="SAILPOST" xsi:type="string">SAILPOST</item>
+                <item name="SAP_EXPRESS" xsi:type="string">SAP EXPRESS</item>
+                <item name="SAUDI_POST" xsi:type="string">Saudi Post</item>
+                <item name="SCUDEX_EXPRESS" xsi:type="string">Scudex Express</item>
+                <item name="SEINO" xsi:type="string">Seino</item>
+                <item name="SEKO_LOGISTICS" xsi:type="string">SEKO Logistics</item>
+                <item name="SENDING_TRANSPORTE_URGENTE_Y_COMUNICACION_SAU" xsi:type="string">Sending Transporte Urgente y Comunicacion, S.A.U</item>
+                <item name="SENDIT" xsi:type="string">Sendit</item>
+                <item name="SENDLE" xsi:type="string">Sendle</item>
+                <item name="SFC_SERVICE" xsi:type="string">SFC Service</item>
+                <item name="SF_EXPRESS" xsi:type="string">S.F. Express</item>
+                <item name="SF_INTERNATIONAL" xsi:type="string">S.F International</item>
+                <item name="SGT_CORRIERE_ESPRESSO" xsi:type="string">SGT Corriere Espresso</item>
+                <item name="SHANGHAI_WISE_SUPPLY_CHAIN_MANAGEMENT_CO_LTD" xsi:type="string">上海万色供应链管理有限公司（原：上海万色速递有限公司） Shanghai Wise Supply Chain Management Co., Ltd</item>
+                <item name="SHENZHEN_JINGHUADA_LOGISTICS_CO_LTD" xsi:type="string">Shenzhen Jinghuada Logistics Co., Ltd</item>
+                <item name="SHIPPIT" xsi:type="string">Shippit</item>
+                <item name="SHIPTOR" xsi:type="string">Shiptor</item>
+                <item name="SHOPFANSRU_LLC" xsi:type="string">ShopfansRU LLC</item>
+                <item name="SHREE_MARUTI_COURIER_SERVICES_PVT_LTD" xsi:type="string">Shree Maruti Courier Services Pvt Ltd</item>
+                <item name="SHREE_TIRUPATI_COURIER_SERVICES_PVT_LTD" xsi:type="string">SHREE TIRUPATI COURIER SERVICES PVT. LTD.</item>
+                <item name="SHUNYOU_POST" xsi:type="string">Shunyou Post</item>
+                <item name="SIMPLYPOST" xsi:type="string">SimplyPost</item>
+                <item name="SINGAPORE_POST" xsi:type="string">Singapore Post</item>
+                <item name="SINGAPORE_SPEEDPOST" xsi:type="string">Singapore Speedpost</item>
+                <item name="SIODEMKA" xsi:type="string">Siodemka</item>
+                <item name="SKYBOX" xsi:type="string">SKYBOX</item>
+                <item name="SKYNET_MALAYSIA" xsi:type="string">SkyNet Malaysia</item>
+                <item name="SKYNET_WORLDWIDE_EXPRESS" xsi:type="string">SkyNet Worldwide Express</item>
+                <item name="SKYNET_WORLDWIDE_EXPRESS_UAE" xsi:type="string">SkyNet Worldwide Express UAE</item>
+                <item name="SKYNET_WORLDWIDE_EXPRESS_UK" xsi:type="string">Skynet Worldwide Express UK</item>
+                <item name="SKYNET_WORLD_WIDE_EXPRESS_SOUTH_AFRICA" xsi:type="string">Skynet World Wide Express South Africa</item>
+                <item name="SKYPOSTAL" xsi:type="string">SkyPostal</item>
+                <item name="SMOOTH_COURIERS" xsi:type="string">Smooth Couriers</item>
+                <item name="SMSA_EXPRESS" xsi:type="string">SMSA Express</item>
+                <item name="SOUTH_AFRICAN_POST_OFFICE" xsi:type="string">South African Post Office</item>
+                <item name="SPANISH_SEUR" xsi:type="string">Spanish Seur</item>
+                <item name="SPECIALISED_FREIGHT" xsi:type="string">Specialised Freight</item>
+                <item name="SPEEDEX_COURIER" xsi:type="string">Speedex Courier</item>
+                <item name="SPEED_COURIERS" xsi:type="string">Speed Couriers</item>
+                <item name="SPOTON_LOGISTICS_PVT_LTD" xsi:type="string">SPOTON Logistics Pvt Ltd</item>
+                <item name="SRE_KOREA" xsi:type="string">SRE Korea</item>
+                <item name="STARTRACK" xsi:type="string">StarTrack</item>
+                <item name="STAR_TRACK_COURIER" xsi:type="string">Star Track Courier</item>
+                <item name="STAR_TRACK_EXPRESS" xsi:type="string">Star Track Express</item>
+                <item name="STO_EXPRESS" xsi:type="string">STO Express</item>
+                <item name="SWISS_POST" xsi:type="string">Swiss Post</item>
+                <item name="TAIWAN_POST" xsi:type="string">Taiwan Post</item>
+                <item name="TAQBIN_HONG_KONG" xsi:type="string">TAQBIN Hong Kong</item>
+                <item name="TAQBIN_MALAYSIA" xsi:type="string">TAQBIN Malaysia</item>
+                <item name="TAQBIN_SINGAPORE" xsi:type="string">TAQBIN Singapore</item>
+                <item name="TCS" xsi:type="string">TCS</item>
+                <item name="TELIWAY_SIC_EXPRESS" xsi:type="string">Teliway SIC Express</item>
+                <item name="THAILAND_THAI_POST" xsi:type="string">Thailand Thai Post</item>
+                <item name="THE_COURIER_GUY" xsi:type="string">The Courier Guy</item>
+                <item name="TIKI" xsi:type="string">Tiki</item>
+                <item name="TIPSA" xsi:type="string">TIPSA</item>
+                <item name="TNT_AUSTRALIA" xsi:type="string">TNT Australia</item>
+                <item name="TNT_CLICK_ITALY" xsi:type="string">TNT-Click Italy</item>
+                <item name="TNT_FRANCE" xsi:type="string">TNT France</item>
+                <item name="TNT_ITALY" xsi:type="string">TNT Italy</item>
+                <item name="TNT_REFERENCE" xsi:type="string">TNT Reference</item>
+                <item name="TNT_UK_REFERENCE" xsi:type="string">TNT UK Reference</item>
+                <item name="TOLL_IPEC" xsi:type="string">Toll IPEC</item>
+                <item name="TOLL_PRIORITY" xsi:type="string">Toll Priority</item>
+                <item name="TOLOS" xsi:type="string">Tolos</item>
+                <item name="TRAKPAK" xsi:type="string">TrakPak</item>
+                <item name="TRANSMISSION" xsi:type="string">TransMission</item>
+                <item name="TRANS_KARGO_INTERNASIONAL" xsi:type="string">Trans Kargo Internasional</item>
+                <item name="TUFFNELLS_PARCELS_EXPRESS" xsi:type="string">Tuffnells Parcels Express</item>
+                <item name="UBI_SMART_PARCEL" xsi:type="string">UBI Smart Parcel</item>
+                <item name="UKRPOSHTA" xsi:type="string">UkrPoshta</item>
+                <item name="UK_MAIL" xsi:type="string">UK Mail</item>
+                <item name="UNITED_DELIVERY_SERVICE_LTD" xsi:type="string">United Delivery Service, Ltd</item>
+                <item name="UPS_FREIGHT" xsi:type="string">UPS Freight</item>
+                <item name="UPS_MAIL_INNOVATIONS" xsi:type="string">UPS Mail Innovations</item>
+                <item name="VIETNAM_POST" xsi:type="string">Vietnam Post</item>
+                <item name="VIETNAM_POST_EMS" xsi:type="string">Vietnam Post EMS</item>
+                <item name="VIETTELPOST" xsi:type="string">ViettelPost</item>
+                <item name="WAHANA" xsi:type="string">Wahana</item>
+                <item name="WANBEXPRESS" xsi:type="string">WanbExpress</item>
+                <item name="WEDO_LOGISTICS" xsi:type="string">WeDo Logistics</item>
+                <item name="WEPOST_LOGISTICS" xsi:type="string">WePost Logistics</item>
+                <item name="WHISTL" xsi:type="string">Whistl</item>
+                <item name="WISELOADS" xsi:type="string">Wiseloads</item>
+                <item name="WISE_EXPRESS" xsi:type="string">Wise Express</item>
+                <item name="WISHPOST" xsi:type="string">WishPost</item>
+                <item name="WNDIRECT" xsi:type="string">wnDirect</item>
+                <item name="XDP_EXPRESS" xsi:type="string">XDP Express</item>
+                <item name="XDP_EXPRESS_REFERENCE" xsi:type="string">XDP Express Reference</item>
+                <item name="XEND_EXPRESS" xsi:type="string">Xend Express</item>
+                <item name="XL_EXPRESS" xsi:type="string">XL Express</item>
+                <item name="XPOSTPH" xsi:type="string">Xpost.ph</item>
+                <item name="XPRESSBEES" xsi:type="string">XpressBees</item>
+                <item name="XQ_EXPRESS" xsi:type="string">XQ Express</item>
+                <item name="YAKIT" xsi:type="string">Yakit</item>
+                <item name="YAMATO_JAPAN" xsi:type="string">Yamato Japan</item>
+                <item name="YANWEN" xsi:type="string">Yanwen</item>
+                <item name="YODEL_DOMESTIC" xsi:type="string">Yodel Domestic</item>
+                <item name="YODEL_INTERNATIONAL" xsi:type="string">Yodel International</item>
+                <item name="YRC" xsi:type="string">YRC</item>
+                <item name="YTO_EXPRESS" xsi:type="string">YTO Express</item>
+                <item name="YUNDA_EXPRESS" xsi:type="string">Yunda Express</item>
+                <item name="YUN_EXPRESS" xsi:type="string">Yun Express</item>
+                <item name="ZEPTOEXPRESS" xsi:type="string">ZeptoExpress</item>
+                <item name="ZINC" xsi:type="string">Zinc</item>
+                <item name="ZJS_INTERNATIONAL" xsi:type="string">ZJS International</item>
+                <item name="ZTO_EXPRESS" xsi:type="string">ZTO Express</item>
+                <item name="ZYLLEM" xsi:type="string">Zylle</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

@@ -22,35 +22,28 @@ namespace Meta\Conversion\Helper;
  */
 abstract class AAMSettingsFields
 {
-    const EMAIL = 'em';
-    const FIRST_NAME = 'fn';
-    const LAST_NAME = 'ln';
-    const GENDER = 'ge';
-    const PHONE = 'ph';
-    const CITY = 'ct';
-    const STATE = 'st';
-    const ZIP_CODE = 'zp';
-    const DATE_OF_BIRTH = 'db';
-    const COUNTRY = 'country';
-    const EXTERNAL_ID = 'external_id';
-
-    /**
-     * @return array
-     */
-    public static function getAllFields()
-    {
-        return [
-            self::EMAIL,
-            self::FIRST_NAME,
-            self::LAST_NAME,
-            self::GENDER,
-            self::PHONE,
-            self::CITY,
-            self::STATE,
-            self::ZIP_CODE,
-            self::DATE_OF_BIRTH,
-            self::COUNTRY,
-            self::EXTERNAL_ID,
-        ];
-    }
+    public const EMAIL = 'em';
+    public const FIRST_NAME = 'fn';
+    public const LAST_NAME = 'ln';
+    public const GENDER = 'ge';
+    public const PHONE = 'ph';
+    public const CITY = 'ct';
+    public const STATE = 'st';
+    public const ZIP_CODE = 'zp';
+    public const DATE_OF_BIRTH = 'db';
+    public const COUNTRY = 'country';
+    public const EXTERNAL_ID = 'external_id';
+    public const ALL_FIELDS = [
+        self::EMAIL,
+        self::FIRST_NAME,
+        self::LAST_NAME,
+        self::GENDER,
+        self::PHONE,
+        self::CITY,
+        self::STATE,
+        self::ZIP_CODE,
+        self::DATE_OF_BIRTH,
+        self::COUNTRY,
+        self::EXTERNAL_ID,
+    ];
 }

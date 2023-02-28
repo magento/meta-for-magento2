@@ -17,19 +17,40 @@
 
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
-class FbaamsettingsTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\MockObject\MockObject;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Magento\Framework\App\RequestInterface;
+use Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbaamsettings;
+use PHPUnit\Framework\TestCase;
+
+class FbaamsettingsTest extends TestCase
 {
-    protected $fbeHelper;
+    /**
+     * @var MockObject
+     */
+    private $fbeHelper;
 
-    protected $systemConfig;
+    /**
+     * @var MockObject
+     */
+    private $context;
 
-    protected $context;
+    /**
+     * @var MockObject
+     */
+    private $resultJsonFactory;
 
-    protected $resultJsonFactory;
+    /**
+     * @var Fbaamsettings
+     */
+    private $fbaamsettings;
 
-    protected $fbaamsettings;
-
-    protected $request;
+    /**
+     * @var MockObject
+     */
+    private $request;
 
     /**
      * Used to reset or change values after running a test
@@ -47,17 +68,15 @@ class FbaamsettingsTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
-        $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
-        $this->fbeHelper = $this->createMock(\Meta\BusinessExtension\Helper\FBEHelper::class);
-        $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
-        $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
+        $this->context = $this->createMock(Context::class);
+        $this->resultJsonFactory = $this->createMock(JsonFactory::class);
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->request = $this->createMock(RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
-        $this->fbaamsettings = new \Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbaamsettings(
+        $this->fbaamsettings = new Fbaamsettings(
             $this->context,
             $this->resultJsonFactory,
-            $this->fbeHelper,
-            $this->systemConfig
+            $this->fbeHelper
         );
     }
 

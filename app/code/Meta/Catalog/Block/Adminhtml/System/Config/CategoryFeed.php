@@ -41,6 +41,8 @@ class CategoryFeed extends Field
     }
 
     /**
+     * Get Ajax url
+     *
      * @todo move to helper
      * @return string
      */
@@ -50,8 +52,11 @@ class CategoryFeed extends Field
     }
 
     /**
+     * Get element html
+     *
      * @param AbstractElement $element
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
     {
@@ -59,6 +64,8 @@ class CategoryFeed extends Field
     }
 
     /**
+     * Get button html
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */

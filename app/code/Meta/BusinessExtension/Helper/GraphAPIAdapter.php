@@ -23,13 +23,13 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
+use Magento\Framework\HTTP\Client\CurlFactory;
+use Magento\Framework\View\FileFactory;
 
 class GraphAPIAdapter
 {
-    const GET_ORDERS_LIMIT = 25;
-
-    /** @var string */
     private const ORDER_STATE_CREATED = 'CREATED';
+    private const GET_ORDERS_LIMIT = 25;
 
     /**
      * @var mixed
@@ -56,8 +56,30 @@ class GraphAPIAdapter
      */
     private $debugMode = false;
 
-    public function __construct(SystemConfig $systemConfig, LoggerInterface $logger)
-    {
+    /**
+     * @var CurlFactory
+     */
+    private $curlFactory;
+
+    /**
+     * @var FileFactory
+     */
+    private $fileFactory;
+
+    /**
+     * GraphAPIAdapter constructor.
+     *
+     * @param SystemConfig $systemConfig
+     * @param LoggerInterface $logger
+     * @param CurlFactory $curlFactory
+     * @param FileFactory $fileFactory
+     */
+    public function __construct(
+        SystemConfig $systemConfig,
+        LoggerInterface $logger,
+        CurlFactory $curlFactory,
+        FileFactory $fileFactory
+    ) {
         $this->logger = $logger;
         $this->accessToken = $systemConfig->getAccessToken();
         $this->client = new Client([
@@ -65,10 +87,14 @@ class GraphAPIAdapter
             'timeout' => 60,
         ]);
         $this->debugMode = $systemConfig->isDebugMode();
+        $this->curlFactory = $curlFactory;
+        $this->fileFactory = $fileFactory;
     }
 
     /**
-     * @param $accessToken
+     * Set access token
+     *
+     * @param null|string $accessToken
      * @return $this
      */
     public function setAccessToken($accessToken)
@@ -78,7 +104,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $debugMode
+     * Set debug mode
+     *
+     * @param bool $debugMode
      * @return $this
      */
     public function setDebugMode($debugMode)
@@ -88,6 +116,8 @@ class GraphAPIAdapter
     }
 
     /**
+     * Get uniq Id
+     *
      * @return string
      */
     private function getUniqId()
@@ -96,9 +126,11 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $method
-     * @param $endpoint
-     * @param $request
+     * Call api
+     *
+     * @param string $method
+     * @param string $endpoint
+     * @param array $request
      * @return \Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      * @todo implement custom logger class, remove access token from logs
@@ -107,16 +139,16 @@ class GraphAPIAdapter
     {
         try {
             if ($this->debugMode) {
-                $this->logger->debug(print_r([
+                $this->logger->debug(json_encode([
                     'endpoint' => "/{$method} {$endpoint}",
                     'request' => $request,
-                ], true));
+                ], JSON_PRETTY_PRINT));
             }
 //            TODO: repalce with admin user local
             $request['locale'] = 'en_US';
             $response = $this->client->request($method, $endpoint, ['query' => $request]);
             if ($this->debugMode) {
-                $this->logger->debug(print_r([
+                $this->logger->debug(json_encode([
                     'response' => [
                         'status_code' => $response->getStatusCode(),
                         'reason_phrase' => $response->getReasonPhrase(),
@@ -125,7 +157,7 @@ class GraphAPIAdapter
                         }, $response->getHeaders())),
                         'body' => (string)$response->getBody(),
                     ]
-                ], true));
+                ], JSON_PRETTY_PRINT));
             }
             return $response;
         } catch (BadResponseException $e) {
@@ -139,7 +171,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $userToken
+     * Get page token from user token
+     *
+     * @param null|string $userToken
      * @return false|string
      * @throws GuzzleException
      */
@@ -154,7 +188,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $userToken
+     * Get page Id from user token
+     *
+     * @param null|string $userToken
      * @return false|string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -169,8 +205,10 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $accessToken
-     * @param $pageId
+     * Get page access token
+     *
+     * @param null|string $accessToken
+     * @param null|string $pageId
      * @return false|string
      * @throws GuzzleException
      */
@@ -186,8 +224,10 @@ class GraphAPIAdapter
     }
 
     /**
+     * Get page merchant settings Id
+     *
      * @param null|string $accessToken
-     * @param null $pageId
+     * @param null|string $pageId
      * @return false|string
      * @throws GuzzleException
      */
@@ -203,8 +243,10 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $commerceAccountId
-     * @param null $accessToken
+     * Get commerce account data
+     *
+     * @param mixed $commerceAccountId
+     * @param mixed|null $accessToken
      * @return array
      * @throws GuzzleException
      * @todo check store setup status
@@ -217,12 +259,17 @@ class GraphAPIAdapter
         ];
         $response = $this->callApi('GET', "{$commerceAccountId}", $request);
         $response = json_decode($response->getBody(), true);
-        return ['page_id' => $response['merchant_page']['id'], 'catalog_id' => $response['product_catalogs']['data'][0]['id']];
+        return [
+            'page_id' => $response['merchant_page']['id'],
+            'catalog_id' => $response['product_catalogs']['data'][0]['id']
+        ];
     }
 
     /**
-     * @param $commerceAccountId
-     * @param null $accessToken
+     * Associate merchant settings with app
+     *
+     * @param mixed|null $commerceAccountId
+     * @param mixed|null $accessToken
      * @return array|mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
@@ -238,7 +285,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $catalogId
+     * Get catalog feeds
+     *
+     * @param mixed $catalogId
      * @return mixed
      * @throws GuzzleException
      */
@@ -259,7 +308,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $feedId
+     * Get feed
+     *
+     * @param string $feedId
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
@@ -273,8 +324,10 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $catalogId
-     * @param $name
+     * Create empty feed
+     *
+     * @param mixed $catalogId
+     * @param string $name
      * @param bool $isPromotion
      * @return mixed
      * @throws GuzzleException
@@ -294,8 +347,10 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $feedId
-     * @param $feed
+     * Push product feed
+     *
+     * @param string $feedId
+     * @param string $feed
      * @return mixed
      */
     public function pushProductFeed($feedId, $feed)
@@ -304,41 +359,45 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $feedId
-     * @param $feed
+     * Push feed
+     *
+     * @param string $feedId
+     * @param string $feed
      * @return mixed
      */
     public function pushFeed($feedId, $feed)
     {
         $endpoint = "https://graph.facebook.com/v{$this->graphAPIVersion}/$feedId/uploads";
+        try {
+            $curl = $this->curlFactory->create();
+            $fileBaseName = $this->fileFactory->create(['filename' => $feed, 'module' => ''])->getName();
 
-        $ch = curl_init($endpoint);
-
-        $file = new CURLFile($feed, mime_content_type($feed), basename($feed));
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, ['file' => $file, 'access_token' => $this->accessToken]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            $result = curl_error($ch);
+            $file = new CURLFile($feed, mime_content_type($feed), $fileBaseName);
+            $curl->setOptions([ // This will override the $params to the post function
+                CURLOPT_POSTFIELDS => ['file' => $file, 'access_token' => $this->accessToken]
+            ]);
+            $curl->post($endpoint, ['access_token' => '']); // Gets overridden, but still needs 1 param
+            $result = $curl->getBody();
+        } catch (\Exception $e) {
+            $result = $e->getMessage();
         }
-        curl_close($ch);
 
         if ($this->debugMode) {
-            $this->logger->debug(print_r([
+            $this->logger->debug(json_encode([
                 'endpoint' => "POST {$endpoint}",
                 'file' => $feed,
                 'response' => $result
-            ], true));
+            ], JSON_PRETTY_PRINT));
         }
 
         return json_decode($result);
     }
 
     /**
-     * @param $catalogId
-     * @param $requests
+     * Catalog batch request
+     *
+     * @param mixed $catalogId
+     * @param array $requests
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
@@ -354,7 +413,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $pageId
+     * Get orders
+     *
+     * @param mixed $pageId
      * @param false|string $cursorAfter
      * @return array
      * @throws GuzzleException
@@ -389,7 +450,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $fbOrderId
+     * Get order items
+     *
+     * @param mixed $fbOrderId
      * @return array|mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
@@ -412,7 +475,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $pageId
+     * Acknowledge orders
+     *
+     * @param mixed $pageId
      * @param array $orderIds
      * @return mixed
      * @throws GuzzleException
@@ -432,10 +497,12 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $fbOrderId
-     * @param $items
-     * @param $trackingInfo
-     * @param $fulfillmentAddressData
+     * Mark order as shipped
+     *
+     * @param mixed $fbOrderId
+     * @param array $items
+     * @param array $trackingInfo
+     * @param array $fulfillmentAddressData
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
@@ -457,7 +524,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $fbOrderId
+     * Cancel order
+     *
+     * @param mixed $fbOrderId
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
@@ -479,11 +548,13 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $fbOrderId
-     * @param $items
-     * @param $shippingRefundAmount
+     * Refund order
+     *
+     * @param mixed $fbOrderId
+     * @param array $items
+     * @param float|null $shippingRefundAmount
      * @param string $currency Order's currency code. Examples: "USD", "GBP"
-     * @param null $reasonText
+     * @param null|string $reasonText
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
@@ -495,7 +566,12 @@ class GraphAPIAdapter
             'reason_code' => 'REFUND_REASON_OTHER',
             'reason_text' => $reasonText,
             'items' => json_encode($items),
-            'shipping' => json_encode(['shipping_refund' => ['amount' => $shippingRefundAmount, 'currency' => $currency]]),
+            'shipping' => json_encode([
+                'shipping_refund' => [
+                    'amount' => $shippingRefundAmount,
+                    'currency' => $currency
+                ]
+            ]),
         ];
         if ($reasonText) {
             $request['reason_text'] = $reasonText;
@@ -507,7 +583,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $fbProductId
+     * Get product info
+     *
+     * @param mixed $fbProductId
      * @return array|mixed|object
      * @throws GuzzleException
      */
@@ -526,8 +604,10 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $catalogId
-     * @param $retailerId
+     * Get product by retailer Id
+     *
+     * @param mixed $catalogId
+     * @param bool|int|string $retailerId
      * @return array|mixed|object
      * @throws GuzzleException
      */
@@ -542,7 +622,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $catalogId
+     * Get products by Facebook product Ids
+     *
+     * @param mixed $catalogId
      * @param array $fbProductIds
      * @return array|mixed|object
      * @throws GuzzleException
@@ -558,7 +640,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $fbProductId
+     * Get product errors
+     *
+     * @param mixed $fbProductId
      * @return array|mixed|object
      * @throws GuzzleException
      */
@@ -573,7 +657,9 @@ class GraphAPIAdapter
     }
 
     /**
-     * @param $catalogId
+     * Get catalog diagnostics
+     *
+     * @param mixed $catalogId
      * @return mixed
      * @throws GuzzleException
      */

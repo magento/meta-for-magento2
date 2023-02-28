@@ -20,6 +20,7 @@ namespace Meta\Sales\Block\Adminhtml\System\Config;
 use Magento\Backend\Block\Widget\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Exception\LocalizedException;
 
 class PullOrders extends Field
 {
@@ -41,6 +42,8 @@ class PullOrders extends Field
     }
 
     /**
+     * Get ajax url
+     *
      * @todo move to helper
      * @return string
      */
@@ -50,8 +53,11 @@ class PullOrders extends Field
     }
 
     /**
+     * Get element html
+     *
      * @param AbstractElement $element
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
     {
@@ -59,8 +65,10 @@ class PullOrders extends Field
     }
 
     /**
+     * Get button html
+     *
      * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getButtonHtml()
     {

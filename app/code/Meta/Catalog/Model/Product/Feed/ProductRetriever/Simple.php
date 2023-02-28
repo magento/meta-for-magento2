@@ -25,19 +25,22 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 
 class Simple implements ProductRetrieverInterface
 {
-    const LIMIT = 2000;
+    private const LIMIT = 2000;
 
-    protected $storeId;
+    /**
+     * @var int
+     */
+    private $storeId;
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var CollectionFactory
      */
-    protected $productCollectionFactory;
+    private $productCollectionFactory;
 
     /**
      * @param FBEHelper $fbeHelper
@@ -50,8 +53,7 @@ class Simple implements ProductRetrieverInterface
     }
 
     /**
-     * @param $storeId
-     * @return ProductRetrieverInterface|void
+     * @inheritDoc
      */
     public function setStoreId($storeId)
     {
@@ -68,6 +70,8 @@ class Simple implements ProductRetrieverInterface
     }
 
     /**
+     * Retrieve products
+     *
      * @param int $offset
      * @param int $limit
      * @return array
@@ -95,7 +99,8 @@ class Simple implements ProductRetrieverInterface
             ->setStoreId($storeId);
 
         $collection
-            ->getSelect()->joinLeft(['l' => $collection->getTable('catalog_product_super_link')], 'e.entity_id = l.product_id')
+            ->getSelect()
+            ->joinLeft(['l' => $collection->getTable('catalog_product_super_link')], 'e.entity_id = l.product_id')
             ->where('l.product_id IS NULL')
             ->order(new \Zend_Db_Expr('e.updated_at desc'))
             ->limit($limit, $offset);

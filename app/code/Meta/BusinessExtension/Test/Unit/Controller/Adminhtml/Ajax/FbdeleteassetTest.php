@@ -17,21 +17,37 @@
 
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
+use Magento\Security\Model\AdminSessionsManager;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbdeleteasset;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Magento\Framework\App\ResourceConnection;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
-class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
+class FbdeleteassetTest extends TestCase
 {
-    protected $fbeHelper;
+    /**
+     * @var MockObject
+     */
+    private $fbeHelper;
 
-    protected $systemConfig;
+    /**
+     * @var Fbdeleteasset
+     */
+    private $fbdeleteasset;
 
-    protected $context;
+    /**
+     * @var RequestInterface
+     */
+    private RequestInterface $request;
 
-    protected $resultJsonFactory;
-
-    protected $fbdeleteasset;
-
-    protected $request;
+    /**
+     * @var SystemConfig
+     */
+    private SystemConfig $systemConfig;
 
     /**
      * Used to reset or change values after running a test
@@ -49,17 +65,19 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
-        $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
-        $this->fbeHelper = $this->createMock(\Meta\BusinessExtension\Helper\FBEHelper::class);
-        $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
+        $resultJsonFactory = $this->createMock(JsonFactory::class);
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $sessionManager = $this->createMock(AdminSessionsManager::class);
+        $resourceConnection = $this->createMock(ResourceConnection::class);
+        $this->systemConfig = $this->createMock(SystemConfig::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
-        $this->context->method('getRequest')->willReturn($this->request);
         $this->fbdeleteasset = new Fbdeleteasset(
-            $this->context,
-            $this->resultJsonFactory,
+            $resultJsonFactory,
             $this->fbeHelper,
-            $this->systemConfig
+            $sessionManager,
+            $resourceConnection,
+            $this->systemConfig,
+            $this->request
         );
     }
 
@@ -71,8 +89,8 @@ class FbdeleteassetTest extends \PHPUnit\Framework\TestCase
     {
         $storeId = 2;
         $this->request->method('getParam')->willReturn($storeId);
-        $this->fbeHelper->expects($this->once())
-            ->method('deleteConfigKeys')->with($storeId)->willReturnSelf();
+        $this->systemConfig->expects($this->atLeastOnce())
+            ->method('deleteConfig')->willReturnSelf();
 
         $result = $this->fbdeleteasset->executeForJson();
         $this->assertNotNull($result);

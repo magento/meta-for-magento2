@@ -59,6 +59,8 @@ class MarkAsShipped implements ObserverInterface
     }
 
     /**
+     * Constructor
+     *
      * @param Observer $observer
      * @throws LocalizedException
      * @throws GuzzleException
@@ -70,7 +72,7 @@ class MarkAsShipped implements ObserverInterface
         /** @var Shipment $shipment */
         if ($event == Shipper::MAGENTO_EVENT_SHIPMENT_SAVE_AFTER) {
             $shipment = $observer->getEvent()->getShipment();
-        } else if ($event == Shipper::MAGENTO_EVENT_TRACKING_SAVE_AFTER) {
+        } elseif ($event == Shipper::MAGENTO_EVENT_TRACKING_SAVE_AFTER) {
             $shipment = $observer->getEvent()->getTrack()->getShipment();
         } else {
             return;

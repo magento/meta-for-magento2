@@ -53,6 +53,9 @@ class CleanCache extends AbstractAjax
         $this->systemConfig = $systemConfig;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function executeForJson()
     {
         try {

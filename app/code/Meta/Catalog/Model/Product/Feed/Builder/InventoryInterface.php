@@ -20,24 +20,30 @@ use Magento\Catalog\Model\Product;
 
 interface InventoryInterface
 {
-    const STATUS_IN_STOCK = 'in stock';
+    public const STATUS_IN_STOCK = 'in stock';
 
-    const STATUS_OUT_OF_STOCK = 'out of stock';
+    public const STATUS_OUT_OF_STOCK = 'out of stock';
 
-    const UNMANAGED_STOCK_QTY = 9999;
+    public const UNMANAGED_STOCK_QTY = 9999;
 
     /**
+     * Init inventory for product
+     *
      * @param Product $product
      * @return $this
      */
     public function initInventoryForProduct(Product $product);
 
     /**
+     * Get availability
+     *
      * @return string
      */
     public function getAvailability();
 
     /**
+     * Get inventory
+     *
      * @return int
      */
     public function getInventory();

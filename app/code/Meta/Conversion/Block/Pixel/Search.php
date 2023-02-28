@@ -23,18 +23,18 @@ namespace Meta\Conversion\Block\Pixel;
 class Search extends Common
 {
     /**
+     * Get search query
+     *
      * @return string
      */
     public function getSearchQuery()
     {
-        return htmlspecialchars(
-            $this->getRequest()->getParam('q'),
-            ENT_QUOTES,
-            'UTF-8'
-        );
+        return $this->escaper->escapeHtml($this->getRequest()->getParam('q'));
     }
 
     /**
+     * Get event to observer name
+     *
      * @return string
      */
     public function getEventToObserveName()

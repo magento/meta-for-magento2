@@ -40,8 +40,7 @@ class Uploader
     public function __construct(
         SystemConfig  $systemConfig,
         MethodFeedApi $methodFeedApi
-    )
-    {
+    ) {
         $this->systemConfig = $systemConfig;
         $this->methodFeedApi = $methodFeedApi;
     }
@@ -49,7 +48,7 @@ class Uploader
     /**
      * Upload Magento promotions to Facebook
      *
-     * @param null $storeId
+     * @param int $storeId
      * @return array
      * @throws Exception
      */

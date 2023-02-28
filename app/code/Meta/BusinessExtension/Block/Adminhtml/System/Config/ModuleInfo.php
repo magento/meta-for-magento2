@@ -67,6 +67,7 @@ class ModuleInfo extends Field
      *
      * @param  AbstractElement $element
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
     {
@@ -84,6 +85,8 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Store Id
+     *
      * @return mixed
      */
     private function getStoreId()
@@ -92,6 +95,8 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Commerce Account Id
+     *
      * @return string
      */
     public function getCommerceAccountId()
@@ -100,6 +105,8 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Page Id
+     *
      * @return string
      */
     public function getPageId()
@@ -108,6 +115,8 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Catalog Id
+     *
      * @return string
      */
     public function getCatalogId()
@@ -116,6 +125,8 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Commerce Manager Url
+     *
      * @return string
      */
     public function getCommerceManagerUrl()
@@ -124,6 +135,8 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Catalog Manager Url
+     *
      * @return string
      */
     public function getCatalogManagerUrl()
@@ -132,6 +145,8 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Support Url
+     *
      * @return string
      */
     public function getSupportUrl()

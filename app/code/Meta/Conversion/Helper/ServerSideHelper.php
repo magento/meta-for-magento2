@@ -23,6 +23,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Api;
 use FacebookAds\Object\ServerSide\EventRequestAsync;
 use GuzzleHttp\Exception\RequestException;
+use FacebookAds\Object\ServerSide\Event;
 
 /**
  * Helper to fire ServerSide Event.
@@ -67,13 +68,15 @@ class ServerSideHelper
     }
 
     /**
-     * @param $event
-     * @param null $userDataArray
+     * Send event
+     *
+     * @param Event $event
+     * @param array $userDataArray
      */
     public function sendEvent($event, $userDataArray = null)
     {
         try {
-            $api = Api::init(null, null, $this->systemConfig->getAccessToken());
+            Api::init(null, null, $this->systemConfig->getAccessToken());
 
             $event = $this->aamFieldsExtractorHelper->setUserData($event, $userDataArray);
 
@@ -110,6 +113,8 @@ class ServerSideHelper
     }
 
     /**
+     * Get tracked events
+     *
      * @return array
      */
     public function getTrackedEvents()

@@ -62,6 +62,8 @@ class PushPromotions extends Field
     }
 
     /**
+     * Get ajax URL
+     *
      * @todo move to helper
      * @return string
      */
@@ -71,8 +73,11 @@ class PushPromotions extends Field
     }
 
     /**
+     * Get element html
+     *
      * @param AbstractElement $element
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
     {
@@ -80,6 +85,8 @@ class PushPromotions extends Field
     }
 
     /**
+     * Get button html
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -92,6 +99,8 @@ class PushPromotions extends Field
     }
 
     /**
+     * Get store id
+     *
      * @return mixed
      */
     protected function getStoreId()
@@ -100,6 +109,8 @@ class PushPromotions extends Field
     }
 
     /**
+     * Get commerce account id
+     *
      * @return string
      */
     public function getCommerceAccountId()
@@ -108,6 +119,8 @@ class PushPromotions extends Field
     }
 
     /**
+     * Get promotion urls
+     *
      * @return string
      */
     public function getCommerceManagerPromotionsUrl()

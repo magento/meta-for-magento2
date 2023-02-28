@@ -19,7 +19,6 @@ namespace Meta\Catalog\Cron;
 
 use Meta\Catalog\Model\Product\Feed\Uploader;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-
 use Magento\Framework\Exception\LocalizedException;
 use Psr\Log\LoggerInterface;
 
@@ -53,19 +52,40 @@ class UploadProductFeed
     }
 
     /**
-     * @param $storeId
+     * Upload for product
+     *
+     * @param int $storeId
      * @return $this
      * @throws LocalizedException
      */
     protected function uploadForStore($storeId)
     {
-        if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->isActiveDailyProductFeed($storeId))) {
-            return $this;
+        if ($this->isFeedUploadEnabled($storeId)) {
+            $this->uploader->uploadFullCatalog($storeId);
         }
-        $this->uploader->uploadFullCatalog($storeId);
+
         return $this;
     }
 
+    /**
+     * Return configuration state of feed upload
+     *
+     * @param int $storeId Store ID to check.
+     * @return bool
+     */
+    private function isFeedUploadEnabled($storeId)
+    {
+        if (!$this->systemConfig->isActiveExtension($storeId)) {
+            return false;
+        }
+        return $this->systemConfig->isActiveDailyProductFeed($storeId);
+    }
+
+    /**
+     * Execute
+     *
+     * @return void
+     */
     public function execute()
     {
         foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {

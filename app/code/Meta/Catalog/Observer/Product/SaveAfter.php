@@ -67,6 +67,8 @@ class SaveAfter implements ObserverInterface
     }
 
     /**
+     * Execute observer for product save API call
+     *
      * Call an API to product save from facebook catalog
      * after save product from Magento
      *

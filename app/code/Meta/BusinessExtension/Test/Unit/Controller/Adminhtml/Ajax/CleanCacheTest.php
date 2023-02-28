@@ -17,21 +17,45 @@
 
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\CleanCache;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config;
+use PHPUnit\Framework\TestCase;
 
-class CleanCacheTest extends \PHPUnit\Framework\TestCase
+class CleanCacheTest extends TestCase
 {
-    protected $fbeHelper;
+    /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
 
-    protected $systemConfig;
+    /**
+     * @var Config
+     */
+    private Config $systemConfig;
 
-    protected $context;
+    /**
+     * @var Context
+     */
+    private Context $context;
 
-    protected $resultJsonFactory;
+    /**
+     * @var JsonFactory
+     */
+    private JsonFactory $resultJsonFactory;
 
-    protected $request;
+    /**
+     * @var RequestInterface
+     */
+    private RequestInterface $request;
 
-    private $controller;
+    /**
+     * @var CleanCache
+     */
+    private CleanCache $controller;
 
     /**
      * Used to reset or change values after running a test
@@ -49,11 +73,11 @@ class CleanCacheTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
-        $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
-        $this->fbeHelper = $this->createMock(\Meta\BusinessExtension\Helper\FBEHelper::class);
-        $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
-        $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
+        $this->context = $this->createMock(Context::class);
+        $this->resultJsonFactory = $this->createMock(JsonFactory::class);
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(Config::class);
+        $this->request = $this->createMock(RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
         $this->controller = new CleanCache(
             $this->context,
@@ -64,10 +88,11 @@ class CleanCacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test execute for json method
      *
      * @return void
      */
-    public function testExecuteForJson()
+    public function testExecuteForJson(): void
     {
         $this->systemConfig->expects($this->once())
             ->method('cleanCache');

@@ -89,7 +89,10 @@ class ProductFeedUpload extends AbstractAjax
         if (!$this->systemConfig->getAccessToken($storeId)) {
             $response['success'] = false;
             $response['message'] = __(
-                sprintf('Before uploading products, set up the extension for \'%s\'.', $storeName)
+                sprintf(
+                    'Before uploading products, set up the extension for \'%s\'.',
+                    $storeName
+                )
             );
             return $response;
         }

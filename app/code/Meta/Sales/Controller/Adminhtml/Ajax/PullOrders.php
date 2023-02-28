@@ -18,29 +18,30 @@
 namespace Meta\Sales\Controller\Adminhtml\Ajax;
 
 use Exception;
-use Meta\Sales\Helper\CommerceHelper;
+use GuzzleHttp\Exception\GuzzleException;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\AbstractAjax;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\Sales\Helper\CommerceHelper;
 
 class PullOrders extends AbstractAjax
 {
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * @var CommerceHelper
      */
-    private $commerceHelper;
+    private CommerceHelper $commerceHelper;
 
     /**
      * @param Context $context
@@ -63,10 +64,12 @@ class PullOrders extends AbstractAjax
     }
 
     /**
+     * Pull/sync orders from facebook
+     *
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
-    public function executeForJson()
+    public function executeForJson(): array
     {
         // get default store info
         $storeId = $this->fbeHelper->getStore()->getId();
@@ -83,10 +86,8 @@ class PullOrders extends AbstractAjax
             return $response;
         }
 
-        $this->commerceHelper->setStoreId($storeId);
-
         try {
-            return ['success' => true, 'response' => $this->commerceHelper->pullPendingOrders()];
+            return ['success' => true, 'response' => $this->commerceHelper->pullPendingOrders((int)$storeId)];
         } catch (Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();

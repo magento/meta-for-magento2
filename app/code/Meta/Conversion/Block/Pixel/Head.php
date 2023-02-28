@@ -22,8 +22,9 @@ use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Checkout\Model\Session as CheckoutSession;
 
 /**
  * @api
@@ -33,32 +34,48 @@ class Head extends Common
     /**
      * @var AAMFieldsExtractorHelper
      */
-    protected $aamFieldsExtractorHelper;
+    private $aamFieldsExtractorHelper;
+
+    /**
+     * @var CustomerSession
+     */
+    private $customerSession;
 
     /**
      * Head constructor
      *
      * @param Context $context
-     * @param ObjectManagerInterface $objectManager
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
      * @param Escaper $escaper
+     * @param CheckoutSession $checkoutSession
      * @param AAMFieldsExtractorHelper $aamFieldsExtractorHelper
+     * @param CustomerSession $customerSession
      * @param array $data
      */
     public function __construct(
         Context $context,
-        ObjectManagerInterface $objectManager,
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
         Escaper $escaper,
+        CheckoutSession $checkoutSession,
         AAMFieldsExtractorHelper $aamFieldsExtractorHelper,
+        CustomerSession $customerSession,
         array $data = []
     ) {
-        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $escaper, $data);
+        parent::__construct(
+            $context,
+            $fbeHelper,
+            $magentoDataHelper,
+            $systemConfig,
+            $escaper,
+            $checkoutSession,
+            $data
+        );
         $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
+        $this->customerSession = $customerSession;
     }
 
     /**
@@ -68,7 +85,7 @@ class Head extends Common
      */
     public function getPixelInitCode()
     {
-        $userDataArray = $this->aamFieldsExtractorHelper->getNormalizedUserData();
+        $userDataArray = $this->aamFieldsExtractorHelper->getNormalizedUserData($this->getCustomer());
 
         if ($userDataArray) {
             return json_encode(array_filter($userDataArray), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
@@ -98,5 +115,19 @@ class Head extends Common
     public function getDataProcessingOptionsImgTag()
     {
         return '';
+    }
+
+    /**
+     * Get logged in customer
+     *
+     * @return \Magento\Customer\Model\Customer|null
+     */
+    public function getCustomer()
+    {
+        if (!$this->customerSession->isLoggedIn()) {
+            return null;
+        }
+
+        return $this->customerSession->getCustomer();
     }
 }

@@ -43,9 +43,12 @@ class HttpClient
     }
 
     /**
-     * @param string $uri
-     * the curl does not support delete api call, so have to use this low level lib
+     * Make delete http call
+     *
+     * The curl does not support delete api call, so have to use this low level lib
      * https://devdocs.magento.com/guides/v2.3/get-started/gs-web-api-request.html
+     *
+     * @param string $uri
      * @return string|null
      */
     public function makeDeleteHttpCall(string $uri)

@@ -22,6 +22,8 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Escaper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Catalog\Helper\Data as CatalogHelper;
 
 class Tools
 {
@@ -36,17 +38,33 @@ class Tools
     private $escaper;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
+     * @var CatalogHelper
+     */
+    private $catalogHelper;
+
+    /**
      * Tools constructor
      *
      * @param PriceCurrencyInterface $priceCurrency
      * @param Escaper $escaper
+     * @param SystemConfig $systemConfig
+     * @param CatalogHelper $catalogHelper
      */
     public function __construct(
         PriceCurrencyInterface $priceCurrency,
-        Escaper $escaper
+        Escaper $escaper,
+        SystemConfig $systemConfig,
+        CatalogHelper $catalogHelper
     ) {
         $this->priceCurrency = $priceCurrency;
         $this->escaper = $escaper;
+        $this->systemConfig = $systemConfig;
+        $this->catalogHelper = $catalogHelper;
     }
 
     /**
@@ -139,5 +157,62 @@ class Tools
     public function replaceLocalUrlWithDummyUrl($url)
     {
         return str_replace('localhost', 'magento.com', $url);
+    }
+
+    /**
+     * Get product price
+     *
+     * @param Product $product
+     * @return string
+     */
+    public function getProductPrice(Product $product)
+    {
+        $price = $this->systemConfig->isPriceInclTax()
+            ? $this->catalogHelper->getTaxPrice($product, $product->getPrice(), true)
+            : $product->getPrice();
+        return $this->formatPrice($price, $product->getStoreId());
+    }
+
+    /**
+     * Get product sale price
+     *
+     * @param Product $product
+     * @return string
+     */
+    public function getProductSalePrice(Product $product)
+    {
+        if ($product->getFinalPrice() > 0 && $product->getPrice() > $product->getFinalPrice()) {
+            $price = $this->systemConfig->isPriceInclTax()
+                ? $this->catalogHelper->getTaxPrice($product, $product->getFinalPrice(), true)
+                : $product->getFinalPrice();
+            return $this->formatPrice($price, $product->getStoreId());
+        }
+        return '';
+    }
+
+    /**
+     * Get product sale price effective date
+     *
+     * @param Product $product
+     * @return string
+     * @throws Exception
+     */
+    public function getProductSalePriceEffectiveDate(Product $product)
+    {
+        $specialFromDate = $product->getSpecialFromDate();
+        $specialToDate = $product->getSpecialToDate();
+
+        $salePriceStartDate = '';
+        if ($specialFromDate) {
+            $salePriceStartDate = (new \DateTime($specialFromDate))->format('c');
+        }
+        $salePriceEndDate = '';
+        if ($specialToDate) {
+            $salePriceEndDate = (new \DateTime($specialToDate))->format('c');
+        }
+        if ($product->getSpecialPrice() && $salePriceStartDate || $salePriceEndDate) {
+            return sprintf("%s/%s", $salePriceStartDate, $salePriceEndDate);
+        }
+        return '';
     }
 }

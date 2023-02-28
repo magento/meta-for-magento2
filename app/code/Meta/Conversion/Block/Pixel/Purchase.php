@@ -26,6 +26,8 @@ use Magento\Sales\Model\Order;
 class Purchase extends Common
 {
     /**
+     * Get contents IDs
+     *
      * @return string
      */
     public function getContentIDs()
@@ -42,6 +44,11 @@ class Purchase extends Common
         return $this->arrayToCommaSeparatedStringValues($contentIds);
     }
 
+    /**
+     * Get value
+     *
+     * @return float|string|null
+     */
     public function getValue()
     {
         $order = $this->fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
@@ -51,19 +58,26 @@ class Purchase extends Common
             if ($subtotal) {
                 $priceHelper = $this->fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
                 return $priceHelper->currency($subtotal, false, false);
+            } else {
+                return null;
             }
         } else {
             return null;
         }
     }
 
+    /**
+     * Get contents
+     *
+     * @return string
+     */
     public function getContents()
     {
         $contents = [];
         $order = $this->fbeHelper->getObject(\Magento\Checkout\Model\Session::class)->getLastRealOrder();
         /** @var Order $order */
         if ($order) {
-            $priceHelper = $this->objectManager->get(\Magento\Framework\Pricing\Helper\Data::class);
+            $priceHelper = $this->fbeHelper->getObject(\Magento\Framework\Pricing\Helper\Data::class);
             $items = $order->getItemsCollection();
             foreach ($items as $item) {
                 /** @var Product $product */
@@ -71,7 +85,7 @@ class Purchase extends Common
                 $product = $item->getProduct();
                 $price = $priceHelper->currency($product->getFinalPrice(), false, false);
                 $content = '{id:"' . $product->getId() . '",quantity:' . (int)$item->getQtyOrdered()
-                        . ',item_price:' . $price . '}';
+                    . ',item_price:' . $price . '}';
                 $contents[] = $content;
             }
         }
@@ -79,6 +93,8 @@ class Purchase extends Common
     }
 
     /**
+     * Get event to observe name
+     *
      * @return string
      */
     public function getEventToObserveName()

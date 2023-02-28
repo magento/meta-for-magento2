@@ -17,64 +17,58 @@
 
 namespace Meta\Sales\Model\Order;
 
-use Meta\Sales\Helper\CommerceHelper;
-use Meta\Sales\Helper\ShippingHelper;
-use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Model\Order\Item as OrderItem;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\Shipment\Item;
 use Magento\Sales\Model\Order\Shipment\Track;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
+use Meta\Sales\Helper\ShippingHelper;
 
 class Shipper
 {
-    const MAGENTO_EVENT_SHIPMENT_SAVE_AFTER = 'sales_order_shipment_save_after';
+    public const MAGENTO_EVENT_SHIPMENT_SAVE_AFTER = 'sales_order_shipment_save_after';
 
-    const MAGENTO_EVENT_TRACKING_SAVE_AFTER = 'sales_order_shipment_track_save_after';
+    public const MAGENTO_EVENT_TRACKING_SAVE_AFTER = 'sales_order_shipment_track_save_after';
 
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
-     * @var LoggerInterface
+     * @var GraphAPIAdapter
      */
-    private $logger;
-
-    /**
-     * @var CommerceHelper
-     */
-    private $commerceHelper;
+    private GraphAPIAdapter $graphAPIAdapter;
 
     /**
      * @var ShippingHelper
      */
-    private $shippingHelper;
+    private ShippingHelper $shippingHelper;
 
     /**
      * @param SystemConfig $systemConfig
-     * @param LoggerInterface $logger
-     * @param CommerceHelper $commerceHelper
+     * @param GraphAPIAdapter $graphAPIAdapter
      * @param ShippingHelper $shippingHelper
      */
     public function __construct(
         SystemConfig $systemConfig,
-        LoggerInterface $logger,
-        CommerceHelper $commerceHelper,
+        GraphAPIAdapter $graphAPIAdapter,
         ShippingHelper $shippingHelper
     ) {
         $this->systemConfig = $systemConfig;
-        $this->logger = $logger;
-        $this->commerceHelper = $commerceHelper;
+        $this->graphAPIAdapter = $graphAPIAdapter;
         $this->shippingHelper = $shippingHelper;
     }
 
     /**
-     * @param null $storeId
-     * @return bool
+     * Get order ship event
+     *
+     * @param int|null $storeId
+     * @return null|string
      */
     public function getOrderShipEvent($storeId = null)
     {
@@ -82,10 +76,12 @@ class Shipper
     }
 
     /**
-     * @param \Magento\Sales\Model\Order\Item $orderItem
-     * @return mixed
+     * Get retailer id
+     *
+     * @param OrderItem $orderItem
+     * @return string|int|bool
      */
-    protected function getRetailerId($orderItem)
+    protected function getRetailerId(OrderItem $orderItem)
     {
         $storeId = $orderItem->getStoreId();
         $productIdentifierAttr = $this->systemConfig->getProductIdentifierAttr($storeId);
@@ -98,25 +94,30 @@ class Shipper
     }
 
     /**
+     * Get carrier code for facebook
+     *
      * @param Track $track
      * @return string
      */
-    public function getCarrierCodeForFacebook($track)
+    public function getCarrierCodeForFacebook(Track $track): string
     {
         return $this->shippingHelper->getCarrierCodeForFacebook($track);
     }
 
     /**
-     * @param $address
+     * Validate fulfillment address
+     *
+     * @param array $address
+     * @return void
      * @throws LocalizedException
      */
-    private function validateFulfillmentAddress($address)
+    private function validateFulfillmentAddress(array $address)
     {
         $requiredFields = [
-            'street_1'    => __('Street Address 1'),
-            'country'     => __('Country'),
-            'state'       => __('Region/State'),
-            'city'        => __('City'),
+            'street_1' => __('Street Address 1'),
+            'country' => __('Country'),
+            'state' => __('Region/State'),
+            'city' => __('City'),
             'postal_code' => __('Zip/Postal Code')
         ];
         $missingFields = array_filter($requiredFields, function ($field) use ($address) {
@@ -131,6 +132,8 @@ class Shipper
     }
 
     /**
+     * Mark facebook order as shipped
+     *
      * @param Shipment $shipment
      * @throws LocalizedException
      * @throws GuzzleException
@@ -177,10 +180,46 @@ class Shipper
             $fulfillmentAddress['state'] = $this->shippingHelper->getRegionName($fulfillmentAddress['state']);
         }
 
-        $this->commerceHelper->setStoreId($storeId)
-            ->markOrderAsShipped($fbOrderId, $itemsToShip, $trackingInfo, $fulfillmentAddress);
-        $shipment->getOrder()->addCommentToStatusHistory("Marked order as shipped on Facebook with {$track->getTitle()}. Tracking #: {$track->getNumber()}.");
+        $this->markOrderAsShipped(
+            (int)$storeId,
+            $fbOrderId,
+            $itemsToShip,
+            $trackingInfo,
+            $fulfillmentAddress
+        );
+
+        $comment = "Marked order as shipped on Facebook with {$track->getTitle()}. Tracking #: {$track->getNumber()}.";
+        $shipment->getOrder()->addCommentToStatusHistory($comment);
 
         // @todo Update order totals
+    }
+
+    /**
+     * Mark a facebook order as shipped
+     *
+     * @param int $storeId
+     * @param string $fbOrderId
+     * @param array $items
+     * @param array $trackingInfo
+     * @param array $fulfillmentAddressData
+     * @throws GuzzleException
+     */
+    private function markOrderAsShipped(
+        int $storeId,
+        string $fbOrderId,
+        array $items,
+        array $trackingInfo,
+        array $fulfillmentAddressData = []
+    ) {
+        $this->graphAPIAdapter
+            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+
+        $this->graphAPIAdapter->markOrderAsShipped(
+            $fbOrderId,
+            $items,
+            $trackingInfo,
+            $fulfillmentAddressData
+        );
     }
 }

@@ -17,12 +17,16 @@
 
 namespace Meta\Catalog\Model\Config\Source;
 
-class FeedUploadMethod implements \Magento\Framework\Data\OptionSourceInterface
+use Magento\Framework\Data\OptionSourceInterface;
+
+class FeedUploadMethod implements OptionSourceInterface
 {
-    const UPLOAD_METHOD_FEED_API = 'feed_api';
-    const UPLOAD_METHOD_CATALOG_BATCH_API = 'catalog_batch_api';
+    public const UPLOAD_METHOD_FEED_API = 'feed_api';
+    public const UPLOAD_METHOD_CATALOG_BATCH_API = 'catalog_batch_api';
 
     /**
+     * Retrieve option array
+     *
      * @return array
      */
     public function toOptionArray()

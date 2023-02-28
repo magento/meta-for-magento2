@@ -23,9 +23,6 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Store\Model\ScopeInterface;
 
-/**
- * @SuppressWarnings(PHPMD)
- */
 class Fbprofiles extends AbstractAjax
 {
     /**

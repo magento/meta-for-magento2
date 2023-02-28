@@ -74,18 +74,9 @@ class Identifier
     }
 
     /**
-     * Get product Content ID for Pixel and CAPI
+     * Get product by Facebook retailer id
      *
-     * @param ProductInterface $product
-     * @return bool|int|string
-     */
-    public function getContentId(ProductInterface $product)
-    {
-        return $this->getMagentoProductRetailerId($product);
-    }
-
-    /**
-     * @param $retailerId
+     * @param string|int $retailerId
      * @return ProductInterface|bool
      * @throws LocalizedException
      */

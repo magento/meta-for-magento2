@@ -21,7 +21,7 @@ use Magento\Payment\Model\Method\AbstractMethod;
 
 class PaymentMethod extends AbstractMethod
 {
-    const METHOD_CODE = 'facebook';
+    public const METHOD_CODE = 'facebook';
 
     /**
      * Payment method code

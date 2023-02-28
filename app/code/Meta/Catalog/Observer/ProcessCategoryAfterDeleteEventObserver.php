@@ -48,6 +48,8 @@ class ProcessCategoryAfterDeleteEventObserver implements ObserverInterface
     }
 
     /**
+     * Execute observer for category delete API call
+     *
      * Call an API to category delete from facebook catalog
      * after delete category from Magento
      *

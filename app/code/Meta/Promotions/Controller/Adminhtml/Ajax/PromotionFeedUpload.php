@@ -64,6 +64,8 @@ class PromotionFeedUpload extends AbstractAjax
     }
 
     /**
+     * Get json response
+     *
      * @return array
      * @throws NoSuchEntityException
      */
@@ -84,7 +86,7 @@ class PromotionFeedUpload extends AbstractAjax
 
         if (!$this->systemConfig->getAccessToken($storeId)) {
             $response['success'] = false;
-            $response['message'] = __(sprintf('Before uploading promotions, set up the extension for \'%s\'.', $storeName));
+            $response['message'] = __('Before uploading promotions, set up the extension for "%1".', $storeName);
             return $response;
         }
 

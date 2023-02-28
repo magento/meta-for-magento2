@@ -57,7 +57,7 @@ class CategoryUpload extends AbstractAjax
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function executeForJson()
     {

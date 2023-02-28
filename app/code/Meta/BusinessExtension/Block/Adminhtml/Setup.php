@@ -119,11 +119,16 @@ class Setup extends Template
      *
      * @param int $storeId
      * @return string|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getExternalBusinessId($storeId)
     {
-        return $this->fbeHelper->getFBEExternalBusinessId($storeId);
+        $storedExternalId = $this->systemConfig->getExternalBusinessId($storeId);
+        if ($storedExternalId) {
+            return $storedExternalId;
+        }
+        $storeId = $this->fbeHelper->getStore()->getId();
+        $this->fbeHelper->log("Store id---" . $storeId);
+        return uniqid('fbe_magento_' . $storeId . '_');
     }
 
     /**
@@ -147,6 +152,8 @@ class Setup extends Template
     }
 
     /**
+     * Get Delete Asset IDs Ajax Route
+     *
      * @return mixed
      */
     public function getDeleteAssetIdsAjaxRoute()

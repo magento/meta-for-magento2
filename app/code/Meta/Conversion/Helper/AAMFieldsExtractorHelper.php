@@ -17,9 +17,15 @@
 
 namespace Meta\Conversion\Helper;
 
+use Magento\Customer\Model\Customer;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use FacebookAds\Object\ServerSide\Normalizer;
 use FacebookAds\Object\ServerSide\Util;
+use FacebookAds\Object\ServerSide\Event;
+use Magento\Customer\Api\CustomerMetadataInterface;
+use Magento\Customer\Model\AddressFactory;
 
 /**
  * Helper to extract and filter aam fields
@@ -29,37 +35,58 @@ class AAMFieldsExtractorHelper
     /**
      * @var MagentoDataHelper
      */
-    protected $magentoDataHelper;
+    private MagentoDataHelper $magentoDataHelper;
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private FBEHelper $fbeHelper;
+
+    /**
+     * @var CustomerMetadataInterface
+     */
+    private CustomerMetadataInterface $customerMetadata;
+
+    /**
+     * @var AddressFactory
+     */
+    private AddressFactory $addressFactory;
 
     /**
      * Constructor
+     *
      * @param MagentoDataHelper $magentoDataHelper
      * @param FBEHelper $fbeHelper
+     * @param CustomerMetadataInterface $customerMetadata
+     * @param AddressFactory $addressFactory
      */
     public function __construct(
         MagentoDataHelper $magentoDataHelper,
-        FBEHelper $fbeHelper
+        FBEHelper $fbeHelper,
+        CustomerMetadataInterface $customerMetadata,
+        AddressFactory $addressFactory
     ) {
         $this->magentoDataHelper = $magentoDataHelper;
         $this->fbeHelper = $fbeHelper;
+        $this->customerMetadata = $customerMetadata;
+        $this->addressFactory = $addressFactory;
     }
 
     /**
      * Filters user data according to AAM settings and normalizes the fields
+     *
      * Reads user data from session when no user data was passed
-     * @param string[] $userDataArray
-     * @return string[]
+     * Customer parameter only used if $userDataArray is null
+     *
+     * @param Customer|null $customer
+     * @param array|null $userDataArray
+     * @return array|null
      */
-    public function getNormalizedUserData($userDataArray = null)
+    public function getNormalizedUserData($customer = null, $userDataArray = null): ?array
     {
         if (!$userDataArray) {
             try {
-                $userDataArray = $this->magentoDataHelper->getUserDataFromSession();
+                $userDataArray = $this->getUserDataFromSession($customer);
             } catch (\Exception $e) {
                 $this->fbeHelper->log(json_encode($e));
             }
@@ -72,7 +99,7 @@ class AAMFieldsExtractorHelper
         }
 
         //Removing fields not enabled in AAM settings
-        foreach ($userDataArray as $key => $value) {
+        foreach (array_keys($userDataArray) as $key) {
             if (!in_array($key, $aamSettings->getEnabledAutomaticMatchingFields())) {
                 unset($userDataArray[$key]);
             }
@@ -80,11 +107,41 @@ class AAMFieldsExtractorHelper
 
         // Normalizing gender and date of birth
         // According to https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+        $userDataArray = $this->normalizeGender($userDataArray);
+        $userDataArray = $this->normalizeBirth($userDataArray);
+
+        return $this->normalizeMatchingFields($userDataArray);
+    }
+
+    /**
+     * Normalizing gender
+     *
+     * According to https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+     *
+     * @param array $userDataArray
+     * @return array
+     */
+    private function normalizeGender(array $userDataArray): array
+    {
         if (array_key_exists(AAMSettingsFields::GENDER, $userDataArray)
             && !empty($userDataArray[AAMSettingsFields::GENDER])
         ) {
             $userDataArray[AAMSettingsFields::GENDER] = $userDataArray[AAMSettingsFields::GENDER][0];
         }
+
+        return $userDataArray;
+    }
+
+    /**
+     * Normalizing date of birth
+     *
+     * According to https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+     *
+     * @param array $userDataArray
+     * @return array
+     */
+    private function normalizeBirth(array $userDataArray): array
+    {
         if (array_key_exists(AAMSettingsFields::DATE_OF_BIRTH, $userDataArray)
         ) {
             // strtotime() and date() return false for invalid parameters
@@ -100,12 +157,22 @@ class AAMFieldsExtractorHelper
                 }
             }
         }
-        // Given that the format of advanced matching fields is the same in
-        // the Pixel and the Conversions API,
-        // we can use the business sdk for normalization
-        // Compare the documentation:
-        // https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
-        // https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+        return $userDataArray;
+    }
+
+    /**
+     * Given that the format of advanced matching fields is the same in
+     * the Pixel and the Conversions API,
+     * we can use the business sdk for normalization
+     * Compare the documentation:
+     * https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
+     * https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+     *
+     * @param array $userDataArray
+     * @return array
+     */
+    private function normalizeMatchingFields(array $userDataArray): array
+    {
         foreach ($userDataArray as $field => $data) {
             try {
                 $normalizedValue = Normalizer::normalize($field, $data);
@@ -119,13 +186,17 @@ class AAMFieldsExtractorHelper
     }
 
     /**
-     * @param $event
-     * @param null $userDataArray
+     * Set user data
+     *
+     * @param Event $event
+     * @param array $userDataArray
      * @return mixed
+     * @SuppressWarnings(PHPMD)
+     * Unable to refactor because UserData object from Facebook SDK does not have generic setter function
      */
     public function setUserData($event, $userDataArray = null)
     {
-        $userDataArray = self::getNormalizedUserData($userDataArray);
+        $userDataArray = $this->getNormalizedUserData(null, $userDataArray);
 
         if (empty($userDataArray)) {
             return $event;
@@ -197,5 +268,54 @@ class AAMFieldsExtractorHelper
             );
         }
         return $event;
+    }
+
+    /**
+     * Return all of the match keys that can be extracted from user session
+     *
+     * @param Customer|null $customer
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function getUserDataFromSession($customer): array
+    {
+        if (!$customer) {
+            return [];
+        }
+
+        $userData = [];
+
+        $userData[AAMSettingsFields::EXTERNAL_ID] = $customer->getId();
+        $userData[AAMSettingsFields::EMAIL] = $this->magentoDataHelper->hashValue($customer->getEmail());
+        $userData[AAMSettingsFields::FIRST_NAME] = $this->magentoDataHelper->hashValue($customer->getFirstname());
+        $userData[AAMSettingsFields::LAST_NAME] = $this->magentoDataHelper->hashValue($customer->getLastname());
+        $userData[AAMSettingsFields::DATE_OF_BIRTH] = $this->magentoDataHelper->hashValue($customer->getDob());
+        if ($customer->getGender()) {
+            $genderId = $customer->getGender();
+            $userData[AAMSettingsFields::GENDER] =
+                $this->magentoDataHelper->hashValue(
+                    $this->customerMetadata->getAttributeMetadata('gender')
+                        ->getOptions()[$genderId]->getLabel()
+                );
+        }
+
+        $customerAddressId = $customer->getDefaultBilling();
+        $billingAddress = $this->addressFactory->create()->load($customerAddressId);
+
+        if ($billingAddress) {
+            $userData[AAMSettingsFields::ZIP_CODE] =
+                $this->magentoDataHelper->hashValue($billingAddress->getPostcode());
+            $userData[AAMSettingsFields::CITY] =
+                $this->magentoDataHelper->hashValue($billingAddress->getCity());
+            $userData[AAMSettingsFields::PHONE] =
+                $this->magentoDataHelper->hashValue($billingAddress->getTelephone());
+            $userData[AAMSettingsFields::STATE] =
+                $this->magentoDataHelper->hashValue($billingAddress->getRegionCode());
+            $userData[AAMSettingsFields::COUNTRY] =
+                $this->magentoDataHelper->hashValue($billingAddress->getCountryId());
+        }
+
+        return array_filter($userData);
     }
 }

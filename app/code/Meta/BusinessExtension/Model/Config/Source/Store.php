@@ -38,6 +38,10 @@ class Store implements OptionSourceInterface
     }
 
     /**
+     * Get map of store ids to names
+     *
+     * Retrieves an array of stores indexed by store ID, with a readable string value.
+     *
      * @return array
      * @throws NoSuchEntityException
      */

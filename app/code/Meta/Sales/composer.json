@@ -11,11 +11,10 @@
         "magento/module-catalog": "*",
         "magento/module-configurable-product": "*",
         "magento/module-store": "*",
-        "magento/module-customer": "*",
-        "magento/module-eav": "*",
         "magento/module-directory": "*",
         "magento/module-payment": "*",
         "magento/module-shipping": "*",
+        "magento/module-newsletter": "*",
         "meta/module-business-extension": "*",
         "meta/module-catalog": "*"
     },

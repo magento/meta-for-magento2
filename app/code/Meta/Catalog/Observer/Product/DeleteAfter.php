@@ -67,6 +67,8 @@ class DeleteAfter implements ObserverInterface
     }
 
     /**
+     * Execute observer for product delete API call
+     *
      * Call an API to product delete from facebook catalog
      * after delete product from Magento
      *

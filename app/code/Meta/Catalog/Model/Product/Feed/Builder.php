@@ -17,74 +17,73 @@
 
 namespace Meta\Catalog\Model\Product\Feed;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface;
 use Meta\Catalog\Model\Product\Feed\Builder\Tools as BuilderTools;
-use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Escaper;
 use Magento\Framework\Filter\StripTagsFactory;
-use Magento\Customer\Model\GroupManagement;
 
 class Builder
 {
-    const ATTR_RETAILER_ID = 'id';
-    const ATTR_ITEM_GROUP_ID = 'item_group_id';
-    const ATTR_DESCRIPTION = 'description';
-    const ATTR_RICH_DESCRIPTION = 'rich_text_description';
-    const ATTR_URL = 'link';
-    const ATTR_IMAGE_URL = 'image_link';
-    const ATTR_ADDITIONAL_IMAGE_URL = 'additional_image_link';
-    const ATTR_BRAND = 'brand';
-    const ATTR_SIZE = 'size';
-    const ATTR_COLOR = 'color';
-    const ATTR_CONDITION = 'condition';
-    const ATTR_AVAILABILITY = 'availability';
-    const ATTR_INVENTORY = 'inventory';
-    const ATTR_PRICE = 'price';
-    const ATTR_SALE_PRICE = 'sale_price';
-    const ATTR_SALE_PRICE_EFFECTIVE_DATE = 'sale_price_effective_date';
-    const ATTR_NAME = 'title';
-    const ATTR_PRODUCT_TYPE = 'product_type';
-    const ATTR_PRODUCT_CATEGORY = 'google_product_category';
-    const ATTR_UNIT_PRICE = 'unit_price';
+    private const ATTR_RETAILER_ID = 'id';
+    private const ATTR_ITEM_GROUP_ID = 'item_group_id';
+    private const ATTR_DESCRIPTION = 'description';
+    private const ATTR_RICH_DESCRIPTION = 'rich_text_description';
+    private const ATTR_URL = 'link';
+    private const ATTR_IMAGE_URL = 'image_link';
+    private const ATTR_ADDITIONAL_IMAGE_URL = 'additional_image_link';
+    private const ATTR_BRAND = 'brand';
+    private const ATTR_SIZE = 'size';
+    private const ATTR_COLOR = 'color';
+    private const ATTR_CONDITION = 'condition';
+    private const ATTR_AVAILABILITY = 'availability';
+    private const ATTR_INVENTORY = 'inventory';
+    private const ATTR_PRICE = 'price';
+    private const ATTR_SALE_PRICE = 'sale_price';
+    private const ATTR_SALE_PRICE_EFFECTIVE_DATE = 'sale_price_effective_date';
+    private const ATTR_NAME = 'title';
+    private const ATTR_PRODUCT_TYPE = 'product_type';
+    private const ATTR_PRODUCT_CATEGORY = 'google_product_category';
+    private const ATTR_UNIT_PRICE = 'unit_price';
 
-    const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
+    private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
         '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
         '<table>', '<tbody>', '<tfoot>', '<thead>', '<td>', '<th>', '<tr>',
         '<ul>', '<li>', '<ol>', '<dl>', '<dd>', '<dt>',
-        '<b>', '<u>', '<i>', '<em>', '<strong>', '<title>', '<small>', '<br>', '<p>', '<div>', '<sub>', '<sup>', '<pre>', '<q>', '<s>'];
+        '<b>', '<u>', '<i>', '<em>', '<strong>', '<title>', '<small>',
+        '<br>', '<p>', '<div>', '<sub>', '<sup>', '<pre>', '<q>', '<s>'];
+
+    private const MAIN_WEBSITE_STORE = 'Main Website Store';
+    private const MAIN_STORE = 'Main Store';
+    private const MAIN_WEBSITE = 'Main Website';
+    private const NOT_LOGGED_IN_ID = 0;
+    private const URL_TYPE_MEDIA = 'media';
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
-
-    /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
+    private $fbeHelper;
 
     /**
      * @var string
      */
-    protected $defaultBrand;
+    private $defaultBrand;
 
     /**
      * @var CategoryCollectionFactory
      */
-    protected $categoryCollectionFactory;
+    private $categoryCollectionFactory;
 
     /**
      * @var BuilderTools
      */
-    protected $builderTools;
+    private $builderTools;
 
     /**
      * @var InventoryInterface
@@ -94,15 +93,16 @@ class Builder
     /**
      * @var ProductIdentifier
      */
-    protected $productIdentifier;
+    private $productIdentifier;
 
     /**
-     * @var CatalogHelper
+     * @var int
      */
-    protected $catalogHelper;
+    private $storeId;
 
-    protected $storeId;
-
+    /**
+     * @var string
+     */
     private $uploadMethod;
 
     /**
@@ -124,39 +124,35 @@ class Builder
      * Constructor
      *
      * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
      * @param ProductIdentifier $productIdentifier
-     * @param CatalogHelper $catalogHelper
      * @param InventoryInterface $inventory
      * @param Escaper $escaper
      * @param StripTagsFactory $stripTags
      */
     public function __construct(
         FBEHelper                 $fbeHelper,
-        SystemConfig              $systemConfig,
         CategoryCollectionFactory $categoryCollectionFactory,
         BuilderTools              $builderTools,
         ProductIdentifier         $productIdentifier,
-        CatalogHelper             $catalogHelper,
         InventoryInterface        $inventory,
         Escaper                   $escaper,
         StripTagsFactory          $stripTags
     ) {
         $this->fbeHelper = $fbeHelper;
-        $this->systemConfig = $systemConfig;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->builderTools = $builderTools;
         $this->productIdentifier = $productIdentifier;
-        $this->catalogHelper = $catalogHelper;
         $this->inventory = $inventory;
         $this->escaper = $escaper;
         $this->stripTags = $stripTags;
     }
 
     /**
-     * @param $storeId
+     * Set store Id
+     *
+     * @param int $storeId
      * @return $this
      */
     public function setStoreId($storeId)
@@ -166,7 +162,9 @@ class Builder
     }
 
     /**
-     * @param $uploadMethod
+     * Set upload method
+     *
+     * @param string $uploadMethod
      * @return Builder
      */
     public function setUploadMethod($uploadMethod)
@@ -176,6 +174,8 @@ class Builder
     }
 
     /**
+     * Set inventory only
+     *
      * @param bool $inventoryOnly
      * @return $this
      */
@@ -186,21 +186,25 @@ class Builder
     }
 
     /**
+     * Get default brand
+     *
      * @return string
      */
-    protected function getDefaultBrand()
+    private function getDefaultBrand()
     {
         if (!$this->defaultBrand) {
-            $this->defaultBrand = $this->trimAttribute(self::ATTR_BRAND, $this->fbeHelper->getStoreName());
+            $this->defaultBrand = $this->trimAttribute(self::ATTR_BRAND, $this->getStoreName());
         }
         return $this->defaultBrand;
     }
 
     /**
+     * Get product url
+     *
      * @param Product $product
      * @return string
      */
-    protected function getProductUrl(Product $product)
+    private function getProductUrl(Product $product)
     {
         $parentUrl = $product->getParentProductUrl();
         // use parent product URL if a simple product has a parent and is not visible individually
@@ -209,10 +213,12 @@ class Builder
     }
 
     /**
+     * Get product images
+     *
      * @param Product $product
      * @return array
      */
-    protected function getProductImages(Product $product)
+    private function getProductImages(Product $product)
     {
         $mainImage = $product->getImage();
 
@@ -228,69 +234,20 @@ class Builder
 
         return [
             'main_image' => $this->builderTools->replaceLocalUrlWithDummyUrl(
-                $this->fbeHelper->getBaseUrlMedia() . 'catalog/product' . $mainImage
+                $this->getBaseUrlMedia() . 'catalog/product' . $mainImage
             ),
             'additional_images' => array_slice($additionalImages, 0, 10),
         ];
     }
 
     /**
-     * @param Product $product
-     * @return string
-     */
-    protected function getProductPrice(Product $product)
-    {
-        $price = $this->systemConfig->isPriceInclTax()
-            ? $this->catalogHelper->getTaxPrice($product, $product->getPrice(), true)
-            : $product->getPrice();
-        return $this->builderTools->formatPrice($price, $product->getStoreId());
-    }
-
-    /**
-     * @param Product $product
-     * @return string
-     */
-    protected function getProductSalePrice(Product $product)
-    {
-        if ($product->getFinalPrice() > 0 && $product->getPrice() > $product->getFinalPrice()) {
-            $price = $this->systemConfig->isPriceInclTax()
-                ? $this->catalogHelper->getTaxPrice($product, $product->getFinalPrice(), true)
-                : $product->getFinalPrice();
-            return $this->builderTools->formatPrice($price, $product->getStoreId());
-        }
-        return '';
-    }
-
-    /**
-     * @param Product $product
-     * @return string
-     */
-    protected function getProductSalePriceEffectiveDate(Product $product)
-    {
-        $specialFromDate = $product->getSpecialFromDate();
-        $specialToDate = $product->getSpecialToDate();
-
-        $salePriceStartDate = '';
-        if ($specialFromDate) {
-            $salePriceStartDate = (new \DateTime($specialFromDate))->format('c');
-        }
-        $salePriceEndDate = '';
-        if ($specialToDate) {
-            $salePriceEndDate = (new \DateTime($specialToDate))->format('c');
-        }
-        if ($product->getSpecialPrice() && $salePriceStartDate || $salePriceEndDate) {
-            return sprintf("%s/%s", $salePriceStartDate, $salePriceEndDate);
-        }
-        return '';
-    }
-
-
-    /**
+     * Get product category path
+     *
      * @param Product $product
      * @return string
      * @throws LocalizedException
      */
-    protected function getCategoryPath(Product $product)
+    private function getCategoryPath(Product $product)
     {
         $categoryIds = $product->getCategoryIds();
         if (empty($categoryIds)) {
@@ -302,7 +259,7 @@ class Builder
             ->addAttributeToSelect('name')
             ->addAttributeToFilter('entity_id', $categoryIds)
             ->setOrder('position', 'ASC');
-        /** @var CategoryInterface $category */
+
         foreach ($categories as $category) {
             $categoryNames[] = $category->getName();
         }
@@ -310,72 +267,66 @@ class Builder
     }
 
     /**
-     * @param $attrName
-     * @param $attrValue
+     * Trim attribute
+     *
+     * @param string $attrName
+     * @param string $attrValue
      * @return string
      */
-    protected function trimAttribute($attrName, $attrValue)
+    private function trimAttribute($attrName, $attrValue)
     {
+        $attrValue = trim((string)$attrValue);
         if (!$attrValue) {
             return '';
         }
-        $attrValue = trim($attrValue);
+
         // Facebook Product attributes
         // ref: https://developers.facebook.com/docs/commerce-platform/catalog/fields
-        switch ($attrName) {
-            case self::ATTR_RETAILER_ID:
-            case self::ATTR_URL:
-            case self::ATTR_IMAGE_URL:
-            case self::ATTR_CONDITION:
-            case self::ATTR_AVAILABILITY:
-            case self::ATTR_INVENTORY:
-            case self::ATTR_PRICE:
-            case self::ATTR_SIZE:
-            case self::ATTR_COLOR:
-                if ($attrValue) {
-                    return $attrValue;
-                }
-                break;
-            case self::ATTR_BRAND:
-                if ($attrValue) {
-                    // brand max size: 70
-                    return mb_strlen($attrValue) > 70 ? mb_substr($attrValue, 0, 70) : $attrValue;
-                }
-                break;
-            case self::ATTR_NAME:
-                if ($attrValue) {
-                    // title max size: 100
-                    return mb_strlen($attrValue) > 100 ? mb_substr($attrValue, 0, 100) : $attrValue;
-                }
-                break;
-            case self::ATTR_DESCRIPTION:
-                if ($attrValue) {
-                    // description max size: 9999
-                    return mb_strlen($attrValue) > 9999 ? mb_substr($attrValue, 0, 9999) : $attrValue;
-                }
-                break;
-            case self::ATTR_RICH_DESCRIPTION:
-                if ($attrValue) {
-                    // description max size: 9999
-                    return mb_strlen($attrValue) > 9999 ? '' : $attrValue;
-                }
-                break;
-            case self::ATTR_PRODUCT_TYPE:
-                // product_type max size: 750
-                if ($attrValue) {
-                    return mb_strlen($attrValue) > 750 ?
-                        mb_substr($attrValue, mb_strlen($attrValue) - 750, 750) : $attrValue;
-                }
-                break;
+        $maxLengths = [
+            self::ATTR_RETAILER_ID => null,
+            self::ATTR_URL => null,
+            self::ATTR_IMAGE_URL => null,
+            self::ATTR_CONDITION => null,
+            self::ATTR_AVAILABILITY => null,
+            self::ATTR_INVENTORY => null,
+            self::ATTR_PRICE => null,
+            self::ATTR_SIZE => null,
+            self::ATTR_COLOR => null,
+            self::ATTR_BRAND => 70,
+            self::ATTR_NAME => 100,
+            self::ATTR_DESCRIPTION => 9999,
+            self::ATTR_RICH_DESCRIPTION => 9999,
+            self::ATTR_PRODUCT_TYPE => 750,
+        ];
+
+        if (!array_key_exists($attrName, $maxLengths)) {
+            return '';
         }
-        return '';
+
+        $maxLength = $maxLengths[$attrName];
+        if ($maxLength === null) {
+            return $attrValue;
+        }
+
+        if (mb_strlen($attrValue) > $maxLength) {
+            if ($attrName === self::ATTR_RICH_DESCRIPTION) {
+                return '';
+            }
+            if ($attrName === self::ATTR_PRODUCT_TYPE) {
+                return mb_substr($attrValue, mb_strlen($attrValue) - 750, 750);
+            }
+            return mb_substr($attrValue, 0, $maxLength);
+        }
+        return $attrValue;
     }
 
     /**
+     * Get product description
+     *
      * @param Product $product
      * @return string
      */
-    protected function getDescription(Product $product)
+    private function getDescription(Product $product)
     {
         // 'Description' is required by default but can be made
         // optional through the magento admin panel.
@@ -403,6 +354,8 @@ class Builder
     }
 
     /**
+     * Get product rich description
+     *
      * @param Product $product
      * @return string
      */
@@ -416,15 +369,19 @@ class Builder
             return '';
         }
         $stripTags = $this->stripTags->create([$this->escaper, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION]);
-        return $this->trimAttribute(self::ATTR_RICH_DESCRIPTION,
-        $stripTags->filter($description));
+        return $this->trimAttribute(
+            self::ATTR_RICH_DESCRIPTION,
+            $stripTags->filter($description)
+        );
     }
 
     /**
+     * Get product condition
+     *
      * @param Product $product
      * @return string
      */
-    protected function getCondition(Product $product)
+    private function getCondition(Product $product)
     {
         $condition = null;
         if ($product->getData('condition')) {
@@ -434,8 +391,10 @@ class Builder
     }
 
     /**
+     * Get correct text for product attribute
+     *
      * @param Product $product
-     * @param $attribute
+     * @param string $attribute
      * @return string|false
      */
     private function getCorrectText(Product $product, $attribute)
@@ -451,10 +410,12 @@ class Builder
     }
 
     /**
+     * Get product brand
+     *
      * @param Product $product
      * @return string|null
      */
-    protected function getBrand(Product $product)
+    private function getBrand(Product $product)
     {
         $brand = $this->getCorrectText($product, 'brand');
         if (!$brand) {
@@ -467,37 +428,45 @@ class Builder
     }
 
     /**
+     * Get product item group id
+     *
      * @param Product $product
      * @return string
      */
-    protected function getItemGroupId(Product $product)
+    private function getItemGroupId(Product $product)
     {
         $configurableSettings = $product->getConfigurableSettings() ?: [];
         return array_key_exists('item_group_id', $configurableSettings) ? $configurableSettings['item_group_id'] : '';
     }
 
     /**
+     * Get product color
+     *
      * @param Product $product
      * @return string
      */
-    protected function getColor(Product $product)
+    private function getColor(Product $product)
     {
         $configurableSettings = $product->getConfigurableSettings() ?: [];
         return array_key_exists('color', $configurableSettings) ? $configurableSettings['color'] : '';
     }
 
     /**
-     * @param $product
+     * Get product size
+     *
+     * @param Product $product
      * @return string
      */
-    protected function getSize($product)
+    private function getSize($product)
     {
         $configurableSettings = $product->getConfigurableSettings() ?: [];
         return array_key_exists('size', $configurableSettings) ? $configurableSettings['size'] : '';
     }
 
     /**
-     * @param $product
+     * Get product unit price
+     *
+     * @param Product $product
      * @return string
      */
     public function getUnitPrice($product)
@@ -506,6 +475,8 @@ class Builder
     }
 
     /**
+     * Get inventory for product
+     *
      * @param Product $product
      * @return InventoryInterface
      */
@@ -516,13 +487,15 @@ class Builder
     }
 
     /**
+     * Build product entry
+     *
      * @param Product $product
      * @return array
      * @throws LocalizedException
      */
     public function buildProductEntry(Product $product)
     {
-        $product->setCustomerGroupId(GroupManagement::NOT_LOGGED_IN_ID);
+        $product->setCustomerGroupId(self::NOT_LOGGED_IN_ID);
 
         $inventory = $this->getInventory($product);
         $retailerId = $this->trimAttribute(
@@ -564,9 +537,9 @@ class Builder
             self::ATTR_PRODUCT_CATEGORY => $product->getGoogleProductCategory() ?? '',
             self::ATTR_PRODUCT_TYPE => $productType,
             self::ATTR_CONDITION => $this->getCondition($product),
-            self::ATTR_PRICE => $this->getProductPrice($product),
-            self::ATTR_SALE_PRICE => $this->getProductSalePrice($product),
-            self::ATTR_SALE_PRICE_EFFECTIVE_DATE => $this->getProductSalePriceEffectiveDate($product),
+            self::ATTR_PRICE => $this->builderTools->getProductPrice($product),
+            self::ATTR_SALE_PRICE => $this->builderTools->getProductSalePrice($product),
+            self::ATTR_SALE_PRICE_EFFECTIVE_DATE => $this->builderTools->getProductSalePriceEffectiveDate($product),
             self::ATTR_COLOR => $this->getColor($product),
             self::ATTR_SIZE => $this->getSize($product),
             self::ATTR_URL => $this->getProductUrl($product),
@@ -582,6 +555,8 @@ class Builder
     }
 
     /**
+     * Get header fields
+     *
      * @return array
      */
     public function getHeaderFields()
@@ -617,5 +592,44 @@ class Builder
         }
 
         return $headerFields;
+    }
+
+    /**
+     * Get base url media
+     *
+     * @return mixed
+     */
+    public function getBaseUrlMedia()
+    {
+        return $this->fbeHelper->getStore()->getBaseUrl(self::URL_TYPE_MEDIA);
+    }
+
+    /**
+     * Get store name
+     *
+     * @return array|false|int|string|null
+     * @throws NoSuchEntityException
+     */
+    public function getStoreName()
+    {
+        $frontendName = $this->fbeHelper->getStore()->getFrontendName();
+        if ($frontendName !== 'Default') {
+            return $frontendName;
+        }
+        $defaultStoreName = $this->fbeHelper->getStore()->getGroup()->getName();
+        $escapeStrings = ['\r', '\n', '&nbsp;', '\t'];
+        $defaultStoreName =
+            trim(str_replace($escapeStrings, ' ', $defaultStoreName));
+        if (!$defaultStoreName) {
+            $defaultStoreName = $this->fbeHelper->getStore()->getName();
+            $defaultStoreName =
+                trim(str_replace($escapeStrings, ' ', $defaultStoreName));
+        }
+        if ($defaultStoreName && $defaultStoreName !== self::MAIN_WEBSITE_STORE
+            && $defaultStoreName !== self::MAIN_STORE
+            && $defaultStoreName !== self::MAIN_WEBSITE) {
+            return $defaultStoreName;
+        }
+        return parse_url($this->fbeHelper->getBaseUrl(), PHP_URL_HOST); // phpcs:ignore
     }
 }

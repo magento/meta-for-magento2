@@ -40,6 +40,8 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
     }
 
     /**
+     * Execute observer for category save API call
+     *
      * Call an API to category save from facebook catalog
      * after save category from Magento
      *

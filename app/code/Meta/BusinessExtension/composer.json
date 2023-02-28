@@ -8,12 +8,10 @@
         "ext-json": "*",
         "magento/framework": "*",
         "magento/module-backend": "*",
-        "magento/module-catalog": "*",
         "magento/module-config": "*",
         "magento/module-eav": "*",
         "magento/module-security": "*",
         "magento/module-store": "*",
-        "magento/module-newsletter": "*",
         "facebook/php-business-sdk": "^15.0.0"
     },
     "autoload": {

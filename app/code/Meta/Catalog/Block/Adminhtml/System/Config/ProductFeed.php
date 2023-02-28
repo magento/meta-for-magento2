@@ -43,6 +43,8 @@ class ProductFeed extends Field
     }
 
     /**
+     * Get Ajax url
+     *
      * @todo move to helper
      * @return string
      */
@@ -52,6 +54,8 @@ class ProductFeed extends Field
     }
 
     /**
+     * Get store name
+     *
      * @return string
      * @throws NoSuchEntityException
      */
@@ -63,8 +67,11 @@ class ProductFeed extends Field
     }
 
     /**
+     * Get html
+     *
      * @param AbstractElement $element
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
     {
@@ -72,6 +79,8 @@ class ProductFeed extends Field
     }
 
     /**
+     * Get button html
+     *
      * @return string
      * @throws LocalizedException
      */

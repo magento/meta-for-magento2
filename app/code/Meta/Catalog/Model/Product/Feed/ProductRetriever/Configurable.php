@@ -37,12 +37,12 @@ class Configurable implements ProductRetrieverInterface
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var CollectionFactory
      */
-    protected $productCollectionFactory;
+    private $productCollectionFactory;
 
     /**
      * Constructor

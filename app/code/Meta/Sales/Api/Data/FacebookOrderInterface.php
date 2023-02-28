@@ -20,44 +20,60 @@ namespace Meta\Sales\Api\Data;
 interface FacebookOrderInterface
 {
     /**
+     * Get magento order id
+     *
      * @return mixed
      */
     public function getMagentoOrderId();
 
     /**
-     * @param $orderId
+     * Set Magento order id
+     *
+     * @param int $orderId
      * @return $this
      */
     public function setMagentoOrderId($orderId);
 
     /**
+     * Get facebook order id
+     *
      * @return mixed
      */
     public function getFacebookOrderId();
 
     /**
-     * @param $orderId
+     * Set facebook order id
+     *
+     * @param int $orderId
      * @return $this
      */
     public function setFacebookOrderId($orderId);
 
     /**
+     * Get channel
+     *
      * @return mixed
      */
     public function getChannel();
 
     /**
-     * @param $channel
+     * Set channel
+     *
+     * @param mixed $channel
      * @return $this
      */
     public function setChannel($channel);
 
     /**
+     * Get extra data
+     *
      * @return mixed
      */
     public function getExtraData();
 
     /**
+     * Set extra data
+     *
      * @param array $extraData
      * @return $this
      */

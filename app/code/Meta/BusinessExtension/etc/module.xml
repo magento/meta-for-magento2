@@ -9,7 +9,6 @@
             <module name="Magento_Eav"/>
             <module name="Magento_Security"/>
             <module name="Magento_Store"/>
-            <module name="Magento_Newsletter"/>
         </sequence>
     </module>
 </config>

@@ -66,6 +66,11 @@ class Catalog extends Value
         $this->request = $request;
     }
 
+    /**
+     * Delete feed id if Catalog value changed before save
+     *
+     * @return $this|Catalog
+     */
     public function beforeSave()
     {
         if ($this->isValueChanged()) {

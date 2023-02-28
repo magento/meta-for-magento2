@@ -24,13 +24,13 @@ $report = $block->getReport();
 </style>
 <table id="catalog-diagnostics-report">
     <tr>
-        <th><?= __('Title') ?></th>
-        <th><?= __('Severity') ?></th>
-        <th><?= __('Type') ?></th>
-        <th><?= __('Diagnostics Description') ?></th>
+        <th><?= $escaper->escapeHtml(__('Title')) ?></th>
+        <th><?= $escaper->escapeHtml(__('Severity')) ?></th>
+        <th><?= $escaper->escapeHtml(__('Type')) ?></th>
+        <th><?= $escaper->escapeHtml(__('Diagnostics Description')) ?></th>
     </tr>
 
-    <?php foreach ($report as $item) : ?>
+    <?php foreach ($report as $item): ?>
         <tr>
             <td><?= $escaper->escapeHtml($item['title']) ?></td>
             <td><?= $escaper->escapeHtml($item['severity']) ?></td>
@@ -38,17 +38,17 @@ $report = $block->getReport();
             <td class="diagnostic-description">
                 <?php $diagnostics = $item['diagnostics']; ?>
                 <ul>
-                <?php foreach ($diagnostics as $diagnostic) : ?>
+                <?php foreach ($diagnostics as $diagnostic): ?>
                     <li><div><?= $escaper->escapeHtml($diagnostic['description']) ?></div>
                     <?php $products = $block->getSampleAffectedItems($diagnostic); ?>
-                        <?php if ($products) : ?>
+                        <?php if ($products): ?>
                             <div class="sample-affected-items">
-                            <p><?= __('Sample affected items:') ?></p>
+                            <p><?= $escaper->escapeHtml(__('Sample affected items:')) ?></p>
                             <ul>
-                            <?php foreach ($products as $product) : ?>
+                            <?php foreach ($products as $product): ?>
                                 <li>
                                     <?= $escaper->escapeHtml($product->getName()) ?>
-                                    (<a href="<?= $block->getAdminUrl($product) ?>">
+                                    (<a href="<?= $escaper->escapeUrl($block->getAdminUrl($product)) ?>">
                                         <?= $escaper->escapeHtml($product->getSku()) ?>
                                     </a>)
                                 </li>
@@ -64,5 +64,5 @@ $report = $block->getReport();
     <?php endforeach; ?>
 </table>
 <?php else: ?>
-    <p><?= __('Report is not available') ?></p>
+    <p><?= $escaper->escapeHtml(__('Report is not available')) ?></p>
 <?php endif; ?>

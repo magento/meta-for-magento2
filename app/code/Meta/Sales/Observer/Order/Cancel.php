@@ -17,43 +17,46 @@
 
 namespace Meta\Sales\Observer\Order;
 
-use Exception;
-use Meta\Sales\Helper\CommerceHelper;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Cancel implements ObserverInterface
 {
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
-     * @var LoggerInterface
+     * @var GraphAPIAdapter
      */
-    private $logger;
+    private GraphAPIAdapter $graphAPIAdapter;
 
     /**
-     * @var CommerceHelper
-     */
-    private $commerceHelper;
-
-    /**
+     * Constructor
+     *
      * @param SystemConfig $systemConfig
-     * @param LoggerInterface $logger
-     * @param CommerceHelper $commerceHelper
+     * @param GraphAPIAdapter $graphAPIAdapter
      */
-    public function __construct(SystemConfig $systemConfig, LoggerInterface $logger, CommerceHelper $commerceHelper)
-    {
+    public function __construct(
+        SystemConfig $systemConfig,
+        GraphAPIAdapter $graphAPIAdapter
+    ) {
         $this->systemConfig = $systemConfig;
-        $this->logger = $logger;
-        $this->commerceHelper = $commerceHelper;
+        $this->graphAPIAdapter = $graphAPIAdapter;
     }
 
+    /**
+     * Cancel facebook order
+     *
+     * @param Observer $observer
+     * @return void
+     * @throws GuzzleException
+     */
     public function execute(Observer $observer)
     {
         /** @var Order $order */
@@ -66,14 +69,30 @@ class Cancel implements ObserverInterface
             return;
         }
 
-
         $facebookOrderId = $order->getExtensionAttributes()->getFacebookOrderId();
         if (!$facebookOrderId) {
             return;
         }
 
-        $this->commerceHelper->setStoreId($storeId)
-            ->cancelOrder($facebookOrderId);
+        $this->cancelOrder((int)$storeId, $facebookOrderId);
+
         $order->addCommentToStatusHistory("Cancelled order on Facebook.");
+    }
+
+    /**
+     * Perform cancel of a facebook order via api
+     *
+     * @param int $storeId
+     * @param string $fbOrderId
+     * @return void
+     * @throws GuzzleException
+     */
+    private function cancelOrder(int $storeId, string $fbOrderId)
+    {
+        $this->graphAPIAdapter
+            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+
+        $this->graphAPIAdapter->cancelOrder($fbOrderId);
     }
 }

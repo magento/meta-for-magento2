@@ -27,12 +27,19 @@ class AccessToken implements CommentInterface
      */
     private $systemConfig;
 
+    /**
+     * AccessToken constructor.
+     *
+     * @param SystemConfig $systemConfig
+     */
     public function __construct(SystemConfig $systemConfig)
     {
         $this->systemConfig = $systemConfig;
     }
 
     /**
+     * Get comment text
+     *
      * @param string $elementValue
      * @return string
      */
@@ -41,7 +48,9 @@ class AccessToken implements CommentInterface
         if (!$elementValue) {
             return '';
         }
-        return '<a href="https://developers.facebook.com/tools/debug/accesstoken?access_token=' . $elementValue . '" target="_blank" title="Debug" style="color:#2b7dbd">Debug</a>'
-            . ' | <a href="https://developers.facebook.com/tools/explorer?access_token=' . $elementValue . '" target="_blank" title="Try in Graph API Explorer" style="color:#2b7dbd">Try in Graph API Explorer</a>';
+        return '<a href="https://developers.facebook.com/tools/debug/accesstoken?access_token='
+            . $elementValue . '" target="_blank" title="Debug" style="color:#2b7dbd">Debug</a>'
+            . ' | <a href="https://developers.facebook.com/tools/explorer?access_token=' . $elementValue
+            . '" target="_blank" title="Try in Graph API Explorer" style="color:#2b7dbd">Try in Graph API Explorer</a>';
     }
 }

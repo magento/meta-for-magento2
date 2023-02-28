@@ -47,12 +47,12 @@ class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
     /**
      * @var MockObject
      */
-    private $_eventObserverMock;
+    private $eventObserverMock;
 
     /**
      * @var MockObject
      */
-    private $_category;
+    private $category;
 
     /**
      * Used to set the values before running a test
@@ -63,11 +63,11 @@ class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->systemConfig = $this->createMock(Config::class);
-        $this->_category = $this->createMock(Category::class);
+        $this->category = $this->createMock(Category::class);
         $event = $this->getMockBuilder(Event::class)->addMethods(['getCategory'])->getMock();
-        $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->_category));
-        $this->_eventObserverMock = $this->createMock(Observer::class);
-        $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
+        $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->category));
+        $this->eventObserverMock = $this->createMock(Observer::class);
+        $this->eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->processCategoryAfterDeleteEventObserver =
             new ProcessCategoryAfterDeleteEventObserver(
                 $this->fbeHelper,
@@ -83,6 +83,6 @@ class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
         $this->fbeHelper->expects($this->once())->method('log')->willReturn(null);
 
         $categoryObj->expects($this->once())->method('deleteCategoryAndSubCategoryFromFB')->willReturn('good');
-        $this->processCategoryAfterDeleteEventObserver->execute($this->_eventObserverMock);
+        $this->processCategoryAfterDeleteEventObserver->execute($this->eventObserverMock);
     }
 }

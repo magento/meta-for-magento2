@@ -17,12 +17,16 @@
 
 namespace Meta\Catalog\Model\Config\Source\Product;
 
-class Identifier implements \Magento\Framework\Data\OptionSourceInterface
+use Magento\Framework\Data\OptionSourceInterface;
+
+class Identifier implements OptionSourceInterface
 {
-    const PRODUCT_IDENTIFIER_SKU = 'sku';
-    const PRODUCT_IDENTIFIER_ID = 'id';
+    public const PRODUCT_IDENTIFIER_SKU = 'sku';
+    public const PRODUCT_IDENTIFIER_ID = 'id';
 
     /**
+     * Retrieve option array
+     *
      * @return array
      */
     public function toOptionArray()
