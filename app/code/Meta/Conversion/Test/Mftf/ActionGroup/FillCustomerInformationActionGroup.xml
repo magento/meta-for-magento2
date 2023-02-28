@@ -5,7 +5,7 @@
     <!--Fill search form-->
     <actionGroup name="fillCustomerInformation">
         <arguments>
-            <argument name="customer" defaultValue="_defaultCustomer"/>
+            <argument name="customer" defaultValue="_defaultMetaCustomer"/>
         </arguments>
         <fillField userInput="{{customer.email}}" selector="#customer-email" stepKey="fillEmail"/>
         <waitForAjaxLoad stepKey="waitForAccountVerification"/>

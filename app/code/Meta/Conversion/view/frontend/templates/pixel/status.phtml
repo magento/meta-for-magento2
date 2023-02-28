@@ -1,0 +1,8 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Meta\Conversion\ViewModel\Pixel\Common $viewModel */
+$viewModel = $block->getViewModel();
+?>
+<?php if ($viewModel->getFacebookPixelID()): ?>
+    <span class="data-fbq-success" data-fbq-success="true"></span>
+<?php endif; ?>

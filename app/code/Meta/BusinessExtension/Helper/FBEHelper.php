@@ -47,8 +47,6 @@ class FBEHelper extends AbstractHelper
 
     private const CURRENT_API_VERSION = "v15.0";
 
-    private const MODULE_NAME = "Meta_BusinessExtension";
-
     /**
      * @var ObjectManagerInterface
      */
@@ -129,9 +127,9 @@ class FBEHelper extends AbstractHelper
     /**
      * Get plugin version
      *
-     * @return mixed
+     * @return string
      */
-    public function getPluginVersion()
+    public function getPluginVersion(): string
     {
         return $this->systemConfig->getModuleVersion();
     }

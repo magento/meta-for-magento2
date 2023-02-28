@@ -2,7 +2,7 @@
 
 <entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
-    <entity name="_defaultCustomer" type="Customer">
+    <entity name="_defaultMetaCustomer" type="customer">
         <data key="email">homero@simpson.com</data>
         <data key="firstName">Homer</data>
         <data key="lastName">Simpson</data>

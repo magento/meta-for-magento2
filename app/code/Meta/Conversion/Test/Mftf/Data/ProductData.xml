@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="_defaultMetaProduct" type="product" extends="_defaultProduct">
+        <data key="sku" unique="suffix">CON1</data>
+        <data key="name" unique="suffix">Console1</data>
+        <data key="urlKey" unique="suffix">console-product</data>
+        <data key="price">500</data>
+        <data key="weight">10</data>
+    </entity>
+</entities>

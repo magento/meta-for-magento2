@@ -2,7 +2,7 @@
 
 <operations xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataOperation.xsd">
-    <operation name="MetaCreateStockItem" dataType="stockItem" type="create">
+    <operation name="MetaCreateStockItem" dataType="stock_item" type="create">
         <field key="qty">integer</field>
         <field key="is_in_stock">boolean</field>
     </operation>

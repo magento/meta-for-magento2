@@ -23,6 +23,5 @@
                 <value>custom_attribute</value>
             </array>
         </object>
-        <field key="parent_id">integer</field>
     </operation>
 </operations>
