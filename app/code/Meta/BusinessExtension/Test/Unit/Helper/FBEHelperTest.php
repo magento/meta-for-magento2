@@ -17,18 +17,13 @@
 
 namespace Meta\BusinessExtension\Test\Unit\Helper;
 
-use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Logger\Logger;
-use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\HTTP\Client\Curl;
-use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Logger\Logger;
 use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class FBEHelperTest extends TestCase
 {
@@ -38,28 +33,19 @@ class FBEHelperTest extends TestCase
     private FBEHelper $fbeHelper;
 
     /**
-     * @var MockObject
+     * @var Config
      */
-    private $objectManagerInterface;
+    private Config $systemConfig;
 
     /**
-     * @var MockObject
+     * @var ObjectManagerInterface
      */
-    private $moduleList;
+    private ObjectManagerInterface $objectManagerInterface;
 
     /**
-     * @var ProductMetadataInterface|MockObject
+     * @var ProductMetadataInterface
      */
-    private $productMetaData;
-
-    /**
-     * Used to reset or change values after running a test
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-    }
+    private ProductMetadataInterface $productMetaData;
 
     /**
      * Used to set the values before running a test
@@ -68,24 +54,16 @@ class FBEHelperTest extends TestCase
      */
     public function setUp(): void
     {
-        $context = $this->createMock(Context::class);
         $this->objectManagerInterface = $this->createMock(ObjectManagerInterface::class);
         $logger = $this->createMock(Logger::class);
         $storeManager = $this->createMock(StoreManagerInterface::class);
-        $curl = $this->createMock(Curl::class);
-        $resourceConnection = $this->createMock(ResourceConnection::class);
-        $this->moduleList = $this->createMock(ModuleListInterface::class);
-        $systemConfig = $this->createMock(Config::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->productMetaData = $this->createMock(ProductMetadataInterface::class);
         $this->fbeHelper = new FBEHelper(
-            $context,
             $this->objectManagerInterface,
             $logger,
             $storeManager,
-            $curl,
-            $resourceConnection,
-            $this->moduleList,
-            $systemConfig,
+            $this->systemConfig,
             $this->productMetaData
         );
     }
@@ -95,15 +73,10 @@ class FBEHelperTest extends TestCase
      *
      * @return void
      */
-    public function testCorrectPartnerAgent()
+    public function testCorrectPartnerAgent(): void
     {
         $magentoVersion = '2.3.5';
         $pluginVersion = '1.0.0';
-        $this->moduleList->method('getOne')->willReturn(
-            [
-                'setup_version' => $pluginVersion
-            ]
-        );
         $source = $this->fbeHelper->getSource();
         $productMetadata = $this->getMockBuilder(ProductMetadataInterface::class)
             ->disableOriginalConstructor()
@@ -111,6 +84,7 @@ class FBEHelperTest extends TestCase
             ->getMock();
         $this->productMetaData->expects($this->once())->method('getVersion')->willReturn($magentoVersion);
         $this->objectManagerInterface->method('get')->willReturn($productMetadata);
+        $this->systemConfig->method('getModuleVersion')->willReturn($pluginVersion);
         $this->assertEquals(
             sprintf('%s-%s-%s', $source, $magentoVersion, $pluginVersion),
             $this->fbeHelper->getPartnerAgent(true)

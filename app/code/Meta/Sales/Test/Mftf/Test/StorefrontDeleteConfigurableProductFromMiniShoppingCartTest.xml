@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="StorefrontDeleteConfigurableProductFromMiniShoppingCartTest">
+        <annotations>
+            <skip>
+                <issueId value="ADO-168"/>
+            </skip>
+        </annotations>
+    </test>
+</tests>

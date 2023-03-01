@@ -14,7 +14,7 @@ class MetaCatalogAttributes
      *
      * @return array[]
      */
-    public function execute(): array
+    public function getProductAttributes(): array
     {
         return [
             'google_product_category' => [
@@ -33,17 +33,6 @@ class MetaCatalogAttributes
                 'is_html_allowed_on_front' => false,
                 'visible_on_front' => false
             ],
-            'sync_to_facebook_catalog' => [
-                'type' => 'int',
-                'label' => 'Sync to Facebook Catalog',
-                'input' => 'boolean',
-                'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
-                'visible' => true,
-                'default' => "1",
-                'required' => false,
-                'global' => ScopedAttributeInterface::SCOPE_STORE,
-                'group' => 'Display Settings'
-            ],
             'send_to_facebook' => [
                 'group' => 'General',
                 'type' => 'int',
@@ -60,6 +49,28 @@ class MetaCatalogAttributes
                 'is_html_allowed_on_front' => false,
                 'visible_on_front' => false,
                 'global' => ScopedAttributeInterface::SCOPE_STORE
+            ]
+        ];
+    }
+
+    /**
+     * Returns array of category attributes to be created
+     *
+     * @return array[]
+     */
+    public function getCategoryAttributes(): array
+    {
+        return [
+            'sync_to_facebook_catalog' => [
+                'type' => 'int',
+                'label' => 'Sync to Facebook Catalog',
+                'input' => 'boolean',
+                'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
+                'visible' => true,
+                'default' => "1",
+                'required' => false,
+                'global' => ScopedAttributeInterface::SCOPE_STORE,
+                'group' => 'Display Settings'
             ]
         ];
     }

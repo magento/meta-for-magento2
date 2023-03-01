@@ -8,5 +8,13 @@
                    template="Meta_Conversion::pixel/head.phtml"
                    before="-" />
         </referenceBlock>
+        <referenceContainer name="before.body.end">
+            <block name="fbe.pixel.status" before="-">
+                <arguments>
+                    <argument name="template" xsi:type="string">Meta_Conversion::pixel/status.phtml</argument>
+                    <argument name="view_model" xsi:type="object">Meta\Conversion\ViewModel\Pixel\Common</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
     </body>
 </page>

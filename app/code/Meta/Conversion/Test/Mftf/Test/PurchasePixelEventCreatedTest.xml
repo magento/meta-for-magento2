@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="PurchasePixelEventCreatedTest">
+        <annotations>
+            <features value="Pixel"/>
+            <stories value="Purchase pixel event"/>
+            <title value="The page has a purchase pixel event."/>
+            <description value="The product page should contain a fbq call with a purchase pixel event."/>
+            <severity value="MAJOR"/>
+            <group value="Pixel"/>
+        </annotations>
+        <before>
+            <!-- Create sample product -->
+            <createData entity="_defaultMetaCategory" stepKey="createCategory"/>
+            <createData entity="_defaultMetaProduct" stepKey="createProduct">
+                <requiredEntity createDataKey="createCategory"/>
+            </createData>
+
+            <!-- Add Pixel -->
+            <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataEnabled.scope}} --scope-code={{FacebookBusinessConfigDataEnabled.scope_code}} {{FacebookBusinessConfigDataEnabled.path}} 1"
+                        stepKey="enableFacebookBusinessExtension"/>
+            <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataPixelId.scope}} --scope-code={{FacebookBusinessConfigDataPixelId.scope_code}} {{FacebookBusinessConfigDataPixelId.path}} 123456789123456"
+                        stepKey="setFacebookBusinessExtensionPixelId"/>
+        </before>
+        <after>
+            <!-- Delete sample product -->
+            <deleteData createDataKey="createProduct" stepKey="deleteProduct"/>
+            <deleteData createDataKey="createCategory" stepKey="deleteCategory"/>
+
+            <!-- Remove Pixel -->
+            <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataEnabled.scope}} --scope-code={{FacebookBusinessConfigDataEnabled.scope_code}} {{FacebookBusinessConfigDataEnabled.path}} 0"
+                        stepKey="disableFacebookBusinessExtension"/>
+            <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataPixelId.scope}} --scope-code={{FacebookBusinessConfigDataPixelId.scope_code}} {{FacebookBusinessConfigDataPixelId.path}} ''"
+                        stepKey="unsetFacebookBusinessExtensionPixelId"/>
+        </after>
+
+        <!-- Navigate to Home page -->
+        <actionGroup ref="StorefrontOpenHomePageActionGroup" stepKey="openHomePage"/>
+
+        <!-- Navigate to product page -->
+        <actionGroup ref="StorefrontOpenProductPageActionGroup" stepKey="openProductPage">
+            <argument name="productUrl" value="$$createProduct.custom_attributes[url_key]$$"/>
+        </actionGroup>
+
+        <!-- Submit add to cart form -->
+        <actionGroup ref="StorefrontClickAddToCartOnProductPageActionGroup" stepKey="addToCartFromStorefrontProductPage"/>
+
+        <!-- Navigate to checkout page-->
+        <actionGroup ref="StorefrontOpenCheckoutPageActionGroup" stepKey="navigateToCheckoutPage"/>
+
+        <!-- Fill customer form -->
+        <actionGroup ref="fillCustomerInformation" stepKey="fillCustomerInformation">
+            <argument name="customer" value="_defaultMetaCustomer" />
+        </actionGroup>
+
+        <!-- Click on Next button -->
+        <click selector="button.button.action.continue.primary" stepKey="clickNextButton"/>
+        <waitForPageLoad stepKey="waitForConfirmationPage" time="60" />
+
+        <!-- Checking box for shipping address-->
+        <checkOption selector="#billing-address-same-as-shipping-checkmo" stepKey="checkShippingAddressEqualToBilling" />
+
+        <!-- Click on place order -->
+        <click selector="button.action.primary.checkout" stepKey="clickPlaceOrder"/>
+
+        <!-- Wait for thank you page -->
+        <waitForPageLoad stepKey="waitForThankYouPage" time="60" />
+
+        <!-- Check pixel status element in dom on page -->
+        <seeElementInDOM selector="{{StorefrontBodySection.PixelStatus}}" stepKey="seePixelStatusElement"/>
+    </test>
+</tests>

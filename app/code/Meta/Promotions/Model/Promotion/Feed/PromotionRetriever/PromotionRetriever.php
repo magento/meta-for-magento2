@@ -22,8 +22,11 @@ use Magento\SalesRule\Model\ResourceModel\Rule\CollectionFactory as RuleCollecti
 
 class PromotionRetriever
 {
-    const LIMIT = 2000;
+    private const LIMIT = 2000;
 
+    /**
+     * @var int
+     */
     protected $storeId;
 
     /**
@@ -31,21 +34,27 @@ class PromotionRetriever
      */
     protected $fbeHelper;
 
+    /**
+     * @var RuleCollection
+     */
     protected $ruleCollection;
 
     /**
      * @param FBEHelper $fbeHelper
+     * @param RuleCollection $ruleCollection
      */
-    public function __construct(FBEHelper $fbeHelper, RuleCollection $ruleCollection
-    )
-    {
+    public function __construct(
+        FBEHelper $fbeHelper,
+        RuleCollection $ruleCollection
+    ) {
         $this->fbeHelper = $fbeHelper;
         $this->ruleCollection = $ruleCollection;
-
     }
 
     /**
-     * @param $storeId
+     * Set store id
+     *
+     * @param int $storeId
      * @return $this
      */
     public function setStoreId($storeId)
@@ -55,14 +64,14 @@ class PromotionRetriever
     }
 
     /**
-     * @param int $limit
+     * Retrieve promotions
+     *
      * @return array
      */
-    public function retrieve($limit = self::LIMIT): array
+    public function retrieve(): array
     {
         $catalogActiveRule = $this->ruleCollection->create()->addFieldToFilter('is_active', 1);
         return $catalogActiveRule->getItems();
-
     }
 
     /**

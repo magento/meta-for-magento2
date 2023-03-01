@@ -18,13 +18,15 @@
 namespace Meta\Catalog\Observer\Product;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Meta\Catalog\Helper\Product\Identifier;
+use Magento\Framework\Message\ManagerInterface;
 
 class DeleteAfter implements ObserverInterface
 {
@@ -36,12 +38,12 @@ class DeleteAfter implements ObserverInterface
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    private $graphApiAdapter;
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var Identifier
@@ -49,24 +51,34 @@ class DeleteAfter implements ObserverInterface
     private $identifier;
 
     /**
+     * @var ManagerInterface
+     */
+    private $messageManager;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphApiAdapter
      * @param FBEHelper $fbeHelper
      * @param Identifier $identifier
+     * @param ManagerInterface $messageManager
      */
     public function __construct(
         SystemConfig $systemConfig,
         GraphApiAdapter $graphApiAdapter,
         FBEHelper $fbeHelper,
-        Identifier $identifier
+        Identifier $identifier,
+        ManagerInterface $messageManager,
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->fbeHelper = $fbeHelper;
         $this->identifier = $identifier;
+        $this->messageManager = $messageManager;
     }
 
     /**
+     * Execute observer for product delete API call
+     *
      * Call an API to product delete from facebook catalog
      * after delete product from Magento
      *
@@ -74,28 +86,53 @@ class DeleteAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!($this->systemConfig->isActiveExtension() && $this->systemConfig->isActiveIncrementalProductUpdates())) {
-            return;
-        }
-
-        /** @var Product $product */
         $product = $observer->getEvent()->getProduct();
+
         if (!$product->getId()) {
             return;
         }
 
-        // @todo observer should not know how to assemble request
-        $requestData = [
-            'method' => 'DELETE',
-            'data' => ['id' => $this->identifier->getMagentoProductRetailerId($product)],
-        ];
+        $stores = $this->systemConfig->getStoreManager()->getStores();
+
+        foreach ($stores as $store) {
+            $this->deleteProduct($store->getId(), $product);
+        }
+    }
+
+    /**
+     * Process Product Delete from Meta Catalog
+     *
+     * @param int $storeId
+     * @param ProductInterface $product
+     * @return void
+     */
+    private function deleteProduct($storeId, $product): void
+    {
+        $isActive = $this->systemConfig->isActiveExtension($storeId);
+        $shouldIncrement = $this->systemConfig->isActiveIncrementalProductUpdates($storeId);
+
+        if (!($isActive && $shouldIncrement)) {
+            return;
+        }
 
         try {
-            $storeId = $product->getStoreId();
+            // @todo observer should not know how to assemble request
+            $requestData = [
+                'method' => 'DELETE',
+                'data' => ['id' => $this->identifier->getMagentoProductRetailerId($product)],
+            ];
+
             $catalogId = $this->systemConfig->getCatalogId($storeId);
             $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
+        } catch (GuzzleException $e) {
+            $this->messageManager->addErrorMessage(
+                'Error deleting product from one or more Meta Catalogs. Please check setup and try again'
+            );
+            $this->fbeHelper->logException($e);
+            return;
         } catch (Exception $e) {
             $this->fbeHelper->logException($e);
+            return;
         }
     }
 }

@@ -59,7 +59,7 @@ class Uploader
     /**
      * Upload Magento catalog to Facebook
      *
-     * @param null $storeId
+     * @param int|null $storeId
      * @return array
      * @throws LocalizedException
      * @throws Exception
@@ -85,7 +85,7 @@ class Uploader
     /**
      * Upload product inventory to Facebook
      *
-     * @param null $storeId
+     * @param int|null $storeId
      * @return array
      * @throws LocalizedException
      */

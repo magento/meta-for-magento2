@@ -21,18 +21,13 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\Conversion\Helper\EventIdGenerator;
 use Magento\Framework\Escaper;
+use Magento\Checkout\Model\Session as CheckoutSession;
 
 class Common extends \Magento\Framework\View\Element\Template
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
-
     /**
      * @var FBEHelper
      */
@@ -51,34 +46,39 @@ class Common extends \Magento\Framework\View\Element\Template
     /**
      * @var Escaper
      */
-    private $escaper;
+    protected $escaper;
+
+    /**
+     * @var CheckoutSession
+     */
+    protected $checkoutSession;
 
     /**
      * Common constructor
      *
      * @param Context $context
-     * @param ObjectManagerInterface $objectManager
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
      * @param Escaper $escaper
+     * @param CheckoutSession $checkoutSession
      * @param array $data
      */
     public function __construct(
         Context $context,
-        ObjectManagerInterface $objectManager,
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
         Escaper $escaper,
+        CheckoutSession $checkoutSession,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->objectManager = $objectManager;
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->systemConfig = $systemConfig;
         $this->escaper = $escaper;
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
@@ -194,7 +194,12 @@ class Common extends \Magento\Framework\View\Element\Template
      */
     public function trackServerEvent($eventId)
     {
-        $this->_eventManager->dispatch($this->getEventToObserveName(), ['eventId' => $eventId]);
+        $quote = $this->checkoutSession->getQuote();
+        $lastOrder = $this->checkoutSession->getLastRealOrder();
+        $this->_eventManager->dispatch(
+            $this->getEventToObserveName(),
+            ['eventId' => $eventId, 'quote' => $quote, 'lastOrder' => $lastOrder]
+        );
     }
 
     /**

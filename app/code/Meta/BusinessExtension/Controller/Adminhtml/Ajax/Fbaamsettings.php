@@ -21,9 +21,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 
-/**
- * @SuppressWarnings(PHPMD)
- */
 class Fbaamsettings extends AbstractAjax
 {
     /**

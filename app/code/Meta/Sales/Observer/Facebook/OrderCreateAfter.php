@@ -17,6 +17,8 @@
 
 namespace Meta\Sales\Observer\Facebook;
 
+use Magento\Newsletter\Model\Subscriber;
+use Magento\Newsletter\Model\SubscriptionManager;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Model\FacebookOrder;
@@ -43,20 +45,44 @@ class OrderCreateAfter implements ObserverInterface
     protected $fbeHelper;
 
     /**
+     * @var SubscriptionManager
+     */
+    private $subscriptionManager;
+
+    /**
+     * @var Subscriber
+     */
+    private $subscriber;
+
+    /**
+     * Constructor
+     *
      * @param SystemConfig $systemConfig
      * @param LoggerInterface $logger
      * @param FBEHelper $fbeHelper
+     * @param SubscriptionManager $subscriptionManager
+     * @param Subscriber $subscriber
      */
     public function __construct(
         SystemConfig $systemConfig,
         LoggerInterface $logger,
-        FBEHelper $fbeHelper
+        FBEHelper $fbeHelper,
+        SubscriptionManager $subscriptionManager,
+        Subscriber $subscriber
     ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->fbeHelper = $fbeHelper;
+        $this->subscriptionManager = $subscriptionManager;
+        $this->subscriber = $subscriber;
     }
 
+    /**
+     * Execute
+     *
+     * @param Observer $observer
+     * @return void
+     */
     public function execute(Observer $observer)
     {
         /** @var Order $order */
@@ -87,13 +113,21 @@ class OrderCreateAfter implements ObserverInterface
     }
 
     /**
-     * @param $email
-     * @param $storeId
+     * Subscribe to newsletter
+     *
+     * @param string $email
+     * @param int $storeId
      * @return $this
      */
     private function subscribeToNewsletter($email, $storeId)
     {
-        $this->fbeHelper->subscribeToNewsletter($email, $storeId);
+        $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager'; // phpcs:ignore
+        if (class_exists($subscriptionClass) && method_exists($subscriptionClass, 'subscribe')) {
+            $this->subscriptionManager->subscribe($email, $storeId);
+        } else {
+            // for older Magento versions (2.3 and below)
+            $this->subscriber->subscribe($email);
+        }
         return $this;
     }
 }

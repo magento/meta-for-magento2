@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<operations xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataOperation.xsd">
+    <operation name="MetaCreateCustomAttributeArray" dataType="custom_attribute_array" type="create">
+        <field key="attribute_code">string</field>
+        <array key="value">
+            <value>string</value>
+        </array>
+    </operation>
+</operations>

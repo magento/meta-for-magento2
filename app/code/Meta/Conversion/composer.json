@@ -9,7 +9,6 @@
         "magento/module-configurable-product": "*",
         "magento/module-checkout": "*",
         "magento/module-customer": "*",
-        "magento/module-directory": "*",
         "magento/module-sales": "*",
         "magento/module-store": "*",
         "magento/module-quote": "*",

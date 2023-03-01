@@ -18,20 +18,46 @@
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
+use PHPUnit\Framework\MockObject\MockObject;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config;
+use Magento\Framework\App\RequestInterface;
+use Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbpixel;
+use PHPUnit\Framework\TestCase;
 
-class FbpixelTest extends \PHPUnit\Framework\TestCase
+class FbpixelTest extends TestCase
 {
-    protected $fbeHelper;
+    /**
+     * @var MockObject
+     */
+    private $fbeHelper;
 
-    protected $systemConfig;
+    /**
+     * @var MockObject
+     */
+    private $systemConfig;
 
-    protected $context;
+    /**
+     * @var MockObject
+     */
+    private $context;
 
-    protected $resultJsonFactory;
+    /**
+     * @var MockObject
+     */
+    private $resultJsonFactory;
 
-    protected $fbPixelTest;
+    /**
+     * @var Fbpixel
+     */
+    private $fbPixelTest;
 
-    protected $request;
+    /**
+     * @var MockObject
+     */
+    private $request;
 
     /**
      * Used to reset or change values after running a test
@@ -49,13 +75,13 @@ class FbpixelTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->context = $this->createMock(\Magento\Backend\App\Action\Context::class);
-        $this->resultJsonFactory = $this->createMock(\Magento\Framework\Controller\Result\JsonFactory::class);
-        $this->fbeHelper = $this->createMock(\Meta\BusinessExtension\Helper\FBEHelper::class);
-        $this->systemConfig = $this->createMock(\Meta\BusinessExtension\Model\System\Config::class);
-        $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
+        $this->context = $this->createMock(Context::class);
+        $this->resultJsonFactory = $this->createMock(JsonFactory::class);
+        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(Config::class);
+        $this->request = $this->createMock(RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
-        $this->fbPixelTest = new \Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbpixel(
+        $this->fbPixelTest = new Fbpixel(
             $this->context,
             $this->resultJsonFactory,
             $this->fbeHelper,

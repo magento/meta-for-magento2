@@ -17,6 +17,7 @@
 
 namespace Meta\Sales\Cron;
 
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\Sales\Helper\CommerceHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Exception\GuzzleException;
@@ -28,52 +29,71 @@ use Psr\Log\LoggerInterface;
 class SyncOrders
 {
     /**
+     * @var StoreManagerInterface
+     */
+    private StoreManagerInterface $storeManager;
+
+    /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * @var CommerceHelper
      */
-    private $commerceHelper;
+    private CommerceHelper $commerceHelper;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
+     * @param StoreManagerInterface $storeManager
      * @param SystemConfig $systemConfig
      * @param CommerceHelper $commerceHelper
      * @param LoggerInterface $logger
      */
-    public function __construct(SystemConfig $systemConfig, CommerceHelper $commerceHelper, LoggerInterface $logger)
-    {
+    public function __construct(
+        StoreManagerInterface $storeManager,
+        SystemConfig $systemConfig,
+        CommerceHelper $commerceHelper,
+        LoggerInterface $logger
+    ) {
         $this->systemConfig = $systemConfig;
         $this->commerceHelper = $commerceHelper;
         $this->logger = $logger;
+        $this->storeManager = $storeManager;
     }
 
     /**
-     * @param $storeId
+     * Sync orders from facebook for a store
+     *
+     * @param int $storeId
+     * @return void
      * @throws GuzzleException
      */
-    protected function pullOrdersForStore($storeId)
+    private function pullOrdersForStore(int $storeId)
     {
         if (!($this->systemConfig->isActiveExtension($storeId)
             && $this->systemConfig->isActiveOrderSync($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
         }
-        $this->commerceHelper->setStoreId($storeId)
-            ->pullPendingOrders();
+
+        $this->commerceHelper->pullPendingOrders($storeId);
     }
 
+    /**
+     * Sync orders from facebook for each magento store
+     *
+     * @return void
+     */
     public function execute()
     {
-        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+        foreach ($this->storeManager->getStores() as $store) {
             try {
-                $this->pullOrdersForStore($store->getId());
+                $this->pullOrdersForStore((int)$store->getId());
             } catch (GuzzleException $e) {
                 $this->logger->critical($e);
             }

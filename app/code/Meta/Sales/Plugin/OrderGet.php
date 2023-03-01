@@ -47,9 +47,13 @@ class OrderGet
     }
 
     /**
+     * After get order plugin
+     *
      * @param OrderRepositoryInterface $subject
      * @param OrderInterface $order
      * @return OrderInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter) $subject
      */
     public function afterGet(OrderRepositoryInterface $subject, OrderInterface $order)
     {

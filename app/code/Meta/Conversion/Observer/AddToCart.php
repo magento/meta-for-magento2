@@ -45,6 +45,11 @@ class AddToCart implements ObserverInterface
     protected $serverSideHelper;
 
     /**
+     * @var ServerEventFactory
+     */
+    private $serverEventFactory;
+
+    /**
      * @var RequestInterface
      */
     protected $request;
@@ -60,6 +65,7 @@ class AddToCart implements ObserverInterface
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param ServerSideHelper $serverSideHelper
+     * @param ServerEventFactory $serverEventFactory
      * @param RequestInterface $request
      * @param Escaper $escaper
      */
@@ -67,12 +73,14 @@ class AddToCart implements ObserverInterface
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         ServerSideHelper $serverSideHelper,
+        ServerEventFactory $serverEventFactory,
         RequestInterface $request,
         Escaper $escaper
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->serverSideHelper = $serverSideHelper;
+        $this->serverEventFactory = $serverEventFactory;
         $this->request = $request;
         $this->escaper = $escaper;
     }
@@ -107,7 +115,7 @@ class AddToCart implements ObserverInterface
                         'pluginVersion'    => $this->fbeHelper->getPluginVersion()
                     ]
                 ];
-                $event = ServerEventFactory::createEvent('AddToCart', $customData, $eventId);
+                $event = $this->serverEventFactory->createEvent('AddToCart', $customData, $eventId);
                 $this->serverSideHelper->sendEvent($event);
             }
         } catch (\Exception $e) {

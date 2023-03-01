@@ -21,10 +21,12 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class DefaultOrderStatus implements OptionSourceInterface
 {
-    const ORDER_STATUS_PENDING = 'pending';
-    const ORDER_STATUS_PROCESSING = 'processing';
+    public const ORDER_STATUS_PENDING = 'pending';
+    public const ORDER_STATUS_PROCESSING = 'processing';
 
     /**
+     * Covert options to array
+     *
      * @return array
      */
     public function toOptionArray()

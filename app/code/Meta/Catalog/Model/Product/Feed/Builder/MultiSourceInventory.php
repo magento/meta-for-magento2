@@ -85,7 +85,7 @@ class MultiSourceInventory implements InventoryInterface
      * @param int $stockId
      * @return bool
      */
-    private function getStockStatus(Product $product, int $stockId): bool
+    private function isInStock(Product $product, int $stockId): bool
     {
         try {
             return $this->isProductSalableInterface->execute(
@@ -128,7 +128,7 @@ class MultiSourceInventory implements InventoryInterface
         $stockId = $this->stockByWebsiteIdResolver->execute($websiteId)->getStockId();
 
         $this->product = $product;
-        $this->stockStatus = $this->getStockStatus($product, $stockId);
+        $this->stockStatus = $this->isInStock($product, $stockId);
         $this->stockQty = $this->getStockQty($product, $stockId);
         return $this;
     }

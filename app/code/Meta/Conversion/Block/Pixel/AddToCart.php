@@ -23,6 +23,8 @@ namespace Meta\Conversion\Block\Pixel;
 class AddToCart extends Common
 {
     /**
+     * Get product info url
+     *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */

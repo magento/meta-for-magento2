@@ -17,23 +17,51 @@
 
 namespace Meta\Conversion\Test\Unit\Helper;
 
+use Magento\Customer\Model\Customer;
+use Magento\Framework\App\Request\Http;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\Conversion\Helper\AAMSettingsFields;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\ServerEventFactory;
-
+use Magento\Customer\Api\CustomerMetadataInterface;
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use FacebookAds\Object\ServerSide\Normalizer;
 use PHPUnit\Framework\TestCase;
+use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Customer\Model\AddressFactory;
 
 class AAMFieldsExtractorHelperTest extends TestCase
 {
-    protected $magentoDataHelper;
+    /**
+     * @var MagentoDataHelper
+     */
+    private MagentoDataHelper $magentoDataHelper;
 
-    protected $fbeHelper;
+    /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
 
-    protected $aamFieldsExtractorHelper;
+    /**
+     * @var AAMFieldsExtractorHelper
+     */
+    private AAMFieldsExtractorHelper $aamFieldsExtractorHelper;
+
+    /**
+     * @var CustomerMetadataInterface
+     */
+    private CustomerMetadataInterface $customerMetadata;
+
+    /**
+     * @var CustomerSession
+     */
+    private CustomerSession $customerSession;
+
+    /**
+     * @var AddressFactory
+     */
+    private AddressFactory $addressFactory;
 
     /**
      * Used to set the values before running a test
@@ -44,50 +72,21 @@ class AAMFieldsExtractorHelperTest extends TestCase
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $this->magentoDataHelper = $this->createMock(MagentoDataHelper::class);
+        $this->customerMetadata = $this->createMock(CustomerMetadataInterface::class);
+        $this->customerSession = $this->createMock(CustomerSession::class);
+        $this->addressFactory = $this->createMock(AddressFactory::class);
         $this->aamFieldsExtractorHelper = new AAMFieldsExtractorHelper(
             $this->magentoDataHelper,
-            $this->fbeHelper
+            $this->fbeHelper,
+            $this->customerMetadata,
+            $this->addressFactory
         );
-        $this->createDummyUserData();
-    }
-
-    public function createDummyUserData()
-    {
-        $userData1 = [
-        AAMSettingsFields::EMAIL => 'abc@mail.com',
-        AAMSettingsFields::LAST_NAME => 'Perez',
-        AAMSettingsFields::FIRST_NAME => 'Pedro',
-        AAMSettingsFields::PHONE => '567891234',
-        AAMSettingsFields::GENDER => 'Male',
-        AAMSettingsFields::EXTERNAL_ID => '1',
-        AAMSettingsFields::COUNTRY => 'US',
-        AAMSettingsFields::CITY => 'Seattle',
-        AAMSettingsFields::STATE => 'WA',
-        AAMSettingsFields::ZIP_CODE => '12345',
-        AAMSettingsFields::DATE_OF_BIRTH => '1990-06-11',
-        ];
-        $userData2 = [
-        AAMSettingsFields::EMAIL => 'def@mail.com',
-        AAMSettingsFields::LAST_NAME => 'Homer',
-        AAMSettingsFields::FIRST_NAME => 'Simpson',
-        AAMSettingsFields::PHONE => '12345678',
-        AAMSettingsFields::GENDER => 'Male',
-        AAMSettingsFields::EXTERNAL_ID => '2',
-        AAMSettingsFields::COUNTRY => 'US',
-        AAMSettingsFields::CITY => 'Springfield',
-        AAMSettingsFields::STATE => 'OH',
-        AAMSettingsFields::ZIP_CODE => '12345',
-        AAMSettingsFields::DATE_OF_BIRTH => '1982-06-11',
-        ];
-
-        $this->magentoDataHelper->method('getUserDataFromSession')->willReturn($userData1);
-        $this->magentoDataHelper->method('getUserDataFromOrder')->willReturn($userData2);
     }
 
     public function testUserDataArrayIsNullWhenAamNotFound()
     {
         $this->fbeHelper->method('getAAMSettings')->willReturn(null);
-        $this->assertNull($this->aamFieldsExtractorHelper->getNormalizedUserData());
+        $this->assertNull($this->aamFieldsExtractorHelper->getNormalizedUserData($this->getCustomer()));
     }
 
     public function testUserDataArrayIsNullWhenAamDisabled()
@@ -95,26 +94,29 @@ class AAMFieldsExtractorHelperTest extends TestCase
         $settings = new AdsPixelSettings();
         $settings->setEnableAutomaticMatching(false);
         $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
-        $this->assertNull($this->aamFieldsExtractorHelper->getNormalizedUserData());
+        $this->assertNull($this->aamFieldsExtractorHelper->getNormalizedUserData($this->getCustomer()));
     }
 
-    public function testReturnDataFromSessionWhenAAMEnabled()
+    /**
+     * @dataProvider userDataFromSessionDataProvider
+     * @param array $userDataFromSession
+     * @return void
+     */
+    public function testReturnDataFromSessionWhenAAMEnabled(array $userDataFromSession): void
     {
         // Enabling all aam fields
         $settings = new AdsPixelSettings();
         $settings->setEnableAutomaticMatching(true);
         $settings->setEnabledAutomaticMatchingFields(
-            AAMSettingsFields::getAllFields()
+            AAMSettingsFields::ALL_FIELDS
         );
 
         $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
 
-        $userDataFromSession = $this->magentoDataHelper->getUserDataFromSession();
-
         // Getting the default user data
-        $userData = $this->aamFieldsExtractorHelper->getNormalizedUserData();
+        $userData = $this->aamFieldsExtractorHelper->getNormalizedUserData(null, $userDataFromSession);
 
-        foreach (AAMSettingsFields::getAllFields() as $field) {
+        foreach (AAMSettingsFields::ALL_FIELDS as $field) {
             $this->assertArrayHasKey($field, $userData);
             $expectedValue = $userDataFromSession[$field];
             if ($field == AAMSettingsFields::GENDER) {
@@ -128,22 +130,26 @@ class AAMFieldsExtractorHelperTest extends TestCase
         }
     }
 
-    public function testReturnUserDataFromArgumentWhenAAMEnabled()
+    /**
+     * @dataProvider userDataFromOrderDataProvider
+     * @param array $userDataFromOrder
+     * @return void
+     */
+    public function testReturnUserDataFromArgumentWhenAAMEnabled(array $userDataFromOrder)
     {
         // Enabling all aam fields
         $settings = new AdsPixelSettings();
         $settings->setEnableAutomaticMatching(true);
         $settings->setEnabledAutomaticMatchingFields(
-            AAMSettingsFields::getAllFields()
+            AAMSettingsFields::ALL_FIELDS
         );
 
         $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
 
-        $userDataFromOrder = $this->magentoDataHelper->getUserDataFromOrder();
         // Passing an argument to normalize and filter
-        $userData = $this->aamFieldsExtractorHelper->getNormalizedUserData($userDataFromOrder);
+        $userData = $this->aamFieldsExtractorHelper->getNormalizedUserData($this->getCustomer(), $userDataFromOrder);
 
-        foreach (AAMSettingsFields::getAllFields() as $field) {
+        foreach (AAMSettingsFields::ALL_FIELDS as $field) {
             $this->assertArrayHasKey($field, $userData);
             $expectedValue = $userDataFromOrder[$field];
             if ($field == AAMSettingsFields::GENDER) {
@@ -157,6 +163,13 @@ class AAMFieldsExtractorHelperTest extends TestCase
         }
     }
 
+    /**
+     * @param $fieldsSubset
+     * @param $userData
+     * @return void
+     * @SuppressWarnings(PHPMD)
+     * Unable to refactor because UserData object from Facebook SDK does not have generic setter function
+     */
     private function assertOnlyRequestedFieldsPresentInUserData($fieldsSubset, $userData)
     {
         $fieldsPresent = [];
@@ -198,7 +211,14 @@ class AAMFieldsExtractorHelperTest extends TestCase
         $this->assertEquals($fieldsSubset, $fieldsPresent);
     }
 
-    private function assertOnlyRequestedFieldsPresentInUserDataArray($fieldsSubset, $userDataArray)
+    /**
+     * Assert only requested fields present in user data array
+     *
+     * @param array $fieldsSubset
+     * @param array $userDataArray
+     * @return void
+     */
+    private function assertOnlyRequestedFieldsPresentInUserDataArray(array $fieldsSubset, array $userDataArray)
     {
         $this->assertEquals(count($fieldsSubset), count($userDataArray));
         foreach ($fieldsSubset as $field) {
@@ -206,44 +226,137 @@ class AAMFieldsExtractorHelperTest extends TestCase
         }
     }
 
-    private function createSubset($fields)
+    /**
+     * Create a random subset of the list of fields provided as parameter
+     *
+     * @param array $fields
+     * @return array
+     */
+    private function createSubset(array $fields): array
     {
         shuffle($fields);
-        $randNum = rand()%count($fields);
+        $randNum = rand() % count($fields);
         $subset = [];
-        for ($i = 0; $i < $randNum; $i+=1) {
+        for ($i = 0; $i < $randNum; ++$i) {
             $subset[] = $fields[$i];
         }
         return $subset;
     }
 
-    public function testArrayWithRequestedUserDataWhenAamEnabled()
+    /**
+     * Test array with requested user data when AAM enabled
+     *
+     * @dataProvider userDataFromSessionDataProvider
+     * @param array $userDataFromSession
+     * @return void
+     */
+    public function testArrayWithRequestedUserDataWhenAamEnabled(array $userDataFromSession)
     {
-        $possibleFields = AAMSettingsFields::getAllFields();
+        $possibleFields = AAMSettingsFields::ALL_FIELDS;
         $settings = new AdsPixelSettings();
         $settings->setEnableAutomaticMatching(true);
         $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
-        for ($i = 0; $i<25; ++$i) {
+        for ($i = 0; $i < 25; ++$i) {
             $fieldsSubset = $this->createSubset($possibleFields);
             $settings->setEnabledAutomaticMatchingFields($fieldsSubset);
-            $userDataArray = $this->aamFieldsExtractorHelper->getNormalizedUserData();
+            $userDataArray = $this->aamFieldsExtractorHelper->getNormalizedUserData(
+                $this->getCustomer(),
+                $userDataFromSession
+            );
             $this->assertOnlyRequestedFieldsPresentInUserDataArray($fieldsSubset, $userDataArray);
         }
     }
 
-    public function testEventWithRequestedUserDataWhenAamEnabled()
+    /**
+     * Test event with requested user data when AAM enabled
+     *
+     * @dataProvider userDataFromOrderDataProvider
+     * @param array $userDataFromOrder
+     * @return void
+     */
+    public function testEventWithRequestedUserDataWhenAamEnabled(array $userDataFromOrder): void
     {
-        $possibleFields = AAMSettingsFields::getAllFields();
+        $possibleFields = AAMSettingsFields::ALL_FIELDS;
         $settings = new AdsPixelSettings();
         $settings->setEnableAutomaticMatching(true);
         $this->fbeHelper->method('getAAMSettings')->willReturn($settings);
-        for ($i = 0; $i<25; ++$i) {
+        for ($i = 0; $i < 25; ++$i) {
             $fieldsSubset = $this->createSubset($possibleFields);
             $settings->setEnabledAutomaticMatchingFields($fieldsSubset);
-            $event = ServerEventFactory::createEvent('ViewContent', []);
-            $event = $this->aamFieldsExtractorHelper->setUserData($event);
+            $httpRequestMock = $this->createMock(Http::class);
+            $httpRequestMock->method('getServerValue')->willReturn([]);
+            $serverEventFactory = new ServerEventFactory($httpRequestMock, []);
+            $event = $serverEventFactory->createEvent('ViewContent', []);
+            $event = $this->aamFieldsExtractorHelper->setUserData($event, $userDataFromOrder);
             $userData = $event->getUserData();
             $this->assertOnlyRequestedFieldsPresentInUserData($fieldsSubset, $userData);
         }
+    }
+
+    /**
+     * Get logged in customer
+     *
+     * @return Customer|null
+     */
+    private function getCustomer(): ?Customer
+    {
+        if (!$this->customerSession->isLoggedIn()) {
+            return null;
+        }
+
+        return $this->customerSession->getCustomer();
+    }
+
+    /**
+     * User data from session data provider
+     *
+     * @return array
+     */
+    public function userDataFromSessionDataProvider(): array
+    {
+        return [
+            [
+                'user_data' => [
+                    AAMSettingsFields::EMAIL => 'abc@mail.com',
+                    AAMSettingsFields::LAST_NAME => 'Perez',
+                    AAMSettingsFields::FIRST_NAME => 'Pedro',
+                    AAMSettingsFields::PHONE => '567891234',
+                    AAMSettingsFields::GENDER => 'Male',
+                    AAMSettingsFields::EXTERNAL_ID => '1',
+                    AAMSettingsFields::COUNTRY => 'US',
+                    AAMSettingsFields::CITY => 'Seattle',
+                    AAMSettingsFields::STATE => 'WA',
+                    AAMSettingsFields::ZIP_CODE => '12345',
+                    AAMSettingsFields::DATE_OF_BIRTH => '1990-06-11',
+
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * User data from order data provider
+     *
+     * @return array
+     */
+    public function userDataFromOrderDataProvider(): array
+    {
+        return [
+            [
+                'user_data' => [
+                    AAMSettingsFields::EMAIL => 'def@mail.com',
+                    AAMSettingsFields::LAST_NAME => 'Homer',
+                    AAMSettingsFields::FIRST_NAME => 'Simpson',
+                    AAMSettingsFields::PHONE => '12345678',
+                    AAMSettingsFields::GENDER => 'Male',
+                    AAMSettingsFields::EXTERNAL_ID => '2',
+                    AAMSettingsFields::COUNTRY => 'US',
+                    AAMSettingsFields::CITY => 'Springfield',
+                    AAMSettingsFields::STATE => 'OH',
+                    AAMSettingsFields::ZIP_CODE => '12345',
+                    AAMSettingsFields::DATE_OF_BIRTH => '1982-06-11',
+                ]
+            ]
+        ];
     }
 }

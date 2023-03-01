@@ -82,6 +82,8 @@ class Diagnostics extends Text
     }
 
     /**
+     * Get store id
+     *
      * @param string $storeId
      * @return $this
      */
@@ -92,6 +94,8 @@ class Diagnostics extends Text
     }
 
     /**
+     * Set product
+     *
      * @param ProductInterface $product
      * @return $this
      */
@@ -102,6 +106,8 @@ class Diagnostics extends Text
     }
 
     /**
+     * Get product diagnostics
+     *
      * @return array
      * @throws GuzzleException
      */

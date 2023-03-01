@@ -1,4 +1,9 @@
-<?php /* @var $block \Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed */ ?>
+<?php
+/**
+ * @var Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
+?>
 <script>
     require([
         'jquery',
@@ -15,7 +20,7 @@
         jQuery('#fb_category_upload_btn').click(function () {
             const params = {};
             console.log("here");
-            new Ajax.Request('<?= $block->getAjaxUrl() ?>', {
+            new Ajax.Request('<?= $block->escapeUrl($block->getAjaxUrl()) ?>', {
                 parameters: params,
                 loaderArea: false,
                 asynchronous: true,
@@ -51,9 +56,12 @@
 
 <?= $block->getButtonHtml() ?>
 <span id="fb_category_upload_result">
-    <img class="fb-category-upload-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src="<?= $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
-    <img class="fb-category-upload-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src="<?= $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <img class="fb-category-upload-processing" hidden="hidden" alt="Processing" style="margin:0 5px"
+         src="<?= $escaper->escapeUrl($block->getViewFileUrl('images/process_spinner.gif')) ?>"/>
+    <img class="fb-category-upload-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"
+         src="<?= $escaper->escapeUrl($block->getViewFileUrl('images/rule_component_apply.gif')) ?>"/>
     <span id="fb_category_upload_result_text"></span>
-    <span id="fb_category_upload_result_response_toggle" style="display: none; cursor: pointer; color: #888a85; text-decoration: underline;">(response)</span>
+    <span id="fb_category_upload_result_response_toggle"
+          style="display: none; cursor: pointer; color: #888a85; text-decoration: underline;">(response)</span>
     <span id="fb_category_upload_result_response" style="display: none; color: #888a85; font-size: 13px;"></span>
 </span>

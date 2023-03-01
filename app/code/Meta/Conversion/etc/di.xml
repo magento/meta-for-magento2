@@ -4,4 +4,19 @@
     <type name="Meta\Conversion\Helper\ServerSideHelper">
         <plugin name="capi_events_modifier_plugin" type="Meta\Conversion\Plugin\CAPIEventsModifierPlugin" sortOrder="1" disabled="false" />
     </type>
+    <type name="Meta\Conversion\Helper\ServerEventFactory">
+        <arguments>
+            <argument name="customDataMapping" xsi:type="array">
+                <item name="currency" xsi:type="string">setCurrency</item>
+                <item name="value" xsi:type="string">setValue</item>
+                <item name="content_ids" xsi:type="string">setContentIds</item>
+                <item name="content_type" xsi:type="string">setContentType</item>
+                <item name="content_name" xsi:type="string">setContentName</item>
+                <item name="content_category" xsi:type="string">setContentCategory</item>
+                <item name="search_string" xsi:type="string">setSearchString</item>
+                <item name="num_items" xsi:type="string">setNumItems</item>
+                <item name="order_id" xsi:type="string">setOrderId</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

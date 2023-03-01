@@ -83,6 +83,8 @@ class SendToFacebook extends AbstractModifier
     }
 
     /**
+     * Get store Id
+     *
      * @return mixed
      */
     private function getStoreId()
@@ -91,6 +93,8 @@ class SendToFacebook extends AbstractModifier
     }
 
     /**
+     * Get if extension is active
+     *
      * @return bool
      */
     private function isActive(): bool

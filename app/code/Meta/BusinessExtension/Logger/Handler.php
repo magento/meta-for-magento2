@@ -29,7 +29,6 @@ class Handler extends Base
     protected $loggerType = Logger::INFO;
 
   /**
-   * File name
    * @var string
    */
     protected $fileName = '/var/log/facebook-business-extension.log';

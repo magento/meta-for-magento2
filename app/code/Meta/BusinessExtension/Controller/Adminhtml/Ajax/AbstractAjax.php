@@ -23,8 +23,10 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Security\Model\AdminSessionsManager;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 
-abstract class AbstractAjax extends Action
+abstract class AbstractAjax extends Action implements HttpPostActionInterface
 {
     /**
      * @var JsonFactory
@@ -37,6 +39,8 @@ abstract class AbstractAjax extends Action
     private $fbeHelper;
 
     /**
+     * Construct
+     *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
@@ -51,9 +55,16 @@ abstract class AbstractAjax extends Action
         $this->fbeHelper = $fbeHelper;
     }
 
+    /**
+     * Execute for json
+     *
+     * @return array
+     */
     abstract public function executeForJson();
 
     /**
+     * Execute function
+     *
      * @throws Exception
      */
     public function execute()
@@ -64,16 +75,16 @@ abstract class AbstractAjax extends Action
             ->createObject(AdminSessionsManager::class)
             ->getCurrentSession();
         if (!$adminSession && $adminSession->getStatus() != 1) {
-            throw new Exception('Oops, this endpoint is for logged in admin and ajax only!');
+            throw new LocalizedException(__('Oops, this endpoint is for logged in admin and ajax only!'));
         } else {
             try {
                 $json = $this->executeForJson();
                 return $result->setData($json);
             } catch (Exception $e) {
                 $this->fbeHelper->logCritical($e->getMessage());
-                throw new Exception(
-                    'Oops, there was error while processing your request.' .
-                    ' Please contact admin for more details.'
+                throw new LocalizedException(
+                    __('Oops, there was error while processing your request.' .
+                    ' Please contact admin for more details.')
                 );
             }
         }

@@ -55,7 +55,7 @@ class Notification implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getIdentity()
     {
@@ -63,7 +63,7 @@ class Notification implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isDisplayed()
     {
@@ -78,16 +78,17 @@ class Notification implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getText()
     {
         $url = $this->urlBuilder->getUrl('adminhtml/system_config/edit/section/facebook_business_extension');
-        return __('Meta Business Extension: Complete the setup by configuring <a href="%1">Shipping Methods Mapping</a>.', $url);
+        $text = 'Meta Business Extension: Complete the setup by configuring <a href="%1">Shipping Methods Mapping</a>.';
+        return __($text, $url);
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getSeverity()
     {
@@ -95,12 +96,14 @@ class Notification implements MessageInterface
     }
 
     /**
-     * @param $storeId
+     * Check if shipping mapping configured.
+     *
+     * @param int $storeId
      * @return bool
      */
     private function isShippingMappingConfigured($storeId)
     {
-        foreach ($this->systemConfig->getShippingMethodsMap($storeId) as $key => $value) {
+        foreach ($this->systemConfig->getShippingMethodsMap($storeId) as $value) {
             if ($value !== null) {
                 return true;
             }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="_defaultMetaCategory" type="category" extends="_defaultCategory">
+        <data key="name">consoles</data>
+        <data key="name_lwr">consoles</data>
+        <data key="urlKey" unique="suffix">consoles</data>
+        <data key="parent_id">2</data>
+        <data key="include_in_menu">true</data>
+    </entity>
+</entities>

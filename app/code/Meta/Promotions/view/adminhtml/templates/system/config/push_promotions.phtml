@@ -15,7 +15,7 @@
 
         jQuery('#fb_push_promotions_btn').click(function () {
             const params = {};
-            new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+            new Ajax.Request('<?= $block->escapeUrl($block->getAjaxUrl()) ?>', {
                 parameters: params,
                 loaderArea: false,
                 asynchronous: true,
@@ -48,19 +48,32 @@
     });
 </script>
 
-<?php echo $block->getButtonHtml() ?>
+<?= $block->getButtonHtml() ?>
 <span id="fb_push_promotions_result">
-    <img class="fb-push-promotions-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src="<?php echo $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
-    <img class="fb-push-promotions-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <img class="fb-push-promotions-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src=
+        "<?= $block->escapeUrl($block->getViewFileUrl('images/process_spinner.gif')) ?>"
+    />
+    <img class="fb-push-promotions-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src=
+        "<?= $block->escapeUrl($block->getViewFileUrl('images/rule_component_apply.gif')) ?>"
+    />
     <span id="fb_push_promotions_result_text"></span>
-    <span id="fb_push_promotions_result_response_toggle" style="display: none; cursor: pointer; color: #888a85; text-decoration: underline;">(response)</span>
-    <div id="fb_push_promotions_result_response" style="display: none; color: #888a85; font-size: 13px; max-width: 459px; margin: 2px 0;"></div>
+    <span id="fb_push_promotions_result_response_toggle"
+          style="display: none;
+          cursor: pointer;
+          color: #888a85;
+          text-decoration: underline;">(response)</span>
+    <div id="fb_push_promotions_result_response"
+         style="display: none;
+         color: #888a85;
+         font-size: 13px;
+         max-width: 459px;
+         margin: 2px 0;"></div>
 </span>
 
-<p class="note"><span><?= __('Manually push promotions on Magento to Facebook') ?></span></p>
+<p class="note"><span><?= __(/* @noEscape */ 'Manually push promotions on Magento to Facebook') ?></span></p>
 
-<?php if ($block->getCommerceAccountId()) :  ?>
-    <p><a target="_blank" href="<?= $block->getCommerceManagerPromotionsUrl() ?> ">
-        <?= __('Promotions in Commerce Manager') ?></a>
+<?php if ($block->getCommerceAccountId()): ?>
+    <p><a target="_blank" href="<?= $block->escapeUrl($block->getCommerceManagerPromotionsUrl()) ?> ">
+        <?= __(/* @noEscape */'Promotions in Commerce Manager') ?></a>
     </p>
 <?php endif; ?>

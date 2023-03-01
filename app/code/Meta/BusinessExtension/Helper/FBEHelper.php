@@ -17,38 +17,22 @@
 
 namespace Meta\BusinessExtension\Helper;
 
-use Magento\Newsletter\Model\Subscriber;
-use Magento\Newsletter\Model\SubscriptionManager;
 use Meta\BusinessExtension\Logger\Logger;
-use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\ProductMetadata as FrameworkProductMetaData;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\HTTP\Client\Curl;
-use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\UrlInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
-class FBEHelper extends AbstractHelper
+class FBEHelper
 {
-    private const MAIN_WEBSITE_STORE = 'Main Website Store';
-    private const MAIN_STORE = 'Main Store';
-    private const MAIN_WEBSITE = 'Main Website';
-
     public const FB_GRAPH_BASE_URL = "https://graph.facebook.com/";
 
-    private const CURRENT_API_VERSION = "v15.0";
-
     private const MODULE_NAME = "Meta_BusinessExtension";
+
+    private const URL_TYPE_WEB = 'web';
 
     /**
      * @var ObjectManagerInterface
@@ -66,21 +50,6 @@ class FBEHelper extends AbstractHelper
     private $logger;
 
     /**
-     * @var Curl
-     */
-    private $curl;
-
-    /**
-     * @var ResourceConnection
-     */
-    private $resourceConnection;
-
-    /**
-     * @var ModuleListInterface
-     */
-    private $moduleList;
-
-    /**
      * @var SystemConfig
      */
     private $systemConfig;
@@ -93,34 +62,22 @@ class FBEHelper extends AbstractHelper
     /**
      * FBEHelper constructor
      *
-     * @param Context $context
      * @param ObjectManagerInterface $objectManager
      * @param Logger $logger
      * @param StoreManagerInterface $storeManager
-     * @param Curl $curl
-     * @param ResourceConnection $resourceConnection
-     * @param ModuleListInterface $moduleList
      * @param SystemConfig $systemConfig
      * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
-        Context $context,
         ObjectManagerInterface $objectManager,
         Logger $logger,
         StoreManagerInterface $storeManager,
-        Curl $curl,
-        ResourceConnection $resourceConnection,
-        ModuleListInterface $moduleList,
         SystemConfig $systemConfig,
         ProductMetadataInterface $productMetadata
     ) {
-        parent::__construct($context);
         $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
-        $this->curl = $curl;
-        $this->resourceConnection = $resourceConnection;
-        $this->moduleList = $moduleList;
         $this->systemConfig = $systemConfig;
         $this->productMetadata = $productMetadata;
     }
@@ -138,11 +95,11 @@ class FBEHelper extends AbstractHelper
     /**
      * Get plugin version
      *
-     * @return mixed
+     * @return string
      */
-    public function getPluginVersion()
+    public function getPluginVersion(): string
     {
-        return $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
+        return $this->systemConfig->getModuleVersion();
     }
 
     /**
@@ -152,7 +109,8 @@ class FBEHelper extends AbstractHelper
      */
     public function getSource(): string
     {
-        return $this->productMetadata->getEdition() == FrameworkProductMetaData::EDITION_NAME ? 'magento_opensource' : 'adobe_commerce';
+        return $this->productMetadata->getEdition() == FrameworkProductMetaData::EDITION_NAME
+            ? 'magento_opensource' : 'adobe_commerce';
     }
 
     /**
@@ -181,16 +139,6 @@ class FBEHelper extends AbstractHelper
     {
         $urlInterface = $this->getObject(\Magento\Backend\Model\UrlInterface::class);
         return $urlInterface->getUrl($partialURL);
-    }
-
-    /**
-     * Get base url media
-     *
-     * @return mixed
-     */
-    public function getBaseUrlMedia()
-    {
-        return $this->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
     }
 
     /**
@@ -245,7 +193,7 @@ class FBEHelper extends AbstractHelper
     public function getBaseUrl()
     {
         // Use this function to get a base url respect to host protocol
-        return $this->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
+        return $this->getStore()->getBaseUrl(self::URL_TYPE_WEB);
     }
 
     /**
@@ -263,34 +211,6 @@ class FBEHelper extends AbstractHelper
         $storeId = $this->getStore()->getId();
         $this->log("Store id---" . $storeId);
         return uniqid('fbe_magento_' . $storeId . '_');
-    }
-
-    /**
-     * Get store name
-     *
-     * @return array|false|int|string|null
-     */
-    public function getStoreName()
-    {
-        $frontendName = $this->getStore()->getFrontendName();
-        if ($frontendName !== 'Default') {
-            return $frontendName;
-        }
-        $defaultStoreName = $this->getStore()->getGroup()->getName();
-        $escapeStrings = ['\r', '\n', '&nbsp;', '\t'];
-        $defaultStoreName =
-            trim(str_replace($escapeStrings, ' ', $defaultStoreName));
-        if (!$defaultStoreName) {
-            $defaultStoreName = $this->getStore()->getName();
-            $defaultStoreName =
-                trim(str_replace($escapeStrings, ' ', $defaultStoreName));
-        }
-        if ($defaultStoreName && $defaultStoreName !== self::MAIN_WEBSITE_STORE
-            && $defaultStoreName !== self::MAIN_STORE
-            && $defaultStoreName !== self::MAIN_WEBSITE) {
-            return $defaultStoreName;
-        }
-        return parse_url($this->getBaseUrl(), PHP_URL_HOST); // phpcs:ignore
     }
 
     /**
@@ -326,90 +246,6 @@ class FBEHelper extends AbstractHelper
     }
 
     /**
-     * Get api version
-     *
-     * @return string|void|null
-     */
-    public function getAPIVersion()
-    {
-        $accessToken = $this->systemConfig->getAccessToken();
-        if (!$accessToken) {
-            $this->log("can't find access token, won't get api update version ");
-            return;
-        }
-        $apiVersion = null;
-        try {
-            $apiVersion = $this->systemConfig->getApiVersion();
-            //$this->log("Current api version : ".$apiVersion);
-            $versionLastUpdate = $this->systemConfig->getApiVersionLastUpdate();
-            //$this->log("Version last update: ".$versionLastUpdate);
-            $isUpdatedVersion = $this->isUpdatedVersion($versionLastUpdate);
-            if ($apiVersion && $isUpdatedVersion) {
-                //$this->log("Returning the version already stored in db : ".$apiVersion);
-                return $apiVersion;
-            }
-            $this->curl->addHeader("Authorization", "Bearer " . $accessToken);
-            $this->curl->get(self::FB_GRAPH_BASE_URL . 'api_version');
-            //$this->log("The API call: ".self::FB_GRAPH_BASE_URL.'api_version');
-            $response = $this->curl->getBody();
-            //$this->log("The API reponse : ".json_encode($response));
-            $decodeResponse = json_decode($response);
-            $apiVersion = $decodeResponse->api_version;
-            //$this->log("The version fetched via API call: ".$apiVersion);
-            $this->systemConfig->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION,
-                $apiVersion
-            );
-            $date = new \DateTime();
-            $this->systemConfig->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
-                $date->format('Y-m-d H:i:s')
-            );
-
-        } catch (\Exception $e) {
-            $this->log("Failed to fetch latest api version with error " . $e->getMessage());
-        }
-
-        return $apiVersion ? $apiVersion : self::CURRENT_API_VERSION;
-    }
-
-    /**
-     * Query fbe installs
-     *
-     * * TODO decide which ids we want to return for commerce feature
-     * This function queries FBE assets and other commerce related assets. We have stored most of them during FBE setup,
-     * such as BM, Pixel, catalog, profiles, ad_account_id. We might want to store or query ig_profiles,
-     * commerce_merchant_settings_id, pages in the future.
-     * API dev doc https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features
-     * Here is one example response, we would expect commerce_merchant_settings_id as well in commerce flow
-     * {"data":[{"business_manager_id":"12345","onsite_eligible":false,"pixel_id":"12333","profiles":["112","111"],
-     * "ad_account_id":"111","catalog_id":"111","pages":["111"],"instagram_profiles":["111"]}]}
-     *  usage: $_bm = $_assets['business_manager_ids'];
-     *
-     * @param int $storeId
-     * @param string $external_business_id
-     * @return void
-     */
-    public function queryFBEInstalls($storeId, $external_business_id = null)
-    {
-        if ($external_business_id == null) {
-            $external_business_id = $this->getFBEExternalBusinessId($storeId);
-        }
-        $accessToken = $this->systemConfig->getAccessToken();
-        $urlSuffix = "/fbe_business/fbe_installs?fbe_external_business_id=" . $external_business_id;
-        $url = $this::FB_GRAPH_BASE_URL . $this->getAPIVersion() . $urlSuffix;
-        $this->log($url);
-        try {
-            $this->curl->addHeader("Authorization", "Bearer " . $accessToken);
-            $this->curl->get($url);
-            $response = $this->curl->getBody();
-            $this->log("The FBE Install reponse : " . json_encode($response));
-        } catch (\Exception $e) {
-            $this->log("Failed to query FBEInstalls" . $e->getMessage());
-        }
-    }
-
-    /**
      * Log pixel event
      *
      * @param string $pixelId
@@ -418,62 +254,6 @@ class FBEHelper extends AbstractHelper
     public function logPixelEvent($pixelId, $pixelEvent)
     {
         $this->log($pixelEvent . " event fired for Pixel id : " . $pixelId);
-    }
-
-    /**
-     * Delete config keys
-     *
-     * @param string $storeId
-     * @return FBEHelper
-     */
-    public function deleteConfigKeys($storeId)
-    {
-        $this->systemConfig->deleteConfig(
-            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID,
-            $storeId
-        )
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION, $storeId)
-            ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE, $storeId);
-
-        return $this;
-    }
-
-
-    /**
-     * Is updated version
-     *
-     * @param string $versionLastUpdate
-     * @return bool|null
-     */
-    public function isUpdatedVersion($versionLastUpdate)
-    {
-        if (!$versionLastUpdate) {
-            return null;
-        }
-        $monthsSinceLastUpdate = 3;
-        try {
-            $datetime1 = new \DateTime($versionLastUpdate);
-            $datetime2 = new \DateTime();
-            $interval = date_diff($datetime1, $datetime2);
-            $interval_vars = get_object_vars($interval);
-            $monthsSinceLastUpdate = $interval_vars['m'];
-            $this->log("Months since last update : " . $monthsSinceLastUpdate);
-        } catch (\Exception $e) {
-            $this->log($e->getMessage());
-        }
-        // Since the previous version is valid for 3 months,
-        // I will check to see for the gap to be only 2 months to be safe.
-        return $monthsSinceLastUpdate <= 2;
     }
 
     /**
@@ -555,61 +335,5 @@ class FBEHelper extends AbstractHelper
             return $this->saveAAMSettings($settings, $storeId);
         }
         return null;
-    }
-
-    /**
-     * Generates a map of the form : 4 => "Root > Mens > Shoes"
-     *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     * @return array
-     */
-    public function generateCategoryNameMap()
-    {
-        $categories = $this->getObject(CategoryCollection::class)
-            ->addAttributeToSelect('name')
-            ->addAttributeToSelect('path')
-            ->addAttributeToSelect('is_active')
-            ->addAttributeToFilter('is_active', 1);
-        $name = [];
-        $breadcrumb = [];
-        foreach ($categories as $category) {
-            $entityId = $category->getId();
-            $name[$entityId] = $category->getName();
-            $breadcrumb[$entityId] = $category->getPath();
-        }
-        // Converts the product category paths to human readable form.
-        // e.g.  "1/2/3" => "Root > Mens > Shoes"
-        foreach ($name as $id => $value) {
-            $breadcrumb[$id] = implode(" > ", array_filter(array_map(
-                function ($innerId) use (&$name) {
-                    return isset($name[$innerId]) ? $name[$innerId] : null;
-                },
-                explode("/", $breadcrumb[$id])
-            )));
-        }
-        return $breadcrumb;
-    }
-
-    /**
-     * Subscribe to newsletter
-     *
-     * @param string $email
-     * @param int $storeId
-     * @return $this
-     */
-    public function subscribeToNewsletter($email, $storeId)
-    {
-        $subscriptionClass = '\Magento\Newsletter\Model\SubscriptionManager'; // phpcs:ignore
-        if (class_exists($subscriptionClass) && method_exists($subscriptionClass, 'subscribe')) {
-            /** @var SubscriptionManager $subscriptionManager */
-            $subscriptionManager = $this->createObject(SubscriptionManager::class);
-            $subscriptionManager->subscribe($email, $storeId);
-        } else {
-            // for older Magento versions (2.3 and below)
-            /** @var Subscriber $subscriber */
-            $subscriber = $this->createObject(Subscriber::class);
-            $subscriber->subscribe($email);
-        }
-        return $this;
     }
 }

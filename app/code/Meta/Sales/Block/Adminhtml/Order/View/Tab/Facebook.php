@@ -27,8 +27,6 @@ use Magento\Sales\Model\Order;
 class Facebook extends Template implements TabInterface
 {
     /**
-     * Template
-     *
      * @var string
      */
     protected $_template = 'Meta_Sales::order/view/tab/facebook.phtml';
@@ -87,7 +85,7 @@ class Facebook extends Template implements TabInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTabLabel()
     {
@@ -95,7 +93,7 @@ class Facebook extends Template implements TabInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTabTitle()
     {
@@ -103,6 +101,8 @@ class Facebook extends Template implements TabInterface
     }
 
     /**
+     * Get facebook order id
+     *
      * @return string|null
      */
     public function getFacebookOrderId()
@@ -111,6 +111,8 @@ class Facebook extends Template implements TabInterface
     }
 
     /**
+     * Check if order is facebbok order
+     *
      * @return bool
      */
     public function isFacebookOrder()
@@ -119,6 +121,8 @@ class Facebook extends Template implements TabInterface
     }
 
     /**
+     * Get order's facebook url
+     *
      * @return string
      */
     public function getOrderFacebookUrl()
@@ -131,6 +135,8 @@ class Facebook extends Template implements TabInterface
     }
 
     /**
+     * Check if email remarketing is allowed for order
+     *
      * @return bool
      */
     public function isEmailRemarketingAllowedForOrder()

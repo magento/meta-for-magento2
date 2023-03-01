@@ -17,11 +17,13 @@
 
 namespace Meta\Conversion\Observer;
 
+use Magento\Quote\Api\Data\CartInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 
 use Meta\Conversion\Helper\ServerEventFactory;
 
@@ -30,62 +32,127 @@ class InitiateCheckout implements ObserverInterface
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var MagentoDataHelper
      */
-    protected $magentoDataHelper;
+    private MagentoDataHelper $magentoDataHelper;
 
     /**
      * @var ServerSideHelper
      */
-    protected $serverSideHelper;
+    private ServerSideHelper $serverSideHelper;
 
     /**
-     * InitiateCheckout constructor
+     * @var ServerEventFactory
+     */
+    private ServerEventFactory $serverEventFactory;
+
+    /**
+     * @var PricingHelper
+     */
+    private PricingHelper $pricingHelper;
+
+    /**
+     * Constructor
      *
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param ServerSideHelper $serverSideHelper
+     * @param ServerEventFactory $serverEventFactory
+     * @param PricingHelper $pricingHelper
      */
     public function __construct(
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
-        ServerSideHelper $serverSideHelper
+        ServerSideHelper $serverSideHelper,
+        ServerEventFactory $serverEventFactory,
+        PricingHelper $pricingHelper
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->serverSideHelper = $serverSideHelper;
+        $this->serverEventFactory = $serverEventFactory;
+        $this->pricingHelper = $pricingHelper;
     }
 
     /**
      * Execute action method for the Observer
      *
      * @param Observer $observer
-     * @return  $this
+     * @return $this
      */
     public function execute(Observer $observer)
     {
         try {
             $eventId = $observer->getData('eventId');
+            $quote = $observer->getData('quote');
             $customData = [
                 'currency'     => $this->magentoDataHelper->getCurrency(),
-                'value'        => $this->magentoDataHelper->getCartTotal(),
+                'value'        => $this->magentoDataHelper->getCartTotal($quote),
                 'content_type' => 'product',
-                'content_ids'  => $this->magentoDataHelper->getCartContentIds(),
-                'num_items'    => $this->magentoDataHelper->getCartNumItems(),
-                'contents'     => $this->magentoDataHelper->getCartContents(),
+                'content_ids'  => $this->getCartContentIds($quote),
+                'num_items'    => $this->magentoDataHelper->getCartNumItems($quote),
+                'contents'     => $this->getCartContents($quote),
                 'custom_properties' => [
                     'source'           => $this->fbeHelper->getSource(),
                     'pluginVersion'    => $this->fbeHelper->getPluginVersion()
                 ]
             ];
-            $event = ServerEventFactory::createEvent('InitiateCheckout', array_filter($customData), $eventId);
+            $event = $this->serverEventFactory->createEvent('InitiateCheckout', array_filter($customData), $eventId);
             $this->serverSideHelper->sendEvent($event);
         } catch (\Exception $e) {
             $this->fbeHelper->log(json_encode($e));
         }
         return $this;
+    }
+
+    /**
+     * Return information about the cart items
+     *
+     * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
+     *
+     * @param CartInterface $quote
+     * @return array
+     */
+    private function getCartContents(CartInterface $quote): array
+    {
+        if (!$quote) {
+            return [];
+        }
+
+        $contents = [];
+        $items = $quote->getAllVisibleItems();
+
+        foreach ($items as $item) {
+            $product = $item->getProduct();
+            $contents[] = [
+                'product_id' => $this->magentoDataHelper->getContentId($product),
+                'quantity' => (int) $item->getQty(),
+                'item_price' => $item->getPrice(),
+            ];
+        }
+        return $contents;
+    }
+
+    /**
+     * Return the ids of the items added to the cart
+     *
+     * @param CartInterface $quote
+     * @return array
+     */
+    private function getCartContentIds(CartInterface $quote): array
+    {
+        if (!$quote) {
+            return [];
+        }
+        $contentIds = [];
+
+        $items = $quote->getAllVisibleItems();
+        foreach ($items as $item) {
+            $contentIds[] = $this->magentoDataHelper->getContentId($item->getProduct());
+        }
+        return $contentIds;
     }
 }

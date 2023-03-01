@@ -3,9 +3,10 @@
 <tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="StorefrontQuickSearchConfigurableChildrenTest">
-        <actionGroup ref="AssignAttributeToGroupActionGroup" stepKey="assignAttributeToGroup">
-            <argument name="group" value="General"/>
-            <argument name="attribute" value="$createProductAttribute.attribute_code$"/>
-        </actionGroup>
+        <annotations>
+            <skip>
+                <issueId value="Can't change test's before node"/>
+            </skip>
+        </annotations>
     </test>
 </tests>

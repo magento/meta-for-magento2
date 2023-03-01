@@ -17,19 +17,21 @@
 
 namespace Meta\Conversion\Test\Unit\Helper;
 
+use Magento\Framework\App\Request\Http;
 use Meta\Conversion\Helper\ServerEventFactory;
 use PHPUnit\Framework\TestCase;
 
 class ServerEventFactoryTest extends TestCase
 {
     /**
-     * Used to reset or change values after running a test
-     *
-     * @return void
+     * @var ServerEventFactory
      */
-    public function tearDown(): void
-    {
-    }
+    private ServerEventFactory $serverEventFactory;
+
+    /**
+     * @var Http
+     */
+    private Http $httpRequestMock;
 
     /**
      * Used to set the values before running a test
@@ -38,109 +40,132 @@ class ServerEventFactoryTest extends TestCase
      */
     public function setUp(): void
     {
+        $this->httpRequestMock = $this->createMock(Http::class);
+        $this->serverEventFactory = new ServerEventFactory($this->httpRequestMock, []);
     }
 
-    public function testNewEventHasId()
+    public function testNewEventHasId(): void
     {
-        $event = ServerEventFactory::newEvent('ViewContent');
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        $event = $this->serverEventFactory->newEvent('ViewContent');
         $this->assertNotNull($event->getEventId());
     }
 
-    public function testNewEventHasProvidedId()
+    public function testNewEventHasProvidedId(): void
     {
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
         $eventId = '1234';
-        $event = ServerEventFactory::newEvent('ViewContent', $eventId);
+        $event = $this->serverEventFactory->newEvent('ViewContent', $eventId);
         $this->assertEquals($event->getEventId(), $eventId);
     }
 
-    public function testNewEventHasEventTime()
+    public function testNewEventHasEventTime(): void
     {
-        $event = ServerEventFactory::newEvent('ViewContent');
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        $event = $this->serverEventFactory->newEvent('ViewContent');
         $this->assertNotNull($event->getEventTime());
         $this->assertLessThan(1, time() - $event->getEventTime());
     }
 
     public function testNewEventHasEventName()
     {
-        $event =  ServerEventFactory::newEvent('ViewContent');
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        $event = $this->serverEventFactory->newEvent('ViewContent');
         $this->assertEquals('ViewContent', $event->getEventName());
     }
 
     public function testNewEventHasActionSource()
     {
-        $event =  ServerEventFactory::newEvent('ViewContent');
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        $event = $this->serverEventFactory->newEvent('ViewContent');
         $this->assertEquals('website', $event->getActionSource());
     }
 
     public function testNewEventHasIpAddressFromPublicIp()
     {
-        $_SERVER['HTTP_CLIENT_IP'] = '173.10.20.30';
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = null;
-        $event =  ServerEventFactory::newEvent('ViewContent');
+        $this->httpRequestMock->method('getServerValue')->willReturn([
+            'HTTP_CLIENT_IP' => '173.10.20.30',
+            'HTTP_X_FORWARDED_FOR' => null,
+        ]);
+        $event = $this->serverEventFactory->newEvent('ViewContent');
         $this->assertEquals($event->getUserData()->getClientIpAddress(), '173.10.20.30');
     }
 
     public function testNewEventHasIpAddressFromIpList()
     {
-        $_SERVER['HTTP_CLIENT_IP'] = null;
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = '173.10.20.30, 192.168.0.1';
-        $event =  ServerEventFactory::newEvent('ViewContent');
+        $this->httpRequestMock->method('getServerValue')->willReturn([
+            'HTTP_CLIENT_IP' => null,
+            'HTTP_X_FORWARDED_FOR' => '173.10.20.30, 192.168.0.1',
+        ]);
+        $event = $this->serverEventFactory->newEvent('ViewContent');
         $this->assertEquals($event->getUserData()->getClientIpAddress(), '173.10.20.30');
     }
 
     public function testNewEventHasNoIpAddressFromPrivateIP()
     {
-        $_SERVER['HTTP_CLIENT_IP'] = null;
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = '192.168.0.1';
-        $event =  ServerEventFactory::newEvent('ViewContent');
+        $this->httpRequestMock->method('getServerValue')->willReturn([
+            'HTTP_CLIENT_IP' => null,
+            'HTTP_X_FORWARDED_FOR' => '192.168.0.1',
+        ]);
+        $event = $this->serverEventFactory->newEvent('ViewContent');
         $this->assertNull($event->getUserData()->getClientIpAddress());
     }
 
     public function testNewEventHasUserAgent()
     {
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        // Forced to set value on super global due to meta code accessing it directly
         $_SERVER['HTTP_USER_AGENT'] = 'test-agent';
 
-        $event =  ServerEventFactory::newEvent('ViewContent');
+        $event = $this->serverEventFactory->newEvent('ViewContent');
 
         $this->assertEquals($event->getUserData()->getClientUserAgent(), 'test-agent');
     }
 
     public function testNewEventHasEventSourceUrlWithHttps()
     {
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        // Forced to set value on super global due to meta code accessing it directly
         $_SERVER['HTTPS'] = 'anyvalue';
         $_SERVER['HTTP_HOST'] = 'www.pikachu.com';
         $_SERVER['REQUEST_URI'] = '/index.php';
 
-        $event = ServerEventFactory::newEvent('ViewContent');
+        $event = $this->serverEventFactory->newEvent('ViewContent');
 
         $this->assertEquals('https://www.pikachu.com/index.php', $event->getEventSourceUrl());
     }
 
     public function testNewEventHasEventSourceUrlWithHttp()
     {
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        // Forced to set value on super global due to meta code accessing it directly
         $_SERVER['HTTPS'] = '';
         $_SERVER['HTTP_HOST'] = 'www.pikachu.com';
         $_SERVER['REQUEST_URI'] = '/index.php';
 
-        $event = ServerEventFactory::newEvent('ViewContent');
+        $event = $this->serverEventFactory->newEvent('ViewContent');
 
         $this->assertEquals('http://www.pikachu.com/index.php', $event->getEventSourceUrl());
     }
 
     public function testNewEventHasFbc()
     {
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        // Forced to set value on super global due to meta code accessing it directly
         $_COOKIE['_fbc'] = '_fbc_value';
 
-        $event = ServerEventFactory::newEvent('ViewContent');
+        $event = $this->serverEventFactory->newEvent('ViewContent');
 
         $this->assertEquals('_fbc_value', $event->getUserData()->getFbc());
     }
 
     public function testNewEventHasFbp()
     {
+        $this->httpRequestMock->method('getServerValue')->willReturn([]);
+        // Forced to set value on super global due to meta code accessing it directly
         $_COOKIE['_fbp'] = '_fbp_value';
 
-        $event = ServerEventFactory::newEvent('ViewContent');
+        $event = $this->serverEventFactory->newEvent('ViewContent');
 
         $this->assertEquals('_fbp_value', $event->getUserData()->getFbp());
     }

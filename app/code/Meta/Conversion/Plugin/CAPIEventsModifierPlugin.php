@@ -29,6 +29,8 @@ class CAPIEventsModifierPlugin
      * @param Event $event
      * @param string[] $user_data
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter) $subject
      */
     public function beforeSendEvent(ServerSideHelper $subject, $event, $user_data = null)
     {

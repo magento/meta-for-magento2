@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="FacebookBusinessConfigDataEnabled">
+        <data key="path">facebook/business_extension/active</data>
+        <data key="scope">store</data>
+        <data key="scope_code">default</data>
+    </entity>
+    <entity name="FacebookBusinessConfigDataPixelId">
+        <data key="path">facebook/business_extension/pixel_id</data>
+        <data key="scope">store</data>
+        <data key="scope_code">default</data>
+    </entity>
+</entities>

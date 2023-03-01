@@ -20,7 +20,6 @@ namespace Meta\Catalog\Cron;
 use Exception;
 use Meta\Catalog\Model\Product\Feed\Uploader;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-
 use Magento\Framework\Exception\LocalizedException;
 use Psr\Log\LoggerInterface;
 
@@ -54,19 +53,40 @@ class UploadInventory
     }
 
     /**
-     * @param $storeId
+     * Upload inventory for store
+     *
+     * @param int $storeId
      * @return $this
      * @throws LocalizedException
      */
     protected function uploadForStore($storeId)
     {
-        if (!($this->systemConfig->isActiveExtension($storeId) && $this->systemConfig->isActiveInventoryUpload($storeId))) {
-            return $this;
+        if ($this->isUploadEnabled($storeId)) {
+            $this->uploader->uploadInventory($storeId);
         }
-        $this->uploader->uploadInventory($storeId);
+
         return $this;
     }
 
+    /**
+     * Check configuration state of upload
+     *
+     * @param int $storeId Store ID to check.
+     * @return bool
+     */
+    private function isUploadEnabled($storeId)
+    {
+        if (!$this->systemConfig->isActiveExtension($storeId)) {
+            return false;
+        }
+        return $this->systemConfig->isActiveInventoryUpload($storeId);
+    }
+
+    /**
+     * Execute
+     *
+     * @return void
+     */
     public function execute()
     {
         foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {

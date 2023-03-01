@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<operations xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataOperation.xsd">
+    <operation name="MetaCreateProductExtensionAttribute" dataType="product_extension_attribute" type="create">
+        <field key="stock_item">stock_item</field>
+    </operation>
+</operations>

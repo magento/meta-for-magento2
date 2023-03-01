@@ -17,29 +17,25 @@
 
 namespace Meta\Conversion\Controller\Pixel;
 
-use Magento\Catalog\Model\ProductFactory;
-use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
 use Magento\Framework\Pricing\Helper\Data;
-use Magento\Framework\View\Asset\File\NotFoundException;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\EventIdGenerator;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\ManagerInterface as EventManager;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\ResultFactory;
 
-class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
+class ProductInfoForAddToCart implements HttpGetActionInterface
 {
     /**
      * @var JsonFactory
      */
     private JsonFactory $resultJsonFactory;
-
-    /**
-     * @var ProductFactory
-     */
-    private ProductFactory $productFactory;
 
     /**
      * @var FBEHelper
@@ -62,32 +58,50 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
     private Data $priceHelper;
 
     /**
+     * @var EventManager
+     */
+    private EventManager $eventManager;
+
+    /**
+     * @var RequestInterface
+     */
+    private RequestInterface $request;
+
+    /**
+     * @var ResultFactory
+     */
+    private ResultFactory $resultFactory;
+
+    /**
      * ProductInfoForAddToCart constructor
      *
-     * @param Context $context
      * @param JsonFactory $resultJsonFactory
-     * @param ProductFactory $productFactory
      * @param FBEHelper $helper
      * @param Validator $formKeyValidator
      * @param MagentoDataHelper $magentoDataHelper
      * @param Data $priceHelper
+     * @param EventManager $eventManager
+     * @param RequestInterface $request
+     * @param ResultFactory $resultFactory
      */
     public function __construct(
-        Context $context,
         JsonFactory $resultJsonFactory,
-        ProductFactory $productFactory,
         FBEHelper $helper,
         Validator $formKeyValidator,
         MagentoDataHelper $magentoDataHelper,
-        Data $priceHelper
+        Data $priceHelper,
+        EventManager $eventManager,
+        RequestInterface $request,
+        ResultFactory $resultFactory
     ) {
-        parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->productFactory = $productFactory;
         $this->fbeHelper = $helper;
         $this->formKeyValidator = $formKeyValidator;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->priceHelper = $priceHelper;
+        $this->eventManager = $eventManager;
+        $this->request = $request;
+        $this->resultFactory = $resultFactory;
     }
 
     /**
@@ -107,7 +121,8 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
                 $category = $categoryModel->load($categoryId);
                 $categoryNames[] = $category->getName();
             }
-            return addslashes(implode(',', $categoryNames)); // phpcs: ignore
+            // phpcs:ignore
+            return addslashes(implode(',', $categoryNames));
         } else {
             return null;
         }
@@ -155,14 +170,13 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
      * Execute function
      *
      * @returns ResultInterface
-     * @throws NotFoundException
      */
     public function execute()
     {
         $result = $this->resultJsonFactory->create();
-        $productId = $this->getRequest()->getParam('product_id', null);
-        $productSku = $this->getRequest()->getParam('product_sku', null);
-        if ($this->formKeyValidator->validate($this->getRequest()) && ($productSku || $productId)) {
+        $productId = $this->request->getParam('product_id', null);
+        $productSku = $this->request->getParam('product_sku', null);
+        if ($this->formKeyValidator->validate($this->request) && ($productSku || $productId)) {
             $responseData = $this->getProductInfo($productSku, $productId);
             // If the sku is valid, The event id is added in the response And a CAPI event is created
             if (count($responseData) > 0) {
@@ -172,7 +186,8 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
                 $result->setData(array_filter($responseData));
             }
         } else {
-            return $this->_redirect('noroute');
+            $redirect = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_REDIRECT);
+            return $redirect->setUrl('noroute');
         }
         return $result;
     }
@@ -185,7 +200,7 @@ class ProductInfoForAddToCart extends \Magento\Framework\App\Action\Action
      */
     public function trackServerEvent($eventId): void
     {
-        $this->_eventManager->dispatch(
+        $this->eventManager->dispatch(
             'facebook_businessextension_ssapi_add_to_cart',
             ['eventId' => $eventId]
         );

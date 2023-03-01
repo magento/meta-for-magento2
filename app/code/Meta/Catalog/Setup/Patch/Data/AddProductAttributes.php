@@ -70,7 +70,7 @@ class AddProductAttributes implements DataPatchInterface
      */
     public function apply(): void
     {
-        $catalogAttributes = $this->metaCatalogAttributes->execute();
+        $productAttributes = $this->metaCatalogAttributes->getProductAttributes();
 
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
@@ -78,7 +78,7 @@ class AddProductAttributes implements DataPatchInterface
         $entityTypeId = $eavSetup->getEntityTypeId(Product::ENTITY);
         $attributeSetId = $eavSetup->getDefaultAttributeSetId($entityTypeId);
 
-        foreach ($catalogAttributes as $attributeCode => $attributeData) {
+        foreach ($productAttributes as $attributeCode => $attributeData) {
 
             if (!$eavSetup->getAttributeId(Product::ENTITY, $attributeCode)) {
                 $eavSetup->addAttribute(Product::ENTITY, $attributeCode, $attributeData);
@@ -100,12 +100,12 @@ class AddProductAttributes implements DataPatchInterface
      */
     public function revert(): void
     {
-        $catalogAttributes = $this->metaCatalogAttributes->execute();
+        $productAttributes = $this->metaCatalogAttributes->getProductAttributes();
         $this->moduleDataSetup->getConnection()->startSetup();
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
-        foreach (array_keys($catalogAttributes) as $attributeCode) {
+        foreach (array_keys($productAttributes) as $attributeCode) {
             $eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
         }
 

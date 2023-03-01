@@ -14,7 +14,6 @@ use Magento\Framework\Controller\Result\Json;
 
 class Tracker implements HttpPostActionInterface
 {
-
     /**
      * @var RequestInterface
      */
@@ -41,12 +40,18 @@ class Tracker implements HttpPostActionInterface
     private $jsonFactory;
 
     /**
+     * @var ServerEventFactory
+     */
+    private $serverEventFactory;
+
+    /**
      * Constructor
      *
      * @param RequestInterface $request
      * @param ServerSideHelper $serverSideHelper
      * @param FBEHelper $fbeHelper
      * @param JsonFactory $jsonFactory
+     * @param ServerEventFactory $serverEventFactory
      * @param array $pixelEvents
      */
     public function __construct(
@@ -54,12 +59,14 @@ class Tracker implements HttpPostActionInterface
         ServerSideHelper $serverSideHelper,
         FBEHelper $fbeHelper,
         JsonFactory $jsonFactory,
+        ServerEventFactory $serverEventFactory,
         array $pixelEvents = []
     ) {
         $this->request = $request;
         $this->serverSideHelper = $serverSideHelper;
         $this->fbeHelper = $fbeHelper;
         $this->jsonFactory = $jsonFactory;
+        $this->serverEventFactory = $serverEventFactory;
         $this->pixelEvents = $pixelEvents;
     }
 
@@ -86,7 +93,7 @@ class Tracker implements HttpPostActionInterface
 
                     $eventType = $this->pixelEvents[$eventName]->getEventType();
 
-                    $event = ServerEventFactory::createEvent($eventType, array_filter($payload), $eventId);
+                    $event = $this->serverEventFactory->createEvent($eventType, array_filter($payload), $eventId);
                     $this->serverSideHelper->sendEvent($event);
                     $response['success'] = true;
                 }

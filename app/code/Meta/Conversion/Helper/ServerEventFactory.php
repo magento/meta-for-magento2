@@ -22,6 +22,8 @@ use FacebookAds\Object\ServerSide\UserData;
 use FacebookAds\Object\ServerSide\CustomData;
 use FacebookAds\Object\ServerSide\Content;
 use FacebookAds\Object\ServerSide\Util;
+use Laminas\Http\PhpEnvironment\Request;
+use Magento\Framework\App\RequestInterface;
 
 /**
  * Factory class for generating new ServerSideAPI events with default parameters.
@@ -29,15 +31,39 @@ use FacebookAds\Object\ServerSide\Util;
 class ServerEventFactory
 {
     /**
-     * @param $eventName
-     * @param null $eventId
-     * @return mixed
+     * @var RequestInterface
      */
-    public static function newEvent($eventName, $eventId = null)
+    private RequestInterface $httpRequest;
+
+    /**
+     * @var array $customDataMapping Mapping of event fields to setters.
+     */
+    private array $customDataMapping = [];
+
+    /**
+     * @param RequestInterface $httpRequest
+     * @param array $customDataMapping
+     */
+    public function __construct(
+        RequestInterface $httpRequest,
+        array $customDataMapping = []
+    ) {
+        $this->httpRequest = $httpRequest;
+        $this->customDataMapping = $customDataMapping;
+    }
+
+    /**
+     * Create a new event.
+     *
+     * @param string $eventName Name of event to create.
+     * @param string|null $eventId
+     * @return Event
+     */
+    public function newEvent($eventName, $eventId = null)
     {
-      // Capture default user-data parameters passed down from the client browser.
+        // Capture default user-data parameters passed down from the client browser.
         $userData = (new UserData())
-                  ->setClientIpAddress(self::getIpAddress())
+                  ->setClientIpAddress($this->getIpAddress())
                   ->setClientUserAgent(Util::getHttpUserAgent())
                   ->setFbp(Util::getFbp())
                   ->setFbc(Util::getFbc());
@@ -64,7 +90,7 @@ class ServerEventFactory
      *
      * @return string|null
      */
-    private static function getIpAddress()
+    private function getIpAddress()
     {
         $HEADERS_TO_SCAN = [
         'HTTP_CLIENT_IP',
@@ -75,12 +101,13 @@ class ServerEventFactory
         'HTTP_FORWARDED',
         'REMOTE_ADDR'
         ];
+        $server = $this->httpRequest->getServerValue();
         foreach ($HEADERS_TO_SCAN as $header) {
-            if (array_key_exists($header, $_SERVER)) {
-                $ipList = explode(',', $_SERVER[$header] ?? '');
+            if (array_key_exists($header, $server)) {
+                $ipList = explode(',', $server[$header] ?? '');
                 foreach ($ipList as $ip) {
                     $trimmedIp = trim($ip);
-                    if (self::isValidIpAddress($trimmedIp)) {
+                    if ($this->isValidIpAddress($trimmedIp)) {
                         return $trimmedIp;
                     }
                 }
@@ -92,12 +119,12 @@ class ServerEventFactory
     /**
      * Check if the given ip address is valid
      *
-     * @param $ipAddress
-     * @return mixed
+     * @param string $ipAddress
+     * @return bool
      */
-    private static function isValidIpAddress($ipAddress)
+    private function isValidIpAddress($ipAddress)
     {
-        return filter_var(
+        return (bool)filter_var(
             $ipAddress,
             FILTER_VALIDATE_IP,
             FILTER_FLAG_IPV4
@@ -110,44 +137,18 @@ class ServerEventFactory
     /**
      * Fill customData member of $event with array $data
      *
-     * @param $event
-     * @param $data
-     * @return mixed
+     * @param Event $event
+     * @param array $data
+     * @return Event
      */
-    private static function addCustomData($event, $data)
+    private function addCustomData($event, $data)
     {
         $custom_data = $event->getCustomData();
 
-        if (!empty($data['currency'])) {
-            $custom_data->setCurrency($data['currency']);
-        }
-
-        if (!empty($data['value'])) {
-            $custom_data->setValue($data['value']);
-        }
-
-        if (!empty($data['content_ids'])) {
-            $custom_data->setContentIds($data['content_ids']);
-        }
-
-        if (!empty($data['content_type'])) {
-            $custom_data->setContentType($data['content_type']);
-        }
-
-        if (!empty($data['content_name'])) {
-            $custom_data->setContentName($data['content_name']);
-        }
-
-        if (!empty($data['content_category'])) {
-            $custom_data->setContentCategory($data['content_category']);
-        }
-
-        if (!empty($data['search_string'])) {
-            $custom_data->setSearchString($data['search_string']);
-        }
-
-        if (!empty($data['num_items'])) {
-            $custom_data->setNumItems($data['num_items']);
+        foreach ($this->customDataMapping as $field => $setter) {
+            if (!empty($data[$field])) {
+                $custom_data->$setter($data[$field]);
+            }
         }
 
         if (!empty($data['contents'])) {
@@ -156,10 +157,6 @@ class ServerEventFactory
                 $contents[] = new Content($content);
             }
             $custom_data->setContents($contents);
-        }
-
-        if (!empty($data['order_id'])) {
-            $custom_data->setOrderId($data['order_id']);
         }
 
         if (!empty($data['custom_properties']) && is_array($data['custom_properties'])) {
@@ -172,17 +169,15 @@ class ServerEventFactory
     /**
      * Create a server side event
      *
-     * @param $eventName
-     * @param $data
-     * @param null $eventId
-     * @return mixed
+     * @param string $eventName
+     * @param array $data
+     * @param string|null $eventId
+     * @return Event
      */
-    public static function createEvent($eventName, $data, $eventId = null)
+    public function createEvent($eventName, $data, $eventId = null)
     {
-        $event = self::newEvent($eventName, $eventId);
+        $event = $this->newEvent($eventName, $eventId);
 
-        $event = self::addCustomData($event, $data);
-
-        return $event;
+        return $this->addCustomData($event, $data);
     }
 }

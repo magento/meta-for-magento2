@@ -18,6 +18,7 @@
 namespace Meta\Conversion\Test\Unit\Helper;
 
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\Request\Http;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -81,7 +82,10 @@ class ServerSideHelperTest extends TestCase
      */
     public function testEventAddedToTrackedEvents(): void
     {
-        $event = ServerEventFactory::createEvent('ViewContent', []);
+        $httpRequestMock = $this->createMock(Http::class);
+        $httpRequestMock->method('getServerValue')->willReturn([]);
+        $serverEventFactory = new ServerEventFactory($httpRequestMock, []);
+        $event = $serverEventFactory->createEvent('ViewContent', []);
         $this->aamFieldsExtractorHelper->method('setUserData')->willReturn($event);
         $this->serverSideHelper->sendEvent($event);
         $this->assertEquals(1, count($this->serverSideHelper->getTrackedEvents()));

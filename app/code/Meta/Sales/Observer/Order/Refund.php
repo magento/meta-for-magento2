@@ -18,62 +18,57 @@
 namespace Meta\Sales\Observer\Order;
 
 use Exception;
-use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
-use Meta\Sales\Helper\CommerceHelper;
-use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Api\Data\CreditmemoInterface;
 use Magento\Sales\Api\Data\CreditmemoItemInterface as CreditmemoItem;
+use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Model\Order\Payment;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
+use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
 
 class Refund implements ObserverInterface
 {
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
-     * @var LoggerInterface
+     * @var GraphAPIAdapter
      */
-    private $logger;
-
-    /**
-     * @var CommerceHelper
-     */
-    private $commerceHelper;
+    private GraphAPIAdapter $graphAPIAdapter;
 
     /**
      * @var FacebookOrderInterfaceFactory
      */
-    private $facebookOrderFactory;
+    private FacebookOrderInterfaceFactory $facebookOrderFactory;
 
     /**
      * @param SystemConfig $systemConfig
-     * @param LoggerInterface $logger
-     * @param CommerceHelper $commerceHelper
+     * @param GraphAPIAdapter $graphAPIAdapter
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      */
     public function __construct(
         SystemConfig $systemConfig,
-        LoggerInterface $logger,
-        CommerceHelper $commerceHelper,
+        GraphAPIAdapter $graphAPIAdapter,
         FacebookOrderInterfaceFactory $facebookOrderFactory
     ) {
         $this->systemConfig = $systemConfig;
-        $this->logger = $logger;
-        $this->commerceHelper = $commerceHelper;
+        $this->graphAPIAdapter = $graphAPIAdapter;
         $this->facebookOrderFactory = $facebookOrderFactory;
     }
 
     /**
+     * Get retailer id
+     *
      * @param CreditmemoItem $creditmemoItem
-     * @return mixed
+     * @return string|int|bool
      */
-    protected function getRetailerId($creditmemoItem)
+    protected function getRetailerId(CreditmemoItem $creditmemoItem)
     {
         if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $creditmemoItem->getSku();
@@ -83,6 +78,13 @@ class Refund implements ObserverInterface
         return false;
     }
 
+    /**
+     * Refund facebook order from observer event
+     *
+     * @param Observer $observer
+     * @return void
+     * @throws GuzzleException|Exception
+     */
     public function execute(Observer $observer)
     {
         /** @var Payment $payment */
@@ -111,9 +113,75 @@ class Refund implements ObserverInterface
             throw new Exception('Cannot refund order on Facebook. Refunds with adjustments are not yet supported.');
         }
 
+        $refundItems = $this->getRefundItems($creditmemo, $payment);
+
+        $shippingRefundAmount = $creditmemo->getBaseShippingAmount();
+        $reasonText = $creditmemo->getCustomerNote();
+        $currencyCode = $payment->getOrder()->getOrderCurrencyCode();
+
+        // refunds in the UK are after tax
+        if ($currencyCode === 'GBP') {
+            $shippingRefundAmount += $creditmemo->getShippingTaxAmount();
+        }
+
+        $this->refundOrder(
+            (int)$storeId,
+            $facebookOrder->getFacebookOrderId(),
+            $refundItems,
+            $shippingRefundAmount,
+            $currencyCode,
+            $reasonText
+        );
+
+        $payment->getOrder()->addCommentToStatusHistory('Refunded order on Facebook');
+    }
+
+    /**
+     * Refund a facebook order
+     *
+     * @param int $storeId
+     * @param string $fbOrderId
+     * @param array $items
+     * @param float|null $shippingRefundAmount
+     * @param string|null $currencyCode
+     * @param string|null $reasonText
+     * @throws GuzzleException
+     */
+    private function refundOrder(
+        int $storeId,
+        string $fbOrderId,
+        array $items,
+        ?float $shippingRefundAmount,
+        ?string $currencyCode,
+        ?string $reasonText = null
+    ) {
+        $this->graphAPIAdapter
+            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+
+        $this->graphAPIAdapter->refundOrder(
+            $fbOrderId,
+            $items,
+            $shippingRefundAmount,
+            $currencyCode,
+            $reasonText
+        );
+    }
+
+    /**
+     * Private helper function that returns array of items that should be refunded
+     *
+     * @param CreditmemoInterface $creditmemo
+     * @param OrderPaymentInterface $payment
+     * @return array
+     */
+    private function getRefundItems(
+        CreditmemoInterface $creditmemo,
+        OrderPaymentInterface $payment
+    ): array {
         $refundItems = [];
+
         foreach ($creditmemo->getItems() as $item) {
-            /** @var CreditmemoItem $item */
             if ($item->getQty() > 0) {
                 if ($item->getDiscountAmount() == 0) {
                     $refundItems[] = [
@@ -121,7 +189,8 @@ class Refund implements ObserverInterface
                         'item_refund_quantity' => $item->getQty(),
                     ];
                 } else {
-                    //TODO: refunds by qty for items with discount is unavailable atm; once it is available the else statement should be removed
+                    // @todo refunds by qty for items with discount is unavailable atm;
+                    //     once it is available the else statement should be removed
                     $refundItems[] = [
                         'retailer_id' => $this->getRetailerId($item),
                         'item_refund_amount' => [
@@ -133,17 +202,6 @@ class Refund implements ObserverInterface
             }
         }
 
-        $shippingRefundAmount = $creditmemo->getBaseShippingAmount();
-        $reasonText = $creditmemo->getCustomerNote();
-        $currencyCode = $payment->getOrder()->getOrderCurrencyCode();
-
-        // refunds in the UK are after tax
-        if ($currencyCode === 'GBP') {
-            $shippingRefundAmount += $creditmemo->getShippingTaxAmount();
-        }
-
-        $this->commerceHelper->setStoreId($storeId)
-            ->refundOrder($facebookOrder->getFacebookOrderId(), $refundItems, $shippingRefundAmount, $currencyCode, $reasonText);
-        $payment->getOrder()->addCommentToStatusHistory('Refunded order on Facebook');
+        return $refundItems;
     }
 }

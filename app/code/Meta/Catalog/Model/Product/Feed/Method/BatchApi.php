@@ -29,39 +29,42 @@ use Magento\Framework\Exception\LocalizedException;
 
 class BatchApi
 {
-    const ATTR_METHOD = 'method';
-    const ATTR_UPDATE = 'UPDATE';
-    const ATTR_DATA = 'data';
+    private const ATTR_METHOD = 'method';
+    private const ATTR_UPDATE = 'UPDATE';
+    private const ATTR_DATA = 'data';
 
     // Process only the maximum allowed by API per request
-    const BATCH_MAX = 4999;
+    private const BATCH_MAX = 4999;
 
-    protected $storeId;
+    /**
+     * @var int
+     */
+    private $storeId;
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    private $graphApiAdapter;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var ProductRetrieverInterface[]
      */
-    protected $productRetrievers;
+    private $productRetrievers;
 
     /**
      * @var Builder
      */
-    protected $builder;
+    private $builder;
 
     /**
      * @param FBEHelper $helper
@@ -90,12 +93,14 @@ class BatchApi
     }
 
     /**
+     * Build product request
+     *
      * @param Product $product
      * @param string $method
      * @return array
      * @throws LocalizedException
      */
-    protected function buildProductRequest(Product $product, $method = self::ATTR_UPDATE)
+    private function buildProductRequest(Product $product, $method = self::ATTR_UPDATE)
     {
         return [
             self::ATTR_METHOD => $method,
@@ -104,6 +109,8 @@ class BatchApi
     }
 
     /**
+     * Build request for individual product
+     *
      * @param Product $product
      * @param string $method
      * @return array
@@ -116,8 +123,10 @@ class BatchApi
     }
 
     /**
-     * @param null $storeId
-     * @param null $accessToken
+     * Generate product request data
+     *
+     * @param int|null $storeId
+     * @param mixed|null $accessToken
      * @param bool $inventoryOnly
      * @return array
      * @throws Exception
@@ -125,12 +134,7 @@ class BatchApi
     public function generateProductRequestData($storeId = null, $accessToken = null, $inventoryOnly = false)
     {
         $this->fbeHelper->log($storeId ? "Starting batch upload for store $storeId" : 'Starting batch upload');
-
-        $this->storeId = $storeId;
-        $this->builder->setStoreId($storeId)
-            ->setInventoryOnly($inventoryOnly);
-        $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
-            ->setAccessToken($accessToken ?? $this->systemConfig->getAccessToken($storeId));
+        $this->prepareApiAdapter($storeId, $accessToken, $inventoryOnly);
 
         $catalogId = $this->systemConfig->getCatalogId($storeId);
 
@@ -145,46 +149,82 @@ class BatchApi
             do {
                 $products = $productRetriever->retrieve($offset);
                 $offset += $limit;
-                if (empty($products)) {
-                    break;
-                }
 
                 foreach ($products as $product) {
                     try {
                         $requests[] = $this->buildProductRequest($product);
                     } catch (Exception $e) {
                         $exceptions++;
-                        // Don't overload the logs, log the first 3 exceptions
-                        if ($exceptions <= 3) {
-                            $this->fbeHelper->logException($e);
-                        }
-                        // If it looks like a systemic failure : stop feed generation
-                        if ($exceptions > 100) {
-                            throw $e;
-                        }
+                        $this->handleProductBuildException($exceptions, $e);
                     }
 
-                    if (!empty($requests) && count($requests) === self::BATCH_MAX) {
-                        $this->fbeHelper->log(
-                            sprintf('Pushing batch %d with %d products', $currentBatch, count($requests))
-                        );
-                        $response = $this->graphApiAdapter->catalogBatchRequest($catalogId, $requests);
-                        $this->fbeHelper->log('Product push response ' . json_encode($response));
-                        $responses[] = $response;
-                        unset($requests);
+                    if (count($requests) === self::BATCH_MAX) {
+                        $responses[] = $this->flushCatalogBatchRequest($catalogId, $requests, $currentBatch);
+                        $requests = [];
                         $currentBatch++;
                     }
                 }
-            } while (true);
+            } while (!empty($products));
         }
 
         if (!empty($requests)) {
-            $this->fbeHelper->log(sprintf('Pushing batch %d with %d products', $currentBatch, count($requests)));
-            $response = $this->graphApiAdapter->catalogBatchRequest($catalogId, $requests);
-            $this->fbeHelper->log('Product push response ' . json_encode($response));
-            $responses[] = $response;
+            $responses[] = $this->flushCatalogBatchRequest($catalogId, $requests, $currentBatch);
         }
 
         return $responses;
+    }
+
+    /**
+     * Prepare API adapter
+     *
+     * @param int|null $storeId
+     * @param mixed|null $accessToken
+     * @param bool $inventoryOnly
+     * @return void
+     */
+    private function prepareApiAdapter($storeId, $accessToken, $inventoryOnly): void
+    {
+        $this->storeId = $storeId;
+        $this->builder->setStoreId($storeId)
+            ->setInventoryOnly($inventoryOnly);
+        $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($accessToken ?? $this->systemConfig->getAccessToken($storeId));
+    }
+
+    /**
+     * Flush catalog batch request
+     *
+     * @param mixed|null $catalogId
+     * @param array $requests
+     * @param int $currentBatch
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    private function flushCatalogBatchRequest($catalogId, array $requests, int $currentBatch)
+    {
+        $this->fbeHelper->log(sprintf('Pushing batch %d with %d products', $currentBatch, count($requests)));
+        $response = $this->graphApiAdapter->catalogBatchRequest($catalogId, $requests);
+        $this->fbeHelper->log('Product push response ' . json_encode($response));
+        return $response;
+    }
+
+    /**
+     * Handle product build exception
+     *
+     * @param int $exceptions
+     * @param Exception $e
+     * @return void
+     * @throws Exception
+     */
+    private function handleProductBuildException(int $exceptions, Exception $e): void
+    {
+        // Don't overload the logs, log the first 3 exceptions
+        if ($exceptions <= 3) {
+            $this->fbeHelper->logException($e);
+        }
+        // If it looks like a systemic failure : stop feed generation
+        if ($exceptions > 100) {
+            throw $e;
+        }
     }
 }

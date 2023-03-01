@@ -27,21 +27,24 @@ use PHPUnit\Framework\MockObject\MockObject;
 class ProcessCategoryAfterSaveEventObserverTest extends TestCase
 {
     /**
+     * @var ProcessCategoryAfterSaveEventObserver
+     */
+    protected $processCategoryAfterSaveEventObserver;
+
+    /**
      * @var MockObject
      */
     private MockObject $fbeHelper;
 
-    private $processCategoryAfterSaveEventObserver;
+    /**
+     * @var MockObject
+     */
+    private $eventObserverMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
-    private $_eventObserverMock;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $_category;
+    private $category;
 
     /**
      * Used to set the values before running a test
@@ -51,11 +54,11 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
-        $this->_category = $this->createMock(\Magento\Catalog\Model\Category::class);
+        $this->category = $this->createMock(\Magento\Catalog\Model\Category::class);
         $event = $this->getMockBuilder(Event::class)->addMethods(['getCategory'])->getMock();
-        $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->_category));
-        $this->_eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
-        $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
+        $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->category));
+        $this->eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
+        $this->eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->processCategoryAfterSaveEventObserver =
             new ProcessCategoryAfterSaveEventObserver($this->fbeHelper);
     }
@@ -67,7 +70,7 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
         $this->fbeHelper->expects($this->once())->method('log');
 
         $categoryObj->expects($this->once())->method('makeHttpRequestAfterCategorySave')->willReturn('good');
-        $res = $this->processCategoryAfterSaveEventObserver->execute($this->_eventObserverMock);
+        $res = $this->processCategoryAfterSaveEventObserver->execute($this->eventObserverMock);
         $this->assertNotNull($res);
     }
 }

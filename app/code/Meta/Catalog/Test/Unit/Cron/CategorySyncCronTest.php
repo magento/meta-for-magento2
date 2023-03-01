@@ -21,14 +21,30 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Catalog\Cron\CategorySyncCron;
 use Meta\Catalog\Model\Feed\CategoryCollection;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class CategorySyncCronTest extends \PHPUnit\Framework\TestCase
+class CategorySyncCronTest extends TestCase
 {
-    protected $categorySyncCron;
+    /**
+     * @var CategorySyncCron
+     */
+    private $categorySyncCron;
 
-    protected $fbeHelper;
-    protected $categoryCollection;
-    protected $systemConfig;
+    /**
+     * @var MockObject
+     */
+    private $fbeHelper;
+    
+    /**
+     * @var MockObject
+     */
+    private $categoryCollection;
+    
+    /**
+     * @var MockObject
+     */
+    private $systemConfig;
 
     /**
      * Used to reset or change values after running a test

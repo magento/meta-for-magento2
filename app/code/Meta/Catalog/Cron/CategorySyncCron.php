@@ -55,6 +55,11 @@ class CategorySyncCron
         $this->systemConfig = $systemConfig;
     }
 
+    /**
+     * Execute function for Category Sync
+     *
+     * @return bool
+     */
     public function execute()
     {
         if ($this->systemConfig->isActiveCollectionsSync()) {

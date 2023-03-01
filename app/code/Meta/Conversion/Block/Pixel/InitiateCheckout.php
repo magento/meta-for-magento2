@@ -18,12 +18,15 @@
 namespace Meta\Conversion\Block\Pixel;
 
 use Magento\Framework\Escaper;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Quote\Model\Quote;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
  * @api
@@ -36,28 +39,41 @@ class InitiateCheckout extends Common
     protected $pricingHelper;
 
     /**
+     * @var Quote
+     */
+    private $quote;
+
+    /**
      * Constructor
      *
      * @param Context $context
-     * @param ObjectManagerInterface $objectManager
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param SystemConfig $systemConfig
      * @param Escaper $escaper
+     * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
-        ObjectManagerInterface $objectManager,
         FBEHelper $fbeHelper,
         MagentoDataHelper $magentoDataHelper,
         SystemConfig $systemConfig,
         Escaper $escaper,
+        CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
         array $data = []
     ) {
-        parent::__construct($context, $objectManager, $fbeHelper, $magentoDataHelper, $systemConfig, $escaper, $data);
+        parent::__construct(
+            $context,
+            $fbeHelper,
+            $magentoDataHelper,
+            $systemConfig,
+            $escaper,
+            $checkoutSession,
+            $data
+        );
         $this->pricingHelper = $pricingHelper;
     }
 
@@ -69,7 +85,7 @@ class InitiateCheckout extends Common
     public function getContentIDs()
     {
         $contentIds = [];
-        $items = $this->magentoDataHelper->getQuote()->getAllVisibleItems();
+        $items = $this->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
             $contentIds[] = $this->getContentId($item->getProduct());
         }
@@ -83,7 +99,7 @@ class InitiateCheckout extends Common
      */
     public function getValue()
     {
-        return $this->magentoDataHelper->getCartTotal();
+        return $this->magentoDataHelper->getCartTotal($this->getQuote());
     }
 
     /**
@@ -93,11 +109,11 @@ class InitiateCheckout extends Common
      */
     public function getContents()
     {
-        if (!$this->magentoDataHelper->getQuote()) {
+        if (!$this->getQuote()) {
             return '';
         }
         $contents = [];
-        $items = $this->magentoDataHelper->getQuote()->getAllVisibleItems();
+        $items = $this->getQuote()->getAllVisibleItems();
         foreach ($items as $item) {
             $product = $item->getProduct();
             $price = $this->pricingHelper->currency($product->getFinalPrice(), false, false);
@@ -115,7 +131,7 @@ class InitiateCheckout extends Common
      */
     public function getNumItems()
     {
-        return $this->magentoDataHelper->getCartNumItems();
+        return $this->magentoDataHelper->getCartNumItems($this->getQuote());
     }
 
     /**
@@ -126,5 +142,20 @@ class InitiateCheckout extends Common
     public function getEventToObserveName()
     {
         return 'facebook_businessextension_ssapi_initiate_checkout';
+    }
+
+    /**
+     * Get active quote
+     *
+     * @return Quote
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function getQuote(): Quote
+    {
+        if (null === $this->quote) {
+            $this->quote = $this->checkoutSession->getQuote();
+        }
+        return $this->quote;
     }
 }

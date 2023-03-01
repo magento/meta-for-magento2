@@ -21,17 +21,23 @@ use Magento\Catalog\Api\Data\ProductInterface;
 interface ProductRetrieverInterface
 {
     /**
-     * @param $storeId
+     * Set store Id
+     *
+     * @param int $storeId
      * @return ProductRetrieverInterface
      */
     public function setStoreId($storeId);
 
     /**
+     * Get product type
+     *
      * @return string
      */
     public function getProductType();
 
     /**
+     * Retrieve products
+     *
      * @param int $offset
      * @param int $limit
      * @return ProductInterface[]
@@ -39,6 +45,8 @@ interface ProductRetrieverInterface
     public function retrieve($offset = 1, $limit = 100): array;
 
     /**
+     * Get product limit
+     *
      * @return int
      */
     public function getLimit();

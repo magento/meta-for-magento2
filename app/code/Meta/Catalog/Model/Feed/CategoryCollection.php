@@ -21,15 +21,24 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\HttpClient;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Category;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\HTTP\Client\Curl;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 
 class CategoryCollection
 {
-    protected $catalogId;
+    private const FB_GRAPH_BASE_URL = "https://graph.facebook.com/";
+    private const CURRENT_API_VERSION = "v15.0";
 
     /**
-     * @var CollectionFactory
+     * @var string|null
+     */
+    private $catalogId;
+
+    /**
+     * @var ProductCollectionFactory
      */
     private $productCollectionFactory;
 
@@ -54,49 +63,56 @@ class CategoryCollection
     private $httpClient;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
-    protected $_storeManager;
-    protected $_categoryCollection;
+    private $storeManager;
+
+    /**
+     * @var CategoryCollectionFactory
+     */
+    private $categoryCollection;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * Constructor
-     * @param CollectionFactory $productCollectionFactory
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
+     * @param ProductCollectionFactory $productCollectionFactory
+     * @param StoreManagerInterface $storeManager
+     * @param CategoryCollectionFactory $categoryCollection
      * @param FBEHelper $helper
      * @param Curl $curl
      * @param HttpClient $httpClient
      * @param SystemConfig $systemConfig
      */
     public function __construct(
-        CollectionFactory $productCollectionFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
+        ProductCollectionFactory $productCollectionFactory,
+        StoreManagerInterface $storeManager,
+        CategoryCollectionFactory $categoryCollection,
         FBEHelper $helper,
         Curl $curl,
         HttpClient $httpClient,
         SystemConfig $systemConfig
     ) {
-        $this->_storeManager = $storeManager;
-        $this->_categoryCollection = $categoryCollection;
+        $this->storeManager = $storeManager;
+        $this->categoryCollection = $categoryCollection;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->fbeHelper = $helper;
         $this->curl = $curl;
-        $this->categoryMap = $this->fbeHelper->generateCategoryNameMap();
+        $this->categoryMap = $this->generateCategoryNameMap();
         $this->httpClient = $httpClient;
         $this->systemConfig = $systemConfig;
     }
 
     /**
-     * @param Category $category
-     * get called after user save category, if it is new leaf category, we will create new collection on fb side,
+     * Makes HTTP request after category save
+     *
+     * Get called after user save category, if it is new leaf category, we will create new collection on fb side,
      * if it is changing existed category, we just update the corresponding fb collection.
+     *
+     * @param Category $category
      * @return null|string
      */
     public function makeHttpRequestAfterCategorySave(Category $category)
@@ -117,7 +133,10 @@ class CategoryCollection
     }
 
     /**
+     * Get catalog ID
+     *
      * TODO move it to helper or common class
+     *
      * @return string|null
      */
     public function getCatalogID()
@@ -129,8 +148,11 @@ class CategoryCollection
     }
 
     /**
+     * Get FB product set ID
+     *
+     * This method will try to get FB product set id from Magento DB, return null if not exist
+     *
      * @param Category $category
-     * this method try to get fb product set id from Magento DB, return null if not exist
      * @return string|null
      */
     public function getFBProductSetID(Category $category)
@@ -140,8 +162,9 @@ class CategoryCollection
     }
 
     /**
+     * Compose the key for a given category
+     *
      * @param Category $category
-     * compose the key for a given category
      * @return string
      */
     public function getCategoryKey(Category $category)
@@ -150,8 +173,11 @@ class CategoryCollection
     }
 
     /**
+     * Get category path name
+     *
+     * If the category is Tops we might create "Default Category > Men > Tops"
+     *
      * @param Category $category
-     * if the category is Tops we might create "Default Category > Men > Tops"
      * @return string
      */
     public function getCategoryPathName(Category $category)
@@ -164,9 +190,10 @@ class CategoryCollection
     }
 
     /**
+     * Save key with a fb product set ID
+     *
      * @param Category $category
      * @param string $setID
-     * save key with a fb product set id
      */
     public function saveFBProductSetID(Category $category, string $setID)
     {
@@ -175,8 +202,11 @@ class CategoryCollection
     }
 
     /**
+     * Get root category
+     *
+     * When getLevel() == 1 then it is root category
+     *
      * @param Category $category
-     * when getLevel() == 1 then it is root category
      * @return Category
      */
     public function getRootCategory(Category $category)
@@ -196,8 +226,11 @@ class CategoryCollection
     }
 
     /**
+     * Get bottom children categories
+     *
+     * Get the leave node in category tree, recursion is being used.
+     *
      * @param Category $category
-     * get the leave node in category tree, recursion is being used.
      * @return Category[]
      */
     public function getBottomChildrenCategories(Category $category)
@@ -224,8 +257,11 @@ class CategoryCollection
     }
 
     /**
+     * Get all children categories
+     *
+     * Get all children node in category tree recursion is being used.
+     *
      * @param Category $category
-     * get all children node in category tree, recursion is being used.
      * @return Category[]
      */
     public function getAllChildrenCategories(Category $category)
@@ -244,22 +280,28 @@ class CategoryCollection
     }
 
     /**
+     * Get all active categories
+     *
      * @return Category
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getAllActiveCategories()
     {
-        $categories = $this->_categoryCollection->create()
+        $categories = $this->categoryCollection->create()
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('is_active', 1)
-            ->setStore($this->_storeManager->getStore());
+            ->setStore($this->storeManager->getStore());
         return $categories;
     }
 
     /**
-     * initial collection call after fbe installation, please not we only push leaf category to collection,
+     * Push all categories to FB collections
+     *
+     * Initial collection call after fbe installation, please not we only push leaf category to collection,
      * this means if a category contains any category, we won't create a collection for it.
+     *
      * @return string|null
+     * @throws LocalizedException
      */
     public function pushAllCategoriesToFbCollections()
     {
@@ -294,9 +336,11 @@ class CategoryCollection
     }
 
     /**
+     * Call the api creating new product set
+     *
+     * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
+     *
      * @param Category $category
-     * call the api creating new product set
-     * https://developers.facebook.com/docs/marketing-api/reference/product-set/
      * @return string|null
      */
     public function pushNewCategoryToFB(Category $category)
@@ -334,10 +378,12 @@ class CategoryCollection
     }
 
     /**
-     * @param Category $category
-     * create filter params for product set api
-     * https://developers.facebook.com/docs/marketing-api/reference/product-set/
+     * Create filter params for product set api
+     *
+     * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
      * e.g. {'retailer_id': {'is_any': ['10', '100']}}
+     *
+     * @param Category $category
      * @return string
      */
     public function getCategoryProductFilter(Category $category)
@@ -360,8 +406,10 @@ class CategoryCollection
     }
 
     /**
-     * compose api creating new category (product set) e.g.
-     * https://graph.facebook.com/v7.0/$catalogId/product_sets
+     * Compose api creating new category (product set) e.g.
+     *
+     * Api link: https://graph.facebook.com/v7.0/$catalogId/product_sets
+     *
      * @return string | null
      */
     public function getCategoryCreateApi()
@@ -373,33 +421,37 @@ class CategoryCollection
         $category_path = "/" . $catalogId . "/product_sets";
 
         $category_create_api = $this->fbeHelper::FB_GRAPH_BASE_URL .
-            $this->fbeHelper->getAPIVersion() .
+            $this->getAPIVersion() .
             $category_path;
         $this->fbeHelper->log("Category Create API - " . $category_create_api);
         return $category_create_api;
     }
 
     /**
+     * Compose api creating new category (product set) e.g.
+     *
+     * Api link: https://graph.facebook.com/v7.0/$catalogId/product_sets
+     *
      * @param string $set_id
-     * compose api creating new category (product set) e.g.
-     * https://graph.facebook.com/v7.0/$catalogId/product_sets
      * @return string
      */
     public function getCategoryUpdateApi(string $set_id)
     {
         $set_path = "/" . $set_id ;
         $set_update_api = $this->fbeHelper::FB_GRAPH_BASE_URL .
-            $this->fbeHelper->getAPIVersion() .
+            $this->getAPIVersion() .
             $set_path;
         $this->fbeHelper->log("product set update API - " . $set_update_api);
         return $set_update_api;
     }
 
     /**
+     * Call the api update existing product set
+     *
+     * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
+     *
      * @param Category $category
      * @param string $set_id
-     * call the api update existing product set
-     * https://developers.facebook.com/docs/marketing-api/reference/product-set/
      * @return string|null
      */
     public function updateCategoryWithFB(Category $category, string $set_id)
@@ -426,7 +478,10 @@ class CategoryCollection
     }
 
     /**
-     * delete all existing product set on fb side
+     * Delete all existing product set on FB side
+     *
+     * @return void
+     * @throws LocalizedException
      */
     public function deleteAllCategoryFromFB()
     {
@@ -437,11 +492,14 @@ class CategoryCollection
     }
 
     /**
-     * @param Category $category
-     * call the api delete existing product set under this category
+     * Call the api delete existing product set under category
+     *
      * When user deletes a category on magento, we first get all sub categories(including itself), and check if we
      * have created a collection set on fb side, if yes then we make delete api call.
      * https://developers.facebook.com/docs/marketing-api/reference/product-set/
+     *
+     * @param Category $category
+     * @return void
      */
     public function deleteCategoryAndSubCategoryFromFB(Category $category)
     {
@@ -452,10 +510,13 @@ class CategoryCollection
     }
 
     /**
-     * @param Category $category
-     * call the api delete existing product set
-     * this should be a low level function call, simple
+     * Call the api delete existing product set
+     *
+     * This should be a low level function call, simple
      * https://developers.facebook.com/docs/marketing-api/reference/product-set/
+     *
+     * @param Category $category
+     * @return void
      */
     public function deleteCategoryFromFB(Category $category)
     {
@@ -472,19 +533,122 @@ class CategoryCollection
         }
         $set_path = "/" . $set_id . "?access_token=". $access_token;
         $url = $this->fbeHelper::FB_GRAPH_BASE_URL .
-            $this->fbeHelper->getAPIVersion() .
+            $this->getAPIVersion() .
             $set_path;
-        // $this->fbeHelper->log("product set deletion API - " . $url);
-        $response_body = null;
         try {
             $response_body = $this->httpClient->makeDeleteHttpCall($url);
-            if (strpos($response_body, 'true') !== false) {
-                $configKey = $this->getCategoryKey($category);
-            } else {
+            if (strpos($response_body, 'true') === false) {
                 $this->fbeHelper->log("product set deletion failed!!! ");
             }
         } catch (\Exception $e) {
             $this->fbeHelper->logException($e);
         }
+    }
+
+    /**
+     * Generates a map of the form : 4 => "Root > Mens > Shoes"
+     *
+     * @return array
+     */
+    public function generateCategoryNameMap()
+    {
+        $categories = $categories = $this->categoryCollection->create()
+            ->addAttributeToSelect('name')
+            ->addAttributeToSelect('path')
+            ->addAttributeToSelect('is_active')
+            ->addAttributeToFilter('is_active', 1);
+        $name = [];
+        $breadcrumb = [];
+        foreach ($categories as $category) {
+            $entityId = $category->getId();
+            $name[$entityId] = $category->getName();
+            $breadcrumb[$entityId] = $category->getPath();
+        }
+        // Converts the product category paths to human readable form.
+        // e.g.  "1/2/3" => "Root > Mens > Shoes"
+        foreach (array_keys($name) as $id) {
+            $breadcrumb[$id] = implode(" > ", array_filter(array_map(
+                function ($innerId) use (&$name) {
+                    return isset($name[$innerId]) ? $name[$innerId] : null;
+                },
+                explode("/", $breadcrumb[$id])
+            )));
+        }
+        return $breadcrumb;
+    }
+
+    /**
+     * Get api version
+     *
+     * @return string|void|null
+     */
+    public function getAPIVersion()
+    {
+        $accessToken = $this->systemConfig->getAccessToken();
+        if (!$accessToken) {
+            $this->fbeHelper->log("can't find access token, won't get api update version ");
+            return;
+        }
+        $apiVersion = null;
+        try {
+            $apiVersion = $this->systemConfig->getApiVersion();
+            //$this->log("Current api version : ".$apiVersion);
+            $versionLastUpdate = $this->systemConfig->getApiVersionLastUpdate();
+            //$this->log("Version last update: ".$versionLastUpdate);
+            $isUpdatedVersion = $this->isUpdatedVersion($versionLastUpdate);
+            if ($apiVersion && $isUpdatedVersion) {
+                //$this->log("Returning the version already stored in db : ".$apiVersion);
+                return $apiVersion;
+            }
+            $this->curl->addHeader("Authorization", "Bearer " . $accessToken);
+            $this->curl->get(self::FB_GRAPH_BASE_URL . 'api_version');
+            //$this->fbeHelper->log("The API call: ".self::FB_GRAPH_BASE_URL.'api_version');
+            $response = $this->curl->getBody();
+            //$this->fbeHelper->log("The API reponse : ".json_encode($response));
+            $decodeResponse = json_decode($response);
+            $apiVersion = $decodeResponse->api_version;
+            //$this->fbeHelper->log("The version fetched via API call: ".$apiVersion);
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION,
+                $apiVersion
+            );
+            $date = new \DateTime();
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE,
+                $date->format('Y-m-d H:i:s')
+            );
+
+        } catch (\Exception $e) {
+            $this->fbeHelper->log("Failed to fetch latest api version with error " . $e->getMessage());
+        }
+
+        return $apiVersion ? $apiVersion : self::CURRENT_API_VERSION;
+    }
+
+    /**
+     * Is updated version
+     *
+     * @param string $versionLastUpdate
+     * @return bool|null
+     */
+    public function isUpdatedVersion($versionLastUpdate)
+    {
+        if (!$versionLastUpdate) {
+            return null;
+        }
+        $monthsSinceLastUpdate = 3;
+        try {
+            $datetime1 = new \DateTime($versionLastUpdate);
+            $datetime2 = new \DateTime();
+            $interval = date_diff($datetime1, $datetime2);
+            $interval_vars = get_object_vars($interval);
+            $monthsSinceLastUpdate = $interval_vars['m'];
+            $this->fbeHelper->log("Months since last update : " . $monthsSinceLastUpdate);
+        } catch (\Exception $e) {
+            $this->fbeHelper->log($e->getMessage());
+        }
+        // Since the previous version is valid for 3 months,
+        // I will check to see for the gap to be only 2 months to be safe.
+        return $monthsSinceLastUpdate <= 2;
     }
 }

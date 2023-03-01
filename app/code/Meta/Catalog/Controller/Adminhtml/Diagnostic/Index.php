@@ -20,8 +20,9 @@ namespace Meta\Catalog\Controller\Adminhtml\Diagnostic;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 
-class Index extends \Magento\Backend\App\Action
+class Index extends \Magento\Backend\App\Action implements HttpGetActionInterface
 {
   /**
    * @var PageFactory
@@ -49,6 +50,6 @@ class Index extends \Magento\Backend\App\Action
    */
     public function execute()
     {
-        return $resultPage = $this->resultPageFactory->create();
+        return $this->resultPageFactory->create();
     }
 }
