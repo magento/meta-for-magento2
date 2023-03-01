@@ -17,6 +17,8 @@
 
 namespace Meta\Catalog\Test\Unit\Observer;
 
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config;
@@ -27,6 +29,7 @@ use Magento\Framework\Event;
 use Magento\Framework\Event\Observer;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Magento\Framework\Message\ManagerInterface;
 
 class ProcessProductAfterDeleteEventObserverTest extends TestCase
 {
@@ -66,6 +69,11 @@ class ProcessProductAfterDeleteEventObserverTest extends TestCase
     private $identifier;
 
     /**
+     * @var MockObject
+     */
+    private $messageManager;
+
+    /**
      * Used to set the values before running a test
      *
      * @return void
@@ -78,17 +86,25 @@ class ProcessProductAfterDeleteEventObserverTest extends TestCase
         $this->_product->expects($this->atLeastOnce())->method('getId')->will($this->returnValue("1234"));
         $this->_product->expects($this->never())->method('getSku');
 
+        $storeManager = $this->createMock(StoreManagerInterface::class);
+        $store = $this->createMock(StoreInterface::class);
+        $this->systemConfig->method('getStoreManager')->willReturn($storeManager);
+        $storeManager->method('getStores')->willReturn([$store]);
+        $store->method('getId')->willReturn('1');
+
         $event = $this->getMockBuilder(Event::class)->addMethods(['getProduct'])->getMock();
         $event->expects($this->once())->method('getProduct')->will($this->returnValue($this->_product));
         $this->_eventObserverMock = $this->createMock(Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->_graphApi = $this->createMock(GraphAPIAdapter::class);
         $this->identifier = $this->createMock(Identifier::class);
+        $this->messageManager = $this->createMock(ManagerInterface::class);
         $this->processProductAfterDeleteEventObserver = new ProcessProductAfterDeleteEventObserver(
             $this->systemConfig,
             $this->_graphApi,
             $this->fbeHelper,
-            $this->identifier
+            $this->identifier,
+            $this->messageManager,
         );
     }
 

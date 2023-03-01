@@ -17,6 +17,7 @@
 
 namespace Meta\Conversion\Controller\Pixel;
 
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Data\Form\FormKey\Validator;
@@ -25,12 +26,11 @@ use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\EventIdGenerator;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Event\ManagerInterface as EventManager;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\ResultFactory;
 
-class ProductInfoForAddToCart implements HttpPostActionInterface
+class ProductInfoForAddToCart implements HttpGetActionInterface
 {
     /**
      * @var JsonFactory

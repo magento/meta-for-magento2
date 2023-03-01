@@ -17,59 +17,56 @@
 
 namespace Meta\Catalog\Test\Unit\Observer;
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Framework\Event;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Model\Product\Feed\Method\BatchApi;
 use Meta\Catalog\Observer\Product\SaveAfter as ProcessProductAfterSaveEventObserver;
-use Magento\Catalog\Model\Product;
-use Magento\Framework\Event;
-use Magento\Framework\Event\Observer;
-use Magento\Store\Api\Data\StoreInterface;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessProductAfterSaveEventObserverTest extends TestCase
 {
     /**
-     * @var MockObject
+     * @var FBEHelper
      */
-    private MockObject $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
-     * @var MockObject
+     * @var Config
      */
-    private MockObject $systemConfig;
+    private Config $systemConfigMock;
 
     /**
      * @var ProcessProductAfterSaveEventObserver
      */
-    private $processProductAfterSaveEventObserver;
+    private ProcessProductAfterSaveEventObserver $processProductAfterSaveEventObserver;
 
     /**
-     * @var MockObject
+     * @var BatchApi
      */
-    private $_eventObserverMock;
+    private BatchApi $batchApiMock;
 
     /**
-     * @var MockObject
+     * @var GraphAPIAdapter
      */
-    private $_product;
+    private GraphAPIAdapter $graphApiAdapterMock;
 
     /**
-     * @var MockObject
+     * @var ProductRepositoryInterface
      */
-    private $store;
+    private ProductRepositoryInterface $productRepositoryMock;
 
     /**
-     * @var MockObject
+     * @var ManagerInterface
      */
-    private $_batchApi;
-
-    /**
-     * @var MockObject
-     */
-    private $_graphApi;
+    private ManagerInterface $messageManager;
 
     /**
      * Used to set the values before running a test
@@ -79,31 +76,57 @@ class ProcessProductAfterSaveEventObserverTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
-        $this->systemConfig = $this->createMock(Config::class);
-        $this->store = $this->createMock(StoreInterface::class);
-        $this->fbeHelper->expects($this->once())->method('getStore')->will($this->returnValue($this->store));
-        $this->_product = $this->createMock(Product::class);
-        $this->_product->expects($this->once())->method('getId')->will($this->returnValue("1234"));
-        $event = $this->getMockBuilder(Event::class)->addMethods(['getProduct'])->getMock();
-        $event->expects($this->once())->method('getProduct')->will($this->returnValue($this->_product));
-        $this->_eventObserverMock = $this->createMock(Observer::class);
-        $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
-        $this->_graphApi = $this->createMock(GraphAPIAdapter::class);
-        $this->_batchApi = $this->createMock(BatchApi::class);
+        $this->systemConfigMock = $this->createMock(Config::class);
+        $this->graphApiAdapterMock = $this->createMock(GraphAPIAdapter::class);
+        $this->batchApiMock = $this->createMock(BatchApi::class);
+        $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
+        $this->messageManager = $this->createMock(ManagerInterface::class);
+
         $this->processProductAfterSaveEventObserver = new ProcessProductAfterSaveEventObserver(
-            $this->systemConfig,
+            $this->systemConfigMock,
             $this->fbeHelper,
-            $this->_batchApi,
-            $this->_graphApi,
+            $this->batchApiMock,
+            $this->graphApiAdapterMock,
+            $this->messageManager,
+            $this->productRepositoryMock
         );
     }
 
-    public function testExecution()
+    public function testExecute(): void
     {
-        $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
-        $this->systemConfig->method('isActiveExtension')->willReturn(true);
-        $this->_batchApi->expects($this->once())->method('buildRequestForIndividualProduct');
-        $this->_graphApi->expects($this->atLeastOnce())->method('catalogBatchRequest');
-        $this->processProductAfterSaveEventObserver->execute($this->_eventObserverMock);
+        $observerMock = $this->createMock(Observer::class);
+        $eventMock = $this->getMockBuilder(Event::class)->addMethods(['getProduct'])->getMock();
+        $observerMock->expects($this->once())->method('getEvent')->willReturn($eventMock);
+        $productMock = $this->getMockBuilder(Product::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getId'])
+            ->addMethods(['getSendToFacebook'])
+            ->getMock();
+        $eventMock->expects($this->once())->method('getProduct')->willReturn($productMock);
+
+        $productMock->expects($this->once())->method('getId')->willReturn("1234");
+
+        $storeManager = $this->createMock(StoreManagerInterface::class);
+        $this->systemConfigMock->method('getStoreManager')->willReturn($storeManager);
+
+        $store = $this->createMock(StoreInterface::class);
+        $storeManager->method('getStores')->willReturn([$store]);
+
+        $store->method('getId')->willReturn('1');
+
+        $this->systemConfigMock->method('isActiveExtension')->willReturn(true);
+        $this->systemConfigMock->method('isActiveIncrementalProductUpdates')->willReturn(true);
+
+        $this->productRepositoryMock->method('getById')->willReturn($productMock);
+
+        $productMock->method('getSendToFacebook')->willReturn(1);
+
+        $this->systemConfigMock->method('getCatalogId')->willReturn("12345");
+
+        $this->batchApiMock->expects($this->once())
+            ->method('buildRequestForIndividualProduct')
+            ->with($productMock);
+        $this->graphApiAdapterMock->expects($this->atLeastOnce())->method('catalogBatchRequest');
+        $this->processProductAfterSaveEventObserver->execute($observerMock);
     }
 }
