@@ -35,7 +35,7 @@
                     <source_model>Meta\Catalog\Model\Config\Source\Product\Identifier</source_model>
                     <comment>Adobe Commerce product attribute mapped to Retailer ID / Content ID on Meta. Warning: use with caution, as changing this option after uploading products to Meta might result in having duplicate products in your Meta catalog</comment>
                 </field>
-                <field id="price_incl_tax" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="price_incl_tax" translate="label comment" type="select" sortOrder="60" showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Price Including Tax</label>
                     <config_path>facebook/catalog_management/price_incl_tax</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

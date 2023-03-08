@@ -48,7 +48,7 @@
     });
 </script>
 
-<?= $block->escapeHtml($block->getButtonHtml()) ?>
+<?= /* @noEscape */ $block->getButtonHtml() ?>
 <span id="fb_pull_orders_result">
     <img class="fb-pull-orders-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src=
         "<?= $block->escapeUrl($block->getViewFileUrl('images/process_spinner.gif')) ?>"
