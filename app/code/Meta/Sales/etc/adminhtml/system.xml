@@ -41,7 +41,7 @@
                     </depends>
                     <comment>Automatically subscribe buyers to the Adobe Commerce newsletter. Note: only works if the buyer agreed to use their email for marketing purposes on Meta</comment>
                 </field>
-                <field id="default_fulfillment_location" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="default_fulfillment_location" translate="label comment" type="select" sortOrder="50" showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Use Default Fulfillment Location</label>
                     <config_path>facebook/orders_sync/default_fulfillment_location</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -50,35 +50,35 @@
                     </depends>
                     <comment>Store address is the default fulfillment location</comment>
                 </field>
-                <group id="fulfillment_information" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="1">
+                <group id="fulfillment_information" translate="label" type="text" sortOrder="100" showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Fulfillment Address</label>
                     <depends>
                         <field id="facebook_business_extension/orders_sync/default_fulfillment_location">0</field>
                     </depends>
-                    <field id="street_line1" translate="label" type="text" sortOrder="55" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <field id="street_line1" translate="label" type="text" sortOrder="55" showInDefault="0" showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/street_line1</config_path>
                         <label>Street Address</label>
                     </field>
-                    <field id="street_line2" translate="label" type="text" sortOrder="55" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <field id="street_line2" translate="label" type="text" sortOrder="55" showInDefault="0" showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/street_line2</config_path>
                         <label>Street Address 2</label>
                     </field>
-                    <field id="country_id" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <field id="country_id" translate="label" type="select" sortOrder="25" showInDefault="0" showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/country_id</config_path>
                         <label>Country</label>
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                         <frontend_class>countries</frontend_class>
                         <can_be_empty>1</can_be_empty>
                     </field>
-                    <field id="region_id" translate="label" type="text" sortOrder="27" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <field id="region_id" translate="label" type="text" sortOrder="27" showInDefault="0" showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/region_id</config_path>
                         <label>Region/State</label>
                     </field>
-                    <field id="city" translate="label" type="text" sortOrder="45" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <field id="city" translate="label" type="text" sortOrder="45" showInDefault="0" showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/city</config_path>
                         <label>City</label>
                     </field>
-                    <field id="postcode" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <field id="postcode" translate="label" type="text" sortOrder="30" showInDefault="0" showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/postcode</config_path>
                         <label>ZIP/Postal Code</label>
                     </field>
