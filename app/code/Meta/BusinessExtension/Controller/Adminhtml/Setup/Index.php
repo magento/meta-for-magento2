@@ -51,6 +51,9 @@ class Index extends Action implements HttpGetActionInterface
    */
     public function execute()
     {
-        return $this->resultPageFactory->create();
+        $resultPage = $this->resultPageFactory->create();
+        $resultPage->setActiveMenu('Meta_BusinessExtension::facebook_business_extension');
+        $resultPage->getConfig()->getTitle()->prepend(__('Meta Business Extension'));
+        return $resultPage;
     }
 }

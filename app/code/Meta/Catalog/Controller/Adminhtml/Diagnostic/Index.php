@@ -50,6 +50,9 @@ class Index extends \Magento\Backend\App\Action implements HttpGetActionInterfac
    */
     public function execute()
     {
-        return $this->resultPageFactory->create();
+        $resultPage = $this->resultPageFactory->create();
+        $resultPage->setActiveMenu('Meta_Catalog::diagnostic');
+        $resultPage->getConfig()->getTitle()->prepend(__('Catalog Diagnostics'));
+        return $resultPage;
     }
 }
