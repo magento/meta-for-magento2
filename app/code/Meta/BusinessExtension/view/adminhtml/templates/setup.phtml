@@ -4,6 +4,7 @@
  * @var $escaper \Magento\Framework\Escaper
  */
 ?>
+
 <select id="store">
     <option value="select-store"><?= $escaper->escapeHtml(__('Select store')) ?></option>
     <?php foreach ($block->getStores() as $key => $store): ?>
@@ -16,6 +17,9 @@
                     "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
                 data-external-business-id=
                     "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
+                <?php if ($store->isDefault() && $store->getWebsiteId() === $block->getFirstWebsiteId()): ?>
+                    data-selected="true"
+                <?php endif; ?>
             ><?= $escaper->escapeHtml(__($store['name'])) ?></option>
        <?php endif; ?>
     <?php endforeach; ?>
@@ -47,7 +51,14 @@
 </script>
 <script>
     require([
+        'jquery',
         'Meta_BusinessExtension/js/fbe_allinone'
-    ], function () {
+    ], function ($) {
+        var installedDefault = $('#store option[data-selected="true"][data-installed="true"]');
+        if (installedDefault.length) {
+            installedDefault.attr('selected', 'selected').change();
+        } else {
+            $('#store option[data-installed="true"]').first().attr('selected', 'selected').change();
+        }
     });
 </script>

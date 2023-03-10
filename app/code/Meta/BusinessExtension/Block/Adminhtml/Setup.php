@@ -22,6 +22,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Template;
 use Magento\Store\Api\StoreRepositoryInterface;
+use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
 
 /**
  * @api
@@ -44,10 +45,16 @@ class Setup extends Template
     public $storeRepo;
 
     /**
+     * @var WebsiteCollectionFactory
+     */
+    private $websiteCollectionFactory;
+
+    /**
      * @param Context $context
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param StoreRepositoryInterface $storeRepo
+     * @param WebsiteCollectionFactory $websiteCollectionFactory
      * @param array $data
      */
     public function __construct(
@@ -55,12 +62,14 @@ class Setup extends Template
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
         StoreRepositoryInterface $storeRepo,
+        WebsiteCollectionFactory $websiteCollectionFactory,
         array $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
         $this->systemConfig = $systemConfig;
         $this->storeRepo = $storeRepo;
+        $this->websiteCollectionFactory = $websiteCollectionFactory;
     }
 
     /**
@@ -201,5 +210,20 @@ class Setup extends Template
     public function getStores()
     {
         return $this->storeRepo->getList();
+    }
+
+    /**
+     * Get first website id
+     *
+     * @return int|null
+     */
+    public function getFirstWebsiteId()
+    {
+        $collection = $this->websiteCollectionFactory->create();
+        $collection->addFieldToSelect('website_id')
+            ->addFieldToFilter('code', ['neq' => 'admin']);
+        $collection->getSelect()->order('website_id ASC')->limit(1);
+
+        return $collection->getFirstItem()->getWebsiteId();
     }
 }
