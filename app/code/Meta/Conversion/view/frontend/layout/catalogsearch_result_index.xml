@@ -8,5 +8,11 @@
                    template="Meta_Conversion::pixel/search.phtml"
                    before="-" />
         </referenceContainer>
+        <referenceBlock name="head.additional">
+            <block class="Meta\Conversion\Block\Pixel\AddToCart"
+                   name="fbe.pixel.add_to_cart"
+                   template="Meta_Conversion::pixel/add_to_cart.phtml"
+                   before="-" />
+        </referenceBlock>
     </body>
 </page>
