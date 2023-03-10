@@ -1,0 +1,26 @@
+<?php /** @var \Meta\Conversion\Block\Pixel\Head $block */ ?>
+<?php /** @var \Magento\Framework\Escaper $escaper */ ?>
+<?php if ($block->getFacebookPixelID()): ?>
+    <?php $dataProcessingOptionsImgTag = $block->getDataProcessingOptionsImgTag(); ?>
+    <?php if (strlen($dataProcessingOptionsImgTag) == 0): ?>
+        <?php
+            $src = 'https://www.facebook.com/tr?id=' . $block->getFacebookPixelID() . '&ev=PageView&noscript=1&a=' .
+                $block->getFacebookAgentVersion();
+        ?>
+        <noscript>
+            <img height="1" width="1" style="display:none"
+                 src="<?= $escaper->escapeUrl($src) ?>"
+                 alt="<?= $escaper->escapeHtmlAttr(__('Facebook Pixel')) ?>">
+        </noscript>
+    <?php else: ?>
+        <?php
+            $src = 'https://www.facebook.com/tr?id=' . $block->getFacebookPixelID() . '&ev=PageView&noscript=1&a=' .
+                $block->getFacebookAgentVersion() . '&' . $dataProcessingOptionsImgTag;
+        ?>
+        <noscript>
+            <img height="1" width="1" style="display:none"
+                 src="<?= $escaper->escapeUrl($src) ?>"
+                 alt="<?= $escaper->escapeHtmlAttr(__('Facebook Pixel')) ?>">
+        </noscript>
+    <?php endif; ?>
+<?php endif; ?>

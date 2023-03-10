@@ -16,5 +16,11 @@
                 </arguments>
             </block>
         </referenceContainer>
+        <referenceContainer name="after.body.start">
+            <block class="Meta\Conversion\Block\Pixel\Head"
+                   name="fbe.pixel.noscript"
+                   template="Meta_Conversion::pixel/noscript.phtml"
+                   before="-" />
+        </referenceContainer>
     </body>
 </page>

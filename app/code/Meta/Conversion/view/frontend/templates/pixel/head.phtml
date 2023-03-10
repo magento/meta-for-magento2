@@ -1,4 +1,5 @@
 <?php /** @var \Meta\Conversion\Block\Pixel\Head $block */ ?>
+<?php /** @var \Magento\Framework\Escaper $escaper */ ?>
 <?php if ($block->getFacebookPixelID()) { ?>
 <!-- Meta Business Extension for Magento 2 -->
 <!-- Meta Pixel Code -->
@@ -11,40 +12,26 @@ document,'script','//connect.facebook.net/en_US/fbevents.js');
     <?php
     $dataProcessingOptionsCode = $block->getDataProcessingOptionsJSCode();
     if (strlen($dataProcessingOptionsCode) > 0) {
-        echo $dataProcessingOptionsCode."\n";
+        echo $escaper->escapeJs($dataProcessingOptionsCode . "\n");
     }
     ?>
 fbq(
   'init',
-  '<?= $block->getFacebookPixelID() ?>',
-    <?= $block->getPixelInitCode() ?>,
-  {agent: '<?= $block->getFacebookAgentVersion() ?>' }
+  '<?= /* @noEscape */ $block->getFacebookPixelID() ?>',
+    <?= /* @noEscape */ $block->getPixelInitCode() ?>,
+  {agent: '<?= /* @noEscape */ $block->getFacebookAgentVersion() ?>' }
 );
 fbq('track', 'PageView', {
-  source: "<?= $block->getSource() ?>",
-  pluginVersion: "<?= $block->getPluginVersion() ?>"
+  source: "<?= /* @noEscape */ $block->getSource() ?>",
+  pluginVersion: "<?= /* @noEscape */ $block->getPluginVersion() ?>"
 });
 </script>
-<noscript>
-    <?php
-    $dataProcessingOptionsImgTag = $block->getDataProcessingOptionsImgTag();
-    if (strlen($dataProcessingOptionsImgTag) == 0) {
-        ?>
-<img height="1" width="1" style="display:none"
-     src="https://www.facebook.com/tr?id=<?= $block->getFacebookPixelID() ?>&ev=PageView&noscript=1&a=<?= $block->getFacebookAgentVersion() ?>" />
-        <?php
-    } else {
-        ?>
-<img height="1" width="1" style="display:none"
-     src="https://www.facebook.com/tr?id=<?= $block->getFacebookPixelID() ?>&ev=PageView&noscript=1&a=<?= $block->getFacebookAgentVersion() ?>&<?= $dataProcessingOptionsImgTag ?>" />
-        <?php
-    }
-    ?>
-</noscript>
 <!-- End Meta Pixel Code -->
 <?php } else { ?>
 <!-- NO Pixel ID is configured, please goto Admin -->
 <script>
-console.log('No Meta pixel is configured, please log in as a admin and then visit Stores -> Meta -> Setup -> Get Started');
+console.log(
+    'No Meta pixel is configured, please log in as a admin and then visit Stores -> Meta -> Setup -> Get Started'
+);
 </script>
 <?php } ?>
