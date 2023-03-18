@@ -519,4 +519,8 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Sales\Model\ResourceModel\Order\Grid\Collection">
+        <plugin name="facebookSalesOrderGrid"
+                type="Meta\Sales\Plugin\FacebookSalesOrderGridPlugin"/>
+    </type>
 </config>
