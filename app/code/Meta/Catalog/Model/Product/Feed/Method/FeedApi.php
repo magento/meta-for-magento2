@@ -112,7 +112,7 @@ class FeedApi
                 return $a['name'] === $feedName;
             });
             if (!empty($magentoFeeds)) {
-                $feedId = $magentoFeeds[0]['id'];
+                $feedId = $magentoFeeds[array_key_first($magentoFeeds)]['id'];
             }
         }
 
