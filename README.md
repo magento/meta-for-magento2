@@ -108,12 +108,6 @@ Execute the following commands to manually install Meta Business Extension.
 - There should be a section named Facebook -> Setup
 - Click on 'Setup' to go to the Extension Installation Page.
 
-## Testing before installing
-
-If you want to test this extension in a separate environment, without making changes in your production server, you can use the files provided in tests folder.
-
-Follow `docker-installation-instructions.txt` file to run a Magento 2 store with the extension installed, using Docker, so you can test in your local machine.
-
 ## Need help?
 
 Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help/532749253576163).
