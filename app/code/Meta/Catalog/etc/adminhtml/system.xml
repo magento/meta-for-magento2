@@ -14,11 +14,6 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Scheduled full catalog upload</comment>
                 </field>
-                <field id="feed_upload_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Feed Upload Method</label>
-                    <config_path>facebook/catalog_management/feed_upload_method</config_path>
-                    <source_model>Meta\Catalog\Model\Config\Source\FeedUploadMethod</source_model>
-                </field>
                 <field id="product_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Push Products</label>
                     <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
