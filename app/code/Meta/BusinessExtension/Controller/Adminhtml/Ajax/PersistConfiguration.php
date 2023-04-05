@@ -82,6 +82,12 @@ class PersistConfiguration extends AbstractAjax
                 ->saveCatalogId($catalogId, $storeId)
                 ->completeOnsiteOnboarding($accessToken, $pageId, $storeId);
 
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
+                true,
+                $storeId
+            );
+
             $response['success'] = true;
             $response['message'] = 'Configuration successfully saved';
             return $response;
