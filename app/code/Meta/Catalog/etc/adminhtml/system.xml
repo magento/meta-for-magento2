@@ -53,12 +53,6 @@
                     <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>
                     <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
                 </field>
-                <field id="enable_inventory_upload" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Scheduled Inventory Upload</label>
-                    <config_path>facebook/inventory_management/enable_inventory_upload</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Enable product inventory upload from Adobe Commerce to your Meta catalog every 15 minutes</comment>
-                </field>
             </group>
         </section>
     </system>

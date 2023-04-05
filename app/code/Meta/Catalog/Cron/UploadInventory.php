@@ -76,10 +76,7 @@ class UploadInventory
      */
     private function isUploadEnabled($storeId)
     {
-        if (!$this->systemConfig->isActiveExtension($storeId)) {
-            return false;
-        }
-        return $this->systemConfig->isActiveInventoryUpload($storeId);
+        return $this->systemConfig->isActiveExtension($storeId);
     }
 
     /**
