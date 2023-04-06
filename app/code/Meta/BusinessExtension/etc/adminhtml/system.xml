@@ -23,6 +23,11 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
+                <field id="installed" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <config_path>facebook/business_extension/installed</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
+                </field>
                 <field id="pixel_id" translate="label" type="label" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Pixel Id</label>
                     <config_path>facebook/business_extension/pixel_id</config_path>

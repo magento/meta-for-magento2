@@ -8,7 +8,7 @@
              module="Meta_Catalog"
              parent="Meta_BusinessExtension::facebook"
              sortOrder="30"
-             dependsOnModule="Meta_BusinessExtension"
+             dependsOnConfig="facebook/business_extension/installed"
              action="fbeadmin/diagnostic"
              resource="Meta_BusinessExtension::facebook"/>
     </menu>

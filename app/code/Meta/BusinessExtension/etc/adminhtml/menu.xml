@@ -24,7 +24,7 @@
              module="Meta_BusinessExtension"
              parent="Meta_BusinessExtension::facebook"
              sortOrder="20"
-             dependsOnModule="Meta_BusinessExtension"
+             dependsOnConfig="facebook/business_extension/installed"
              action="adminhtml/system_config/edit/section/facebook_business_extension"
              resource="Meta_BusinessExtension::facebook"/>
     </menu>
