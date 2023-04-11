@@ -108,10 +108,9 @@ class DeleteAfter implements ObserverInterface
      */
     private function deleteProduct($storeId, $product): void
     {
-        $isActive = $this->systemConfig->isActiveExtension($storeId);
         $shouldIncrement = $this->systemConfig->isActiveIncrementalProductUpdates($storeId);
 
-        if (!($isActive && $shouldIncrement)) {
+        if (!$shouldIncrement) {
             return;
         }
 

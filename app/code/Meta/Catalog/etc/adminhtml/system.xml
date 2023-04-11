@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="facebook_business_extension">
-            <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+        <section id="meta_catalog" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+            <class>separator-top</class>
+            <label>Catalog</label>
+            <tab>facebook</tab>
+            <resource>Meta_BusinessExtension::system_config</resource>
+            <group id="business_extension" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Catalog Management</label>
                 <fieldset_css>meta-section-config</fieldset_css>
-                <depends>
-                    <field id="facebook_business_extension/business_extension/active">1</field>
-                </depends>
                 <field id="daily_product_feed" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Daily Product Feed</label>
                     <config_path>facebook/catalog_management/daily_product_feed</config_path>
@@ -41,14 +42,7 @@
                     <label>Push All Categories to Facebook Catalog</label>
                     <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed</frontend_model>
                 </field>-->
-            </group>
-            <group id="inventory_management" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
-                <label>Inventory Management</label>
-                <fieldset_css>meta-section-config</fieldset_css>
-                <depends>
-                    <field id="facebook_business_extension/business_extension/active">1</field>
-                </depends>
-                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Out-of-Stock Threshold</label>
                     <config_path>facebook/inventory_management/out_of_stock_threshold</config_path>
                     <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>

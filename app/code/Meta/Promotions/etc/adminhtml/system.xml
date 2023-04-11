@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="facebook_business_extension">
+        <section id="commerce" translate="label" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
             <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="0" showInWebsite="0" showInStore="0">
                 <label>Promotions [Beta]</label>
                 <fieldset_css>meta-section-config</fieldset_css>

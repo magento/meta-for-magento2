@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-namespace Meta\BusinessExtension\Block\Adminhtml\System\Config;
+declare(strict_types=1);
+
+namespace Meta\Sales\Block\Adminhtml\System\Config;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
@@ -24,13 +26,12 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class ModuleInfo extends Field
 {
-    private const EVENTS_MANAGER_URL = 'https://www.facebook.com/events_manager2';
     /**
      * Template path
      *
      * @var string
      */
-    protected $_template = 'Meta_BusinessExtension::system/config/module_info.phtml';
+    protected $_template = 'Meta_Sales::system/config/module_info.phtml';
 
     /**
      * @var SystemConfig
@@ -76,16 +77,6 @@ class ModuleInfo extends Field
     }
 
     /**
-     * Generate collect button html
-     *
-     * @return string
-     */
-    public function getModuleVersion()
-    {
-        return $this->systemConfig->getModuleVersion();
-    }
-
-    /**
      * Retrieve Store Id
      *
      * @return mixed
@@ -96,22 +87,62 @@ class ModuleInfo extends Field
     }
 
     /**
-     * Retrieve Pixel Id
+     * Retrieve Commerce Account Id
      *
      * @return string
      */
-    public function getPixelId()
+    public function getCommerceAccountId()
     {
-        return $this->systemConfig->getPixelId($this->getStoreId());
+        return $this->systemConfig->getCommerceAccountId($this->getStoreId());
     }
 
     /**
-     * Get events manager URL
+     * Retrieve Page Id
      *
      * @return string
      */
-    public function getEventsManagerUrl()
+    public function getPageId()
     {
-        return self::EVENTS_MANAGER_URL;
+        return $this->systemConfig->getPageId($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Catalog Id
+     *
+     * @return string
+     */
+    public function getCatalogId()
+    {
+        return $this->systemConfig->getCatalogId($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Commerce Manager Url
+     *
+     * @return string
+     */
+    public function getCommerceManagerUrl()
+    {
+        return $this->systemConfig->getCommerceManagerUrl($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Catalog Manager Url
+     *
+     * @return string
+     */
+    public function getCatalogManagerUrl()
+    {
+        return $this->systemConfig->getCatalogManagerUrl($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Support Url
+     *
+     * @return string
+     */
+    public function getSupportUrl()
+    {
+        return $this->systemConfig->getSupportUrl($this->getStoreId());
     }
 }

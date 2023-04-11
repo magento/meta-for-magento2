@@ -63,7 +63,7 @@ class Cancel implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $storeId = $order->getStoreId();
 
-        if (!($this->systemConfig->isActiveExtension($storeId)
+        if (!($this->systemConfig->isActiveShop($storeId)
             && $this->systemConfig->isActiveOrderSync($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;

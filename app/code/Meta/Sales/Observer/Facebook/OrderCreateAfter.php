@@ -91,7 +91,7 @@ class OrderCreateAfter implements ObserverInterface
         $facebookOrder = $observer->getEvent()->getFacebookOrder();
         $storeId = $order->getStoreId();
 
-        if (!($this->systemConfig->isActiveExtension($storeId)
+        if (!($this->systemConfig->isActiveShop($storeId)
             && $this->systemConfig->isActiveOrderSync($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;

@@ -1,13 +1,10 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="facebook_business_extension">
+        <section id="ads_management">
             <group id="conversion_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Conversion Management</label>
                 <fieldset_css>meta-section-config</fieldset_css>
-                <depends>
-                    <field id="facebook_business_extension/business_extension/active">1</field>
-                </depends>
                 <field id="enable_server_test" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Enable Server Event Test Mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -16,11 +13,11 @@
                 </field>
                 <field id="server_test_code" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Server Event Test Code</label>
-                    <depends>
-                        <field id="facebook_business_extension/conversion_management/enable_server_test">1</field>
-                    </depends>
                     <config_path>facebook/conversion_management/server_test_code</config_path>
                     <comment>Specify the test code for server events</comment>
+                    <depends>
+                        <field id="ads_management/conversion_management/enable_server_test">1</field>
+                    </depends>
                 </field>
             </group>
         </section>

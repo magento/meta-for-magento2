@@ -35,7 +35,7 @@ class Config
     private const VERSION_CACHE_KEY = 'meta-business-extension-version';
     private const EXTENSION_PACKAGE_NAME = 'meta/meta-for-magento2';
 
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE = 'facebook/business_extension/active';
+    private const XML_PATH_FACEBOOK_SHOPS_ACTIVE = 'facebook/business_extension/commerce';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED = 'facebook/business_extension/installed';
 
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID =
@@ -263,9 +263,9 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isActiveExtension($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
+    public function isActiveShop($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_SHOPS_ACTIVE, $scopeId, $scope);
     }
 
     /**
@@ -565,7 +565,7 @@ class Config
             $defaultStoreId = $storeManager->getDefaultStoreView()->getId();
             foreach ($storeManager->getStores() as $store) {
                 if ($store->getId() !== $defaultStoreId) {
-                    $this->saveConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, 0, $store->getId());
+                    $this->saveConfig(self::XML_PATH_FACEBOOK_SHOPS_ACTIVE, 0, $store->getId());
                 }
             }
         }
