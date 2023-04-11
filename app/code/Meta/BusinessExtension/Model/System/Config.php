@@ -846,4 +846,16 @@ class Config
             $scope
         );
     }
+
+    /**
+     * Get store weight unit
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return mixed
+     */
+    public function getWeightUnit(int $scopeId = null, string $scope = null)
+    {
+        return $this->getConfig('general/locale/weight_unit', $scopeId, $scope);
+    }
 }

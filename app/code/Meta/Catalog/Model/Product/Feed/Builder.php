@@ -27,28 +27,45 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Escaper;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Builder
 {
+    //required fields
     private const ATTR_RETAILER_ID = 'id';
-    private const ATTR_ITEM_GROUP_ID = 'item_group_id';
+    private const ATTR_NAME = 'title';
     private const ATTR_DESCRIPTION = 'description';
-    private const ATTR_RICH_DESCRIPTION = 'rich_text_description';
+    private const ATTR_AVAILABILITY = 'availability';
+    private const ATTR_CONDITION = 'condition';
+    private const ATTR_PRICE = 'price';
     private const ATTR_URL = 'link';
     private const ATTR_IMAGE_URL = 'image_link';
-    private const ATTR_ADDITIONAL_IMAGE_URL = 'additional_image_link';
     private const ATTR_BRAND = 'brand';
+
+    //required checkout fields
+    private const ATTR_INVENTORY = 'quantity_to_sell_on_facebook';
+    private const ATTR_PRODUCT_CATEGORY = 'google_product_category';
     private const ATTR_SIZE = 'size';
-    private const ATTR_COLOR = 'color';
-    private const ATTR_CONDITION = 'condition';
-    private const ATTR_AVAILABILITY = 'availability';
-    private const ATTR_INVENTORY = 'inventory';
-    private const ATTR_PRICE = 'price';
+
+    //optional checkout fields
     private const ATTR_SALE_PRICE = 'sale_price';
     private const ATTR_SALE_PRICE_EFFECTIVE_DATE = 'sale_price_effective_date';
-    private const ATTR_NAME = 'title';
+    private const ATTR_ITEM_GROUP_ID = 'item_group_id';
+    private const ATTR_STATUS = 'status';
+    private const ATTR_ADDITIONAL_IMAGE_URL = 'additional_image_link';
+    private const ATTR_COLOR = 'color';
+    private const ATTR_GENDER = 'gender';
+    private const ATTR_AGE_GROUP = 'age_group';
+    private const ATTR_MATERIAL = 'material';
+    private const ATTR_PATTERN = 'pattern';
+    private const ATTR_SHIPPING_WEIGHT = 'shipping_weight';
+    private const ATTR_RICH_DESCRIPTION = 'rich_text_description';
     private const ATTR_PRODUCT_TYPE = 'product_type';
-    private const ATTR_PRODUCT_CATEGORY = 'google_product_category';
+    private const ATTR_VIDEO = 'video';
     private const ATTR_UNIT_PRICE = 'unit_price';
 
     private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
@@ -115,6 +132,11 @@ class Builder
     private $escaper;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
@@ -123,6 +145,7 @@ class Builder
      * @param ProductIdentifier $productIdentifier
      * @param InventoryInterface $inventory
      * @param Escaper $escaper
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         FBEHelper                 $fbeHelper,
@@ -131,6 +154,7 @@ class Builder
         ProductIdentifier         $productIdentifier,
         InventoryInterface        $inventory,
         Escaper                   $escaper,
+        SystemConfig              $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -138,6 +162,7 @@ class Builder
         $this->productIdentifier = $productIdentifier;
         $this->inventory = $inventory;
         $this->escaper = $escaper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -478,6 +503,101 @@ class Builder
     }
 
     /**
+     * Get status for product
+     *
+     * @param Product $product
+     * @return string
+     */
+    private function getStatus(Product $product)
+    {
+        return $product->getStatus() == Status::STATUS_ENABLED ? 'active' : 'archived';
+    }
+
+    /**
+     * Get gender for product
+     *
+     * @param Product $product
+     * @return string
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
+    private function getGender(Product $product)
+    {
+        $gender = $product->getAttributeText('gender');
+
+        if (!$gender) {
+            return '';
+        }
+
+        if (is_array($gender)) {
+            $isFemale = in_array('Women', $gender) || in_array('Girls', $gender);
+            $isMale = in_array('Men', $gender) || in_array('Boys', $gender);
+            if (in_array('Unisex', $gender) || ($isMale && $isFemale)) {
+                return 'Unisex';
+            } elseif ($isFemale) {
+                return 'Female';
+            } elseif ($isMale) {
+                return 'Male';
+            }
+        } else {
+            if ($gender === 'Men' || $gender === 'Boys') {
+                return 'Male';
+            } elseif ($gender === 'Women' || $gender === 'Girls') {
+                return 'Female';
+            } elseif ($gender === 'Unisex') {
+                return 'Unisex';
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Get material for product
+     *
+     * @param Product $product
+     * @return array
+     */
+    private function getMaterial(Product $product)
+    {
+        $material = $product->getAttributeText('material');
+        if ($material) {
+            return is_array($material) ? implode(', ', $material) : $material;
+        }
+        return '';
+    }
+
+    /**
+     * Get pattern for product
+     *
+     * @param Product $product
+     * @return array
+     */
+    private function getPattern(Product $product)
+    {
+        $pattern = $product->getAttributeText('pattern');
+        if ($pattern) {
+            return is_array($pattern) ? implode(', ', $pattern) : $pattern;
+        }
+        return  '';
+    }
+
+    /**
+     * Get weight for product
+     *
+     * @param Product $product
+     * @return string
+     */
+    private function getWeight(Product $product)
+    {
+        $weight = $product->getWeight();
+        if ($weight) {
+            $weightUnit = $this->systemConfig->getWeightUnit() === 'lbs' ? 'lb' : 'kg';
+            return $product->getWeight() . ' ' . $weightUnit;
+        }
+        return '';
+    }
+
+    /**
      * Build product entry
      *
      * @param Product $product
@@ -536,6 +656,11 @@ class Builder
             self::ATTR_URL => $this->getProductUrl($product),
             self::ATTR_IMAGE_URL => $imageUrl,
             self::ATTR_ADDITIONAL_IMAGE_URL => $additionalImages,
+            self::ATTR_STATUS => $this->getStatus($product),
+            self::ATTR_GENDER => $this->getGender($product),
+            self::ATTR_MATERIAL => $this->getMaterial($product),
+            self::ATTR_PATTERN => $this->getPattern($product),
+            self::ATTR_SHIPPING_WEIGHT => $this->getWeight($product),
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
@@ -572,6 +697,11 @@ class Builder
             self::ATTR_URL,
             self::ATTR_IMAGE_URL,
             self::ATTR_ADDITIONAL_IMAGE_URL,
+            self::ATTR_STATUS,
+            self::ATTR_GENDER,
+            self::ATTR_MATERIAL,
+            self::ATTR_PATTERN,
+            self::ATTR_SHIPPING_WEIGHT,
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {

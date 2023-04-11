@@ -18,7 +18,6 @@ namespace Meta\Catalog\Model\Product\Feed\ProductRetriever;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
@@ -82,7 +81,6 @@ class Simple implements ProductRetrieverInterface
 
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect('*')
-            ->addAttributeToFilter('status', Status::STATUS_ENABLED)
             ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
             ->addAttributeToFilter([
                 [

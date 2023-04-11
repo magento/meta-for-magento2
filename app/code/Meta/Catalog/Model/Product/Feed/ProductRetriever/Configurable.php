@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Meta\Catalog\Model\Product\Feed\ProductRetriever;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
@@ -87,7 +87,6 @@ class Configurable implements ProductRetrieverInterface
 
         $configurableCollection = $this->productCollectionFactory->create();
         $configurableCollection->addAttributeToSelect('*')
-            ->addAttributeToFilter('status', Status::STATUS_ENABLED)
             ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
             ->addAttributeToFilter([
                 [
@@ -114,29 +113,36 @@ class Configurable implements ProductRetrieverInterface
             $configurableAttributes = $configurableType->getConfigurableAttributes($product);
 
             foreach ($configurableType->getUsedProducts($product) as $childProduct) {
-                if ($childProduct->getStatus() == Status::STATUS_ENABLED) {
-                    /** @var Product $childProduct */
-                    $configurableSettings = ['item_group_id' => $product->getId()];
-                    foreach ($configurableAttributes as $attribute) {
-                        $productAttribute = $attribute->getProductAttribute();
-                        $attributeCode = $productAttribute->getAttributeCode();
-                        $attributeValue = $childProduct->getData($productAttribute->getAttributeCode());
-                        $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
-                        $configurableSettings[$attributeCode] = $attributeLabel;
-                    }
-                    // Assign parent product name to all child products' name (used as variant name is Meta catalog)
-                    // https://developers.facebook.com/docs/commerce-platform/catalog/variants
-                    $childProduct->setName($product->getName());
-                    $childProduct->setConfigurableSettings($configurableSettings);
-                    $childProduct->setParentProductUrl($product->getProductUrl());
-                    if (!$childProduct->getDescription()) {
-                        $childProduct->setDescription($product->getDescription());
-                    }
-                    $simpleProducts[] = $childProduct;
+                /** @var Product $childProduct */
+                $configurableSettings = ['item_group_id' => $product->getId()];
+                foreach ($configurableAttributes as $attribute) {
+                    $productAttribute = $attribute->getProductAttribute();
+                    $attributeCode = $productAttribute->getAttributeCode();
+                    $attributeValue = $childProduct->getData($productAttribute->getAttributeCode());
+                    $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
+                    $configurableSettings[$attributeCode] = $attributeLabel;
                 }
+                // Assign parent product name to all child products' name (used as variant name is Meta catalog)
+                // https://developers.facebook.com/docs/commerce-platform/catalog/variants
+                $childProduct->setName($product->getName());
+                $childProduct->setConfigurableSettings($configurableSettings);
+                $childProduct->setParentProductUrl($product->getProductUrl());
+                //todo put all these attributes to a list
+                if (!$childProduct->getDescription()) {
+                    $childProduct->setDescription($product->getDescription());
+                }
+                if (!$childProduct->getWeight()) {
+                    $childProduct->setWeight($product->getWeight());
+                }
+                if (!$childProduct->getAttributeText('material')) {
+                    $childProduct->setData('material', $product->getData('material'));
+                }
+                if (!$childProduct->getAttributeText('pattern')) {
+                    $childProduct->setData('pattern', $product->getData('pattern'));
+                }
+                $simpleProducts[] = $childProduct;
             }
         }
-
         return $simpleProducts;
     }
 
