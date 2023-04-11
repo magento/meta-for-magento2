@@ -27,7 +27,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Escaper;
-use Magento\Framework\Filter\StripTagsFactory;
 
 class Builder
 {
@@ -116,11 +115,6 @@ class Builder
     private $escaper;
 
     /**
-     * @var StripTagsFactory
-     */
-    private $stripTags;
-
-    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
@@ -129,7 +123,6 @@ class Builder
      * @param ProductIdentifier $productIdentifier
      * @param InventoryInterface $inventory
      * @param Escaper $escaper
-     * @param StripTagsFactory $stripTags
      */
     public function __construct(
         FBEHelper                 $fbeHelper,
@@ -138,7 +131,6 @@ class Builder
         ProductIdentifier         $productIdentifier,
         InventoryInterface        $inventory,
         Escaper                   $escaper,
-        StripTagsFactory          $stripTags
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -146,7 +138,6 @@ class Builder
         $this->productIdentifier = $productIdentifier;
         $this->inventory = $inventory;
         $this->escaper = $escaper;
-        $this->stripTags = $stripTags;
     }
 
     /**
@@ -347,9 +338,9 @@ class Builder
 
         $description = $description ?: $productTitle;
         // phpcs:ignore
-        $description =  html_entity_decode($description);
+        $description = html_entity_decode($description);
         // phpcs:ignore
-        $description = html_entity_decode(preg_replace( '/<[^<]+?>/', '', $description));
+        $description = html_entity_decode(preg_replace('/<[^<]+?>/', '', $description));
         return $this->builderTools->lowercaseIfAllCaps($description);
     }
 
@@ -368,10 +359,10 @@ class Builder
         if (!$description) {
             return '';
         }
-        $stripTags = $this->stripTags->create([$this->escaper, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION]);
+
         return $this->trimAttribute(
             self::ATTR_RICH_DESCRIPTION,
-            $stripTags->filter($description)
+            strip_tags($description, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION)
         );
     }
 
