@@ -11,7 +11,7 @@ echo "Installing Facebook Business SDK..."
 composer require facebook/php-business-sdk
 
 echo "Enabling extension..."
-php bin/magento module:enable Facebook_BusinessExtension
+php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales
 
 echo "Deploying static files..."
 php bin/magento setup:static-content:deploy
