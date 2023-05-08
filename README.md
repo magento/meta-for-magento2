@@ -1,5 +1,5 @@
 
-# Meta Business Extension For Magento2 
+# Meta Business Extension For Magento2
 
 ## Facebook Connects Businesses with People
 
@@ -63,8 +63,8 @@ You can download and install our extension in [Magento marketplace](https://mark
 * Go to your magento root path
 * Execute command `cd /var/www/Magento` or
  `cd /var/www/html/Magento` based on your server Centos or Ubuntu.
-* run composer command: `composer require facebook/facebook-for-magento2`
-- To enable module execute `php bin/magento module:enable Facebook_BusinessExtension`
+* run composer command: `composer require meta/meta-for-magento2`
+- To enable modules execute `php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales`
 - Execute `php bin/magento setup:upgrade`
 - Optional `php bin/magento setup:static-content:deploy`
 - Execute `php bin/magento setup:di:compile`
@@ -75,8 +75,7 @@ You can download and install our extension in [Magento marketplace](https://mark
 * extract files from an archive.
 * Execute command `cd /var/www/Magento/app/code` or
  `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.
-* Move files into Magento2 folder `app/code/Facebook/BusinessExtension`. If you downloaded zip file on github, you need to
-create directory `app/code/Facebook/BusinessExtension`. If you downloaded zip from facebook, those two folders are included.
+* Move all files from the /app/code/* directory in your extracted archive to the /app/code directory in your Magento project. Your Magento directory should now have a subdirectory named /app/code/Meta/BusinessExtension.
 
 
 ##### ENABLE EXTENSION
@@ -95,8 +94,8 @@ Execute the following commands to manually install Meta Business Extension.
 - Install the Facebook Business SDK for PHP: `composer require facebook/php-business-sdk`. This dependency is used by the extension.
 - You will see a message similar to: `Installing facebook/php-business-sdk (8.0.0): Downloading (100%)`
 - Execute `php bin/magento module:status`
-- You must see Facebook_BusinessExtension in the list of disabled modules.
-- To enable module execute `php bin/magento module:enable Facebook_BusinessExtension`
+- You should see Meta_BusinessExtension in the list of disabled modules.
+- To enable modules execute `php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales`
 - Execute `php bin/magento setup:upgrade`
 - Optional `php bin/magento setup:static-content:deploy`
 - Execute `php bin/magento setup:di:compile`
@@ -104,9 +103,8 @@ Execute the following commands to manually install Meta Business Extension.
 - Execute `php bin/magento cron:run` three times
 ### Verify Installation
 - Upon successful installation, login to your Magento Admin panel.
-- Click the Stores icon in the main menu.
-- There should be a section named Facebook -> Setup
-- Click on 'Setup' to go to the Extension Installation Page.
+- You should see a "Meta" Icon on the left hand side.
+- Click "Setup" to link a Meta Account.
 
 ## Need help?
 
