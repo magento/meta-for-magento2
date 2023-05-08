@@ -522,7 +522,7 @@ class Builder
      */
     private function getGender(Product $product)
     {
-        $gender = $product->getAttributeText('gender');
+        $gender = $this->getCorrectText($product, 'gender');
 
         if (!$gender) {
             return '';
@@ -559,7 +559,7 @@ class Builder
      */
     private function getMaterial(Product $product)
     {
-        $material = $product->getAttributeText('material');
+        $material = $this->getCorrectText($product, 'material');
         if ($material) {
             return is_array($material) ? implode(', ', $material) : $material;
         }
@@ -574,7 +574,7 @@ class Builder
      */
     private function getPattern(Product $product)
     {
-        $pattern = $product->getAttributeText('pattern');
+        $pattern = $this->getCorrectText($product, 'pattern');
         if ($pattern) {
             return is_array($pattern) ? implode(', ', $pattern) : $pattern;
         }
