@@ -3,7 +3,7 @@
 <entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
     <entity name="FacebookBusinessConfigDataEnabled">
-        <data key="path">facebook/business_extension/commerce</data>
+        <data key="path">facebook/business_extension/active</data>
         <data key="scope">store</data>
         <data key="scope_code">default</data>
     </entity>

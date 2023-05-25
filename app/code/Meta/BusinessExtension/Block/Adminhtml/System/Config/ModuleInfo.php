@@ -24,7 +24,6 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class ModuleInfo extends Field
 {
-    private const EVENTS_MANAGER_URL = 'https://www.facebook.com/events_manager2';
     /**
      * Template path
      *
@@ -96,22 +95,62 @@ class ModuleInfo extends Field
     }
 
     /**
-     * Retrieve Pixel Id
+     * Retrieve Commerce Account Id
      *
      * @return string
      */
-    public function getPixelId()
+    public function getCommerceAccountId()
     {
-        return $this->systemConfig->getPixelId($this->getStoreId());
+        return $this->systemConfig->getCommerceAccountId($this->getStoreId());
     }
 
     /**
-     * Get events manager URL
+     * Retrieve Page Id
      *
      * @return string
      */
-    public function getEventsManagerUrl()
+    public function getPageId()
     {
-        return self::EVENTS_MANAGER_URL;
+        return $this->systemConfig->getPageId($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Catalog Id
+     *
+     * @return string
+     */
+    public function getCatalogId()
+    {
+        return $this->systemConfig->getCatalogId($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Commerce Manager Url
+     *
+     * @return string
+     */
+    public function getCommerceManagerUrl()
+    {
+        return $this->systemConfig->getCommerceManagerUrl($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Catalog Manager Url
+     *
+     * @return string
+     */
+    public function getCatalogManagerUrl()
+    {
+        return $this->systemConfig->getCatalogManagerUrl($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Support Url
+     *
+     * @return string
+     */
+    public function getSupportUrl()
+    {
+        return $this->systemConfig->getSupportUrl($this->getStoreId());
     }
 }

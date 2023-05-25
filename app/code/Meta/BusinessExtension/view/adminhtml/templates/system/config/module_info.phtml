@@ -1,15 +1,33 @@
 <?php
 /**
- * @var \Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo $block
+ * @var Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo $block
  * @var $escaper \Magento\Framework\Escaper
  */
 ?>
 <div>
     <p>Version: <?= $escaper->escapeHtml($block->getModuleVersion()) ?></p>
-    <p>Pixel ID: <?= $escaper->escapeHtml($block->getPixelId()) ?></p>
-    <p><a target="_blank"
-          href="<?= $escaper->escapeUrl($block->getEventsManagerUrl()) ?> ">
-            <?= $escaper->escapeHtml(__('Events Manager')) ?>
-        </a>
-    </p>
+    <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
+    <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>
+    <p>Catalog ID: <?= $escaper->escapeHtml($block->getCatalogId()) ?></p>
+    <?php if ($block->getCommerceAccountId()):  ?>
+        <p><a target="_blank"
+               href="<?= $escaper->escapeUrl($block->getCommerceManagerUrl()) ?> ">
+                <?= $escaper->escapeHtml(__('Commerce Manager')) ?>
+            </a>
+        </p>
+    <?php endif; ?>
+    <?php if ($block->getCatalogId()): ?>
+        <p><a target="_blank"
+              href="<?= $escaper->escapeUrl($block->getCatalogManagerUrl()) ?> ">
+                <?= $escaper->escapeHtml(__('Catalog Items')) ?>
+            </a>
+        </p>
+    <?php endif; ?>
+    <?php if ($block->getCommerceAccountId()): ?>
+        <p><a target="_blank"
+              href="<?= $escaper->escapeUrl($block->getSupportUrl()) ?> ">
+                <?= $escaper->escapeHtml(__('Contact Support')) ?>
+            </a>
+        </p>
+    <?php endif; ?>
 </div>

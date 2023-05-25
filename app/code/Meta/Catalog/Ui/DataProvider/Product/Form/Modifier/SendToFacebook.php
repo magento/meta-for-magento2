@@ -93,6 +93,16 @@ class SendToFacebook extends AbstractModifier
     }
 
     /**
+     * Get if extension is active
+     *
+     * @return bool
+     */
+    private function isActive(): bool
+    {
+        return $this->systemConfig->isActiveExtension($this->getStoreId());
+    }
+
+    /**
      * Adding URL rewrite checkbox to meta
      *
      * @param array $meta
@@ -126,7 +136,7 @@ class SendToFacebook extends AbstractModifier
      */
     public function modifyMeta(array $meta)
     {
-        if ($this->locator->getProduct()->getId()
+        if ($this->isActive() && $this->locator->getProduct()->getId()
             && $this->locator->getProduct()->getTypeId() === ProductType::TYPE_SIMPLE) {
             $meta = $this->addFacebookProductDiagnostics($meta);
         }

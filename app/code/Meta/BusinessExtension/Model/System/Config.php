@@ -35,7 +35,7 @@ class Config
     private const VERSION_CACHE_KEY = 'meta-business-extension-version';
     private const EXTENSION_PACKAGE_NAME = 'meta/meta-for-magento2';
 
-    private const XML_PATH_FACEBOOK_SHOPS_ACTIVE = 'facebook/business_extension/commerce';
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE = 'facebook/business_extension/active';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED = 'facebook/business_extension/installed';
 
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID =
@@ -56,6 +56,7 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_STORE = 'facebook/business_extension/store';
 
     private const XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED = 'facebook/catalog_management/daily_product_feed';
+    private const XML_PATH_FACEBOOK_FEED_UPLOAD_METHOD = 'facebook/catalog_management/feed_upload_method';
     private const XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER = 'facebook/catalog_management/product_identifier';
     private const XML_PATH_FACEBOOK_PRICE_INCL_TAX = 'facebook/catalog_management/price_incl_tax';
     private const XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE = 'facebook/catalog_management/collections_sync';
@@ -71,6 +72,7 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES =
         'facebook/catalog_management/incremental_product_updates';
 
+    private const XML_PATH_FACEBOOK_ENABLE_INVENTORY_UPLOAD = 'facebook/inventory_management/enable_inventory_upload';
     private const XML_PATH_FACEBOOK_USE_MULTI_SOURCE_INVENTORY =
         'facebook/inventory_management/use_multi_source_inventory';
     private const XML_PATH_FACEBOOK_INVENTORY_STOCK = 'facebook/inventory_management/inventory_stock';
@@ -263,9 +265,9 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isActiveShop($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
+    public function isActiveExtension($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_SHOPS_ACTIVE, $scopeId, $scope);
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
     }
 
     /**
@@ -335,6 +337,18 @@ class Config
             $scopeId,
             $scope
         );
+    }
+
+    /**
+     * Is active inventory upload
+     *
+     * @param int $scopeId
+     * @param int $scope
+     * @return bool
+     */
+    public function isActiveInventoryUpload($scopeId = null, $scope = null): bool
+    {
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_INVENTORY_UPLOAD, $scopeId, $scope);
     }
 
     /**
@@ -565,7 +579,7 @@ class Config
             $defaultStoreId = $storeManager->getDefaultStoreView()->getId();
             foreach ($storeManager->getStores() as $store) {
                 if ($store->getId() !== $defaultStoreId) {
-                    $this->saveConfig(self::XML_PATH_FACEBOOK_SHOPS_ACTIVE, 0, $store->getId());
+                    $this->saveConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, 0, $store->getId());
                 }
             }
         }
@@ -749,6 +763,18 @@ class Config
     public function isActiveDailyProductFeed($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED, $scopeId, $scope);
+    }
+
+    /**
+     * Get feed upload method
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return mixed
+     */
+    public function getFeedUploadMethod($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_FEED_UPLOAD_METHOD, $scopeId, $scope);
     }
 
     /**

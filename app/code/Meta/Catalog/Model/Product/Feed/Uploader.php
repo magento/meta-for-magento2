@@ -18,6 +18,7 @@
 namespace Meta\Catalog\Model\Product\Feed;
 
 use Exception;
+use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
 use Meta\Catalog\Model\Product\Feed\Method\BatchApi as MethodBatchApi;
 use Meta\Catalog\Model\Product\Feed\Method\FeedApi as MethodFeedApi;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -65,7 +66,20 @@ class Uploader
      */
     public function uploadFullCatalog($storeId = null)
     {
-        return $this->methodFeedApi->execute($storeId);
+        $uploadMethod = $this->systemConfig->getFeedUploadMethod($storeId);
+
+        if ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_CATALOG_BATCH_API) {
+            try {
+                $response = $this->methodBatchApi->generateProductRequestData($storeId);
+            } catch (Exception $e) {
+                throw new LocalizedException(__($e->getMessage()));
+            }
+        } elseif ($uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
+            $response = $this->methodFeedApi->execute($storeId);
+        } else {
+            throw new LocalizedException(__('Unknown feed upload method'));
+        }
+        return $response;
     }
 
     /**

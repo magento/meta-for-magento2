@@ -75,6 +75,9 @@ class UploadProductFeed
      */
     private function isFeedUploadEnabled($storeId)
     {
+        if (!$this->systemConfig->isActiveExtension($storeId)) {
+            return false;
+        }
         return $this->systemConfig->isActiveDailyProductFeed($storeId);
     }
 

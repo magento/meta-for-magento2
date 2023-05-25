@@ -83,7 +83,7 @@ class MarkAsShipped implements ObserverInterface
             return;
         }
 
-        if (!($this->systemConfig->isActiveShop($storeId)
+        if (!($this->systemConfig->isActiveExtension($storeId)
             && $this->systemConfig->isActiveOrderSync($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
