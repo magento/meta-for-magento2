@@ -10,7 +10,6 @@
         "magento/module-sales-rule": "*",
         "magento/module-offline-shipping": "*",
         "meta/module-business-extension": "*"
-
     },
     "license": "Apache-2.0",
     "autoload": {

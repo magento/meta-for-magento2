@@ -77,11 +77,6 @@ class Fbpixel extends AbstractAjax
                 $pixelId,
                 $storeId
             );
-            $this->systemConfig->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
-                true,
-                $storeId
-            );
             $response['success'] = true;
             $response['pixelId'] = $pixelId;
             if ($oldPixelId && $oldPixelId != $pixelId) {

@@ -123,6 +123,7 @@ jQuery('#store').on('change', function() {
         async : false,
         data: ajaxParam({
           pixelId: pixelId,
+          storeId: window.facebookBusinessExtensionConfig.storeId, 
         }),
         success: function onSuccess(data, _textStatus, _jqXHR) {
           var response = data;
@@ -231,6 +232,7 @@ jQuery('#store').on('change', function() {
           catalogId: catalogId,
           pageId: pageId,
           accessToken: accessToken,
+          storeId: window.facebookBusinessExtensionConfig.storeId,
         }),
         success: function onSuccess(data, _textStatus, _jqXHR) {
           if(data.success) {
@@ -247,6 +249,9 @@ jQuery('#store').on('change', function() {
         jQuery.ajax({
         type: 'delete',
         url: ajaxify(window.facebookBusinessExtensionConfig.deleteConfigKeys),
+        data: ajaxParam({
+            storeId: window.facebookBusinessExtensionConfig.storeId,
+        }),
         success: function onSuccess(data, _textStatus, _jqXHR) {
           let msg = '';
           if(data.success) {

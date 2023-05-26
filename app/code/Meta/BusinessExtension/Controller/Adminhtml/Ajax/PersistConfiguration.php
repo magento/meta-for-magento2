@@ -80,6 +80,7 @@ class PersistConfiguration extends AbstractAjax
 
             $this->saveExternalBusinessId($externalBusinessId, $storeId)
                 ->saveCatalogId($catalogId, $storeId)
+                ->saveInstalledFlag($storeId)
                 ->completeOnsiteOnboarding($accessToken, $pageId, $storeId);
 
             $response['success'] = true;
@@ -130,6 +131,23 @@ class PersistConfiguration extends AbstractAjax
             );
             $this->fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
         }
+        return $this;
+    }
+
+    /**
+     * Update install flag to true and save
+     *
+     * @param int $storeId
+     * @return $this
+     */
+    public function saveInstalledFlag($storeId)
+    {
+         // set installed to true
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
+            true,
+            $storeId,
+        );
         return $this;
     }
 
