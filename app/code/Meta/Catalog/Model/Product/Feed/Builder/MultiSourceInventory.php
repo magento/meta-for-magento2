@@ -104,7 +104,7 @@ class MultiSourceInventory implements InventoryInterface
      * @param int $stockId
      * @return int|float
      */
-    private function getStockQty(Product $product, int $stockId): int|float
+    private function getStockQty(Product $product, int $stockId)
     {
         try {
             return $this->getProductSalableQtyInterface->execute(

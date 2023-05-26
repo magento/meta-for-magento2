@@ -105,13 +105,18 @@ class Tools
     public function formatPrice($price, $storeId = null)
     {
         $currencyModel = $this->priceCurrency->getCurrency($storeId);
+        $currencySymbol = $currencyModel->getCurrencySymbol();
+
         $amount = $this->priceCurrency->convert($price, $storeId, $currencyModel);
         try {
-            return sprintf(
+            $price = sprintf(
                 '%s %s',
                 $currencyModel->formatTxt($amount, ['display' => Currency::NO_SYMBOL]),
                 $currencyModel->getCode()
             );
+            // workaround for 2.4.3
+            $price = trim($price, $currencySymbol);
+            return $price;
         } catch (Exception $e) {
             return '';
         }
@@ -133,14 +138,18 @@ class Tools
         }
 
         $currencyModel = $this->priceCurrency->getCurrency($product->getStoreId());
+        $currencySymbol = $currencyModel->getCurrencySymbol();
 
         try {
-            return sprintf(
+            $price = sprintf(
                 "{'value':'%s','currency':'%s','unit':'%s'}",
                 $currencyModel->formatTxt($value, ['display' => Currency::NO_SYMBOL]),
                 $currencyModel->getCode(),
                 $unit
             );
+            // workaround for 2.4.3
+            $price = trim($price, $currencySymbol);
+            return $price;
         } catch (Exception $e) {
             return '';
         }
