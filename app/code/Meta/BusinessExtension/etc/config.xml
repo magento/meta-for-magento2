@@ -6,6 +6,9 @@
                 <active>1</active>
                 <onsite>0</onsite>
             </business_extension>
+            <catalog_management>
+                <product_identifier>sku</product_identifier>
+            </catalog_management>
             <debug>
                 <debug_mode>1</debug_mode>
             </debug>

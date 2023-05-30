@@ -12,8 +12,7 @@
         "magento/module-sales": "*",
         "magento/module-store": "*",
         "magento/module-quote": "*",
-        "meta/module-business-extension": "*",
-        "meta/module-catalog": "*"
+        "meta/module-business-extension": "*"
     },
     "license": "Apache-2.0",
     "autoload": {

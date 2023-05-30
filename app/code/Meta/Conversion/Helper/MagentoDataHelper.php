@@ -22,7 +22,6 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -50,11 +49,6 @@ class MagentoDataHelper
     private ProductRepositoryInterface $productRepository;
 
     /**
-     * @var ProductIdentifier
-     */
-    private ProductIdentifier $productIdentifier;
-
-    /**
      * @var CategoryRepositoryInterface
      */
     private CategoryRepositoryInterface $categoryRepository;
@@ -74,7 +68,6 @@ class MagentoDataHelper
      *
      * @param StoreManagerInterface $storeManager
      * @param ProductRepositoryInterface $productRepository
-     * @param ProductIdentifier $productIdentifier
      * @param CategoryRepositoryInterface $categoryRepository
      * @param PricingHelper $pricingHelper
      * @param SystemConfig $systemConfig
@@ -82,14 +75,12 @@ class MagentoDataHelper
     public function __construct(
         StoreManagerInterface $storeManager,
         ProductRepositoryInterface $productRepository,
-        ProductIdentifier $productIdentifier,
         CategoryRepositoryInterface $categoryRepository,
         PricingHelper $pricingHelper,
         SystemConfig $systemConfig
     ) {
         $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
-        $this->productIdentifier = $productIdentifier;
         $this->categoryRepository = $categoryRepository;
         $this->pricingHelper = $pricingHelper;
         $this->identifierAttr = $systemConfig->getProductIdentifierAttr();
