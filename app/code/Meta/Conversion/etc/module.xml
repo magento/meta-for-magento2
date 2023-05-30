@@ -11,7 +11,6 @@
             <module name="Magento_Store"/>
             <module name="Magento_Quote"/>
             <module name="Meta_BusinessExtension"/>
-            <module name="Meta_Catalog"/>
         </sequence>
     </module>
 </config>
