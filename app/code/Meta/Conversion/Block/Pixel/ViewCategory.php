@@ -17,11 +17,59 @@
 
 namespace Meta\Conversion\Block\Pixel;
 
+use Magento\Catalog\Model\Layer as CatalogLayer;
+use Magento\Catalog\Model\Layer\Resolver as CatalogLayerResolver;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template\Context;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Conversion\Helper\MagentoDataHelper;
+
 /**
  * @api
  */
 class ViewCategory extends Common
 {
+    /**
+     * @var CatalogLayer
+     */
+    private CatalogLayer $catalogLayer;
+
+    /**
+     * Head constructor
+     *
+     * @param Context $context
+     * @param FBEHelper $fbeHelper
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param SystemConfig $systemConfig
+     * @param Escaper $escaper
+     * @param CheckoutSession $checkoutSession
+     * @param CatalogLayerResolver $catalogLayerResolver
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        FBEHelper $fbeHelper,
+        MagentoDataHelper $magentoDataHelper,
+        SystemConfig $systemConfig,
+        Escaper $escaper,
+        CheckoutSession $checkoutSession,
+        CatalogLayerResolver $catalogLayerResolver,
+        array $data = []
+    ) {
+        parent::__construct(
+            $context,
+            $fbeHelper,
+            $magentoDataHelper,
+            $systemConfig,
+            $escaper,
+            $checkoutSession,
+            $data
+        );
+        $this->catalogLayer = $catalogLayerResolver->get();
+    }
+
     /**
      * Get Category name
      *
@@ -29,7 +77,7 @@ class ViewCategory extends Common
      */
     public function getCategoryName()
     {
-        return $this->getLayout()->getBlock('category.description')->getCurrentCategory()->getName();
+        return $this->catalogLayer->getCurrentCategory()->getName();
     }
 
     /**
@@ -49,6 +97,6 @@ class ViewCategory extends Common
      */
     public function getCategoryId()
     {
-        return $this->getLayout()->getBlock('category.description')->getCurrentCategory()->getId();
+        return $this->catalogLayer->getCurrentCategory()->getId();
     }
 }
