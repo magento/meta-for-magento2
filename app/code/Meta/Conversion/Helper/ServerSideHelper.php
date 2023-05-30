@@ -60,7 +60,7 @@ class ServerSideHelper
     public function __construct(
         FBEHelper $fbeHelper,
         AAMFieldsExtractorHelper $aamFieldsExtractorHelper,
-        SystemConfig $systemConfig,
+        SystemConfig $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;

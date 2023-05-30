@@ -67,7 +67,7 @@ class DeleteAfter implements ObserverInterface
         GraphApiAdapter $graphApiAdapter,
         FBEHelper $fbeHelper,
         Identifier $identifier,
-        ManagerInterface $messageManager,
+        ManagerInterface $messageManager
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
