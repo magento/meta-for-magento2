@@ -4,7 +4,6 @@
         <facebook>
             <catalog_management>
                 <daily_product_feed>0</daily_product_feed>
-                <feed_upload_method>feed_api</feed_upload_method>
                 <incremental_product_updates>0</incremental_product_updates>
                 <price_incl_tax>0</price_incl_tax>
                 <collections_sync>0</collections_sync>

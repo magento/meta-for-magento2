@@ -56,7 +56,6 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_STORE = 'facebook/business_extension/store';
 
     private const XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED = 'facebook/catalog_management/daily_product_feed';
-    private const XML_PATH_FACEBOOK_FEED_UPLOAD_METHOD = 'facebook/catalog_management/feed_upload_method';
     private const XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER = 'facebook/catalog_management/product_identifier';
     private const XML_PATH_FACEBOOK_PRICE_INCL_TAX = 'facebook/catalog_management/price_incl_tax';
     private const XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE = 'facebook/catalog_management/collections_sync';
@@ -763,18 +762,6 @@ class Config
     public function isActiveDailyProductFeed($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED, $scopeId, $scope);
-    }
-
-    /**
-     * Get feed upload method
-     *
-     * @param int $scopeId
-     * @param string $scope
-     * @return mixed
-     */
-    public function getFeedUploadMethod($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
-    {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_FEED_UPLOAD_METHOD, $scopeId, $scope);
     }
 
     /**
