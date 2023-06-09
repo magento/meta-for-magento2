@@ -104,10 +104,22 @@ class FeedApi
     {
         $feedId = $this->systemConfig->getFeedId($this->storeId);
         $feedName = self::FB_FEED_NAME;
+        $catalogId = $this->systemConfig->getCatalogId($this->storeId);
+        $catalogFeeds = $this->graphApiAdapter->getCatalogFeeds($catalogId);
+
+        // make sure feed exists on meta side, not deleted
+        if ($feedId) {
+            $magentoFeeds = array_filter($catalogFeeds, function ($a) use ($feedId) {
+                return $a['id'] === $feedId;
+            });
+            // in case feed id is not found in meta catalog, feed id on
+            // magento will be flushed and new feed will be created in Meta Catalog
+            if (empty($magentoFeeds)) {
+                $feedId = null;
+            }
+        }
 
         if (!$feedId) {
-            $catalogId = $this->systemConfig->getCatalogId($this->storeId);
-            $catalogFeeds = $this->graphApiAdapter->getCatalogFeeds($catalogId);
             $magentoFeeds = array_filter($catalogFeeds, function ($a) use ($feedName) {
                 return $a['name'] === $feedName;
             });
@@ -117,9 +129,7 @@ class FeedApi
         }
 
         if (!$feedId) {
-            $catalogId = $this->systemConfig->getCatalogId($this->storeId);
             $feedId = $this->graphApiAdapter->createEmptyFeed($catalogId, $feedName);
-
             $maxAttempts = 5;
             $attempts = 0;
             do {
@@ -132,12 +142,7 @@ class FeedApi
             } while ($attempts < $maxAttempts);
         }
 
-        if (!$this->systemConfig->getFeedId($this->storeId) && $feedId) {
-            $this->systemConfig->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID,
-                $feedId,
-                $this->storeId
-            );
+        if ($feedId && $this->systemConfig->getFeedId($this->storeId) != $feedId) {
             $this->systemConfig
                 ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $feedId, $this->storeId)
                 ->cleanCache();
