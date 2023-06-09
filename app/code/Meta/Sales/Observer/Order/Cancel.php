@@ -17,6 +17,7 @@
 
 namespace Meta\Sales\Observer\Order;
 
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -86,13 +87,22 @@ class Cancel implements ObserverInterface
      * @param string $fbOrderId
      * @return void
      * @throws GuzzleException
+     * @throws Exception
      */
     private function cancelOrder(int $storeId, string $fbOrderId)
     {
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
-
-        $this->graphAPIAdapter->cancelOrder($fbOrderId);
+        try {
+            $this->graphAPIAdapter->cancelOrder($fbOrderId);
+        } catch (GuzzleException $e) {
+            $response = $e->getResponse();
+            $body = json_decode($response->getBody());
+            throw new Exception('Error Code: '
+                .(string) $body->error->code
+                .'; '
+                . (string) $body->error->error_user_msg);
+        }
     }
 }

@@ -146,6 +146,7 @@ class Refund implements ObserverInterface
      * @param string|null $currencyCode
      * @param string|null $reasonText
      * @throws GuzzleException
+     * @throws Exception
      */
     private function refundOrder(
         int $storeId,
@@ -159,13 +160,22 @@ class Refund implements ObserverInterface
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
 
-        $this->graphAPIAdapter->refundOrder(
-            $fbOrderId,
-            $items,
-            $shippingRefundAmount,
-            $currencyCode,
-            $reasonText
-        );
+        try {
+            $this->graphAPIAdapter->refundOrder(
+                $fbOrderId,
+                $items,
+                $shippingRefundAmount,
+                $currencyCode,
+                $reasonText
+            );
+        } catch (GuzzleException $e) {
+            $response = $e->getResponse();
+            $body = json_decode($response->getBody());
+            throw new Exception('Error Code: '
+                .(string) $body->error->code
+                .'; '
+                . (string) $body->error->error_user_msg);
+        }
     }
 
     /**

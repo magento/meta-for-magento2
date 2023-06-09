@@ -17,6 +17,7 @@
 
 namespace Meta\Sales\Observer\Order;
 
+use Exception;
 use Meta\Sales\Model\Order\Shipper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Exception\GuzzleException;
@@ -64,6 +65,7 @@ class MarkAsShipped implements ObserverInterface
      * @param Observer $observer
      * @throws LocalizedException
      * @throws GuzzleException
+     * @throws Exception
      */
     public function execute(Observer $observer)
     {
@@ -88,7 +90,15 @@ class MarkAsShipped implements ObserverInterface
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
         }
-
-        $this->shipper->markAsShipped($shipment);
+        try {
+            $this->shipper->markAsShipped($shipment);
+        } catch (GuzzleException $e) {
+            $response = $e->getResponse();
+            $body = json_decode($response->getBody());
+            throw new Exception('Error Code: '
+                .(string) $body->error->code
+                .'; '
+                . (string) $body->error->error_user_msg);
+        }
     }
 }
