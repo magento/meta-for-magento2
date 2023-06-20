@@ -133,10 +133,10 @@ class SaveAfter implements ObserverInterface
                 return;
             }
 
-            // @todo implement error handling/logging for invalid access token and other non-happy path scenarios
             // @todo implement batch API status check
             // @todo implement async call
-
+            $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+                ->setAccessToken($this->systemConfig->getAccessToken($storeId));
             $catalogId = $this->systemConfig->getCatalogId($storeId);
             $requestData = $this->batchApi->buildRequestForIndividualProduct($product);
             $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);

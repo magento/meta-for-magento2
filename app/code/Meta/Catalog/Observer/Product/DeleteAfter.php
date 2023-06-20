@@ -121,7 +121,8 @@ class DeleteAfter implements ObserverInterface
                 'method' => 'DELETE',
                 'data' => ['id' => $this->identifier->getMagentoProductRetailerId($product)],
             ];
-
+            $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+                ->setAccessToken($this->systemConfig->getAccessToken($storeId));
             $catalogId = $this->systemConfig->getCatalogId($storeId);
             $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
         } catch (GuzzleException $e) {
