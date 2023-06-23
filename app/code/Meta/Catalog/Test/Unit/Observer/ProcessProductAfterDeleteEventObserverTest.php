@@ -97,6 +97,7 @@ class ProcessProductAfterDeleteEventObserverTest extends TestCase
         $this->_eventObserverMock = $this->createMock(Observer::class);
         $this->_eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->_graphApi = $this->createMock(GraphAPIAdapter::class);
+        $this->_graphApi->method('setDebugMode')->willReturn($this->_graphApi);
         $this->identifier = $this->createMock(Identifier::class);
         $this->messageManager = $this->createMock(ManagerInterface::class);
         $this->processProductAfterDeleteEventObserver = new ProcessProductAfterDeleteEventObserver(

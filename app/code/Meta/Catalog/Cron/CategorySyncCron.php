@@ -17,40 +17,31 @@
 
 namespace Meta\Catalog\Cron;
 
-use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Feed\CategoryCollection;
 
 class CategorySyncCron
 {
     /**
-     * @var FBEHelper
-     */
-    protected $fbeHelper;
-
-    /**
      * @var CategoryCollection
      */
-    protected $categoryCollection;
+    private $categoryCollection;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * CategorySyncCron constructor
      *
-     * @param FBEHelper $fbeHelper
      * @param CategoryCollection $categoryCollection
      * @param SystemConfig $systemConfig
      */
     public function __construct(
-        FBEHelper $fbeHelper,
         CategoryCollection $categoryCollection,
         SystemConfig $systemConfig
     ) {
-        $this->fbeHelper = $fbeHelper;
         $this->categoryCollection = $categoryCollection;
         $this->systemConfig = $systemConfig;
     }

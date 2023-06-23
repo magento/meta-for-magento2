@@ -32,7 +32,7 @@ class Configurable implements ProductRetrieverInterface
     /**
      * @var int
      */
-    protected $storeId;
+    private $storeId;
 
     /**
      * @var FBEHelper

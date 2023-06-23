@@ -66,7 +66,6 @@ class CategorySyncCronTest extends TestCase
         $this->categoryCollection = $this->createMock(CategoryCollection::class);
         $this->systemConfig = $this->createMock(SystemConfig::class);
         $this->categorySyncCron = new CategorySyncCron(
-            $this->fbeHelper,
             $this->categoryCollection,
             $this->systemConfig
         );

@@ -27,7 +27,7 @@ class Index extends \Magento\Backend\App\Action implements HttpGetActionInterfac
   /**
    * @var PageFactory
    */
-    protected $resultPageFactory;
+    private $resultPageFactory;
 
   /**
    * Constructor

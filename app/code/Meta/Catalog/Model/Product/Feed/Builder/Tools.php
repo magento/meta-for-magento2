@@ -30,7 +30,7 @@ class Tools
     /**
      * @var PriceCurrencyInterface
      */
-    protected $priceCurrency;
+    private $priceCurrency;
 
     /**
      * @var Escaper

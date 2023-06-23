@@ -27,7 +27,7 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
     /**
      * @var FBEHelper
      */
-    protected $_fbeHelper;
+    private $_fbeHelper;
 
     /**
      * Constructor

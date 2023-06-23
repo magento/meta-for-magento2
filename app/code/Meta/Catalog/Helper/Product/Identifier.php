@@ -52,7 +52,7 @@ class Identifier
      * @param ProductInterface $product
      * @return bool|int|string
      */
-    protected function getProductIdentifier(ProductInterface $product)
+    private function getProductIdentifier(ProductInterface $product)
     {
         if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $product->getSku();

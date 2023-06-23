@@ -43,7 +43,7 @@ class MultiSourceInventory implements InventoryInterface
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var StockByWebsiteIdResolverInterface

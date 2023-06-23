@@ -127,6 +127,7 @@ class ProcessProductAfterSaveEventObserverTest extends TestCase
             ->method('buildRequestForIndividualProduct')
             ->with($productMock);
         $this->graphApiAdapterMock->expects($this->atLeastOnce())->method('catalogBatchRequest');
+        $this->graphApiAdapterMock->method('setDebugMode')->willReturn($this->graphApiAdapterMock);
         $this->processProductAfterSaveEventObserver->execute($observerMock);
     }
 }

@@ -28,11 +28,11 @@ class ProcessCategoryAfterDeleteEventObserver implements ObserverInterface
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * Constructor

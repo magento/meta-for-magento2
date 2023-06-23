@@ -58,7 +58,7 @@ class UploadProductFeed
      * @return $this
      * @throws LocalizedException
      */
-    protected function uploadForStore($storeId)
+    private function uploadForStore($storeId)
     {
         if ($this->isFeedUploadEnabled($storeId)) {
             $this->uploader->uploadFullCatalog($storeId);

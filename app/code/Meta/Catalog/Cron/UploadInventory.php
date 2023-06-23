@@ -59,7 +59,7 @@ class UploadInventory
      * @return $this
      * @throws LocalizedException
      */
-    protected function uploadForStore($storeId)
+    private function uploadForStore($storeId)
     {
         if ($this->isUploadEnabled($storeId)) {
             $this->uploader->uploadInventory($storeId);
