@@ -6,6 +6,7 @@
         "php": "~7.4.0||~8.1.0",
         "magento/framework": "*",
         "magento/module-sales": "*",
+        "magento/module-sales-sequence": "*",
         "magento/module-backend": "*",
         "magento/module-config": "*",
         "magento/module-catalog": "*",
