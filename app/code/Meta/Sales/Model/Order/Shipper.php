@@ -81,7 +81,7 @@ class Shipper
      * @param OrderItem $orderItem
      * @return string|int|bool
      */
-    protected function getRetailerId(OrderItem $orderItem)
+    private function getRetailerId(OrderItem $orderItem)
     {
         $storeId = $orderItem->getStoreId();
         $productIdentifierAttr = $this->systemConfig->getProductIdentifierAttr($storeId);

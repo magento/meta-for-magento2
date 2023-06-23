@@ -68,7 +68,7 @@ class Refund implements ObserverInterface
      * @param CreditmemoItem $creditmemoItem
      * @return string|int|bool
      */
-    protected function getRetailerId(CreditmemoItem $creditmemoItem)
+    private function getRetailerId(CreditmemoItem $creditmemoItem)
     {
         if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $creditmemoItem->getSku();

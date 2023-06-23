@@ -27,12 +27,12 @@ class OrderGet
     /**
      * @var OrderExtensionFactory
      */
-    protected $orderExtensionFactory;
+    private $orderExtensionFactory;
 
     /**
      * @var FacebookOrderInterfaceFactory
      */
-    protected $facebookOrderFactory;
+    private $facebookOrderFactory;
 
     /**
      * @param OrderExtensionFactory $orderExtensionFactory

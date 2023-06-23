@@ -14,12 +14,12 @@ class ShippingHelper extends AbstractHelper
     /**
      * @var RegionFactory
      */
-    protected $regionFactory;
+    private $regionFactory;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var string[string] Supported carrier names by carrier code.
@@ -81,7 +81,7 @@ class ShippingHelper extends AbstractHelper
      *
      * @return array
      */
-    protected function getSupplementaryCarriersMap()
+    private function getSupplementaryCarriersMap()
     {
         return [
             'UPS'   => 'United Parcel Service',
@@ -97,7 +97,7 @@ class ShippingHelper extends AbstractHelper
      * @param array $carriersMap
      * @return string|false
      */
-    protected function findCodeByTitle($carrierTitle, array $carriersMap)
+    private function findCodeByTitle($carrierTitle, array $carriersMap)
     {
         foreach ($carriersMap as $code => $title) {
             if (stripos($carrierTitle, $title) !== false || stripos($carrierTitle, $code) !== false) {
@@ -113,7 +113,7 @@ class ShippingHelper extends AbstractHelper
      * @param Track $track
      * @return string
      */
-    protected function getCanonicalCarrierCode($track)
+    private function getCanonicalCarrierCode($track)
     {
         $carrierCode = strtoupper($track->getCarrierCode());
         $carrierTitle = $track->getTitle();

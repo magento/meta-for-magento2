@@ -32,17 +32,17 @@ class OrderCreateAfter implements ObserverInterface
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var SubscriptionManager
