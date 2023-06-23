@@ -25,6 +25,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\InvoiceManagementInterface;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Model\Order;
+use Magento\SalesSequence\Model\Manager as OrderSequenceManager;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
@@ -34,6 +35,7 @@ use Meta\Sales\Model\Mapper\OrderMapper;
 
 /**
  * Create order from facebook api data
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class CreateOrder
 {
@@ -73,6 +75,11 @@ class CreateOrder
     private OrderMapper $orderMapper;
 
     /**
+     * @var OrderSequenceManager
+     */
+    private OrderSequenceManager $orderSequenceManager;
+
+    /**
      * @param ManagerInterface $eventManager
      * @param OrderManagementInterface $orderManagement
      * @param SystemConfig $systemConfig
@@ -80,6 +87,7 @@ class CreateOrder
      * @param InvoiceManagementInterface $invoiceManagement
      * @param TransactionFactory $transactionFactory
      * @param OrderMapper $orderMapper
+     * @param OrderSequenceManager $orderSequenceManager
      */
     public function __construct(
         ManagerInterface $eventManager,
@@ -88,7 +96,8 @@ class CreateOrder
         FacebookOrderInterfaceFactory $facebookOrderFactory,
         InvoiceManagementInterface $invoiceManagement,
         TransactionFactory $transactionFactory,
-        OrderMapper $orderMapper
+        OrderMapper $orderMapper,
+        OrderSequenceManager $orderSequenceManager
     ) {
         $this->eventManager = $eventManager;
         $this->orderManagement = $orderManagement;
@@ -97,6 +106,23 @@ class CreateOrder
         $this->invoiceManagement = $invoiceManagement;
         $this->transactionFactory = $transactionFactory;
         $this->orderMapper = $orderMapper;
+        $this->orderSequenceManager = $orderSequenceManager;
+    }
+
+    /**
+     * Generate a new increment order ID and associate it with a current order
+     *
+     * @param Order $order
+     * @return string|null
+     * @throws LocalizedException
+     */
+    public function reserveOrderIncrementId(Order $order): ?string
+    {
+        $reservedOrderId = $this->orderSequenceManager
+            ->getSequence(Order::ENTITY, $order->getStoreId())
+            ->getNextValue();
+        $order->setIncrementId($reservedOrderId);
+        return $reservedOrderId;
     }
 
     /**
@@ -119,6 +145,7 @@ class CreateOrder
         }
 
         $order = $this->orderMapper->map($data, $storeId);
+        $this->reserveOrderIncrementId($order);
         $channel = ucfirst($data['channel']);
 
         $this->orderManagement->place($order);
