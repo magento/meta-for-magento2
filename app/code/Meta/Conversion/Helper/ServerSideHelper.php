@@ -33,22 +33,22 @@ class ServerSideHelper
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var AAMFieldsExtractorHelper
      */
-    protected $aamFieldsExtractorHelper;
+    private $aamFieldsExtractorHelper;
 
     /**
      * @var array
      */
-    protected $trackedEvents = [];
+    private $trackedEvents = [];
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private $systemConfig;
 
     /**
      * Constructor

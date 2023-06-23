@@ -32,17 +32,17 @@ class AddToCart implements ObserverInterface
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    private $fbeHelper;
 
     /**
      * @var MagentoDataHelper
      */
-    protected $magentoDataHelper;
+    private $magentoDataHelper;
 
     /**
      * @var ServerSideHelper
      */
-    protected $serverSideHelper;
+    private $serverSideHelper;
 
     /**
      * @var ServerEventFactory
@@ -52,7 +52,7 @@ class AddToCart implements ObserverInterface
     /**
      * @var RequestInterface
      */
-    protected $request;
+    private $request;
 
     /**
      * @var Escaper

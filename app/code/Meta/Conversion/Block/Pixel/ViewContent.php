@@ -17,11 +17,61 @@
 
 namespace Meta\Conversion\Block\Pixel;
 
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\Conversion\Helper\MagentoDataHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Framework\Escaper;
+use Magento\Checkout\Model\Session as CheckoutSession;
+
 /**
  * @api
  */
 class ViewContent extends Common
 {
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @var MagentoDataHelper
+     */
+    private $magentoDataHelper;
+
+    /**
+     * ViewContent constructor
+     *
+     * @param Context $context
+     * @param FBEHelper $fbeHelper
+     * @param MagentoDataHelper $magentoDataHelper
+     * @param SystemConfig $systemConfig
+     * @param Escaper $escaper
+     * @param CheckoutSession $checkoutSession
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        FBEHelper $fbeHelper,
+        MagentoDataHelper $magentoDataHelper,
+        SystemConfig $systemConfig,
+        Escaper $escaper,
+        CheckoutSession $checkoutSession,
+        array $data = []
+    ) {
+        parent::__construct(
+            $context,
+            $fbeHelper,
+            $magentoDataHelper,
+            $systemConfig,
+            $escaper,
+            $checkoutSession,
+            $data
+        );
+        $this->fbeHelper = $fbeHelper;
+        $this->magentoDataHelper = $magentoDataHelper;
+    }
+
     /**
      * Return content ids
      *
