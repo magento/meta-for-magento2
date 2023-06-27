@@ -114,11 +114,16 @@ class Diagnostics extends Text
      * @return array
      * @throws GuzzleException
      */
-    private function getFacebookProductDiagnostics()
+    private function getFacebookProductDiagnostics(): array
     {
+        // @todo #269 Missing catalog ID for product diagnostics
+        $catalogId = $this->systemConfig->getCatalogId($this->storeId);
+        if (!$catalogId) {
+            return [];
+        }
+
         try {
             $retailerId = $this->productIdentifier->getMagentoProductRetailerId($this->product);
-            $catalogId = $this->systemConfig->getCatalogId($this->storeId);
             $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $retailerId);
             $fbProductId = $product['data'][0]['id'] ?? false;
             if ($fbProductId) {

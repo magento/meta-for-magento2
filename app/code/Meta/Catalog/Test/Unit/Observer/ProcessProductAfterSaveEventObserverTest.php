@@ -124,6 +124,8 @@ class ProcessProductAfterSaveEventObserverTest extends TestCase
 
         $productMock->method('getSendToFacebook')->willReturn(1);
 
+        $this->graphApiAdapterMock->method('setDebugMode')->willReturn($this->graphApiAdapterMock);
+
         $this->systemConfigMock->method('getCatalogId')->willReturn("12345");
 
         $this->batchApiMock->expects($this->once())
