@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Meta\Sales\Helper;
 
 use Exception;

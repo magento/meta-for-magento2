@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -227,7 +230,7 @@ class MagentoDataHelper
         foreach ($items as $item) {
             $numItems += $item->getQty();
         }
-        return $numItems;
+        return (int) $numItems;
     }
 
     /**

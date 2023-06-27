@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ /**
+  * Copyright © Magento, Inc. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+-->
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="ConfigurableProductWithDropDownAttributeOnTestStockGetOutOfStockWhenAllItsChildProductsGetOutOfStockOrDisabledTest">
+        <!--  Step7 Create Order with total qty of option white     -->
+        <actionGroup ref="AdminCreateNewOrderSelectPaymentActionGroup" stepKey="createOrderForWhiteProduct">
+            <argument name="productSKU" value="$grabChildWhiteProdSku"/>
+            <argument name="productName" value="$grabChildWhiteProdName"/>
+            <argument name="customerFirstName" value="$$createCustomer1.firstname$$"/>
+        </actionGroup>
+    </test>
+</tests>

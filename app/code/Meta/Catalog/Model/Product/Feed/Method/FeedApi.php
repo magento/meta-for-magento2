@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -18,6 +21,7 @@
 namespace Meta\Catalog\Model\Product\Feed\Method;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
@@ -30,6 +34,11 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\File\WriteInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class Use for Feed Api
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class FeedApi
 {
     private const FEED_FILE_NAME = 'facebook_products%s.csv';
@@ -96,24 +105,22 @@ class FeedApi
     }
 
     /**
-     * Get FB Feed Id
+     * Get feed id
      *
-     * @return string|false
+     * @param int $feedId
+     * @param array $catalogFeeds
+     * @param string $feedName
+     * @param int $catalogId
+     * @return void
+     * @throws GuzzleException
      */
-    private function getFbFeedId()
-    {
-        $feedId = $this->systemConfig->getFeedId($this->storeId);
-        $feedName = self::FB_FEED_NAME;
-        $catalogId = $this->systemConfig->getCatalogId($this->storeId);
-        $catalogFeeds = $this->graphApiAdapter->getCatalogFeeds($catalogId);
 
-        // make sure feed exists on meta side, not deleted
+    private function getFeedId($feedId, $catalogFeeds, $feedName, $catalogId)
+    {
         if ($feedId) {
             $magentoFeeds = array_filter($catalogFeeds, function ($a) use ($feedId) {
                 return $a['id'] === $feedId;
             });
-            // in case feed id is not found in meta catalog, feed id on
-            // magento will be flushed and new feed will be created in Meta Catalog
             if (empty($magentoFeeds)) {
                 $feedId = null;
             }
@@ -141,7 +148,21 @@ class FeedApi
                 usleep(2000000);
             } while ($attempts < $maxAttempts);
         }
+    }
 
+    /**
+     * Get FB Feed Id
+     *
+     * @return mixed|null
+     * @throws GuzzleException
+     */
+    private function getFbFeedId()
+    {
+        $feedId = $this->systemConfig->getFeedId($this->storeId);
+        $feedName = self::FB_FEED_NAME;
+        $catalogId = $this->systemConfig->getCatalogId($this->storeId);
+        $catalogFeeds = $this->graphApiAdapter->getCatalogFeeds($catalogId);
+        $this->getFeedId($feedId, $catalogFeeds, $feedName, $catalogId);
         if ($feedId && $this->systemConfig->getFeedId($this->storeId) != $feedId) {
             $this->systemConfig
                 ->saveConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID, $feedId, $this->storeId)

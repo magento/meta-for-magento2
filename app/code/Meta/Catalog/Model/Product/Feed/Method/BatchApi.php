@@ -1,4 +1,7 @@
 <?php /** @noinspection PhpUndefinedFieldInspection */
+
+declare(strict_types=1);
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *

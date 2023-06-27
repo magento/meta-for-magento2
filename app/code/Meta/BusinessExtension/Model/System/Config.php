@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -185,7 +188,7 @@ class Config
      */
     public function getModuleVersion(): string
     {
-        $this->version = $this->version ?: $this->cache->load(self::VERSION_CACHE_KEY);
+        $this->version = (string) ($this->version ?: $this->cache->load(self::VERSION_CACHE_KEY));
         if (!$this->version) {
             $installedPackages = $this->composerInformation->getInstalledMagentoPackages();
             $extensionVersion = $installedPackages[self::EXTENSION_PACKAGE_NAME]['version'] ?? null;

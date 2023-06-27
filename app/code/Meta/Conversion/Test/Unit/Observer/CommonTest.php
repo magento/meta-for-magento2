@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -68,10 +71,16 @@ abstract class CommonTest extends TestCase
         $this->objectManager = new ObjectManager($this);
         $this->systemConfig->method('getAccessToken')->willReturn('');
         $this->systemConfig->method('getPixelId')->willReturn('123');
-
         $this->magentoDataHelper->method('getCurrency')->willReturn('USD');
     }
 
+    /**
+     * @param $customDataArray
+     * @param $customData
+     * @return void
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public function assertEqualsCustomData($customDataArray, $customData)
     {
         if (!empty($customDataArray['currency'])) {

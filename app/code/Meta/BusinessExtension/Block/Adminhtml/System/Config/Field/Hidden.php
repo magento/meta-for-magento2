@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Field renderer for hidden fields
  */
-
-declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Block\Adminhtml\System\Config\Field;
 
