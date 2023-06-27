@@ -99,10 +99,11 @@ class Cancel implements ObserverInterface
         } catch (GuzzleException $e) {
             $response = $e->getResponse();
             $body = json_decode($response->getBody());
-            throw new Exception('Error Code: '
-                .(string) $body->error->code
-                .'; '
-                . (string) $body->error->error_user_msg);
+            throw new Exception(__(
+                'Error code: "%1"; Error message: "%2"',
+                (string)$body->error->code,
+                (string)($body->error->message ?? $body->error->error_user_msg)
+            ));
         }
     }
 }
