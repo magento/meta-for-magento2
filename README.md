@@ -112,9 +112,9 @@ Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help
 
 ## Requirements
 
-Meta Business Extension For Magento2 requires
-* Magento version 2.0 and above
-* PHP 7.0 or greater
+Meta Business Extension For Magento 2 requires
+* Magento version 2.4.4, 2.4.5 (2.4.6 support coming soon)
+* PHP 7.4 or greater
 * Memory limit of 1 GB or greater (2 GB or higher is preferred)
 
 ## Contributing

@@ -12,6 +12,7 @@
             <module name="Magento_Eav"/>
             <module name="Magento_Directory"/>
             <module name="Magento_Payment"/>
+            <module name="Magento_SalesSequence"/>
             <module name="Magento_Shipping"/>
             <module name="Meta_BusinessExtension"/>
             <module name="Meta_Catalog"/>

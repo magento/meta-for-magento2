@@ -121,8 +121,9 @@ class SaveAfter implements ObserverInterface
     {
         $isActive = $this->systemConfig->isActiveExtension($storeId);
         $shouldIncrement = $this->systemConfig->isActiveIncrementalProductUpdates($storeId);
+        $catalogId = $this->systemConfig->getCatalogId($storeId);
 
-        if (!($isActive && $shouldIncrement)) {
+        if (!($isActive && $shouldIncrement && $catalogId)) {
             return;
         }
 
@@ -133,11 +134,10 @@ class SaveAfter implements ObserverInterface
                 return;
             }
 
-            // @todo implement error handling/logging for invalid access token and other non-happy path scenarios
             // @todo implement batch API status check
             // @todo implement async call
-
-            $catalogId = $this->systemConfig->getCatalogId($storeId);
+            $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+                ->setAccessToken($this->systemConfig->getAccessToken($storeId));
             $requestData = $this->batchApi->buildRequestForIndividualProduct($product);
             $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
         } catch (NoSuchEntityException $e) {

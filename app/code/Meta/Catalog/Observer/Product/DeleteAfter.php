@@ -110,8 +110,9 @@ class DeleteAfter implements ObserverInterface
     {
         $isActive = $this->systemConfig->isActiveExtension($storeId);
         $shouldIncrement = $this->systemConfig->isActiveIncrementalProductUpdates($storeId);
+        $catalogId = $this->systemConfig->getCatalogId($storeId);
 
-        if (!($isActive && $shouldIncrement)) {
+        if (!($isActive && $shouldIncrement && $catalogId)) {
             return;
         }
 
@@ -121,8 +122,8 @@ class DeleteAfter implements ObserverInterface
                 'method' => 'DELETE',
                 'data' => ['id' => $this->identifier->getMagentoProductRetailerId($product)],
             ];
-
-            $catalogId = $this->systemConfig->getCatalogId($storeId);
+            $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+                ->setAccessToken($this->systemConfig->getAccessToken($storeId));
             $this->graphApiAdapter->catalogBatchRequest($catalogId, [$requestData]);
         } catch (GuzzleException $e) {
             $this->messageManager->addErrorMessage(
