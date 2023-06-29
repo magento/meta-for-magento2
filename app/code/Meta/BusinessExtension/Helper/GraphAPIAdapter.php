@@ -186,7 +186,7 @@ class GraphAPIAdapter
             'access_token' => $userToken
         ];
         $response = $this->callApi('GET', 'me/accounts', $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response['data'][0]['access_token'] ?? false;
     }
 
@@ -203,7 +203,7 @@ class GraphAPIAdapter
             'access_token' => $userToken
         ];
         $response = $this->callApi('GET', 'me/accounts', $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response['data'][0]['id'] ?? false;
     }
 
@@ -222,7 +222,7 @@ class GraphAPIAdapter
             'fields' => 'access_token'
         ];
         $response = $this->callApi('GET', $pageId, $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response['access_token'] ?? false;
     }
 
@@ -241,7 +241,7 @@ class GraphAPIAdapter
             'fields' => 'commerce_merchant_settings',
         ];
         $response = $this->callApi('GET', $pageId ?? 'me', $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response['commerce_merchant_settings']['data'][0]['id'] ?? false;
     }
 
@@ -261,7 +261,7 @@ class GraphAPIAdapter
             'fields' => 'merchant_page,product_catalogs',
         ];
         $response = $this->callApi('GET', "{$commerceAccountId}", $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return [
             'page_id' => $response['merchant_page']['id'],
             'catalog_id' => $response['product_catalogs']['data'][0]['id']
@@ -283,7 +283,7 @@ class GraphAPIAdapter
         ];
         $response = $this->callApi('POST', "{$commerceAccountId}/order_management_apps", $request);
         // @todo check for success:true upstream
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response;
     }
 
@@ -306,7 +306,7 @@ class GraphAPIAdapter
             'access_token' => $this->accessToken,
             'fields' => implode(',', $requestFields),
         ]);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response['data'];
     }
 
@@ -322,7 +322,7 @@ class GraphAPIAdapter
         $response = $this->callApi('GET', "{$feedId}", [
             'access_token' => $this->accessToken,
         ]);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response;
     }
 
@@ -345,7 +345,7 @@ class GraphAPIAdapter
             $request['feed_type'] = 'OFFER';
         }
         $response = $this->callApi('POST', "{$catalogId}/product_feeds", $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response['id'];
     }
 
@@ -411,7 +411,7 @@ class GraphAPIAdapter
             'requests' => json_encode($requests),
             'item_type' => 'PRODUCT_ITEM'
         ]);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response;
     }
 
@@ -449,7 +449,7 @@ class GraphAPIAdapter
             $request['after'] = $cursorAfter;
         }
         $response = $this->callApi('GET', "{$pageId}/commerce_orders", $request);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**
@@ -474,7 +474,7 @@ class GraphAPIAdapter
             'fields' => implode(',', $requestFields),
         ];
         $response = $this->callApi('GET', "{$fbOrderId}/items", $request);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**
@@ -496,7 +496,7 @@ class GraphAPIAdapter
             'idempotency_key' => $this->getUniqId(),
             'orders' => json_encode($request),
         ]);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**
@@ -522,7 +522,7 @@ class GraphAPIAdapter
             $request['should_use_default_fulfillment_location'] = true;
         }
         $response = $this->callApi('POST', "{$fbOrderId}/shipments", $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response;
     }
 
@@ -546,7 +546,7 @@ class GraphAPIAdapter
             'cancel_reason' => $cancelReason,
             'restock_items' => true,
         ]);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response;
     }
 
@@ -581,7 +581,7 @@ class GraphAPIAdapter
         }
 
         $response = $this->callApi('POST', "{$fbOrderId}/refunds", $request);
-        $response = json_decode($response->getBody(), true);
+        $response = json_decode($response->getBody()->__toString(), true);
         return $response;
     }
 
@@ -603,7 +603,7 @@ class GraphAPIAdapter
             'fields' => implode(',', $requestFields),
         ];
         $response = $this->callApi('GET', "{$fbProductId}", $request);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**
@@ -621,7 +621,7 @@ class GraphAPIAdapter
             'filter' => '{"retailer_id":{"eq":"' . $retailerId . '"}}',
         ];
         $response = $this->callApi('GET', "{$catalogId}/products", $request);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**
@@ -639,7 +639,7 @@ class GraphAPIAdapter
             'filter' => '{"product_item_id":{"is_any":' . json_encode($fbProductIds) . '}}',
         ];
         $response = $this->callApi('GET', "{$catalogId}/products", $request);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**
@@ -656,7 +656,7 @@ class GraphAPIAdapter
             'fields' => 'errors'
         ];
         $response = $this->callApi('GET', "{$fbProductId}", $request);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**
@@ -673,6 +673,6 @@ class GraphAPIAdapter
             'fields' => 'diagnostics'
         ];
         $response = $this->callApi('GET', "{$catalogId}", $request);
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->__toString(), true);
     }
 }
