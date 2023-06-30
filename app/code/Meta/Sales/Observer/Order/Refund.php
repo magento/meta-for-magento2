@@ -177,7 +177,7 @@ class Refund implements ObserverInterface
             throw new Exception(__(
                 'Error code: "%1"; Error message: "%2"',
                 (string)$body->error->code,
-                (string)($body->error->message ?? $body->error->error_user_msg)
+                (string)($body->error->error_user_msg ?? $body->error->message)
             ));
         }
     }
