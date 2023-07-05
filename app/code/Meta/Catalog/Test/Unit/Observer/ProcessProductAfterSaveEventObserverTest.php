@@ -118,7 +118,7 @@ class ProcessProductAfterSaveEventObserverTest extends TestCase
         $store->method('getId')->willReturn('1');
 
         $this->systemConfigMock->method('isActiveExtension')->willReturn(true);
-        $this->systemConfigMock->method('isActiveIncrementalProductUpdates')->willReturn(true);
+        $this->systemConfigMock->method('isCatalogSyncEnabled')->willReturn(true);
 
         $this->productRepositoryMock->method('getById')->willReturn($productMock);
 

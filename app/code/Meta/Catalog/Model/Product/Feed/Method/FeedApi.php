@@ -165,6 +165,7 @@ class FeedApi
 
         $total = 0;
         foreach ($this->productRetrievers as $productRetriever) {
+
             $productRetriever->setStoreId($this->storeId);
             $offset = 0;
             $limit = $productRetriever->getLimit();

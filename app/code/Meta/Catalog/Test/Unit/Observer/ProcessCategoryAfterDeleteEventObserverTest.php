@@ -80,7 +80,7 @@ class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
 
     public function testExecution()
     {
-        $this->systemConfig->method('isActiveIncrementalProductUpdates')->willReturn(true);
+        $this->systemConfig->method('isCatalogSyncEnabled')->willReturn(true);
         $categoryObj = $this->createMock(CategoryCollection::class);
         $this->fbeHelper->expects($this->once())->method('getObject')->willReturn($categoryObj);
         $this->fbeHelper->expects($this->once())->method('log')->willReturn(null);

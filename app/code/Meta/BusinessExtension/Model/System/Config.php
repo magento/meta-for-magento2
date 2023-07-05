@@ -57,8 +57,7 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID = 'facebook/business_extension/feed_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OFFERS_FEED_ID = 'facebook/business_extension/offers_feed_id';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_STORE = 'facebook/business_extension/store';
-
-    private const XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED = 'facebook/catalog_management/daily_product_feed';
+    private const XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC = 'facebook/catalog_management/enable_catalog_sync';
     private const XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER = 'facebook/catalog_management/product_identifier';
     private const XML_PATH_FACEBOOK_PRICE_INCL_TAX = 'facebook/catalog_management/price_incl_tax';
     private const XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE = 'facebook/catalog_management/collections_sync';
@@ -70,16 +69,11 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN = 'facebook/business_extension/access_token';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN =
         'facebook/business_extension/page_access_token';
-
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES =
-        'facebook/catalog_management/incremental_product_updates';
-
-    private const XML_PATH_FACEBOOK_ENABLE_INVENTORY_UPLOAD = 'facebook/inventory_management/enable_inventory_upload';
     private const XML_PATH_FACEBOOK_USE_MULTI_SOURCE_INVENTORY =
         'facebook/inventory_management/use_multi_source_inventory';
     private const XML_PATH_FACEBOOK_INVENTORY_STOCK = 'facebook/inventory_management/inventory_stock';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD =
-        'facebook/inventory_management/out_of_stock_threshold';
+        'facebook/catalog_management/out_of_stock_threshold';
 
     public const XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE = 'facebook/orders_sync/active';
     public const XML_PATH_FACEBOOK_ORDERS_SYNC_DEFAULT_ORDER_STATUS = 'facebook/orders_sync/default_order_status';
@@ -323,34 +317,6 @@ class Config
     public function getStoreId()
     {
         return $this->storeManager->getStore()->getId();
-    }
-
-    /**
-     * Is active incremental product updates
-     *
-     * @param int $scopeId
-     * @param int $scope
-     * @return bool
-     */
-    public function isActiveIncrementalProductUpdates($scopeId = null, $scope = null): bool
-    {
-        return (bool)$this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INCREMENTAL_PRODUCT_UPDATES,
-            $scopeId,
-            $scope
-        );
-    }
-
-    /**
-     * Is active inventory upload
-     *
-     * @param int $scopeId
-     * @param int $scope
-     * @return bool
-     */
-    public function isActiveInventoryUpload($scopeId = null, $scope = null): bool
-    {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_INVENTORY_UPLOAD, $scopeId, $scope);
     }
 
     /**
@@ -756,15 +722,15 @@ class Config
     }
 
     /**
-     * Is active daily product feed
+     * Is catalog sync enabled
      *
      * @param int $scopeId
      * @param string $scope
      * @return bool
      */
-    public function isActiveDailyProductFeed($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
+    public function isCatalogSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_DAILY_PRODUCT_FEED, $scopeId, $scope);
+        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC, $scopeId, $scope);
     }
 
     /**

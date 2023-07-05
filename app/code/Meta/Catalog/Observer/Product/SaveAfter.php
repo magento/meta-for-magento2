@@ -123,10 +123,10 @@ class SaveAfter implements ObserverInterface
     private function updateProduct($storeId, $productId): void
     {
         $isActive = $this->systemConfig->isActiveExtension($storeId);
-        $shouldIncrement = $this->systemConfig->isActiveIncrementalProductUpdates($storeId);
+        $isCatalogSyncEnabled = $this->systemConfig->isCatalogSyncEnabled($storeId);
         $catalogId = $this->systemConfig->getCatalogId($storeId);
 
-        if (!($isActive && $shouldIncrement && $catalogId)) {
+        if (!($isActive && $isCatalogSyncEnabled && $catalogId)) {
             return;
         }
 

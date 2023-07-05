@@ -3,15 +3,11 @@
     <default>
         <facebook>
             <catalog_management>
-                <daily_product_feed>0</daily_product_feed>
-                <incremental_product_updates>0</incremental_product_updates>
+                <enable_catalog_sync>0</enable_catalog_sync>
                 <price_incl_tax>0</price_incl_tax>
                 <collections_sync>0</collections_sync>
-            </catalog_management>
-            <inventory_management>
-                <enable_inventory_upload>0</enable_inventory_upload>
                 <out_of_stock_threshold>0</out_of_stock_threshold>
-            </inventory_management>
+            </catalog_management>
         </facebook>
     </default>
 </config>

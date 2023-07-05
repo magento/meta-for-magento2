@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Catalog\Observer;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Feed\CategoryCollection;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -33,13 +34,19 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
     private $_fbeHelper;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * Constructor
      * @param FBEHelper $helper
+     * @param SystemConfig $systemConfig
      */
-    public function __construct(
-        FBEHelper $helper
-    ) {
+    public function __construct(FBEHelper $helper, SystemConfig $systemConfig)
+    {
         $this->_fbeHelper = $helper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -49,21 +56,24 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
      * after save category from Magento
      *
      * @param Observer $observer
-     * @return
+     * @return string|void|null
      */
     public function execute(Observer $observer)
     {
+        if (!$this->systemConfig->isCatalogSyncEnabled()) {
+            return;
+        }
+
         $category = $observer->getEvent()->getCategory();
         $this->_fbeHelper->log("save category: " . $category->getName());
         /** @var CategoryCollection $categoryObj */
         $categoryObj = $this->_fbeHelper->getObject(CategoryCollection::class);
-        $syncEnabled =$category->getData("sync_to_facebook_catalog");
+        $syncEnabled = $category->getData("sync_to_facebook_catalog");
         if ($syncEnabled === "0") {
             $this->_fbeHelper->log("user disabled category sync");
             return;
         }
 
-        $response = $categoryObj->makeHttpRequestAfterCategorySave($category);
-        return $response;
+        return $categoryObj->makeHttpRequestAfterCategorySave($category);
     }
 }

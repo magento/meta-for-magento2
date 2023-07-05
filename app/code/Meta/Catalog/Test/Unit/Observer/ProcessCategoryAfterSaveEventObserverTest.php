@@ -22,10 +22,11 @@ namespace Meta\Catalog\Test\Unit\Observer;
 
 use Magento\Framework\Event;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Model\Feed\CategoryCollection;
 use Meta\Catalog\Observer\ProcessCategoryAfterSaveEventObserver;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 class ProcessCategoryAfterSaveEventObserverTest extends TestCase
 {
@@ -38,6 +39,11 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
      * @var MockObject
      */
     private MockObject $fbeHelper;
+
+    /**
+     * @var MockObject
+     */
+    private MockObject $systemConfig;
 
     /**
      * @var MockObject
@@ -57,17 +63,19 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(Config::class);
         $this->category = $this->createMock(\Magento\Catalog\Model\Category::class);
         $event = $this->getMockBuilder(Event::class)->addMethods(['getCategory'])->getMock();
         $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->category));
         $this->eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
         $this->eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
         $this->processCategoryAfterSaveEventObserver =
-            new ProcessCategoryAfterSaveEventObserver($this->fbeHelper);
+            new ProcessCategoryAfterSaveEventObserver($this->fbeHelper, $this->systemConfig);
     }
 
     public function testExecution()
     {
+        $this->systemConfig->method('isCatalogSyncEnabled')->willReturn(true);
         $categoryObj = $this->createMock(CategoryCollection::class);
         $this->fbeHelper->expects($this->once())->method('getObject')->willReturn($categoryObj);
         $this->fbeHelper->expects($this->once())->method('log');
