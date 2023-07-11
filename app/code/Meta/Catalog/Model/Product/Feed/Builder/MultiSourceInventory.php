@@ -148,9 +148,9 @@ class MultiSourceInventory implements InventoryInterface
     /**
      * Get available product qty
      *
-     * @return int
+     * @return float
      */
-    public function getInventory(): int
+    public function getInventory(): float
     {
         if (!$this->product) {
             return 0;
