@@ -105,9 +105,9 @@ class Builder
     private $builderTools;
 
     /**
-     * @var InventoryInterface
+     * @var InventoryInterface|null
      */
-    private $inventory;
+    private ?InventoryInterface $inventory = null;
 
     /**
      * @var ProductIdentifier
@@ -146,7 +146,6 @@ class Builder
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param BuilderTools $builderTools
      * @param ProductIdentifier $productIdentifier
-     * @param InventoryInterface $inventory
      * @param Escaper $escaper
      * @param SystemConfig $systemConfig
      */
@@ -155,7 +154,6 @@ class Builder
         CategoryCollectionFactory $categoryCollectionFactory,
         BuilderTools              $builderTools,
         ProductIdentifier         $productIdentifier,
-        InventoryInterface        $inventory,
         Escaper                   $escaper,
         SystemConfig              $systemConfig
     ) {
@@ -163,7 +161,6 @@ class Builder
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->builderTools = $builderTools;
         $this->productIdentifier = $productIdentifier;
-        $this->inventory = $inventory;
         $this->escaper = $escaper;
         $this->systemConfig = $systemConfig;
     }
@@ -501,6 +498,11 @@ class Builder
      */
     private function getInventory(Product $product): InventoryInterface
     {
+        if ($this->inventory === null) {
+            $this->inventory = $this->builderTools->getInventoryObject(
+                $this->systemConfig->useMultiSourceInventory($this->storeId)
+            );
+        }
         $this->inventory->initInventoryForProduct($product);
         return $this->inventory;
     }

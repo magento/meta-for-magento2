@@ -8,6 +8,7 @@
         "magento/module-inventory-sales-api": "*",
         "magento/module-backend": "*",
         "magento/module-catalog": "*",
+        "magento/module-catalog-inventory": "*",
         "magento/module-configurable-product": "*",
         "magento/module-config": "*",
         "magento/module-eav": "*",

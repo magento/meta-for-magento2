@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface" type="Meta\Catalog\Model\Product\Feed\Builder\MultiSourceInventory" />
-    
     <virtualType name="Meta\Catalog\Model\Logger\ProductFeedDebugger" type="Magento\Framework\Logger\Handler\Base">
         <arguments>
             <argument name="fileName" xsi:type="string">/var/log/facebook/product-feed.log</argument>
@@ -66,7 +64,7 @@
                 <item name="9" xsi:type="array">
                     <item name="value" xsi:type="string">Apparel &amp; Accessories > Handbag &amp; Wallet Accessories</item>
                     <item name="label" xsi:type="string">Apparel &amp; Accessories > Handbag &amp; Wallet Accessories</item>
-                </item>   
+                </item>
                 <item name="10" xsi:type="array">
                     <item name="value" xsi:type="string">Apparel &amp; Accessories > Handbags, Wallets &amp; Cases</item>
                     <item name="label" xsi:type="string">Apparel &amp; Accessories > Handbags, Wallets &amp; Cases</item>

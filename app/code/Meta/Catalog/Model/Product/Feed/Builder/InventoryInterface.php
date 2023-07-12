@@ -35,19 +35,19 @@ interface InventoryInterface
      * @param Product $product
      * @return $this
      */
-    public function initInventoryForProduct(Product $product);
+    public function initInventoryForProduct(Product $product): InventoryInterface;
 
     /**
      * Get availability
      *
      * @return string
      */
-    public function getAvailability();
+    public function getAvailability(): string;
 
     /**
      * Get inventory
      *
      * @return int
      */
-    public function getInventory();
+    public function getInventory(): int;
 }

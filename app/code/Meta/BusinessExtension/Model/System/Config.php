@@ -70,8 +70,7 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN =
         'facebook/business_extension/page_access_token';
     private const XML_PATH_FACEBOOK_USE_MULTI_SOURCE_INVENTORY =
-        'facebook/inventory_management/use_multi_source_inventory';
-    private const XML_PATH_FACEBOOK_INVENTORY_STOCK = 'facebook/inventory_management/inventory_stock';
+        'facebook/catalog_management/use_multi_source_inventory';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD =
         'facebook/catalog_management/out_of_stock_threshold';
 
@@ -329,18 +328,6 @@ class Config
     public function useMultiSourceInventory($scopeId = null, $scope = null): bool
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_USE_MULTI_SOURCE_INVENTORY, $scopeId, $scope);
-    }
-
-    /**
-     * Get inventory stock
-     *
-     * @param int $scopeId
-     * @param int $scope
-     * @return mixed
-     */
-    public function getInventoryStock($scopeId = null, $scope = null)
-    {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_INVENTORY_STOCK, $scopeId, $scope);
     }
 
     /**

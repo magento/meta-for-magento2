@@ -23,6 +23,7 @@ namespace Meta\Catalog\Model\Product\Feed\Builder;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Escaper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -34,6 +35,11 @@ class Tools
      * @var PriceCurrencyInterface
      */
     private $priceCurrency;
+
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
     /**
      * @var Escaper
@@ -54,17 +60,20 @@ class Tools
      * Tools constructor
      *
      * @param PriceCurrencyInterface $priceCurrency
+     * @param ObjectManagerInterface $objectManager
      * @param Escaper $escaper
      * @param SystemConfig $systemConfig
      * @param CatalogHelper $catalogHelper
      */
     public function __construct(
         PriceCurrencyInterface $priceCurrency,
+        ObjectManagerInterface $objectManager,
         Escaper $escaper,
         SystemConfig $systemConfig,
         CatalogHelper $catalogHelper
     ) {
         $this->priceCurrency = $priceCurrency;
+        $this->objectManager = $objectManager;
         $this->escaper = $escaper;
         $this->systemConfig = $systemConfig;
         $this->catalogHelper = $catalogHelper;
@@ -226,5 +235,20 @@ class Tools
             return sprintf("%s/%s", $salePriceStartDate, $salePriceEndDate);
         }
         return '';
+    }
+
+    /**
+     * Get inventory object
+     *
+     * @param bool $useMultiSource
+     * @return InventoryInterface
+     */
+    public function getInventoryObject(bool $useMultiSource = true): InventoryInterface
+    {
+        //phpcs:disable Magento2.PHP.LiteralNamespaces
+        return $useMultiSource
+            ? $this->objectManager->get('Meta\Catalog\Model\Product\Feed\Builder\MultiSourceInventory')
+            : $this->objectManager->get('Meta\Catalog\Model\Product\Feed\Builder\Inventory');
+        //phpcs:enable Magento2.PHP.LiteralNamespaces
     }
 }

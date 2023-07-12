@@ -4,6 +4,7 @@
         <sequence>
             <module name="Magento_Backend"/>
             <module name="Magento_Catalog"/>
+            <module name="Magento_CatalogInventory"/>
             <module name="Magento_ConfigurableProduct"/>
             <module name="Magento_Config"/>
             <module name="Magento_Customer"/>

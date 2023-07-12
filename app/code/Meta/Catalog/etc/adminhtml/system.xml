@@ -14,12 +14,18 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Enable catalog syncing with Meta</comment>
                 </field>
-                <field id="product_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="product_feed" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Push Products</label>
                     <depends>
                         <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
                     </depends>
                     <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
+                </field>
+                <field id="use_multi_source_inventory" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Use Multi Source Inventory</label>
+                    <config_path>facebook/catalog_management/use_multi_source_inventory</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Set to 'Yes' if you'd like to use Magento's Multi Source Inventory (MSI) for products sold on Meta</comment>
                 </field>
                 <field id="price_incl_tax" translate="label comment" type="select" sortOrder="60" showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Price Including Tax</label>
@@ -30,7 +36,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Use price including tax in feed. Should be "No" for the US and "Yes" for the UK. Note: only works if Sales -> Tax -> Price Display Settings -> Display Product Prices In Catalog is set to "Including Tax"</comment>
                 </field>
-                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Out-of-Stock Threshold</label>
                     <depends>
                         <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
