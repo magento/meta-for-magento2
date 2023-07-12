@@ -69,11 +69,10 @@ class AAMSettingsCron
         $processed = false;
         foreach ($storeIds as $storeId) {
             $pixelId = $this->systemConfig->getPixelId($storeId);
-            $settingsAsString = null;
             if ($pixelId) {
                 $settingsAsString = $this->fbeHelper->fetchAndSaveAAMSettings($pixelId, $storeId);
                 if (!$settingsAsString) {
-                    $this->fbeHelper->log('Error saving settings. Currently:', $settingsAsString);
+                    $this->fbeHelper->log(__('Error saving settings. Currently: %1', $settingsAsString));
                 } else {
                     $processed = true;
                 }
