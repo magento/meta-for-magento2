@@ -63,7 +63,7 @@ You can download and install our extension in [Magento marketplace](https://mark
 * Go to your magento root path
 * Execute command `cd /var/www/Magento` or
  `cd /var/www/html/Magento` based on your server Centos or Ubuntu.
-* run composer command: `composer require meta/meta-for-magento2`
+* run composer command: `composer require meta/meta-for-magento2 -W`
 - To enable modules execute `php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales`
 - Execute `php bin/magento setup:upgrade`
 - Optional `php bin/magento setup:static-content:deploy`
