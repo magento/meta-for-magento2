@@ -83,6 +83,7 @@ class Configurable implements ProductRetrieverInterface
      * @inheritDoc
      *
      * @throws LocalizedException
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function retrieve($offset = 1, $limit = self::LIMIT): array
     {
@@ -137,10 +138,14 @@ class Configurable implements ProductRetrieverInterface
                 if (!$childProduct->getWeight()) {
                     $childProduct->setWeight($product->getWeight());
                 }
-                if (!$childProduct->getAttributeText('material')) {
+
+                $material = $childProduct->getResource()->getAttribute('material');
+                if ($material && !$material->getSource()->getOptionText($childProduct->getData('material'))) {
                     $childProduct->setData('material', $product->getData('material'));
                 }
-                if (!$childProduct->getAttributeText('pattern')) {
+
+                $pattern = $childProduct->getResource()->getAttribute('pattern');
+                if ($pattern && !$pattern->getSource()->getOptionText($childProduct->getData('pattern'))) {
                     $childProduct->setData('pattern', $product->getData('pattern'));
                 }
                 $simpleProducts[] = $childProduct;
