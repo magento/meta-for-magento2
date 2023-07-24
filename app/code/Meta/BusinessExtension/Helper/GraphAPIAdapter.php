@@ -136,15 +136,19 @@ class GraphAPIAdapter
      * @param array $request
      * @return \Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
-     * @todo implement custom logger class, remove access token from logs
+     * @todo implement custom logger class
      */
     private function callApi($method, $endpoint, $request)
     {
         try {
+            $logRequest = $request;
             if ($this->debugMode) {
+                if (isset($logRequest['access_token'])) {
+                    unset($logRequest['access_token']);
+                }
                 $this->logger->debug(json_encode([
                     'endpoint' => "/{$method} {$endpoint}",
-                    'request' => $request,
+                    'request' => $logRequest,
                 ], JSON_PRETTY_PRINT));
             }
 //            TODO: repalce with admin user local
