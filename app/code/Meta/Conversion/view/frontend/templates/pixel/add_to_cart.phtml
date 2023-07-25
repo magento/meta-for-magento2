@@ -1,32 +1,28 @@
-<?php /** @var \Meta\Conversion\Block\Pixel\AddToCart $block */ ?>
-<?php if ($block->getFacebookPixelID()) { ?>
+<?php
+/** @var \Meta\Conversion\Block\Pixel\AddToCart $block */
+$trackerUrl = $block->getTrackerUrl();
+?>
+<?php if ($block->getFacebookPixelID()): ?>
+    <!-- Added the new component below to track server events -->
+    <script>
+        window.addToCartData =
+            <?= /* @noEscape */ json_encode([
+                "url" => $block->escapeUrl($trackerUrl),
+                "eventName" => $block->getEventToObserveName(),
+                'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                'fbPixelId' => $block->getFacebookPixelID(),
+                'source' => $block->getSource(),
+                'pluginVersion' => $block->getPluginVersion(),
+                'track' => 'track',
+                'event' => 'AddToCart'
+
+            ]); ?>
+    </script>
     <script>
         require([
-            'jquery'
-        ], function ($) {
-
-            function trackAddToCart(content_ids, content_name, content_category, value, eventId) {
-                fbq(
-                    'set',
-                    'agent',
-                    '<?= /* @noEscape */ $block->getFacebookAgentVersion() ?>',
-                    '<?= /* @noEscape */ $block->getFacebookPixelID() ?>'
-                );
-                fbq('track', 'AddToCart', {
-                        source: "<?= /* @noEscape */ $block->getSource() ?>",
-                        pluginVersion: "<?= /* @noEscape */ $block->getPluginVersion() ?>",
-                        content_type: "<?= /* @noEscape */ $block->getContentType() ?>",
-                        currency: "<?= /* @noEscape */ $block->getCurrency() ?>",
-                        content_ids: content_ids,
-                        content_name: content_name,
-                        content_category: content_category,
-                        value: value
-                    },
-                    {
-                        eventID: eventId
-                    }
-                );
-            }
+            'jquery',
+            'Meta_Conversion/js/metaPixelTracker'
+        ], function ($, metaPixelTracker) {
 
             var product_info_url = '<?= /* @noEscape */ $block->getProductInfoUrl() ?>';
 
@@ -65,17 +61,37 @@
                         type: 'get',
                         dataType: 'json',
                         success: function (res) {
-                            trackAddToCart(
-                                [res.id],
-                                res.name,
-                                res.content_category,
-                                res.value,
-                                res.event_id
-                            );
+                            var addToCartConfigPixel = {
+                                "url" : window.addToCartData.url,
+                                "payload": {
+                                    "eventName" : window.addToCartData.eventName,
+                                    "productId" : res.productId
+                                },
+                                "browserEventData": {
+                                    'fbAgentVersion': window.addToCartData.fbAgentVersion,
+                                    'fbPixelId': window.addToCartData.fbPixelId,
+                                    'source': window.addToCartData.source,
+                                    'pluginVersion': window.addToCartData.pluginVersion,
+                                    'track': window.addToCartData.track,
+                                    'event': window.addToCartData.event,
+                                    'payload': {
+                                        "content_name": res.name,
+                                        "content_ids": [res.id],
+                                        "value": res.value,
+                                        "currency": res.currency,
+                                        "content_type": res.content_type,
+                                        "contents": [{
+                                            "id": res.id,
+                                            "quantity": 1
+                                        }]
+                                    }
+                                }
+                            };
+                            metaPixelTracker(addToCartConfigPixel);
                         }
                     });
                 }
             });
         });
     </script>
-<?php } ?>
+<?php endif; ?>

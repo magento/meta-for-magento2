@@ -79,4 +79,14 @@ class AddToCart extends Common
     {
         return sprintf('%sfbe/Pixel/ProductInfoForAddToCart', $this->fbeHelper->getBaseUrl());
     }
+
+    /**
+     * Returns event name
+     *
+     * @return string
+     */
+    public function getEventToObserveName()
+    {
+        return 'facebook_businessextension_ssapi_add_to_cart';
+    }
 }

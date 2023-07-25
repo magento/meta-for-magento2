@@ -160,10 +160,13 @@ class ProductInfoForAddToCart implements HttpGetActionInterface
         }
         if ($product && $product->getId()) {
             return [
+                'productId'=> $product->getId(),
                 'id'       => $this->magentoDataHelper->getContentId($product),
+                'currency' => strtolower($this->magentoDataHelper->getCurrency()),
                 'name'     => $product->getName(),
                 'category' => $this->getCategory($product),
                 'value'    => $this->getPriceValue($product),
+                'content_type' => $this->magentoDataHelper->getContentType($product)
             ];
         }
         return [];
@@ -185,7 +188,6 @@ class ProductInfoForAddToCart implements HttpGetActionInterface
             if (count($responseData) > 0) {
                 $eventId = EventIdGenerator::guidv4();
                 $responseData['event_id'] = $eventId;
-                $this->trackServerEvent($eventId);
                 $result->setData(array_filter($responseData));
             }
         } else {
@@ -193,19 +195,5 @@ class ProductInfoForAddToCart implements HttpGetActionInterface
             return $redirect->setUrl('noroute');
         }
         return $result;
-    }
-
-    /**
-     * Track the server event
-     *
-     * @param string $eventId
-     * @return void
-     */
-    public function trackServerEvent($eventId): void
-    {
-        $this->eventManager->dispatch(
-            'facebook_businessextension_ssapi_add_to_cart',
-            ['eventId' => $eventId]
-        );
     }
 }
