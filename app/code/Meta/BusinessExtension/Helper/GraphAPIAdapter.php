@@ -153,7 +153,10 @@ class GraphAPIAdapter
             }
 //            TODO: repalce with admin user local
             $request['locale'] = 'en_US';
-            $response = $this->client->request($method, $endpoint, ['query' => $request]);
+
+            // post request form_params should be used as it adds data in body rather than keeping it in URL
+            $option = $method === 'POST' ? 'form_params' : 'query';
+            $response = $this->client->request($method, $endpoint, [$option => $request]);
             if ($this->debugMode) {
                 $this->logger->debug(json_encode([
                     'response' => [
