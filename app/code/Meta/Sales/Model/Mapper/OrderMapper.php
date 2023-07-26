@@ -147,10 +147,12 @@ class OrderMapper
         $this->applyTotalsToOrder($order, $data, $storeId);
 
         $shippingMethod = $this->getShippingMethod($shippingOptionName, $storeId);
+        $shippingDescription = $this->getShippingMethodLabel($shippingOptionName, $storeId);
+
         $order->setStoreId($storeId)
             // @todo have to set shipping method like this
             ->setShippingMethod($shippingMethod)
-            ->setShippingDescription($shippingOptionName . " / {$shippingMethod}")
+            ->setShippingDescription($shippingDescription ?? $shippingOptionName . " / {$shippingMethod}")
             ->setPayment($payment);
 
         // @todo implement paging and tax for order items
@@ -185,6 +187,24 @@ class OrderMapper
         throw new LocalizedException(
             __('Cannot map shipping method. Make sure mapping is defined in system configuration.')
         );
+    }
+
+    /**
+     * Get custom shipping method label
+     *
+     * @param string $shippingOptionName
+     * @param int $storeId
+     * @return string|null
+     */
+    private function getShippingMethodLabel(string $shippingOptionName, int $storeId): ?string
+    {
+        $map = $this->systemConfig->getShippingMethodsLabelMap($storeId);
+        foreach (['standard', 'expedited', 'rush'] as $item) {
+            if (stripos($shippingOptionName, $item) !== false && isset($map[$item])) {
+                return $map[$item];
+            }
+        }
+        return null;
     }
 
     /**

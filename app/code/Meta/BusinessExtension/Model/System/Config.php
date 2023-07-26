@@ -65,6 +65,9 @@ class Config
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_STANDARD = 'facebook/shipping_methods/standard';
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_EXPEDITED = 'facebook/shipping_methods/expedited';
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_RUSH = 'facebook/shipping_methods/rush';
+    private const XML_PATH_FACEBOOK_SHIPPING_METHODS_LABEL_STANDARD = 'facebook/shipping_methods/label_standard';
+    private const XML_PATH_FACEBOOK_SHIPPING_METHODS_LABEL_EXPEDITED = 'facebook/shipping_methods/label_expedited';
+    private const XML_PATH_FACEBOOK_SHIPPING_METHODS_LABEL_RUSH = 'facebook/shipping_methods/label_rush';
 
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN = 'facebook/business_extension/access_token';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN =
@@ -705,6 +708,21 @@ class Config
             'standard' => $this->getConfig(self::XML_PATH_FACEBOOK_SHIPPING_METHODS_STANDARD, $storeId),
             'expedited' => $this->getConfig(self::XML_PATH_FACEBOOK_SHIPPING_METHODS_EXPEDITED, $storeId),
             'rush' => $this->getConfig(self::XML_PATH_FACEBOOK_SHIPPING_METHODS_RUSH, $storeId),
+        ];
+    }
+
+    /**
+     * Get shipping methods label map
+     *
+     * @param int|null $storeId
+     * @return array|null
+     */
+    public function getShippingMethodsLabelMap($storeId = null): array
+    {
+        return [
+            'standard' => $this->getConfig(self::XML_PATH_FACEBOOK_SHIPPING_METHODS_LABEL_STANDARD, $storeId),
+            'expedited' => $this->getConfig(self::XML_PATH_FACEBOOK_SHIPPING_METHODS_LABEL_EXPEDITED, $storeId),
+            'rush' => $this->getConfig(self::XML_PATH_FACEBOOK_SHIPPING_METHODS_LABEL_RUSH, $storeId),
         ];
     }
 
