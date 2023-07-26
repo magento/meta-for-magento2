@@ -20,6 +20,9 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Block\Pixel;
 
+use Exception;
+use Magento\Catalog\Helper\Data as CatalogHelper;
+use Magento\Catalog\Model\Product;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -35,12 +38,17 @@ class ViewContent extends Common
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var MagentoDataHelper
      */
-    private $magentoDataHelper;
+    private MagentoDataHelper $magentoDataHelper;
+
+    /**
+     * @var CatalogHelper
+     */
+    private CatalogHelper $catalogHelper;
 
     /**
      * ViewContent constructor
@@ -51,6 +59,7 @@ class ViewContent extends Common
      * @param SystemConfig $systemConfig
      * @param Escaper $escaper
      * @param CheckoutSession $checkoutSession
+     * @param CatalogHelper $catalogHelper
      * @param array $data
      */
     public function __construct(
@@ -60,6 +69,7 @@ class ViewContent extends Common
         SystemConfig $systemConfig,
         Escaper $escaper,
         CheckoutSession $checkoutSession,
+        CatalogHelper $catalogHelper,
         array $data = []
     ) {
         parent::__construct(
@@ -73,6 +83,7 @@ class ViewContent extends Common
         );
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
+        $this->catalogHelper = $catalogHelper;
     }
 
     /**
@@ -108,12 +119,16 @@ class ViewContent extends Common
     /**
      * Returns content type
      *
-     * @return string
+     * @return string|null
      */
     public function getContentType()
     {
-        /** @var \Magento\Catalog\Model\Product $product */
+        /** @var Product $product */
         $product = $this->getCurrentProduct();
+        if (!$product) {
+            return null;
+        }
+
         return $this->magentoDataHelper->getContentType($product);
     }
 
@@ -125,8 +140,12 @@ class ViewContent extends Common
     public function getContentCategory()
     {
         $product = $this->getCurrentProduct();
+        if (!$product) {
+            return null;
+        }
+
         $categoryIds = $product->getCategoryIds();
-        if (count($categoryIds) > 0) {
+        if (count($categoryIds)) {
             $categoryNames = [];
             $categoryModel = $this->fbeHelper->getObject(\Magento\Catalog\Model\Category::class);
             foreach ($categoryIds as $category_id) {
@@ -143,7 +162,7 @@ class ViewContent extends Common
     /**
      * Return currency
      *
-     * @return string
+     * @return string|null
      */
     public function getValue()
     {
@@ -174,17 +193,23 @@ class ViewContent extends Common
      */
     public function getProductId()
     {
-        return $this->getCurrentProduct()->getId();
+        $product = $this->getCurrentProduct();
+        return $product ? $product->getId() : null;
     }
 
     /**
      * Returns current product
      *
-     * @return mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return Product|null
      */
     public function getCurrentProduct()
     {
-        return $this->getLayout()->getBlock('product.info')->getProduct();
+        try {
+            $block = $this->getLayout()->getBlock('product.info');
+            return $block ? $block->getProduct() : $this->catalogHelper->getProduct();
+        } catch (Exception $e) {
+            $this->fbeHelper->logException($e);
+            return null;
+        }
     }
 }
