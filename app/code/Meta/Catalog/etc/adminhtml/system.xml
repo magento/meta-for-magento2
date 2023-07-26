@@ -21,12 +21,6 @@
                     </depends>
                     <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
                 </field>
-                <field id="use_multi_source_inventory" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Use Multi Source Inventory</label>
-                    <config_path>facebook/catalog_management/use_multi_source_inventory</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Set to 'Yes' if you'd like to use Magento's Multi Source Inventory (MSI) for products sold on Meta</comment>
-                </field>
                 <field id="price_incl_tax" translate="label comment" type="select" sortOrder="60" showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Price Including Tax</label>
                     <depends>

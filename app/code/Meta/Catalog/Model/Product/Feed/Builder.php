@@ -499,9 +499,7 @@ class Builder
     private function getInventory(Product $product): InventoryInterface
     {
         if ($this->inventory === null) {
-            $this->inventory = $this->builderTools->getInventoryObject(
-                $this->systemConfig->useMultiSourceInventory($this->storeId)
-            );
+            $this->inventory = $this->builderTools->getInventoryObject();
         }
         $this->inventory->initInventoryForProduct($product);
         return $this->inventory;

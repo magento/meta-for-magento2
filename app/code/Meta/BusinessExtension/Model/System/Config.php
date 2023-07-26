@@ -72,8 +72,6 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN = 'facebook/business_extension/access_token';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN =
         'facebook/business_extension/page_access_token';
-    private const XML_PATH_FACEBOOK_USE_MULTI_SOURCE_INVENTORY =
-        'facebook/catalog_management/use_multi_source_inventory';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD =
         'facebook/catalog_management/out_of_stock_threshold';
 
@@ -319,18 +317,6 @@ class Config
     public function getStoreId()
     {
         return $this->storeManager->getStore()->getId();
-    }
-
-    /**
-     * Use multi source inventory
-     *
-     * @param int $scopeId
-     * @param int $scope
-     * @return bool
-     */
-    public function useMultiSourceInventory($scopeId = null, $scope = null): bool
-    {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_USE_MULTI_SOURCE_INVENTORY, $scopeId, $scope);
     }
 
     /**

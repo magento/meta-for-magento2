@@ -23,6 +23,7 @@ namespace Meta\Catalog\Model\Product\Feed\Builder;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Currency;
+use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Escaper;
@@ -57,6 +58,11 @@ class Tools
     private $catalogHelper;
 
     /**
+     * @var ModuleManager
+     */
+    private ModuleManager $moduleManager;
+
+    /**
      * Tools constructor
      *
      * @param PriceCurrencyInterface $priceCurrency
@@ -64,19 +70,22 @@ class Tools
      * @param Escaper $escaper
      * @param SystemConfig $systemConfig
      * @param CatalogHelper $catalogHelper
+     * @param ModuleManager $moduleManager
      */
     public function __construct(
         PriceCurrencyInterface $priceCurrency,
         ObjectManagerInterface $objectManager,
         Escaper $escaper,
         SystemConfig $systemConfig,
-        CatalogHelper $catalogHelper
+        CatalogHelper $catalogHelper,
+        ModuleManager $moduleManager
     ) {
         $this->priceCurrency = $priceCurrency;
         $this->objectManager = $objectManager;
         $this->escaper = $escaper;
         $this->systemConfig = $systemConfig;
         $this->catalogHelper = $catalogHelper;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
@@ -240,13 +249,13 @@ class Tools
     /**
      * Get inventory object
      *
-     * @param bool $useMultiSource
      * @return InventoryInterface
      */
-    public function getInventoryObject(bool $useMultiSource = true): InventoryInterface
+    public function getInventoryObject(): InventoryInterface
     {
+        // Fallback to Magento_CatalogInventory in case Magento MSI modules are disabled
         //phpcs:disable Magento2.PHP.LiteralNamespaces
-        return $useMultiSource
+        return $this->moduleManager->isEnabled('Magento_InventorySalesApi')
             ? $this->objectManager->get('Meta\Catalog\Model\Product\Feed\Builder\MultiSourceInventory')
             : $this->objectManager->get('Meta\Catalog\Model\Product\Feed\Builder\Inventory');
         //phpcs:enable Magento2.PHP.LiteralNamespaces
