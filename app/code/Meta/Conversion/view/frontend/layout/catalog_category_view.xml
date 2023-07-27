@@ -7,6 +7,10 @@
                    name="fbe.pixel.add_to_cart"
                    template="Meta_Conversion::pixel/add_to_cart.phtml"
                    before="-" />
+            <block class="Meta\Conversion\Block\Pixel\CustomizeProduct"
+                   name="fbe.pixel.customize_product"
+                   template="Meta_Conversion::pixel/customize_product.phtml"
+                   before="-" />
         </referenceBlock>
         <referenceContainer name="before.body.end">
             <block class="Meta\Conversion\Block\Pixel\ViewCategory"

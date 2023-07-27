@@ -1,0 +1,30 @@
+<?php
+/* @var \Meta\Conversion\Block\Pixel\CustomizeProduct $block */
+$trackerUrl = $block->getTrackerUrl();
+?>
+<?php if ($block->getFacebookPixelID()): ?>
+
+    <script type="text/x-magento-init">
+    {
+        "*": {
+            "Meta_Conversion/js/customizeProduct": {
+                "url" : "<?= $block->escapeUrl($trackerUrl); ?>",
+                "payload": <?= /* @noEscape */ json_encode([
+                    "eventName" => $block->getEventToObserveName()
+                ]) ?>,
+                "browserEventData": <?= /* @noEscape */ json_encode([
+                    'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                    'fbPixelId' => $block->getFacebookPixelID(),
+                    'source' => $block->getSource(),
+                    'pluginVersion' => $block->getPluginVersion(),
+                    'track' => 'track',
+                    'event' => 'CustomizeProduct',
+                    'payload' => [
+                        'currency' => $block->getCurrency()
+                    ]
+                ]) ?>
+            }
+        }
+    }
+    </script>
+<?php endif; ?>

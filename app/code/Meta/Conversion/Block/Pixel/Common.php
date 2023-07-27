@@ -176,7 +176,7 @@ class Common extends \Magento\Framework\View\Element\Template
      */
     public function getCurrency()
     {
-        return $this->_storeManager->getStore()->getCurrentCurrency()->getCode();
+        return strtolower($this->_storeManager->getStore()->getCurrentCurrency()->getCode());
     }
 
     /**
