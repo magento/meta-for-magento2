@@ -1,27 +1,38 @@
 <?php
 /** @var \Meta\Conversion\Block\Pixel\InitiateCheckout $block */
+
+$trackerUrl = $block->getTrackerUrl();
 if ($block->getFacebookPixelID()) {
-    $eventId = \Meta\Conversion\Helper\EventIdGenerator::guidv4();
-    $block->trackServerEvent($eventId);
     ?>
-    <script>
-        fbq('set', 'agent', '<?= $block->getFacebookAgentVersion() ?>', '<?= $block->getFacebookPixelID() ?>');
-        fbq('track', 'InitiateCheckout', {
-                source: "<?= $block->getSource() ?>",
-                pluginVersion: "<?= $block->getPluginVersion() ?>",
-                content_type: "<?= $block->getContentType() ?>",
-                content_ids: [<?= $block->getContentIDs() ?>],
-                num_items: <?= $block->getNumItems() ?>,
-                contents: [<?= $block->getContents() ?>]
-                <?php if ($block->getValue() && $block->getCurrency()) { ?>
-                , value: <?= $block->getValue() ?>
-                , currency: "<?= $block->getCurrency() ?>"
-                <?php } ?>
+    <!-- Added the new component below to track server events -->
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Meta_Conversion/js/metaPixelTracker" : {
+                    "url" : "<?= $block->escapeUrl($trackerUrl); ?>",
+                    "payload": <?= /* @noEscape */ json_encode([
+                        "eventName" => $block->getEventToObserveName(),
+                        "quoteId" => $block->getQuote()->getId()
+        ]) ?>,
+                "browserEventData": <?= /* @noEscape */ json_encode([
+                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                        'fbPixelId' => $block->getFacebookPixelID(),
+                        'source' => $block->getSource(),
+                        'pluginVersion' => $block->getPluginVersion(),
+                        'track' => 'trackCustom',
+                        'event' => 'InitiateCheckout',
+                        'payload' => [
+                            'content_type' => $block->getContentTypeQuote(),
+                            'content_ids' => $block->getContentIDs(),
+                            'num_items' => $block->getNumItems(),
+                            'contents' => $block->getContents(),
+                            'content_category' => $block->getContentCategory(),
+                            'value' => $block->getValue() ?? '',
+                            'currency' => $block->getCurrency() ?? ''
+                        ]
+        ]) ?>
+                }
             }
-            , {
-                eventID: "<?= $eventId ?>"
-            }
-        );
+        }
     </script>
-    <?php $block->logEvent($block->getFacebookPixelID(), 'InitiateCheckout') ?>
 <?php } ?>

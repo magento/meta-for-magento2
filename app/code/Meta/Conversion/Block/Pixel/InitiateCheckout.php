@@ -28,8 +28,6 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\Quote;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
  * @api
@@ -95,7 +93,7 @@ class InitiateCheckout extends Common
     /**
      * Get content ids
      *
-     * @return string
+     * @return array
      */
     public function getContentIDs()
     {
@@ -104,7 +102,7 @@ class InitiateCheckout extends Common
         foreach ($items as $item) {
             $contentIds[] = $this->getContentId($item->getProduct());
         }
-        return $this->arrayToCommaSeparatedStringValues($contentIds);
+        return $contentIds;
     }
 
     /**
@@ -120,7 +118,7 @@ class InitiateCheckout extends Common
     /**
      * Get all contents
      *
-     * @return string
+     * @return array|string
      */
     public function getContents()
     {
@@ -132,11 +130,13 @@ class InitiateCheckout extends Common
         foreach ($items as $item) {
             $product = $item->getProduct();
             $price = $this->pricingHelper->currency($product->getFinalPrice(), false, false);
-            $content = '{id:"' . $product->getId() . '",quantity:' . (int)$item->getQty()
-                    . ',item_price:' . $price . "}";
-            $contents[] = $content;
+            $contents[] = [
+                'id' => $this->magentoDataHelper->getContentId($product),
+                'quantity' => (int) $item->getQty(),
+                'item_price' => $price,
+            ];
         }
-        return implode(',', $contents);
+        return $contents;
     }
 
     /**
@@ -163,8 +163,6 @@ class InitiateCheckout extends Common
      * Get active quote
      *
      * @return Quote
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function getQuote(): Quote
     {
@@ -172,5 +170,34 @@ class InitiateCheckout extends Common
             $this->quote = $this->checkoutSession->getQuote();
         }
         return $this->quote;
+    }
+
+    /**
+     * Returns content's category
+     *
+     * @return string
+     */
+    public function getContentCategory(): string
+    {
+        $items = $this->getQuote()->getAllVisibleItems();
+        foreach ($items as $item) {
+            $product = $item->getProduct();
+            $contentCategory =  $this->magentoDataHelper->getCategoriesForProduct($product);
+        }
+        return $contentCategory;/** @phpstan-ignore-line */
+    }
+
+    /**
+     * Get Content Type
+     *
+     * @return string
+     */
+    public function getContentTypeQuote(): string
+    {
+        $items = $this->getQuote()->getAllVisibleItems();
+        foreach ($items as $item) {
+            $product = $item->getProduct();
+        }
+        return $this->magentoDataHelper->getContentType($product);/** @phpstan-ignore-line */
     }
 }
