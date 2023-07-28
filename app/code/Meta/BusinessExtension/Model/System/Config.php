@@ -809,9 +809,9 @@ class Config
      *
      * @param int|null $scopeId
      * @param string|null $scope
-     * @return string
+     * @return string|null
      */
-    public function getServerTestCode(int $scopeId = null, string $scope = null): string
+    public function getServerTestCode(int $scopeId = null, string $scope = null): ?string
     {
         return $this->getConfig(
             self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE,
