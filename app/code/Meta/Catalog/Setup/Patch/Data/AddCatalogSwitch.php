@@ -10,7 +10,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class AddCatalogSwitch implements DataPatchInterface
 {
-    private const CORE_CONFIG_TABLE = "core_config_data";
+    private const CORE_CONFIG_TABLE = 'core_config_data';
     /**
      * @var ModuleDataSetupInterface
      */
@@ -21,6 +21,8 @@ class AddCatalogSwitch implements DataPatchInterface
     private SystemConfig $systemConfig;
 
     /**
+     * Class constructor
+     *
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param SystemConfig $systemConfig
      */
@@ -32,16 +34,27 @@ class AddCatalogSwitch implements DataPatchInterface
         $this->systemConfig = $systemConfig;
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function getDependencies()
     {
         return [];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAliases()
     {
         return [];
     }
 
+    /**
+     * Apply patch
+     *
+     * @return void
+     */
     public function apply(): void
     {
         $connection = $this->moduleDataSetup->getConnection();
@@ -63,7 +76,7 @@ class AddCatalogSwitch implements DataPatchInterface
     /**
      * Updates Store catalog integration
      *
-     * @param $storeId
+     * @param int $storeId
      * @return void
      */
     private function updateStoreCatalogIntegration($storeId): void
@@ -73,79 +86,79 @@ class AddCatalogSwitch implements DataPatchInterface
 
         $isDailyFeedSyncEnabled = $this->fetchValue(
             $storeId,
-            "facebook/catalog_management/daily_product_feed"
+            'facebook/catalog_management/daily_product_feed'
         );
         $isCatalogSyncEnabled = $this->fetchValue(
             $storeId,
-            "facebook/catalog_management/enable_catalog_sync"
+            'facebook/catalog_management/enable_catalog_sync'
         );
         $outOfStockThresholdOld = $this->fetchValue(
             $storeId,
-            "facebook/inventory_management/out_of_stock_threshold"
+            'facebook/inventory_management/out_of_stock_threshold'
         );
         $outOfStockThresholdNew = $this->fetchValue(
             $storeId,
-            "facebook/catalog_management/out_of_stock_threshold"
+            'facebook/catalog_management/out_of_stock_threshold'
         );
 
         if ($isCatalogSyncEnabled == null && $isDailyFeedSyncEnabled != null) {
             $connection->insert($coreConfigTable, [
-                "scope" => $storeId ? "stores" : "default",
-                "scope_id" => $storeId,
-                "path" => "facebook/catalog_management/enable_catalog_sync",
-                "value" => $isDailyFeedSyncEnabled,
+                'scope' => $storeId ? 'stores' : 'default',
+                'scope_id' => $storeId,
+                'path' => 'facebook/catalog_management/enable_catalog_sync',
+                'value' => $isDailyFeedSyncEnabled,
             ]);
         }
 
         if ($outOfStockThresholdNew == null && $outOfStockThresholdOld != null) {
             $connection->insert($coreConfigTable, [
-                "scope" => $storeId ? "stores" : "default",
-                "scope_id" => $storeId,
-                "path" => "facebook/catalog_management/out_of_stock_threshold",
-                "value" => $outOfStockThresholdOld,
+                'scope' => $storeId ? 'stores' : 'default',
+                'scope_id' => $storeId,
+                'path' => 'facebook/catalog_management/out_of_stock_threshold',
+                'value' => $outOfStockThresholdOld,
             ]);
         }
 
         $connection->delete($coreConfigTable, [
-            "scope_id = ?" => $storeId,
-            "path = ?" => "facebook/catalog_management/daily_product_feed",
+            'scope_id = ?' => $storeId,
+            'path = ?' => 'facebook/catalog_management/daily_product_feed',
         ]);
         $connection->delete($coreConfigTable, [
-            "scope_id = ?" => $storeId,
-            "path = ?" =>
-                "facebook/inventory_management/out_of_stock_threshold",
+            'scope_id = ?' => $storeId,
+            'path = ?' =>
+                'facebook/inventory_management/out_of_stock_threshold',
         ]);
         $connection->delete($coreConfigTable, [
-            "scope_id = ?" => $storeId,
-            "path = ?" =>
-                "facebook/catalog_management/incremental_product_updates",
+            'scope_id = ?' => $storeId,
+            'path = ?' =>
+                'facebook/catalog_management/incremental_product_updates',
         ]);
         $connection->delete($coreConfigTable, [
-            "scope_id = ?" => $storeId,
-            "path = ?" =>
-                "facebook/inventory_management/enable_inventory_upload",
+            'scope_id = ?' => $storeId,
+            'path = ?' =>
+                'facebook/inventory_management/enable_inventory_upload',
         ]);
         $connection->delete($coreConfigTable, [
-            "scope_id = ?" => $storeId,
-            "path = ?" => "facebook/catalog_management/feed_upload_method",
+            'scope_id = ?' => $storeId,
+            'path = ?' => 'facebook/catalog_management/feed_upload_method',
         ]);
     }
 
     /**
      * Fetch store config value
      *
-     * @param $storeId
-     * @param $config_path
+     * @param int $storeId
+     * @param string $configPath
      * @return mixed|null
      */
-    private function fetchValue($storeId, $config_path): mixed
+    private function fetchValue($storeId, $configPath)
     {
         $connection = $this->moduleDataSetup->getConnection();
-        $scopeCondition = $connection->prepareSqlCondition("scope_id", [
-            "eq" => $storeId,
+        $scopeCondition = $connection->prepareSqlCondition('scope_id', [
+            'eq' => $storeId,
         ]);
-        $pathCondition = $connection->prepareSqlCondition("path", [
-            "eq" => $config_path,
+        $pathCondition = $connection->prepareSqlCondition('path', [
+            'eq' => $configPath,
         ]);
         $query = $connection
             ->select()

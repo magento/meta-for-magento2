@@ -24,6 +24,7 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\CreditmemoInterface;
 use Magento\Sales\Api\Data\CreditmemoItemInterface as CreditmemoItem;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
@@ -173,8 +174,8 @@ class Refund implements ObserverInterface
             );
         } catch (GuzzleException $e) {
             $response = $e->getResponse();
-            $body = json_decode($response->getBody());
-            throw new Exception(__(
+            $body = json_decode((string)$response->getBody());
+            throw new LocalizedException(__(
                 'Error code: "%1"; Error message: "%2"',
                 (string)$body->error->code,
                 (string)($body->error->error_user_msg ?? $body->error->message)
