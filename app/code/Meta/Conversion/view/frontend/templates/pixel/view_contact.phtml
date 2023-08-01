@@ -1,0 +1,30 @@
+<?php
+/* @var \Meta\Conversion\Block\Pixel\ViewContact $block */
+$trackerUrl = $block->getTrackerUrl();
+?>
+<?php if ($block->getFacebookPixelID()) { ?>
+    <script type="text/x-magento-init">
+    {
+        "*": {
+            "Meta_Conversion/js/contactPixel": {
+                "url" : "<?= $block->escapeUrl($trackerUrl); ?>",
+                "payload": <?= /* @noEscape */ json_encode([
+                    "eventName" => $block->escapeHtml($block->getEventToObserveName()),
+                    "content_type" => $block->escapeHtml($block->getContentType())
+                ]) ?>,
+                "browserEventData": <?= /* @noEscape */ json_encode([
+                    'fbAgentVersion' => $block->escapeHtml($block->getFacebookAgentVersion()),
+                    'fbPixelId' => $block->escapeHtml($block->getFacebookPixelID()),
+                    'source' => $block->escapeHtml($block->getSource()),
+                    'pluginVersion' => $block->escapeHtml($block->getPluginVersion()),
+                    'track' => 'track',
+                    'event' => 'Contact',
+                    'payload' => [
+                        "content_type" => $block->escapeHtml($block->getContentType())
+                    ]
+                ]) ?>
+            }
+        }
+    }
+    </script>
+<?php } ?>

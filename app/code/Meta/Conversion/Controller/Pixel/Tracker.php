@@ -85,7 +85,7 @@ class Tracker implements HttpPostActionInterface
 
             if ($eventName) {
                 $payload = $this->pixelEvents[$eventName]->getPayload($params);
-                if (count($payload)) {
+                if (isset($payload)) {
                     // Add source and pluginVersion in the payload as custom properties
                     $payload['custom_properties'] = [];
                     $payload['custom_properties']['source'] = $this->fbeHelper->getSource();
