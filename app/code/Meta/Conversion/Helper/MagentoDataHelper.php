@@ -241,7 +241,7 @@ class MagentoDataHelper
      */
     public function hashValue($string): string
     {
-        return hash('sha256', strtolower($string ?? ''));
+        return hash('sha256', strtolower($string ?? ""));
     }
 
     // TODO Remaining user/custom data methods that can be obtained using Magento.

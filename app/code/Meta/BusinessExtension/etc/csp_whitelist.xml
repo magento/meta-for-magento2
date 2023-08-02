@@ -33,5 +33,14 @@
                 <value id="facebook-business" type="host">business.facebook.com</value>
             </values>
         </policy>
+        <policy id="form-action">
+            <values>
+                <value id="self" type="host">'self'</value>
+                <value id="facebook" type="host">www.facebook.com</value>
+                <value id="facebook-connect" type="host">connect.facebook.net</value>
+                <value id="facebook-graph-api" type="host">graph.facebook.com</value>
+                <value id="facebook-business" type="host">business.facebook.com</value>
+            </values>
+        </policy>
     </policies>
 </csp_whitelist>
