@@ -20,19 +20,56 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Logger;
 
+use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Logger\Handler\Base;
 use Monolog\Logger;
 
 class Handler extends Base
 {
+
+  /**
+   * Publisher to enable putting logs onto message queue to be persisted async
+   *
+   * @var PublisherInterface
+   */
+    private $publisher;
+
   /**
    * Logging level
+   *
    * @var int
    */
     protected $loggerType = Logger::INFO;
 
   /**
+   * File to log to
+   *
    * @var string
    */
     protected $fileName = '/var/log/facebook-business-extension.log';
+
+  /**
+   * Sets the publisher that the handler will use to add logs to message queue
+   *
+   * @param PublisherInterface $publisher
+   */
+    public function setPublisher(PublisherInterface $publisher)
+    {
+        $this->publisher = $publisher;
+    }
+
+  /**
+   * Overwiting the write function to put logs onto message queue to be persisted to Meta async and logging locally
+   *
+   * @param array $record
+   */
+    protected function write(array $record): void
+    {
+        $logTypeIsSet = isset($record['context']['log_type']);
+        if ($logTypeIsSet && $record['context']['log_type'] === 'persist_meta_log_immediately') {
+            $logData = ['message' => $record['message'], 'context' => $record['context']];
+            $this->publisher->publish('persist.meta.log.immediately', json_encode($logData));
+        }
+        parent::write($record);
+    }
 }

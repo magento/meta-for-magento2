@@ -682,4 +682,51 @@ class GraphAPIAdapter
         $response = $this->callApi('GET', "{$catalogId}", $request);
         return json_decode($response->getBody()->__toString(), true);
     }
+
+    /**
+     * Persist log to Meta
+     *
+     * @param string $message
+     * @param mixed[] $context
+     * @return mixed
+     * @throws GuzzleException
+     */
+    public function persistLogToMeta($message, $context)
+    {
+        $request = [
+            'access_token' => $this->accessToken,
+            'event' => $message,
+            'event_type' => $this->getContextData($context, 'event_type'),
+            'commerce_merchant_settings_id' => $this->getContextData($context, 'commerce_merchant_settings_id'),
+            'exception_message' => $this->getContextData($context, 'exception_message'),
+            'exception_trace' => $this->getContextData($context, 'exception_trace'),
+            'exception_code' => $this->getContextData($context, 'exception_code'),
+            'exception_class' => $this->getContextData($context, 'exception_class'),
+            'catalog_id' => $this->getContextData($context, 'catalog_id'),
+            'order_id' => $this->getContextData($context, 'order_id'),
+            'promotion_id' => $this->getContextData($context, 'promotion_id'),
+            'flow_name' => $this->getContextData($context, 'flow_name'),
+            'flow_step' => $this->getContextData($context, 'flow_step'),
+            'incoming_params' => $this->getContextData($context, 'incoming_params'),
+            'seller_platform_app_version' => $this->getContextData($context, 'seller_platform_app_version'),
+            'extra_data' => $this->getContextData($context, 'extra_data', []),
+        ];
+
+        $response = $this->callApi('POST', "commerce_seller_logs", $request);
+        $response = json_decode($response->getBody()->__toString(), true);
+        return $response;
+    }
+
+    /**
+     * Gets a value from the context array, or a default if the key is not set
+     *
+     * @param array $context
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    private function getContextData(array $context, string $key, $default = null)
+    {
+        return $context[$key] ?? $default;
+    }
 }

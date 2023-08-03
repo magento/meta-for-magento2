@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
+    <consumer name="persist.meta.log.immediately.consumer" queue="persist_meta_log_immediately" connection="db" handler="Meta\BusinessExtension\Model\PersistMetaLogImmediatelyHandler::persistMetaLogImmediately" consumerInstance="Magento\Framework\MessageQueue\Consumer"/>
+</config>

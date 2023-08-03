@@ -18,4 +18,9 @@
             <argument name="logger" xsi:type="object">Meta\BusinessExtension\Model\Logger\ApiLogger</argument>
         </arguments>
     </type>
+    <type name = "Meta\BusinessExtension\Logger">
+        <arguments>
+            <argument name="publisher" xsi:type="object">Magento\Framework\MessageQueue\PublisherInterface</argument>
+        </arguments>
+    </type>
 </config>

@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Logger;
 
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\MessageQueue\PublisherInterface;
 
 class Logger extends \Monolog\Logger
 {
@@ -28,12 +29,14 @@ class Logger extends \Monolog\Logger
      * Logger constructor
      *
      * @param ObjectManagerInterface $objectManager
+     * @param PublisherInterface $publisher
      */
     public function __construct(
-        ObjectManagerInterface $objectManager
+        ObjectManagerInterface $objectManager,
+        PublisherInterface $publisher
     ) {
         $handler = $objectManager->create(Handler::class);
-
+        $handler->setPublisher($publisher);
         parent::__construct('FBE', [$handler]);
     }
 }
