@@ -90,11 +90,13 @@ class Tracker implements HttpPostActionInterface
                     $payload['custom_properties'] = [];
                     $payload['custom_properties']['source'] = $this->fbeHelper->getSource();
                     $payload['custom_properties']['pluginVersion'] = $this->fbeHelper->getPluginVersion();
-
                     $eventType = $this->pixelEvents[$eventName]->getEventType();
-
                     $event = $this->serverEventFactory->createEvent($eventType, array_filter($payload), $eventId);
-                    $this->serverSideHelper->sendEvent($event);
+                    if (isset($payload['userDataFromOrder'])) {
+                        $this->serverSideHelper->sendEvent($event, $payload['userDataFromOrder']);
+                    } else {
+                        $this->serverSideHelper->sendEvent($event);
+                    }
                     $response['success'] = true;
                 }
             }

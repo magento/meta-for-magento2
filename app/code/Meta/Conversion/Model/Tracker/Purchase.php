@@ -2,27 +2,11 @@
 
 declare(strict_types=1);
 
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+namespace Meta\Conversion\Model\Tracker;
 
-namespace Meta\Conversion\Observer;
-
+use Magento\Catalog\Model\Product;
 use Magento\Customer\Api\CustomerMetadataInterface;
-use Magento\Framework\Event\Observer;
-use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Escaper;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
@@ -32,11 +16,13 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\AAMSettingsFields;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\Conversion\Helper\ServerEventFactory;
-
+use Meta\Conversion\Api\TrackerInterface;
 use Meta\Conversion\Helper\ServerSideHelper;
+use Magento\Sales\Model\OrderRepository;
 
-class Purchase implements ObserverInterface
+class Purchase implements TrackerInterface
 {
+    private const EVENT_TYPE = "Purchase";
     /**
      * @var FBEHelper
      */
@@ -68,14 +54,25 @@ class Purchase implements ObserverInterface
     private PricingHelper $pricingHelper;
 
     /**
-     * Constructor
-     *
+     * @var OrderRepository
+     */
+
+    private OrderRepository $orderRepository;
+
+    /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * @param FBEHelper $fbeHelper
      * @param MagentoDataHelper $magentoDataHelper
      * @param ServerSideHelper $serverSideHelper
      * @param ServerEventFactory $serverEventFactory
      * @param CustomerMetadataInterface $customerMetadata
      * @param PricingHelper $pricingHelper
+     * @param OrderRepository $orderRepository
+     * @param Escaper $escaper
      */
     public function __construct(
         FBEHelper $fbeHelper,
@@ -83,7 +80,9 @@ class Purchase implements ObserverInterface
         ServerSideHelper $serverSideHelper,
         ServerEventFactory $serverEventFactory,
         CustomerMetadataInterface $customerMetadata,
-        PricingHelper $pricingHelper
+        PricingHelper $pricingHelper,
+        OrderRepository $orderRepository,
+        Escaper $escaper
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->magentoDataHelper = $magentoDataHelper;
@@ -91,38 +90,44 @@ class Purchase implements ObserverInterface
         $this->serverEventFactory = $serverEventFactory;
         $this->customerMetadata = $customerMetadata;
         $this->pricingHelper = $pricingHelper;
+        $this->orderRepository = $orderRepository;
+        $this->escaper = $escaper;
     }
 
     /**
-     * Execute action method for the Observer
-     *
-     * @param Observer $observer
-     * @return $this
+     * @inheritDoc
      */
-    public function execute(Observer $observer)
+    public function getEventType(): string
+    {
+        return self::EVENT_TYPE;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param array $params
+     * @return array
+     */
+    public function getPayload(array $params): array
     {
         try {
-            $eventId = $observer->getData('eventId');
-            $order = $observer->getData('lastOrder');
+            $orderId = $params['lastOrder'];
+            $order = $this->orderRepository->get($orderId);
             $customData = [
                 'currency'     => $this->magentoDataHelper->getCurrency(),
                 'value'        => $this->getOrderTotal($order),
                 'content_type' => 'product',
+                'num_items'    => $this->getNumItems($order),
                 'content_ids'  => $this->getOrderContentIds($order),
                 'contents'     => $this->getOrderContents($order),
+                'content_name' => $this->getContentName($order),
                 'order_id'     => (string)$this->getOrderId($order),
-                'custom_properties' => [
-                    'source'           => $this->fbeHelper->getSource(),
-                    'pluginVersion'    => $this->fbeHelper->getPluginVersion()
-                ]
+                'userDataFromOrder' => $this->getUserDataFromOrder($order)
             ];
-            $event = $this->serverEventFactory->createEvent('Purchase', array_filter($customData), $eventId);
-            $userDataFromOrder = $this->getUserDataFromOrder($order);
-            $this->serverSideHelper->sendEvent($event, $userDataFromOrder);
-        } catch (\Exception $e) {
-            $this->fbeHelper->log(json_encode($e));
+        } catch (NoSuchEntityException $e) {
+            return [];
         }
-        return $this;
+        return $customData;
     }
 
     /**
@@ -210,18 +215,17 @@ class Purchase implements ObserverInterface
         /** @var Item[] $items */
         $items = $order->getAllVisibleItems();
         foreach ($items as $item) {
-            $product = $item->getProduct();
             $contents[] = [
-                'product_id' => $this->magentoDataHelper->getContentId($product),
+                'product_id' => $item->getSku(),
                 'quantity' => (int)$item->getQtyOrdered(),
-                'item_price' => $item->getPrice(),
+                'item_price' => $item->getPrice()
             ];
         }
         return $contents;
     }
 
     /**
-     * Return the ids of the items in the last order
+     * Return the ids of the items by last order
      *
      * @param OrderInterface $order
      * @return array
@@ -234,7 +238,7 @@ class Purchase implements ObserverInterface
         $contentIds = [];
         $items = $order->getAllVisibleItems();
         foreach ($items as $item) {
-            $contentIds[] = $this->magentoDataHelper->getContentId($item->getProduct());
+            $contentIds[] = $item->getSku();
         }
         return $contentIds;
     }
@@ -250,11 +254,44 @@ class Purchase implements ObserverInterface
         if (!$order) {
             return null;
         }
-        $subtotal = $order->getSubTotal();
+        $subtotal = $order->getGrandTotal();
         if ($subtotal) {
             return $this->pricingHelper->currency($subtotal, false, false);
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get Num of Items
+     *
+     * @param OrderInterface $order
+     * @return int|null
+     */
+    private function getNumItems(OrderInterface $order)
+    {
+        if (!$order) {
+            return null;
+        }
+        return $order->getTotalQtyOrdered();
+    }
+
+    /**
+     * Get Product Name
+     *
+     * @param OrderInterface $order
+     * @return string
+     */
+    private function getContentName(OrderInterface $order)
+    {
+        $productName = [];
+        if ($order) {
+            $items = $order->getAllVisibleItems();
+            foreach ($items as $item) {
+                /** @var Product $product */
+                $productName[] = $item->getName();
+            }
+        }
+        return json_encode($productName);
     }
 }

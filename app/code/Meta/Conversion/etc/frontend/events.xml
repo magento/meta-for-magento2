@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="facebook_businessextension_ssapi_purchase">
-        <observer name="facebook_businessextension_ssapi_purchase_after" instance="Meta\Conversion\Observer\Purchase" />
-    </event>
     <event name="customer_register_success">
         <observer name="set_cookie_customer_registration_for_meta_pixel" instance="Meta\Conversion\Observer\CustomerRegistrationSuccess" />
     </event>
