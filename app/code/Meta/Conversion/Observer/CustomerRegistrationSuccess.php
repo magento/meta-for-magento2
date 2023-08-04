@@ -40,7 +40,8 @@ class CustomerRegistrationSuccess implements ObserverInterface
         if ($customer->getId()) {
             $customerData = [
                 'content_name' => $customer->getFirstname() . " " . $customer->getLastname(),
-                'value' => $customer->getId()
+                'value' => $customer->getId(),
+                'status' => "True"
             ];
             $this->common->setCookieForMetaPixel('event_customer_register', $customerData);
         }

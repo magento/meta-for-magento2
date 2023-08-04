@@ -26,7 +26,8 @@ class CustomerRegistrationSuccess implements TrackerInterface
         return [
             'content_name' => $params['content_name'],
             'currency' => $params['currency'],
-            'value' => $params['value']
+            'value' => $params['value'],
+            'status' => $params['status'],
         ];
     }
 }

@@ -9,6 +9,7 @@
             <argument name="customDataMapping" xsi:type="array">
                 <item name="currency" xsi:type="string">setCurrency</item>
                 <item name="value" xsi:type="string">setValue</item>
+                <item name="status" xsi:type="string">setStatus</item>
                 <item name="content_ids" xsi:type="string">setContentIds</item>
                 <item name="content_type" xsi:type="string">setContentType</item>
                 <item name="content_name" xsi:type="string">setContentName</item>
