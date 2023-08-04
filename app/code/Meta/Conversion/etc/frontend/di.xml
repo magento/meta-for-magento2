@@ -13,8 +13,12 @@
                 <item name = "facebook_businessextension_ssapi_initiate_checkout" xsi:type="object">Meta\Conversion\Model\Tracker\InitiateCheckout</item>
                 <item name = "facebook_businessextension_ssapi_customize_product" xsi:type="object">Meta\Conversion\Model\Tracker\CustomizeProduct</item>
                 <item name = "facebook_businessextension_ssapi_add_to_cart" xsi:type="object">Meta\Conversion\Model\Tracker\AddToCart</item>
+                <item name = "facebook_businessextension_ssapi_add_payment_info" xsi:type="object">Meta\Conversion\Model\Tracker\AddPaymentInfo</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Checkout\CustomerData\Cart">
+        <plugin name="set_meta_payload_for_payment_info" type="Meta\Conversion\Plugin\Checkout\CustomerData\Cart"/>
     </type>
     <type name="Magento\Contact\Controller\Index\Post">
         <plugin name="set_cookie_contact_for_meta_pixel" type="Meta\Conversion\Plugin\Contact\Controller\Index\Post" sortOrder="10" disabled="false"  />

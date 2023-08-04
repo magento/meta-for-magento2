@@ -7,6 +7,10 @@
                    name="fbe.pixel.initate_checkout"
                    template="Meta_Conversion::pixel/initiate_checkout.phtml"
                    before="-" />
+            <block class="Meta\Conversion\Block\Pixel\AddPaymentInfo"
+                   name="fbe.pixel.add_payment_info"
+                   template="Meta_Conversion::pixel/add_payment_info.phtml"
+                   before="-" />
         </referenceContainer>
     </body>
 </page>
