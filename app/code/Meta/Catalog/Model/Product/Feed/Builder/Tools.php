@@ -29,6 +29,7 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Escaper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Helper\Data as CatalogHelper;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Tools
 {
@@ -63,6 +64,11 @@ class Tools
     private ModuleManager $moduleManager;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * Tools constructor
      *
      * @param PriceCurrencyInterface $priceCurrency
@@ -71,6 +77,7 @@ class Tools
      * @param SystemConfig $systemConfig
      * @param CatalogHelper $catalogHelper
      * @param ModuleManager $moduleManager
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         PriceCurrencyInterface $priceCurrency,
@@ -78,7 +85,8 @@ class Tools
         Escaper $escaper,
         SystemConfig $systemConfig,
         CatalogHelper $catalogHelper,
-        ModuleManager $moduleManager
+        ModuleManager $moduleManager,
+        StoreManagerInterface $storeManager
     ) {
         $this->priceCurrency = $priceCurrency;
         $this->objectManager = $objectManager;
@@ -86,6 +94,7 @@ class Tools
         $this->systemConfig = $systemConfig;
         $this->catalogHelper = $catalogHelper;
         $this->moduleManager = $moduleManager;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -125,15 +134,14 @@ class Tools
      */
     public function formatPrice($price, $storeId = null)
     {
-        $currencyModel = $this->priceCurrency->getCurrency($storeId);
-        $currencySymbol = $currencyModel->getCurrencySymbol();
-
-        $amount = $this->priceCurrency->convert($price, $storeId, $currencyModel);
+        $baseCurrency = $this->storeManager->getStore()->getBaseCurrency();
+        $currencySymbol = $baseCurrency->getCurrencySymbol();
+        $amount = $this->priceCurrency->convert($price, $storeId, $baseCurrency);
         try {
             $price = sprintf(
                 '%s %s',
-                $currencyModel->formatTxt($amount, ['display' => Currency::NO_SYMBOL]),
-                $currencyModel->getCode()
+                $baseCurrency->formatTxt($amount, ['display' => Currency::NO_SYMBOL]),
+                $baseCurrency->getCode()
             );
             // workaround for 2.4.3
             $price = trim($price, $currencySymbol);
@@ -158,22 +166,7 @@ class Tools
             return '';
         }
 
-        $currencyModel = $this->priceCurrency->getCurrency($product->getStoreId());
-        $currencySymbol = $currencyModel->getCurrencySymbol();
-
-        try {
-            $price = sprintf(
-                "{'value':'%s','currency':'%s','unit':'%s'}",
-                $currencyModel->formatTxt($value, ['display' => Currency::NO_SYMBOL]),
-                $currencyModel->getCode(),
-                $unit
-            );
-            // workaround for 2.4.3
-            $price = trim($price, $currencySymbol);
-            return $price;
-        } catch (Exception $e) {
-            return '';
-        }
+        return $this->formatPrice($value, $product->getStoreId());
     }
 
     /**
