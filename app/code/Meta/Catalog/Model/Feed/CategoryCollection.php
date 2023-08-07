@@ -423,7 +423,7 @@ class CategoryCollection
         }
         $category_path = "/" . $catalogId . "/product_sets";
 
-        $category_create_api = $this->fbeHelper::FB_GRAPH_BASE_URL .
+        $category_create_api = $this->fbeHelper->getGraphBaseURL() .
             $this->getAPIVersion() .
             $category_path;
         $this->fbeHelper->log("Category Create API - " . $category_create_api);
@@ -441,7 +441,7 @@ class CategoryCollection
     public function getCategoryUpdateApi(string $set_id)
     {
         $set_path = "/" . $set_id ;
-        $set_update_api = $this->fbeHelper::FB_GRAPH_BASE_URL .
+        $set_update_api = $this->fbeHelper->getGraphBaseURL .
             $this->getAPIVersion() .
             $set_path;
         $this->fbeHelper->log("product set update API - " . $set_update_api);
@@ -535,7 +535,7 @@ class CategoryCollection
             return;
         }
         $set_path = "/" . $set_id . "?access_token=". $access_token;
-        $url = $this->fbeHelper::FB_GRAPH_BASE_URL .
+        $url = $this->fbeHelper->getGraphBaseURL() .
             $this->getAPIVersion() .
             $set_path;
         try {
@@ -604,8 +604,8 @@ class CategoryCollection
                 return $apiVersion;
             }
             $this->curl->addHeader("Authorization", "Bearer " . $accessToken);
-            $this->curl->get(self::FB_GRAPH_BASE_URL . 'api_version');
-            //$this->fbeHelper->log("The API call: ".self::FB_GRAPH_BASE_URL.'api_version');
+            $this->curl->get($this->fbeHelper->getGraphBaseURL() . 'api_version');
+            //$this->fbeHelper->log("The API call: ".$this->fbeHelper->getGraphBaseURL().'api_version');
             $response = $this->curl->getBody();
             //$this->fbeHelper->log("The API reponse : ".json_encode($response));
             $decodeResponse = json_decode($response);

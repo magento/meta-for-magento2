@@ -28,14 +28,15 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Meta\BusinessExtension\Helper\GraphAPIConfig;
 
 class FBEHelper
 {
-    public const FB_GRAPH_BASE_URL = "https://graph.facebook.com/";
-
-    private const MODULE_NAME = "Meta_BusinessExtension";
-
     private const URL_TYPE_WEB = 'web';
+    /**
+     * @var GraphAPIConfig
+     */
+    private $graphAPIConfig;
 
     /**
      * @var ObjectManagerInterface
@@ -70,19 +71,31 @@ class FBEHelper
      * @param StoreManagerInterface $storeManager
      * @param SystemConfig $systemConfig
      * @param ProductMetadataInterface $productMetadata
+     * @param GraphAPIConfig $graphAPIConfig
+     *
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
-        Logger $logger,
-        StoreManagerInterface $storeManager,
-        SystemConfig $systemConfig,
-        ProductMetadataInterface $productMetadata
+        ObjectManagerInterface   $objectManager,
+        Logger                   $logger,
+        StoreManagerInterface    $storeManager,
+        SystemConfig             $systemConfig,
+        ProductMetadataInterface $productMetadata,
+        GraphAPIConfig           $graphAPIConfig
     ) {
         $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->systemConfig = $systemConfig;
         $this->productMetadata = $productMetadata;
+        $this->graphAPIConfig = $graphAPIConfig;
+    }
+
+    /**
+     * Returns the properly configured Graph Base URL
+     */
+    public function getGraphBaseURL()
+    {
+        return $this->graphAPIConfig->getGraphBaseURL();
     }
 
     /**
