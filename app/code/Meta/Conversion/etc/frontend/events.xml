@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="wishlist_product_add_after">
+        <observer name="set_cookie_for_meta_wishlist_from_cart" instance="Meta\Conversion\Observer\Cookie\SetCookieForWishlist" />
+    </event>
     <event name="customer_register_success">
         <observer name="set_cookie_customer_registration_for_meta_pixel" instance="Meta\Conversion\Observer\CustomerRegistrationSuccess" />
     </event>

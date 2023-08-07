@@ -7,6 +7,7 @@
                 <item name = "facebook_businessextension_ssapi_view_category" xsi:type="object">Meta\Conversion\Model\Tracker\ViewCategory</item>
                 <item name = "facebook_businessextension_ssapi_view_content" xsi:type="object">Meta\Conversion\Model\Tracker\ViewContent</item>
                 <item name = "facebook_businessextension_ssapi_search" xsi:type="object">Meta\Conversion\Model\Tracker\Search</item>
+                <item name = "facebook_businessextension_ssapi_add_to_wishlist" xsi:type="object">Meta\Conversion\Model\Tracker\AddToWishlist</item>
                 <item name = "facebook_businessextension_ssapi_purchase" xsi:type="object">Meta\Conversion\Model\Tracker\Purchase</item>
                 <item name = "facebook_businessextension_ssapi_contact" xsi:type="object">Meta\Conversion\Model\Tracker\ViewContact</item>
                 <item name = "facebook_businessextension_ssapi_customer_registration_success" xsi:type="object">Meta\Conversion\Model\Tracker\CustomerRegistrationSuccess</item>

@@ -31,6 +31,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 
 /**
  * Helper class to get data using Magento Platform methods.
@@ -67,6 +68,11 @@ class MagentoDataHelper
     private $identifierAttr;
 
     /**
+     * @var CollectionFactory
+     */
+    private CollectionFactory $categoryCollection;
+
+    /**
      * MagentoDataHelper constructor
      *
      * @param StoreManagerInterface $storeManager
@@ -74,19 +80,22 @@ class MagentoDataHelper
      * @param CategoryRepositoryInterface $categoryRepository
      * @param PricingHelper $pricingHelper
      * @param SystemConfig $systemConfig
+     * @param CollectionFactory $categoryCollection
      */
     public function __construct(
         StoreManagerInterface $storeManager,
         ProductRepositoryInterface $productRepository,
         CategoryRepositoryInterface $categoryRepository,
         PricingHelper $pricingHelper,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        CollectionFactory $categoryCollection
     ) {
         $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
         $this->categoryRepository = $categoryRepository;
         $this->pricingHelper = $pricingHelper;
         $this->identifierAttr = $systemConfig->getProductIdentifierAttr();
+        $this->categoryCollection = $categoryCollection;
     }
 
     /**
@@ -141,6 +150,27 @@ class MagentoDataHelper
             return addslashes(implode(',', $categoryNames)); // phpcs:ignore
         }
 
+        return '';
+    }
+
+    /**
+     * Get Categories Names by ids
+     *
+     * @param array $categoryIds
+     * @return string
+     */
+    public function getCategoriesNameById(array $categoryIds): string
+    {
+        if (count($categoryIds) > 0) {
+            $categoryNames = [];
+            $collection = $this->categoryCollection->create()
+                ->addAttributeToSelect('name')
+                ->addAttributeToFilter('entity_id', $categoryIds);
+            foreach ($collection as $category) {
+                $categoryNames[] = $category->getName();
+            }
+            return addslashes(implode(',', $categoryNames)); // phpcs:ignore
+        }
         return '';
     }
 

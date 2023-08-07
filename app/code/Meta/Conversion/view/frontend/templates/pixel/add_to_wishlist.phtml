@@ -1,0 +1,29 @@
+<?php
+/* @var \Meta\Conversion\Block\Pixel\AddToWishlist $block */
+$trackerUrl = $block->getTrackerUrl();
+?>
+<?php if ($block->getFacebookPixelID()) { ?>
+    <script type="text/x-magento-init">
+    {
+        "*": {
+            "Meta_Conversion/js/addToWishlist": {
+                "url" : "<?= $block->escapeUrl($trackerUrl); ?>",
+                "payload": <?= /* @noEscape */ json_encode([
+                    "eventName" => $block->escapeHtml($block->getEventToObserveName())
+                ]) ?>,
+                "browserEventData": <?= /* @noEscape */ json_encode([
+                    'fbAgentVersion' => $block->escapeHtml($block->getFacebookAgentVersion()),
+                    'fbPixelId' => $block->escapeHtml($block->getFacebookPixelID()),
+                    'source' => $block->escapeHtml($block->getSource()),
+                    'pluginVersion' => $block->escapeHtml($block->getPluginVersion()),
+                    'track' => 'track',
+                    'event' => 'AddToWishlist',
+                    'payload' => [
+                        'currency' => $block->escapeHtml($block->getCurrency())
+                    ]
+                ]) ?>
+            }
+        }
+    }
+    </script>
+<?php } ?>

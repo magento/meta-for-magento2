@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="before.body.end">
+            <block class="Meta\Conversion\Block\Pixel\AddToWishlist"
+                   name="fbe.pixel.add_to_wishlist"
+                   template="Meta_Conversion::pixel/add_to_wishlist.phtml"
+                   before="-" />
+        </referenceContainer>
+    </body>
+</page>
