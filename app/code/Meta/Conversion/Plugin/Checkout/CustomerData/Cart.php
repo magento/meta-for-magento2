@@ -74,23 +74,28 @@ class Cart
     {
         $contentCategories = [];
         $contents = [];
+        $categoryIds = [];
         foreach ($this->getQuote()->getAllItems() as $item) {
             $product = $item->getProduct();
+            $categoryIds[] = $product->getCategoryIds();
+            array_push($categoryIds, $product->getCategoryIds());
             if (!in_array($item['product_type'], ['simple', 'grouped', 'bundle', 'virtual', 'downloadable'])) {
                 continue;
-            }
-            $contentCategoriesForItems = explode(
-                ",",
-                $this->magentoDataHelper->getCategoriesForProduct($product)
-            );
-            foreach ($contentCategoriesForItems as $category) {
-                $contentCategories[] = $category;
             }
             $contents[] = [
                 'id' => $item->getSku(),
                 'quantity' => (int) $item->getQty()
             ];
         }
+        $categoryIds = array_merge([], ...$categoryIds);
+        $contentCategoriesForItems = explode(
+            ",",
+            $this->magentoDataHelper->getCategoriesNameById($categoryIds)
+        );
+        foreach ($contentCategoriesForItems as $category) {
+            $contentCategories[] = $category;
+        }
+
         $contentIds = array_unique(array_map(function ($elem) {
             return $elem['id'];
         },
