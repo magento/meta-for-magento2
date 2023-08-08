@@ -24,6 +24,7 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Helper\GraphAPIConfig;
 use Meta\BusinessExtension\Logger\Logger;
 use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
@@ -62,12 +63,15 @@ class FBEHelperTest extends TestCase
         $storeManager = $this->createMock(StoreManagerInterface::class);
         $this->systemConfig = $this->createMock(Config::class);
         $this->productMetaData = $this->createMock(ProductMetadataInterface::class);
+        $graphAPIConfig = $this->createMock(GraphAPIConfig::class);
+
         $this->fbeHelper = new FBEHelper(
             $this->objectManagerInterface,
             $logger,
             $storeManager,
             $this->systemConfig,
-            $this->productMetaData
+            $this->productMetaData,
+            $graphAPIConfig
         );
     }
 
