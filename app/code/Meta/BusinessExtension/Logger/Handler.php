@@ -67,8 +67,7 @@ class Handler extends Base
     {
         $logTypeIsSet = isset($record['context']['log_type']);
         if ($logTypeIsSet && $record['context']['log_type'] === 'persist_meta_log_immediately') {
-            $logData = ['message' => $record['message'], 'context' => $record['context']];
-            $this->publisher->publish('persist.meta.log.immediately', json_encode($logData));
+            $this->publisher->publish('persist.meta.log.immediately', json_encode($record['context']));
         }
         parent::write($record);
     }

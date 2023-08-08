@@ -107,6 +107,15 @@ class ProductFeedUpload extends AbstractAjax
         } catch (Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'catalog_sync',
+                    'event_type' => 'manual_sync'
+                ]
+            );
         }
         return $response;
     }

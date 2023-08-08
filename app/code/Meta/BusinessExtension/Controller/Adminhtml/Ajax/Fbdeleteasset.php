@@ -141,7 +141,15 @@ class Fbdeleteasset implements HttpDeleteActionInterface
                 'message' => __('' . self::DELETE_SUCCESS_MESSAGE),
             ];
         } catch (\Exception $e) {
-            $this->fbeHelper->log($e->getMessage());
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'delete_connection',
+                    'event_type' => 'manual_deletion'
+                ]
+            );
             $response = [
                 'success' => false,
                 'error_message' => __(

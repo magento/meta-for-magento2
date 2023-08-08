@@ -92,7 +92,15 @@ class PersistConfiguration extends AbstractAjax
         } catch (\Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
-            $this->fbeHelper->logException($e);
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'persist_configuration',
+                    'event_type' => 'save_config'
+                ]
+            );
             return $response;
         }
     }

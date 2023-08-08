@@ -94,7 +94,15 @@ class PullOrders extends AbstractAjax
         } catch (Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
-            $this->fbeHelper->logException($e);
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'order_sync',
+                    'event_type' => 'manual_sync'
+                ]
+            );
             return ['success' => false, 'error_message' => $e->getMessage()];
         }
     }

@@ -233,32 +233,59 @@ class FBEHelper
      * Log
      *
      * @param string $info
+     * @param mixed[] $context
      */
-    public function log($info)
+    public function log($info, array $context = [])
     {
-        $this->logger->info($info);
+        $this->logger->info($info, $context);
     }
 
     /**
      * Log critical
      *
      * @param string $message
+     * @param mixed[] $context
      */
-    public function logCritical($message)
+    public function logCritical($message, array $context = [])
     {
-        $this->logger->critical($message);
+        $this->logger->critical($message, $context);
     }
 
     /**
      * Log exception
      *
      * @param \Exception $e
+     * @param array $context
      */
-    public function logException(\Exception $e)
+    public function logException(\Exception $e, array $context = [])
     {
-        $this->logger->error($e->getMessage());
-        $this->logger->error($e->getTraceAsString());
-        $this->logger->error($e);
+        $errorMessage = $e->getMessage();
+        $exceptionTrace = $e->getTraceAsString();
+
+        // If the log type is not set, just log the error message and trace.
+        if (!isset($context['log_type'])) {
+            $this->logger->error($errorMessage);
+            $this->logger->error($exceptionTrace);
+            return;
+        }
+
+        $context['exception_message'] = $errorMessage;
+        $context['exception_code'] = $e->getCode();
+        $context['exception_trace'] = $exceptionTrace;
+
+        if (isset($context['store_id'])) {
+            $context['commerce_merchant_settings_id'] = $this->systemConfig->getCommerceAccountId($context['store_id']);
+        }
+
+        // Add extension version to the extra data.
+        $extensionVersion = ['extension_version' => $this->systemConfig->getModuleVersion()];
+        if (isset($context['extra_data'])) {
+            $context['extra_data'] = array_merge($context['extra_data'], $extensionVersion);
+        } else {
+            $context['extra_data'] = $extensionVersion;
+        }
+
+        $this->logger->error($errorMessage, $context);
     }
 
     /**

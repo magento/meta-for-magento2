@@ -49,7 +49,7 @@ class PersistMetaLogImmediatelyHandler
      */
     public function persistMetaLogImmediately(string $message)
     {
-        $logData = json_decode($message, true);
-        $this->graphApiAdapter->persistLogToMeta($logData['message'], $logData['context']);
+        $context = json_decode($message, true);
+        $this->graphApiAdapter->persistLogToMeta($context);
     }
 }

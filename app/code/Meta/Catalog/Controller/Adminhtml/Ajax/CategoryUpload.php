@@ -36,6 +36,11 @@ class CategoryUpload extends AbstractAjax
     private $categoryCollection;
 
     /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
      * @var SystemConfig
      */
     private $systemConfig;
@@ -56,6 +61,7 @@ class CategoryUpload extends AbstractAjax
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->categoryCollection = $categoryCollection;
+        $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
     }
 
@@ -65,6 +71,15 @@ class CategoryUpload extends AbstractAjax
     public function executeForJson()
     {
         $response = [];
+
+        // get default store info
+        $storeId = $this->fbeHelper->getStore()->getId();
+
+        // override store if user switched config scope to non-default
+        $storeParam = $this->getRequest()->getParam('store');
+        if ($storeParam) {
+            $storeId = $storeParam;
+        }
 
         if (!$this->systemConfig->getAccessToken()) {
             $response['success'] = false;
@@ -79,6 +94,14 @@ class CategoryUpload extends AbstractAjax
         } catch (Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'category_upload'
+                ]
+            );
         }
         return $response;
     }
