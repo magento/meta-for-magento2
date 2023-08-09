@@ -100,9 +100,17 @@ class Tracker implements HttpPostActionInterface
                     $response['success'] = true;
                 }
             }
-        } catch (\Exception $ex) {
+        } catch (\Exception $e) {
             $response['success'] = false;
-            $this->fbeHelper->log(json_encode($ex));
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $this->fbeHelper->getStore()->getId(),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'create_and_send_server_event',
+                    'event_type' => 'pixel'
+                ]
+            );
         }
         $resultJson = $this->jsonFactory->create();
         $resultJson->setData($response);
