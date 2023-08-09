@@ -24,7 +24,7 @@ use Exception;
 use Meta\Catalog\Model\Product\Feed\Uploader;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Exception\LocalizedException;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 class UploadInventory
 {
@@ -39,20 +39,23 @@ class UploadInventory
     private $uploader;
 
     /**
-     * @var LoggerInterface
+     * @var FBEHelper
      */
-    private $logger;
+    private FBEHelper $fbeHelper;
 
     /**
      * @param SystemConfig $systemConfig
      * @param Uploader $uploader
-     * @param LoggerInterface $logger
+     * @param FBEHelper $fbeHelper
      */
-    public function __construct(SystemConfig $systemConfig, Uploader $uploader, LoggerInterface $logger)
-    {
+    public function __construct(
+        SystemConfig $systemConfig,
+        Uploader $uploader,
+        FBEHelper $fbeHelper
+    ) {
         $this->systemConfig = $systemConfig;
         $this->uploader = $uploader;
-        $this->logger = $logger;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -94,7 +97,13 @@ class UploadInventory
             try {
                 $this->uploadForStore($store->getId());
             } catch (Exception $e) {
-                $this->logger->critical($e);
+                $context = [
+                    'store_id' => $store->getId(),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'inventory_sync',
+                    'event_type' => 'upload_inventory_cron',
+                ];
+                $this->fbeHelper->logException($e, $context);
             }
         }
     }

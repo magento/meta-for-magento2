@@ -99,7 +99,8 @@ class CategoryUpload extends AbstractAjax
                 [
                     'store_id' => $storeId,
                     'log_type' => 'persist_meta_log_immediately',
-                    'event' => 'category_upload'
+                    'event' => 'category_sync',
+                    'event_type' => 'manual_sync'
                 ]
             );
         }

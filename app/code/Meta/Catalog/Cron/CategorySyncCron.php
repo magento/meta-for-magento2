@@ -20,8 +20,10 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Cron;
 
+use Exception;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Feed\CategoryCollection;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 class CategorySyncCron
 {
@@ -36,17 +38,25 @@ class CategorySyncCron
     private $systemConfig;
 
     /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
      * CategorySyncCron constructor
      *
      * @param CategoryCollection $categoryCollection
      * @param SystemConfig $systemConfig
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         CategoryCollection $categoryCollection,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        FBEHelper $fbeHelper
     ) {
         $this->categoryCollection = $categoryCollection;
         $this->systemConfig = $systemConfig;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -56,10 +66,21 @@ class CategorySyncCron
      */
     public function execute()
     {
-        if ($this->systemConfig->isActiveCollectionsSync()) {
+        if (!$this->systemConfig->isActiveCollectionsSync()) {
+            return false;
+        }
+        try {
             $this->categoryCollection->pushAllCategoriesToFbCollections();
             return true;
+        } catch (Exception $e) {
+            $context = [
+                'store_id' => $this->fbeHelper->getStore()->getId(),
+                'log_type' => 'persist_meta_log_immediately',
+                'event' => 'category_sync',
+                'event_type' => 'category_sync_cron',
+            ];
+            $this->fbeHelper->logException($e, $context);
+            return false;
         }
-        return false;
     }
 }

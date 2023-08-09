@@ -20,10 +20,11 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Cron;
 
+use Exception;
 use Meta\Catalog\Model\Product\Feed\Uploader;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Exception\LocalizedException;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 class UploadProductFeed
 {
@@ -38,20 +39,23 @@ class UploadProductFeed
     private $uploader;
 
     /**
-     * @var LoggerInterface
+     * @var FBEHelper
      */
-    private $logger;
+    private FBEHelper $fbeHelper;
 
     /**
      * @param SystemConfig $systemConfig
      * @param Uploader $uploader
-     * @param LoggerInterface $logger
+     * @param FBEHelper $fbeHelper
      */
-    public function __construct(SystemConfig $systemConfig, Uploader $uploader, LoggerInterface $logger)
-    {
+    public function __construct(
+        SystemConfig $systemConfig,
+        Uploader $uploader,
+        FBEHelper $fbeHelper
+    ) {
         $this->systemConfig = $systemConfig;
         $this->uploader = $uploader;
-        $this->logger = $logger;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -92,8 +96,14 @@ class UploadProductFeed
         foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
             try {
                 $this->uploadForStore($store->getId());
-            } catch (\Exception $e) {
-                $this->logger->critical($e);
+            } catch (Exception $e) {
+                $context = [
+                    'store_id' => $store->getId(),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'catalog_sync',
+                    'event_type' => 'upload_product_feed_cron',
+                ];
+                $this->fbeHelper->logException($e, $context);
             }
         }
     }

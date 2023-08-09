@@ -38,12 +38,12 @@ class CategorySyncCronTest extends TestCase
      * @var MockObject
      */
     private $fbeHelper;
-    
+
     /**
      * @var MockObject
      */
     private $categoryCollection;
-    
+
     /**
      * @var MockObject
      */
@@ -70,7 +70,8 @@ class CategorySyncCronTest extends TestCase
         $this->systemConfig = $this->createMock(SystemConfig::class);
         $this->categorySyncCron = new CategorySyncCron(
             $this->categoryCollection,
-            $this->systemConfig
+            $this->systemConfig,
+            $this->fbeHelper
         );
     }
 

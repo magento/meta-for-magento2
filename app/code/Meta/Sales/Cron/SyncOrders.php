@@ -20,11 +20,12 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Cron;
 
+use Exception;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\Sales\Helper\CommerceHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Exception\GuzzleException;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 /**
  * Pulls pending orders from FB Commerce Account using FB Graph API
@@ -47,26 +48,26 @@ class SyncOrders
     private CommerceHelper $commerceHelper;
 
     /**
-     * @var LoggerInterface
+     * @var FBEHelper
      */
-    private LoggerInterface $logger;
+    private FBEHelper $fbeHelper;
 
     /**
      * @param StoreManagerInterface $storeManager
      * @param SystemConfig $systemConfig
      * @param CommerceHelper $commerceHelper
-     * @param LoggerInterface $logger
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         StoreManagerInterface $storeManager,
         SystemConfig $systemConfig,
         CommerceHelper $commerceHelper,
-        LoggerInterface $logger
+        FBEHelper $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->commerceHelper = $commerceHelper;
-        $this->logger = $logger;
         $this->storeManager = $storeManager;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -97,8 +98,14 @@ class SyncOrders
         foreach ($this->storeManager->getStores() as $store) {
             try {
                 $this->pullOrdersForStore((int)$store->getId());
-            } catch (GuzzleException $e) {
-                $this->logger->critical($e);
+            } catch (Exception $e) {
+                $context = [
+                    'store_id' => $store->getId(),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'order_sync',
+                    'event_type' => 'sync_orders_cron',
+                ];
+                $this->fbeHelper->logException($e, $context);
             }
         }
     }
