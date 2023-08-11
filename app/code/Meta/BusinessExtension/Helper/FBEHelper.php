@@ -29,6 +29,7 @@ use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\GraphAPIConfig;
+use Throwable;
 
 class FBEHelper
 {
@@ -254,10 +255,10 @@ class FBEHelper
     /**
      * Log exception
      *
-     * @param \Exception $e
+     * @param Throwable $e
      * @param array $context
      */
-    public function logException(\Exception $e, array $context = [])
+    public function logException(Throwable $e, array $context = [])
     {
         $errorMessage = $e->getMessage();
         $exceptionTrace = $e->getTraceAsString();

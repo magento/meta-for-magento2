@@ -6,7 +6,7 @@
     <event name="catalog_category_save_after">
         <observer name="custom_save_category" instance="Meta\Catalog\Observer\ProcessCategoryAfterSaveEventObserver" />
     </event>
-    <event name="catalog_category_delete_after">
-        <observer name="custom_delete_category" instance="Meta\Catalog\Observer\ProcessCategoryAfterDeleteEventObserver" />
+    <event name="catalog_category_delete_before">
+        <observer name="custom_delete_category" instance="Meta\Catalog\Observer\ProcessCategoryBeforeDeleteEventObserver" />
     </event>
 </config>

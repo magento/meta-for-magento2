@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Catalog\Test\Unit\Observer;
 
 use Magento\Framework\Event;
+use Magento\Framework\Message\ManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Model\Feed\CategoryCollection;
@@ -43,7 +44,7 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
     /**
      * @var MockObject
      */
-    private MockObject $systemConfig;
+    private MockObject $categoryCollection;
 
     /**
      * @var MockObject
@@ -56,6 +57,11 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
     private $category;
 
     /**
+     * @var MockObject
+     */
+    private $messageManager;
+
+    /**
      * Used to set the values before running a test
      *
      * @return void
@@ -63,25 +69,31 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
-        $this->systemConfig = $this->createMock(Config::class);
-        $this->category = $this->createMock(\Magento\Catalog\Model\Category::class);
+        $this->categoryCollection = $this->createMock(CategoryCollection::class);
+        $this->messageManager = $this->createMock(ManagerInterface::class);
+        $this->category = $this->getMockBuilder(\Magento\Catalog\Model\Category::class)
+            ->addMethods(['dataHasChangedFor'])->getMock();
+        $this->category->expects($this->once())
+            ->method('dataHasChangedFor')
+            ->will($this->returnValue(true));
         $event = $this->getMockBuilder(Event::class)->addMethods(['getCategory'])->getMock();
         $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->category));
         $this->eventObserverMock = $this->createMock(\Magento\Framework\Event\Observer::class);
         $this->eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
-        $this->processCategoryAfterSaveEventObserver =
-            new ProcessCategoryAfterSaveEventObserver($this->fbeHelper, $this->systemConfig);
+        $this->processCategoryAfterSaveEventObserver = new ProcessCategoryAfterSaveEventObserver(
+            $this->fbeHelper,
+            $this->categoryCollection,
+            $this->messageManager
+        );
     }
 
     public function testExecution()
     {
-        $this->systemConfig->method('isCatalogSyncEnabled')->willReturn(true);
-        $categoryObj = $this->createMock(CategoryCollection::class);
-        $this->fbeHelper->expects($this->once())->method('getObject')->willReturn($categoryObj);
         $this->fbeHelper->expects($this->once())->method('log');
 
-        $categoryObj->expects($this->once())->method('makeHttpRequestAfterCategorySave')->willReturn('good');
-        $res = $this->processCategoryAfterSaveEventObserver->execute($this->eventObserverMock);
-        $this->assertNotNull($res);
+        $this->categoryCollection
+            ->expects($this->once())
+            ->method('makeHttpRequestAfterCategorySave');
+        $this->processCategoryAfterSaveEventObserver->execute($this->eventObserverMock);
     }
 }

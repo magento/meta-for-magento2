@@ -23,6 +23,7 @@ namespace Meta\Catalog\Block\Adminhtml\System\Config;
 use Magento\Backend\Block\Widget\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class CategoryFeed extends Field
 {
@@ -51,7 +52,7 @@ class CategoryFeed extends Field
      */
     public function getAjaxUrl()
     {
-        return $this->getUrl('fbeadmin/ajax/categoryUpload');
+        return $this->getUrl('fbeadmin/ajax/categoryUpload', ['store' => $this->getRequest()->getParam('store')]);
     }
 
     /**
@@ -76,7 +77,7 @@ class CategoryFeed extends Field
     {
         /** @var Button $button */
         $button = $this->getLayout()->createBlock(Button::class);
-        return $button->setData(['id' => 'fb_category_upload_btn', 'label' => __('Upload to Facebook')])
+        return $button->setData(['id' => 'fb_category_upload_btn', 'label' => __('Upload to Meta')])
             ->toHtml();
     }
 }

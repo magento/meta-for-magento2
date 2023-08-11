@@ -114,12 +114,10 @@ class ProcessProductAfterDeleteEventObserverTest extends TestCase
 
     public function testExecution()
     {
-        $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->systemConfig->method('isCatalogSyncEnabled')->willReturn(true);
         $this->systemConfig->method('getCatalogId')->willReturn("12345");
         $this->_graphApi->method('setDebugMode')->willReturn($this->_graphApi);
         $this->_graphApi->expects($this->atLeastOnce())->method('catalogBatchRequest');
-        $this->systemConfig->method('isActiveExtension')->willReturn(true);
         $this->processProductAfterDeleteEventObserver->execute($this->_eventObserverMock);
     }
 }

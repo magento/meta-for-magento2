@@ -26,7 +26,7 @@ use Magento\Framework\Message\ManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Catalog\Model\Feed\CategoryCollection;
 
-class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
+class ProcessCategoryBeforeDeleteEventObserver implements ObserverInterface
 {
     /**
      * @var CategoryCollection
@@ -61,39 +61,33 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
     }
 
     /**
-     * Execute observer for category save API call
+     * Execute observer for category delete API call
      *
-     * Call an API to category save from facebook catalog
-     * after save category from Magento
+     * Call an API to category delete from facebook catalog
+     * after delete category from Magento
      *
      * @param Observer $observer
-     * @return void
      */
     public function execute(Observer $observer)
     {
-        /** @var Category $category */
         $category = $observer->getEvent()->getCategory();
+        $category_name = $category->getName();
+        $this->fbeHelper->log("delete category: " . $category_name);
 
-        // we only pass category name and products ids to meta, so ignoring all other changes
-        if ($category->dataHasChangedFor('name') || !empty($category->getAffectedProductIds())) {
-            $this->fbeHelper->log("save category: " . $category->getName());
-            try {
-                $this->categoryCollection->makeHttpRequestsAfterCategorySave(
-                    $category,
-                    $category->dataHasChangedFor('name')
-                );
-            } catch (\Throwable $e) {
-                $this->messageManager->addErrorMessage(
-                    'Failed to update Meta for one or more stores. Please see Exception log for more detail.'
-                );
-                $this->fbeHelper->log(sprintf(
-                    "Error occurred while updating category: %s , id: %s",
-                    $category->getName(),
-                    $category->getId()
-                ));
+        try {
+            $this->categoryCollection->deleteCategoryAndSubCategoryFromFB($category);
+        } catch (\Throwable $e) {
+            $category_id = $category->getId();
+            $this->messageManager->addErrorMessage(
+                'Failed to delete Category from Meta for one or more stores.' .
+                ' Please see Exception log for more detail.'
+            );
+            $this->fbeHelper->log(sprintf("Error occurred while deleting category: %s , id: %s",
+                $category_name,
+                $category_id
+            ));
 
-                $this->fbeHelper->logException($e);
-            }
+            $this->fbeHelper->logException($e);
         }
     }
 }

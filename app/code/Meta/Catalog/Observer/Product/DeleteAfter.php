@@ -111,11 +111,10 @@ class DeleteAfter implements ObserverInterface
      */
     private function deleteProduct($storeId, $product): void
     {
-        $isActive = $this->systemConfig->isActiveExtension($storeId);
         $isCatalogSyncEnabled = $this->systemConfig->isCatalogSyncEnabled($storeId);
         $catalogId = $this->systemConfig->getCatalogId($storeId);
 
-        if (!($isActive && $isCatalogSyncEnabled && $catalogId)) {
+        if (!($isCatalogSyncEnabled && $catalogId)) {
             return;
         }
 

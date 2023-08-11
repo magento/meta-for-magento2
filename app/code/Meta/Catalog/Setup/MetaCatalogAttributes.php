@@ -9,6 +9,11 @@ use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
 
 class MetaCatalogAttributes
 {
+
+    public const CATEGORY_SYNC_TO_FACEBOOK = 'sync_to_facebook_catalog';
+
+    public const META_PRODUCT_SET_ID = 'meta_product_set_id';
+
     /**
      * Returns array of product attributes to be created
      *
@@ -61,7 +66,7 @@ class MetaCatalogAttributes
     public function getCategoryAttributes(): array
     {
         return [
-            'sync_to_facebook_catalog' => [
+            self::CATEGORY_SYNC_TO_FACEBOOK => [
                 'type' => 'int',
                 'label' => 'Sync to Facebook Catalog',
                 'input' => 'boolean',
@@ -71,6 +76,33 @@ class MetaCatalogAttributes
                 'required' => false,
                 'global' => ScopedAttributeInterface::SCOPE_STORE,
                 'group' => 'Display Settings'
+            ]
+        ];
+    }
+
+    /**
+     * Returns array of meta product set id as category attribute to be created
+     *
+     * @return array[]
+     */
+    public function getCategoryProductSetIdAttribute(): array
+    {
+        return [
+            self::META_PRODUCT_SET_ID => [
+                'type' => 'varchar',
+                'label' => 'Meta Product Set Id',
+                'input' => 'text',
+                'source' => '',
+                'required' => false,
+                'default' => null,
+                'global' => ScopedAttributeInterface::SCOPE_STORE,
+                'visible' => false,
+                'is_used_in_grid' => false,
+                'is_visible_in_grid' => false,
+                'is_filterable_in_grid' => false,
+                'is_searchable_in_grid' => false,
+                'frontend' => '',
+                'backend' => ''
             ]
         ];
     }

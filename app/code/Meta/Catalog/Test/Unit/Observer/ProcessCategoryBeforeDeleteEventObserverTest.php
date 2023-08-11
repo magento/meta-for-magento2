@@ -21,16 +21,17 @@ declare(strict_types=1);
 namespace Meta\Catalog\Test\Unit\Observer;
 
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Message\ManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Model\Feed\CategoryCollection;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Event;
-use Meta\Catalog\Observer\ProcessCategoryAfterDeleteEventObserver;
+use Meta\Catalog\Observer\ProcessCategoryBeforeDeleteEventObserver;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
+class ProcessCategoryBeforeDeleteEventObserverTest extends TestCase
 {
     /**
      * @var MockObject
@@ -40,12 +41,12 @@ class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
     /**
      * @var MockObject
      */
-    private MockObject $systemConfig;
+    private MockObject $categoryCollection;
 
     /**
-     * @var ProcessCategoryAfterDeleteEventObserver
+     * @var ProcessCategoryBeforeDeleteEventObserver
      */
-    private $processCategoryAfterDeleteEventObserver;
+    private $processCategoryBeforeDeleteEventObserver;
 
     /**
      * @var MockObject
@@ -58,6 +59,11 @@ class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
     private $category;
 
     /**
+     * @var MockObject
+     */
+    private $messageManager;
+
+    /**
      * Used to set the values before running a test
      *
      * @return void
@@ -65,27 +71,33 @@ class ProcessCategoryAfterDeleteEventObserverTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
-        $this->systemConfig = $this->createMock(Config::class);
-        $this->category = $this->createMock(Category::class);
+        $this->categoryCollection = $this->createMock(CategoryCollection::class);
+        $this->messageManager = $this->createMock(ManagerInterface::class);
+        $this->category = $this->getMockBuilder(\Magento\Catalog\Model\Category::class)
+            ->addMethods(['getName'])->getMock();
+        $this->category->expects($this->once())
+            ->method('getName')
+            ->will($this->returnValue("Test Category"));
         $event = $this->getMockBuilder(Event::class)->addMethods(['getCategory'])->getMock();
         $event->expects($this->once())->method('getCategory')->will($this->returnValue($this->category));
         $this->eventObserverMock = $this->createMock(Observer::class);
         $this->eventObserverMock->expects($this->once())->method('getEvent')->will($this->returnValue($event));
-        $this->processCategoryAfterDeleteEventObserver =
-            new ProcessCategoryAfterDeleteEventObserver(
+        $this->processCategoryBeforeDeleteEventObserver =
+            new ProcessCategoryBeforeDeleteEventObserver(
                 $this->fbeHelper,
-                $this->systemConfig
+                $this->categoryCollection,
+                $this->messageManager
             );
     }
 
     public function testExecution()
     {
-        $this->systemConfig->method('isCatalogSyncEnabled')->willReturn(true);
-        $categoryObj = $this->createMock(CategoryCollection::class);
-        $this->fbeHelper->expects($this->once())->method('getObject')->willReturn($categoryObj);
-        $this->fbeHelper->expects($this->once())->method('log')->willReturn(null);
 
-        $categoryObj->expects($this->once())->method('deleteCategoryAndSubCategoryFromFB')->willReturn('good');
-        $this->processCategoryAfterDeleteEventObserver->execute($this->eventObserverMock);
+        $this->fbeHelper->expects($this->once())->method('log');
+
+        $this->categoryCollection
+            ->expects($this->once())
+            ->method('deleteCategoryAndSubCategoryFromFB');
+        $this->processCategoryBeforeDeleteEventObserver->execute($this->eventObserverMock);
     }
 }

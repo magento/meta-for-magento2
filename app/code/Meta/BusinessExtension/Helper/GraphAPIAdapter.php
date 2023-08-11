@@ -25,6 +25,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\View\FileFactory;
@@ -465,6 +466,22 @@ class GraphAPIAdapter
         );
         $response = json_decode($response->getBody()->__toString(), true);
         return $response;
+    }
+
+    /**
+     * GraphAPI batch request
+     *
+     * @param array $requests
+     * @return mixed|ResponseInterface
+     * @throws GuzzleException
+     */
+    public function graphAPIBatchRequest(array $requests)
+    {
+        $response = $this->callApi('POST', '', [
+            'access_token' => $this->accessToken,
+            'batch' => json_encode($requests)
+        ]);
+        return json_decode($response->getBody()->__toString(), true);
     }
 
     /**

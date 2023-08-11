@@ -82,8 +82,7 @@ class UploadInventory
      */
     private function isUploadEnabled($storeId)
     {
-        return $this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->isCatalogSyncEnabled($storeId);
+        return $this->systemConfig->isCatalogSyncEnabled($storeId);
     }
 
     /**

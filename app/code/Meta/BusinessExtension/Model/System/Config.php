@@ -60,8 +60,6 @@ class Config
     private const XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC = 'facebook/catalog_management/enable_catalog_sync';
     private const XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER = 'facebook/catalog_management/product_identifier';
     private const XML_PATH_FACEBOOK_PRICE_INCL_TAX = 'facebook/catalog_management/price_incl_tax';
-    private const XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE = 'facebook/catalog_management/collections_sync';
-
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_STANDARD = 'facebook/shipping_methods/standard';
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_EXPEDITED = 'facebook/shipping_methods/expedited';
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_RUSH = 'facebook/shipping_methods/rush';
@@ -721,7 +719,8 @@ class Config
      */
     public function isCatalogSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC, $scopeId, $scope) &&
+            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
     }
 
     /**
@@ -770,22 +769,6 @@ class Config
     public function isPriceInclTax($scopeId = null, $scope = null): bool
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_PRICE_INCL_TAX, $scopeId, $scope);
-    }
-
-    /**
-     * Is active collections sync
-     *
-     * @param int $scopeId
-     * @param int $scope
-     * @return bool
-     */
-    public function isActiveCollectionsSync($scopeId = null, $scope = null): bool
-    {
-        return $this->scopeConfig->isSetFlag(
-            self::XML_PATH_FACEBOOK_COLLECTIONS_SYNC_IS_ACTIVE,
-            $scopeId = null,
-            $scope = null
-        );
     }
 
     /**

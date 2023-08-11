@@ -20,10 +20,9 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Cron;
 
-use Exception;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Feed\CategoryCollection;
-use Meta\BusinessExtension\Helper\FBEHelper;
 
 class CategorySyncCron
 {
@@ -62,25 +61,24 @@ class CategorySyncCron
     /**
      * Execute function for Category Sync
      *
-     * @return bool
+     * @return void
      */
     public function execute()
     {
-        if (!$this->systemConfig->isActiveCollectionsSync()) {
-            return false;
-        }
-        try {
-            $this->categoryCollection->pushAllCategoriesToFbCollections();
-            return true;
-        } catch (Exception $e) {
-            $context = [
-                'store_id' => $this->fbeHelper->getStore()->getId(),
-                'log_type' => 'persist_meta_log_immediately',
-                'event' => 'category_sync',
-                'event_type' => 'category_sync_cron',
-            ];
-            $this->fbeHelper->logException($e, $context);
-            return false;
+        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+            try {
+                if ($this->systemConfig->isCatalogSyncEnabled($store->getId())) {
+                    $this->categoryCollection->pushAllCategoriesToFbCollections($store->getId());
+                }
+            } catch (\Throwable $e) {
+                $context = [
+                    'store_id' => $this->fbeHelper->getStore()->getId(),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'category_sync',
+                    'event_type' => 'category_sync_cron',
+                ];
+                $this->fbeHelper->logException($e, $context);
+            }
         }
     }
 }

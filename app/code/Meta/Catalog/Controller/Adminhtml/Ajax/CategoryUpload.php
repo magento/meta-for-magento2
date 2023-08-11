@@ -20,13 +20,12 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Controller\Adminhtml\Ajax;
 
-use Exception;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\AbstractAjax;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Feed\CategoryCollection;
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\Controller\Result\JsonFactory;
 
 class CategoryUpload extends AbstractAjax
 {
@@ -36,14 +35,14 @@ class CategoryUpload extends AbstractAjax
     private $categoryCollection;
 
     /**
-     * @var FBEHelper
-     */
-    private $fbeHelper;
-
-    /**
      * @var SystemConfig
      */
     private $systemConfig;
+
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
 
     /**
      * @param Context $context
@@ -53,16 +52,16 @@ class CategoryUpload extends AbstractAjax
      * @param CategoryCollection $categoryCollection
      */
     public function __construct(
-        Context $context,
-        JsonFactory $resultJsonFactory,
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
+        Context            $context,
+        JsonFactory        $resultJsonFactory,
+        FBEHelper          $fbeHelper,
+        SystemConfig       $systemConfig,
         CategoryCollection $categoryCollection
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->categoryCollection = $categoryCollection;
-        $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -74,24 +73,48 @@ class CategoryUpload extends AbstractAjax
 
         // get default store info
         $storeId = $this->fbeHelper->getStore()->getId();
+        $storeName = $this->fbeHelper->getStore()->getName();
 
         // override store if user switched config scope to non-default
         $storeParam = $this->getRequest()->getParam('store');
         if ($storeParam) {
             $storeId = $storeParam;
+            $storeName = $this->systemConfig->getStoreManager()->getStore($storeId)->getName();
         }
 
-        if (!$this->systemConfig->getAccessToken()) {
+        if (!$this->systemConfig->getAccessToken($storeId)) {
             $response['success'] = false;
-            $response['message'] = __('Before uploading categories, set up the extension.');
+            $response['message'] = __(
+                'Before uploading categories, set up the extension for store: \'%1\'.',
+                $storeName
+            );
+            $this->fbeHelper->log(sprintf(
+                'Force Categories update: extension is not setup for store: %s',
+                $storeId
+            ));
+            return $response;
+        }
+
+        if (!$this->systemConfig->isCatalogSyncEnabled($storeId)) {
+            $response['success'] = false;
+            $response['message'] = __(
+                'Catalog sync is not enabled for store \'%1\', ' .
+                'please enable meta catalog integration for categories sync.',
+                $storeName
+            );
+            $this->fbeHelper->log(sprintf(
+                'Force Categories update: catalog sync is not enabled or either' .
+                ' Meta extension is disabled for store: %s',
+                $storeId
+            ));
             return $response;
         }
 
         try {
-            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections();
+            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
             $response['success'] = true;
             $response['feed_push_response'] = $feedPushResponse;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
             $this->fbeHelper->logException(
