@@ -74,7 +74,11 @@ class ProcessCategoryBeforeDeleteEventObserverTest extends TestCase
         $this->categoryCollection = $this->createMock(CategoryCollection::class);
         $this->messageManager = $this->createMock(ManagerInterface::class);
         $this->category = $this->getMockBuilder(\Magento\Catalog\Model\Category::class)
-            ->addMethods(['getName'])->getMock();
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->disableArgumentCloning()
+            ->disallowMockingUnknownTypes()
+            ->onlyMethods(['getName'])->getMock();
         $this->category->expects($this->once())
             ->method('getName')
             ->will($this->returnValue("Test Category"));

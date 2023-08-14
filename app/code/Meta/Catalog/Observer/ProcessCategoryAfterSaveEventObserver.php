@@ -53,8 +53,7 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
         FBEHelper          $helper,
         CategoryCollection $categoryCollection,
         ManagerInterface   $messageManager
-    )
-    {
+    ) {
         $this->fbeHelper = $helper;
         $this->categoryCollection = $categoryCollection;
         $this->messageManager = $messageManager;
@@ -74,13 +73,15 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
         /** @var Category $category */
         $category = $observer->getEvent()->getCategory();
 
+        $isNameChanged = $category->dataHasChangedFor('name');
+
         // we only pass category name and products ids to meta, so ignoring all other changes
-        if ($category->dataHasChangedFor('name') || !empty($category->getAffectedProductIds())) {
+        if ($isNameChanged || !empty($category->getAffectedProductIds())) {
             $this->fbeHelper->log("save category: " . $category->getName());
             try {
                 $this->categoryCollection->makeHttpRequestsAfterCategorySave(
                     $category,
-                    $category->dataHasChangedFor('name')
+                    $isNameChanged
                 );
             } catch (\Throwable $e) {
                 $this->messageManager->addErrorMessage(

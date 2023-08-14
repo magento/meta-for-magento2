@@ -72,7 +72,11 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
         $this->categoryCollection = $this->createMock(CategoryCollection::class);
         $this->messageManager = $this->createMock(ManagerInterface::class);
         $this->category = $this->getMockBuilder(\Magento\Catalog\Model\Category::class)
-            ->addMethods(['dataHasChangedFor'])->getMock();
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->disableArgumentCloning()
+            ->disallowMockingUnknownTypes()
+            ->onlyMethods(['dataHasChangedFor'])->getMock();
         $this->category->expects($this->once())
             ->method('dataHasChangedFor')
             ->will($this->returnValue(true));
@@ -89,11 +93,12 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
 
     public function testExecution()
     {
+
         $this->fbeHelper->expects($this->once())->method('log');
 
         $this->categoryCollection
             ->expects($this->once())
-            ->method('makeHttpRequestAfterCategorySave');
+            ->method('makeHttpRequestsAfterCategorySave');
         $this->processCategoryAfterSaveEventObserver->execute($this->eventObserverMock);
     }
 }
