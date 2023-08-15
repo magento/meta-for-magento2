@@ -24,6 +24,8 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Template;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
 
@@ -36,6 +38,11 @@ class Setup extends Template
      * @var FBEHelper
      */
     private $fbeHelper;
+
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
     /**
      * @var SystemConfig
@@ -54,6 +61,7 @@ class Setup extends Template
 
     /**
      * @param Context $context
+     * @param RequestInterface $request
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param StoreRepositoryInterface $storeRepo
@@ -62,6 +70,7 @@ class Setup extends Template
      */
     public function __construct(
         Context $context,
+        RequestInterface $request,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
         StoreRepositoryInterface $storeRepo,
@@ -70,9 +79,44 @@ class Setup extends Template
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
+        $this->request = $request;
         $this->systemConfig = $systemConfig;
         $this->storeRepo = $storeRepo;
         $this->websiteCollectionFactory = $websiteCollectionFactory;
+    }
+
+    /**
+     * ID of the selected Store.
+     *
+     * @return string|null
+     */
+    public function getSelectedStoreId()
+    {
+        $stores = $this->getSelectableStores();
+        if (empty($stores)) {
+            return null;
+        }
+
+        // If there is a store matching query param, return it.
+        $requestStoreId = $this->request->getParam('store_id');
+        try {
+            $this->storeRepo->getById($requestStoreId);
+            return $requestStoreId;
+        } catch (NoSuchEntityException $e) {
+            // Store not found, fallback to default store selection logic.
+            $requestStoreId = null;
+        }
+
+        // Missing or invalid query param, look for a default.
+        foreach ($stores as $store) {
+            if ($store->isDefault() && $store->getWebsiteId() === $this->getFirstWebsiteId()) {
+                return $store['store_id'];
+            }
+        }
+
+        // No default found, return the first store.
+        $firstStore = array_slice($stores, 0, 1)[0];
+        return $firstStore['store_id'];
     }
 
     /**
@@ -188,11 +232,11 @@ class Setup extends Template
      * Is fbe installed
      *
      * @param int $storeId
-     * @return string
+     * @return bool
      */
     public function isFBEInstalled($storeId)
     {
-        return $this->systemConfig->isFBEInstalled($storeId) ? 'true' : 'false';
+        return $this->systemConfig->isFBEInstalled($storeId);
     }
 
     /**
@@ -206,13 +250,19 @@ class Setup extends Template
     }
 
     /**
-     * Get stores
+     * Get stores that are selectable (not Admin).
      *
      * @return \Magento\Store\Api\Data\StoreInterface[]
      */
-    public function getStores()
+    public function getSelectableStores()
     {
-        return $this->storeRepo->getList();
+        $stores = $this->storeRepo->getList();
+
+        return array_filter(
+            $stores,
+            fn($key) => $key !== 'admin',
+            ARRAY_FILTER_USE_KEY,
+        );
     }
 
     /**
