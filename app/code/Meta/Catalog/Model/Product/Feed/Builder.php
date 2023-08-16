@@ -71,6 +71,9 @@ class Builder
     private const ATTR_VIDEO = 'video';
     private const ATTR_UNIT_PRICE = 'unit_price';
 
+    // name of this column is sku, as Meta will identify this column with sku name
+    private const ATTR_OTHER_ID = 'sku';
+
     private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
         '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
         '<table>', '<tbody>', '<tfoot>', '<thead>', '<td>', '<th>', '<tr>',
@@ -300,6 +303,7 @@ class Builder
         // ref: https://developers.facebook.com/docs/commerce-platform/catalog/fields
         $maxLengths = [
             self::ATTR_RETAILER_ID => null,
+            self::ATTR_OTHER_ID => null,
             self::ATTR_URL => null,
             self::ATTR_IMAGE_URL => null,
             self::ATTR_CONDITION => null,
@@ -617,6 +621,11 @@ class Builder
             $this->productIdentifier->getMagentoProductRetailerId($product)
         );
 
+        $otherId = $this->trimAttribute(
+            self::ATTR_OTHER_ID,
+            $this->productIdentifier->getProductIDOtherThanRetailerId($product)
+        );
+
         if ($this->inventoryOnly) {
             return [
                 self::ATTR_RETAILER_ID => $retailerId,
@@ -641,6 +650,7 @@ class Builder
 
         $entry = [
             self::ATTR_RETAILER_ID => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
+            self::ATTR_OTHER_ID => $otherId,
             self::ATTR_ITEM_GROUP_ID => $this->getItemGroupId($product),
             self::ATTR_NAME => $this->escaper->escapeUrl($productTitle),
             self::ATTR_DESCRIPTION => $this->getDescription($product),
@@ -682,6 +692,7 @@ class Builder
     {
         $headerFields = [
             self::ATTR_RETAILER_ID,
+            self::ATTR_OTHER_ID,
             self::ATTR_ITEM_GROUP_ID,
             self::ATTR_NAME,
             self::ATTR_DESCRIPTION,

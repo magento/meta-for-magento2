@@ -66,6 +66,24 @@ class Identifier
     }
 
     /**
+     * Get product's other identifier for passing to Meta for product identifications
+     *
+     * @param ProductInterface $product
+     * @return bool|int|string
+     */
+    private function getOtherProductIdentifier(ProductInterface $product)
+    {
+        // If identifier is set to sku then we pass magento id, otherwise in case of magento id, we pass sku
+        // This is done to pass both different type of IDs to meta for product deduplication
+        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            return $product->getId();
+        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            return $product->getSku();
+        }
+        return false;
+    }
+
+    /**
      * Get product Retailer ID for Commerce
      *
      * @param ProductInterface $product
@@ -74,6 +92,17 @@ class Identifier
     public function getMagentoProductRetailerId(ProductInterface $product)
     {
         return $this->getProductIdentifier($product);
+    }
+
+    /**
+     * Get product ID other than retailerID for Commerce
+     *
+     * @param ProductInterface $product
+     * @return int|string|bool
+     */
+    public function getProductIDOtherThanRetailerId(ProductInterface $product)
+    {
+        return $this->getOtherProductIdentifier($product);
     }
 
     /**
