@@ -29,6 +29,7 @@ use Magento\Framework\Composer\ComposerInformation;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
@@ -131,6 +132,11 @@ class Config
     private ComposerInformation $composerInformation;
 
     /**
+     * @var FacebookInstalledFeature
+     */
+    private FacebookInstalledFeature $fbeInstalledFeatureResource;
+
+    /**
      * Extension version
      *
      * @var string|null
@@ -145,6 +151,7 @@ class Config
      * @param TypeListInterface $cacheTypeList
      * @param CacheInterface $cache
      * @param ComposerInformation $composerInformation
+     * @param FacebookInstalledFeature $fbeInstalledFeatureResource
      * @SuppressWarnings(PHPMD.ExcessivePublicCount)
      */
     public function __construct(
@@ -153,7 +160,8 @@ class Config
         ResourceConfig $resourceConfig,
         TypeListInterface $cacheTypeList,
         CacheInterface $cache,
-        ComposerInformation $composerInformation
+        ComposerInformation $composerInformation,
+        FacebookInstalledFeature $fbeInstalledFeatureResource
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
@@ -161,6 +169,7 @@ class Config
         $this->cacheTypeList = $cacheTypeList;
         $this->cache = $cache;
         $this->composerInformation = $composerInformation;
+        $this->fbeInstalledFeatureResource = $fbeInstalledFeatureResource;
     }
 
     /**
@@ -813,5 +822,65 @@ class Config
     public function getWeightUnit(int $scopeId = null, string $scope = null)
     {
         return $this->getConfig('general/locale/weight_unit', $scopeId, $scope);
+    }
+
+    /**
+     * Check if feature is installed
+     *
+     * @param string $featureType
+     * @param int $storeId
+     * @return bool
+     */
+    private function isFeatureInstalled($featureType, $storeId)
+    {
+        $storeId = $storeId ?: $this->storeManager->getStore()->getId();
+        if (!$this->isFBEInstalled($storeId)) {
+            return false;
+        }
+        return $this->fbeInstalledFeatureResource->doesFeatureTypeExist($featureType, $storeId);
+    }
+    
+    /**
+     * Check if FBE Catalog is Installed
+     *
+     * @param int $storeId
+     * @return bool
+     */
+    public function isFBECatalogInstalled($storeId = null)
+    {
+        return $this->isFeatureInstalled('catalog', $storeId);
+    }
+
+    /**
+     * Check if FBE pixel is Installed
+     *
+     * @param int $storeId
+     * @return bool
+     */
+    public function isFBEPixelInstalled($storeId = null)
+    {
+        return $this->isFeatureInstalled('pixel', $storeId);
+    }
+
+    /**
+     * Check if FBE ads is Installed
+     *
+     * @param int $storeId
+     * @return bool
+     */
+    public function isFBEAdsInstalled($storeId = null)
+    {
+        return $this->isFeatureInstalled('ads', $storeId);
+    }
+
+    /**
+     * Check if FBE ads is Installed
+     *
+     * @param int $storeId
+     * @return bool
+     */
+    public function isFBEShopInstalled($storeId = null)
+    {
+        return $this->isFeatureInstalled('fb_shop', $storeId);
     }
 }

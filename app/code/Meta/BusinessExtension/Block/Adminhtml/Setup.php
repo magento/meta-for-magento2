@@ -279,4 +279,74 @@ class Setup extends Template
 
         return $collection->getFirstItem()->getWebsiteId();
     }
+    
+    /**
+     * Get fbe access token url endpoint
+     *
+     * @return string
+     */
+    public function getFbeAccessTokenUrl()
+    {
+        return $this->fbeHelper->getFbeAccessTokenUrl();
+    }
+
+    /**
+     * Get fbe installs config url endpoint
+     *
+     * @return string
+     */
+    public function getFbeInstallsConfigUrl()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbeinstallsconfig');
+    }
+
+    /**
+     * Get fbe installs save url endpoint
+     *
+     * @return string
+     */
+    public function getFbeInstallsSaveUrl()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbeinstallssave');
+    }
+
+    /**
+     * Get store id from request paramater
+     *
+     * @return string
+     */
+    public function getStoreId()
+    {
+        return $this->getRequest()->getParam('store');
+    }
+
+    /**
+     * Get fbe installs save url endpoint
+     *
+     * @return string
+     */
+    public function getInstalledFeaturesAjaxRouteUrl()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbinstalledfeatures');
+    }
+
+    /**
+     * Get store id from request paramater
+     *
+     * @return string
+     */
+    public function getWebsiteId()
+    {
+        return $this->getRequest()->getParam('website');
+    }
+
+    /**
+     * Get default store_id
+     *
+     * @return string
+     */
+    public function getDefaultStoreViewId()
+    {
+        return $this->fbeHelper->getStore()->getId();
+    }
 }

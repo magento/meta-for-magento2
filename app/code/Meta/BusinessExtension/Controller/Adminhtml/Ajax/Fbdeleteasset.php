@@ -28,6 +28,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Security\Model\AdminSessionsManager;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\App\ResourceConnection;
+use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 
 class Fbdeleteasset implements HttpDeleteActionInterface
 {
@@ -68,12 +69,18 @@ class Fbdeleteasset implements HttpDeleteActionInterface
     private RequestInterface $request;
 
     /**
+     * @var FacebookInstalledFeature
+     */
+    private $fbeInstalledFeatureResource;
+
+    /**
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
      * @param AdminSessionsManager $adminSessionManager
      * @param ResourceConnection $resourceConnection
      * @param SystemConfig $systemConfig
      * @param RequestInterface $request
+     * @param FacebookInstalledFeature $fbeInstalledFeatureResource
      */
     public function __construct(
         JsonFactory $resultJsonFactory,
@@ -81,7 +88,8 @@ class Fbdeleteasset implements HttpDeleteActionInterface
         AdminSessionsManager $adminSessionManager,
         ResourceConnection $resourceConnection,
         SystemConfig $systemConfig,
-        RequestInterface $request
+        RequestInterface $request,
+        FacebookInstalledFeature $fbeInstalledFeatureResource
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->fbeHelper = $fbeHelper;
@@ -89,6 +97,7 @@ class Fbdeleteasset implements HttpDeleteActionInterface
         $this->resourceConnection = $resourceConnection;
         $this->systemConfig = $systemConfig;
         $this->request = $request;
+        $this->fbeInstalledFeatureResource = $fbeInstalledFeatureResource;
     }
 
     /**
@@ -101,8 +110,8 @@ class Fbdeleteasset implements HttpDeleteActionInterface
         $result = $this->resultJsonFactory->create();
         // TODO : Move all String objects to constants.
         $adminSession = $this->adminSessionManager->getCurrentSession();
-        if (!$adminSession && $adminSession->getStatus() != 1) {
-            throw new LocalizedException('Oops, this endpoint is for logged in admin and ajax only!');
+        if (!$adminSession || $adminSession->getStatus() != 1) {
+            throw new LocalizedException('This endpoint is for logged in admin and ajax only.');
         } else {
             try {
                 $json = $this->executeForJson();
@@ -110,7 +119,7 @@ class Fbdeleteasset implements HttpDeleteActionInterface
             } catch (\Exception $e) {
                 $this->fbeHelper->logCritical($e->getMessage());
                 throw new LocalizedException(
-                    'Oops, there was error while processing your request.' .
+                    'There was error while processing your request.' .
                     ' Please contact admin for more details.'
                 );
             }
@@ -136,6 +145,7 @@ class Fbdeleteasset implements HttpDeleteActionInterface
         }
         try {
             $this->deleteConfigKeys($storeId);
+            $this->deleteInstalledFeatures($storeId);
             $response = [
                 'success' => true,
                 'message' => __('' . self::DELETE_SUCCESS_MESSAGE),
@@ -186,5 +196,15 @@ class Fbdeleteasset implements HttpDeleteActionInterface
             ->deleteConfig(SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_API_VERSION_LAST_UPDATE, $storeId);
 
         return $this;
+    }
+    
+    /**
+     * Delete installed features
+     *
+     * @param string|int|null $storeId Store ID to delete from.
+     */
+    private function deleteInstalledFeatures($storeId)
+    {
+        $this->fbeInstalledFeatureResource->deleteAll($storeId);
     }
 }

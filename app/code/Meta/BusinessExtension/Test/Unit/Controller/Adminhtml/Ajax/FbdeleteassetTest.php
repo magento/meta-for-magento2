@@ -29,6 +29,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Magento\Framework\App\ResourceConnection;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 
 class FbdeleteassetTest extends TestCase
 {
@@ -53,6 +54,11 @@ class FbdeleteassetTest extends TestCase
     private SystemConfig $systemConfig;
 
     /**
+     * @var FacebookInstalledFeature
+     */
+    private FacebookInstalledFeature $fbeInstalledFeatureResource;
+
+    /**
      * Used to reset or change values after running a test
      *
      * @return void
@@ -73,6 +79,7 @@ class FbdeleteassetTest extends TestCase
         $sessionManager = $this->createMock(AdminSessionsManager::class);
         $resourceConnection = $this->createMock(ResourceConnection::class);
         $this->systemConfig = $this->createMock(SystemConfig::class);
+        $this->fbeInstalledFeatureResource = $this->createMock(FacebookInstalledFeature::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
         $this->fbdeleteasset = new Fbdeleteasset(
             $resultJsonFactory,
@@ -80,7 +87,8 @@ class FbdeleteassetTest extends TestCase
             $sessionManager,
             $resourceConnection,
             $this->systemConfig,
-            $this->request
+            $this->request,
+            $this->fbeInstalledFeatureResource
         );
     }
 
@@ -94,6 +102,8 @@ class FbdeleteassetTest extends TestCase
         $this->request->method('getParam')->willReturn($storeId);
         $this->systemConfig->expects($this->atLeastOnce())
             ->method('deleteConfig')->willReturnSelf();
+        $this->fbeInstalledFeatureResource->expects($this->atLeastOnce())
+            ->method('deleteAll');
 
         $result = $this->fbdeleteasset->executeForJson();
         $this->assertNotNull($result);

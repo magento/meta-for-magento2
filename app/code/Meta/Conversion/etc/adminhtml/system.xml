@@ -3,6 +3,8 @@
     <system>
         <section id="facebook_business_extension">
             <group id="conversion_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+                <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\FBEFieldSet</frontend_model>
+                <attribute type="group">conversion</attribute>
                 <label>Conversion Management</label>
                 <fieldset_css>meta-section-config</fieldset_css>
                 <depends>

@@ -77,8 +77,8 @@ abstract class AbstractAjax extends Action implements HttpPostActionInterface
         $adminSession = $this->fbeHelper
             ->createObject(AdminSessionsManager::class)
             ->getCurrentSession();
-        if (!$adminSession && $adminSession->getStatus() != 1) {
-            throw new LocalizedException(__('Oops, this endpoint is for logged in admin and ajax only!'));
+        if (!$adminSession || $adminSession->getStatus() != 1) {
+            throw new LocalizedException(__('This endpoint is for logged in admin and ajax only.'));
         } else {
             try {
                 $json = $this->executeForJson();
@@ -86,7 +86,7 @@ abstract class AbstractAjax extends Action implements HttpPostActionInterface
             } catch (Exception $e) {
                 $this->fbeHelper->logCritical($e->getMessage());
                 throw new LocalizedException(
-                    __('Oops, there was error while processing your request.' .
+                    __('There was error while processing your request.' .
                     ' Please contact admin for more details.')
                 );
             }

@@ -26,11 +26,16 @@ use Magento\Framework\App\ProductMetadata as FrameworkProductMetaData;
 use Magento\Framework\ObjectManagerInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Object\ServerSide\AdsPixelSettings;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Security\Model\AdminSessionsManager;
 use Meta\BusinessExtension\Helper\GraphAPIConfig;
 use Throwable;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class FBEHelper
 {
     private const URL_TYPE_WEB = 'web';
@@ -65,6 +70,11 @@ class FBEHelper
     private $productMetadata;
 
     /**
+     * @var GraphAPIAdapter
+     */
+    private GraphAPIAdapter $graphAPIAdapter;
+
+    /**
      * FBEHelper constructor
      *
      * @param ObjectManagerInterface $objectManager
@@ -73,7 +83,7 @@ class FBEHelper
      * @param SystemConfig $systemConfig
      * @param ProductMetadataInterface $productMetadata
      * @param GraphAPIConfig $graphAPIConfig
-     *
+     * @param GraphAPIAdapter $graphAPIAdapter
      */
     public function __construct(
         ObjectManagerInterface   $objectManager,
@@ -81,7 +91,8 @@ class FBEHelper
         StoreManagerInterface    $storeManager,
         SystemConfig             $systemConfig,
         ProductMetadataInterface $productMetadata,
-        GraphAPIConfig           $graphAPIConfig
+        GraphAPIConfig           $graphAPIConfig,
+        GraphAPIAdapter          $graphAPIAdapter
     ) {
         $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;
@@ -89,6 +100,7 @@ class FBEHelper
         $this->systemConfig = $systemConfig;
         $this->productMetadata = $productMetadata;
         $this->graphAPIConfig = $graphAPIConfig;
+        $this->graphAPIAdapter = $graphAPIAdapter;
     }
 
     /**
@@ -379,5 +391,36 @@ class FBEHelper
             return $this->saveAAMSettings($settings, $storeId);
         }
         return null;
+    }
+
+    /**
+     * Check admin permissions
+     *
+     * @param string $pixelId
+     * @param int $storeId
+     * @return void
+     */
+    public function checkAdminEndpointPermission()
+    {
+        $adminSession = $this->createObject(AdminSessionsManager::class)
+            ->getCurrentSession();
+        if (!$adminSession || $adminSession->getStatus() != 1) {
+            throw new LocalizedException(__('This endpoint is for logged in admin and ajax only.'));
+        }
+    }
+
+    /**
+     * Get fbe access token url endpoint
+     *
+     * @return string
+     */
+    public function getFbeAccessTokenUrl()
+    {
+        $apiVersion = $this->graphAPIAdapter->getGraphApiVersion();
+        if (!$apiVersion) {
+            return null;
+        }
+        $baseUrl = $this->getGraphBaseURL();
+        return "{$baseUrl}/{$apiVersion}/business_manager_id/access_token";
     }
 }

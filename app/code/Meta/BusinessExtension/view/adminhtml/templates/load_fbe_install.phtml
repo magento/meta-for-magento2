@@ -1,0 +1,21 @@
+<?php
+/**
+ * @var Meta\BusinessExtension\Block\Adminhtml\Setup $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
+?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Meta_BusinessExtension/js/loadFbeInstalls": {
+            "facebookBusinessExtensionConfig": {
+                "fbeInstallsConfigUrl": "<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>",
+                "fbeInstallsSaveUrl": "<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>",
+                "storeId": "<?= $escaper->escapeHtml($block->getStoreId()) ?>",
+                "websiteId": "<?= $escaper->escapeHtml($block->getWebsiteId()) ?>",
+                "defaultStoreId": "<?= $escaper->escapeHtml($block->getDefaultStoreViewId()) ?>"
+            }
+        }
+    }
+}
+</script>

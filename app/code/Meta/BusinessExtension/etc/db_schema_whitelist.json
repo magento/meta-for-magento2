@@ -1,0 +1,20 @@
+{
+    "facebook_installed_features": {
+        "column": {
+            "feature_instance_id": true,
+            "feature_type": true,
+            "connected_assets": true,
+            "additional_info": true,
+            "store_id": true,
+            "row_id": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FACEBOOK_INSTALLED_FEATURES_STORE_ID_STORE_STORE_ID": true,
+            "FACEBOOK_INSTALLED_FEATURES_FEATURE_INSTANCE_ID": true
+        },
+        "index": {
+            "FACEBOOK_INSTALLED_FEATURES_STORE_ID": true
+        }
+    }
+}

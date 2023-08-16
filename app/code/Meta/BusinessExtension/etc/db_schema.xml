@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="facebook_installed_features" resource="default" engine="innodb" comment="Facebook Installed Features">
+        <column xsi:type="int" name="row_id"  nullable="false" identity="true" comment="Row ID"/>
+        <column xsi:type="varchar" name="feature_instance_id" length="20" nullable="false" comment="Feature Instance ID"/>
+        <column xsi:type="varchar" name="feature_type"  length="255" nullable="false"  comment="Feature Type"/>
+        <column xsi:type="text" name="connected_assets" comment="Connected Assets"/>
+        <column xsi:type="text" name="additional_info" comment="Additional Info"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="Store ID"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="row_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="FEATURE_INSTANCE_ID_UNIQUE">
+            <column name="feature_instance_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FACEBOOK_INSTALLED_FEATURES_MAGENTO_STORE_ID" table="facebook_installed_features" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="FACEBOOK_INSTALLED_FEATURES_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+    </table>
+</schema>

@@ -51,13 +51,18 @@
             , businessName: 'Magento'
             , debug: true
             , setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>'
+            , fbeAccessTokenUrl: '<?= $escaper->escapeHtml($block->getFbeAccessTokenUrl()) ?>'
+            , fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>'
+            , fbeInstallsSaveUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>'
+            , setInstalledFeatures: '<?= $escaper->escapeHtml($block->getInstalledFeaturesAjaxRouteUrl()) ?>'
         };
     </script>
     <script>
         require([
             'jquery',
-            'Meta_BusinessExtension/js/fbe_allinone'
-        ], function ($) {
+            'Meta_BusinessExtension/js/fbe_allinone',
+            'Meta_BusinessExtension/js/fbe_installs'
+        ], function ($, fbeAllInOne, fbeInstalls) {
             // Initialize FBE to the server-selected Store.
             var selectedStore = $('#store option[data-selected="true"]');
             selectedStore.attr('selected', 'selected').change();
@@ -68,6 +73,7 @@
 
                 location.assign(url.search);
             });
+            fbeInstalls.startFBEInstallsProcess(); 
         });
     </script>
 <?php endif; ?>
