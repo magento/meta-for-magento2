@@ -48,6 +48,14 @@
                     <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
                 </field>
             </group>
+            <group id="attribute_mapping" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Attribute Mapping</label>
+                <field id="custom_attribute_mapping" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Custom Attribute Mapping</label>
+                    <backend_model>Meta\Catalog\Block\Adminhtml\Config\Backend\ArraySerialized</backend_model>
+                    <frontend_model>Meta\Catalog\Block\Adminhtml\MetaAttributeMappingData</frontend_model>
+                </field>
+            </group>
         </section>
     </system>
 </config>

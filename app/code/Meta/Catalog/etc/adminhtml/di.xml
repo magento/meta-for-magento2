@@ -10,4 +10,51 @@
             </argument>
         </arguments>
     </virtualType>
+    <type name="Meta\Catalog\Block\Adminhtml\Form\Field\MetaAttributeColumn">
+        <arguments>
+            <argument name="options" xsi:type="array">
+                <!-- required fields-->
+                <item name="description" xsi:type="string">Description</item>
+                <item name="availability" xsi:type="string">Availability</item>
+                <item name="condition" xsi:type="string">Condition</item>
+                <item name="link" xsi:type="string">Link</item>
+                <item name="image_link" xsi:type="string">Image Link</item>
+                <item name="brand" xsi:type="string">Brand</item>
+
+                <!-- required checkout fields-->
+                <item name="google_product_category" xsi:type="string">Google Product Category</item>
+                <item name="fb_product_category" xsi:type="string">FB Product Category</item>
+                <item name="size" xsi:type="string">Size</item>
+
+                <!-- optional fields-->
+                <item name="item_group_id" xsi:type="string">Item Group Id</item>
+                <item name="status" xsi:type="string">Status</item>
+                <item name="additional_image_link" xsi:type="string">Additional Image Link</item>
+                <item name="color" xsi:type="string">Color</item>
+                <item name="gender" xsi:type="string">Gender</item>
+                <item name="age_group" xsi:type="string">Age Group</item>
+                <item name="material" xsi:type="string">Material</item>
+                <item name="pattern" xsi:type="string">Pattern</item>
+                <item name="shipping" xsi:type="string">Shipping [Shipping details for the item, formatted as Country:Region:Service:Price]</item>
+                <item name="shipping_weight" xsi:type="string">Shipping Weight</item>
+                <item name="rich_text_description" xsi:type="string">Rich Text Description</item>
+                <item name="marked_for_product_launch" xsi:type="string">Marked For Product Launch</item>
+                <item name="product_type" xsi:type="string">Product Type</item>
+                <item name="video" xsi:type="string">Video</item>
+                <item name="additional_variant_attribute" xsi:type="string">Additional Variant Attribute</item>
+                <item name="unit_price" xsi:type="string">Unit Price</item>
+                <item name="gtin" xsi:type="string">Gtin</item>
+                <item name="mpn" xsi:type="string">Mpn</item>
+                <item name="expiration_date" xsi:type="string">Expiration Date</item>
+                <item name="return_policy_info" xsi:type="string">Return Policy Info</item>
+                <item name="mobile_link" xsi:type="string">Mobile Link</item>
+                <item name="applink" xsi:type="string">App link</item>
+                <item name="disabled_capabilities" xsi:type="string">Disabled Capabilities</item>
+                <item name="commerce_tax_category" xsi:type="string">Commerce Tax Category</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Config\Controller\Adminhtml\System\Config\Save">
+        <plugin disabled="false" name="Meta_Catalog_Plugin_Backend_Magento_Config_Controller_Save" sortOrder="10" type="Meta\Catalog\Plugin\Backend\Config\SaveController"/>
+    </type>
 </config>
