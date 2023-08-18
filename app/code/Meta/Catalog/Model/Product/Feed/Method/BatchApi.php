@@ -34,6 +34,7 @@ class BatchApi
 {
     private const ATTR_METHOD = 'method';
     private const ATTR_UPDATE = 'UPDATE';
+    private const ATTR_DELETE = 'DELETE';
     private const ATTR_DATA = 'data';
 
     // Process only the maximum allowed by API per request
@@ -108,6 +109,19 @@ class BatchApi
         return [
             self::ATTR_METHOD => $method,
             self::ATTR_DATA => $this->builder->buildProductEntry($product)
+        ];
+    }
+
+    /**
+     * Build request for individual product
+     *
+     * @param string $productIdentifier
+     */
+    public function buildDeleteProductRequest(string $productIdentifier): array
+    {
+        return [
+            self::ATTR_METHOD => self::ATTR_DELETE,
+            self::ATTR_DATA => ['id' => $productIdentifier]
         ];
     }
 

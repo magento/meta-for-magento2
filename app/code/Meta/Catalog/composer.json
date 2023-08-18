@@ -13,6 +13,9 @@
         "magento/module-config": "*",
         "magento/module-eav": "*",
         "magento/module-store": "*",
+        "magento/module-indexer": "*",
+        "magento/module-catalog-inventory": "*",
+        "magento/module-catalog-rule": "*",
         "meta/module-business-extension": "*"
     },
     "license": "Apache-2.0",

@@ -7,6 +7,15 @@
         <job name="facebook_automation_upload_inventory" instance="Meta\Catalog\Cron\UploadInventory" method="execute">
             <schedule>*/15 * * * *</schedule>
         </job>
+        <job name="facebook_automation_catalog_update" instance="Meta\Catalog\Cron\CatalogUpdate" method="execute">
+            <schedule>5,15,25,35,45,55 * * * *</schedule>
+        </job>
+        <job name="facebook_automation_catalog_delete" instance="Meta\Catalog\Cron\CatalogDelete" method="execute">
+            <schedule>0,10,20,30,40,50 * * * *</schedule>
+        </job>
+        <job name="facebook_automation_catalog_update_cleanup" instance="Meta\Catalog\Cron\CatalogUpdateCleanup" method="execute">
+            <schedule>0 0 * * 0</schedule>
+        </job>
 <!--        <job name="facebook_business_extension_category_sync_cronjob" instance="Meta\Catalog\Cron\CategorySyncCron" method="execute">-->
 <!--            &lt;!&ndash; daily at 0:0&ndash;&gt;-->
 <!--            <schedule>0 0 * * *</schedule>-->

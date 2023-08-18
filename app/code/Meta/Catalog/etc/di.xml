@@ -888,4 +888,20 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\CatalogRule\Model\Indexer\Product\ProductRuleIndexer">
+        <plugin name="facebookCatalogUpdateOnProductRuleIndexer"
+                type="Meta\Catalog\Plugin\FacebookCatalogUpdateIndexerPlugin"/>
+    </type>
+    <type name="Magento\CatalogInventory\Model\Indexer\Stock">
+        <plugin name="facebookCatalogUpdateOnStockIndexer"
+                type="Meta\Catalog\Plugin\FacebookCatalogUpdateIndexerPlugin"/>
+    </type>
+    <type name="Magento\Indexer\Model\Indexer">
+        <plugin name="facebookCatalogUpdateOnFullReindex"
+                type="Meta\Catalog\Plugin\FacebookCatalogUpdateFullReindexPlugin"/>
+    </type>
+    <type name="Magento\Catalog\Model\ResourceModel\Product">
+        <plugin name="facebookCatalogDelete"
+                type="Meta\Catalog\Plugin\FacebookCatalogDeletePlugin"/>
+    </type>
 </config>

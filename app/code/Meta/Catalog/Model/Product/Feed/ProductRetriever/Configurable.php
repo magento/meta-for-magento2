@@ -27,6 +27,7 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Framework\Exception\LocalizedException;
+use Meta\Catalog\Model\ProductRepository;
 
 class Configurable implements ProductRetrieverInterface
 {
@@ -48,15 +49,25 @@ class Configurable implements ProductRetrieverInterface
     private $productCollectionFactory;
 
     /**
+     * @var ProductRepository
+     */
+    private $metaProductRepo;
+
+    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
      * @param CollectionFactory $productCollectionFactory
+     * @param ProductRepository $metaProductRepo
      */
-    public function __construct(FBEHelper $fbeHelper, CollectionFactory $productCollectionFactory)
-    {
+    public function __construct(
+        FBEHelper $fbeHelper,
+        CollectionFactory $productCollectionFactory,
+        ProductRepository $metaProductRepo
+    ) {
         $this->fbeHelper = $fbeHelper;
         $this->productCollectionFactory = $productCollectionFactory;
+        $this->metaProductRepo = $metaProductRepo;
     }
 
     /**
@@ -114,41 +125,8 @@ class Configurable implements ProductRetrieverInterface
             /** @var Product $product */
             /** @var ConfigurableType $configurableType */
             $configurableType = $product->getTypeInstance();
-            $configurableAttributes = $configurableType->getConfigurableAttributes($product);
-
             foreach ($configurableType->getUsedProducts($product) as $childProduct) {
-                /** @var Product $childProduct */
-                $configurableSettings = ['item_group_id' => $product->getId()];
-                foreach ($configurableAttributes as $attribute) {
-                    $productAttribute = $attribute->getProductAttribute();
-                    $attributeCode = $productAttribute->getAttributeCode();
-                    $attributeValue = $childProduct->getData($productAttribute->getAttributeCode());
-                    $attributeLabel = $productAttribute->getSource()->getOptionText($attributeValue);
-                    $configurableSettings[$attributeCode] = $attributeLabel;
-                }
-                // Assign parent product name to all child products' name (used as variant name is Meta catalog)
-                // https://developers.facebook.com/docs/commerce-platform/catalog/variants
-                $childProduct->setName($product->getName());
-                $childProduct->setConfigurableSettings($configurableSettings);
-                $childProduct->setParentProductUrl($product->getProductUrl());
-                //todo put all these attributes to a list
-                if (!$childProduct->getDescription()) {
-                    $childProduct->setDescription($product->getDescription());
-                }
-                if (!$childProduct->getWeight()) {
-                    $childProduct->setWeight($product->getWeight());
-                }
-
-                $material = $childProduct->getResource()->getAttribute('material');
-                if ($material && !$material->getSource()->getOptionText($childProduct->getData('material'))) {
-                    $childProduct->setData('material', $product->getData('material'));
-                }
-
-                $pattern = $childProduct->getResource()->getAttribute('pattern');
-                if ($pattern && !$pattern->getSource()->getOptionText($childProduct->getData('pattern'))) {
-                    $childProduct->setData('pattern', $product->getData('pattern'));
-                }
-                $simpleProducts[] = $childProduct;
+                $simpleProducts[] = $this->metaProductRepo->loadParentProductData($childProduct, $product);
             }
         }
         return $simpleProducts;

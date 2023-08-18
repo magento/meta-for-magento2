@@ -1,0 +1,16 @@
+{
+    "facebook_catalog_update": {
+        "column": {
+            "row_id": true,
+            "product_id": true,
+            "sku": true,
+            "method": true,
+            "batch_id": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FACEBOOK_CAT_UPDATE_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true
+        }
+    }
+}
