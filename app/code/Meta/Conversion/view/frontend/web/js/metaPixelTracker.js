@@ -28,6 +28,7 @@ define([
             type: 'POST',
             data: config.payload,
             dataType: 'json',
+            global: false,
             error: function (error) {
                 console.log(error);
             }
