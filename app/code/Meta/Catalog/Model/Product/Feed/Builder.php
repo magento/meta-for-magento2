@@ -397,10 +397,6 @@ class Builder
             );
         }
 
-        $title = $product->getName();
-        $productTitle = $this->trimAttribute(self::ATTR_NAME, $title);
-
-        $description = $description ?: $productTitle;
         // phpcs:ignore
         $description = html_entity_decode($description);
         // phpcs:ignore
