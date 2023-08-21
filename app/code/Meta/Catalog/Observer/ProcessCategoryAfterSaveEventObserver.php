@@ -76,7 +76,12 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
         $isNameChanged = $category->dataHasChangedFor('name');
 
         // we only pass category name and products ids to meta, so ignoring all other changes
-        if ($isNameChanged || !empty($category->getAffectedProductIds())) {
+        if ($isNameChanged
+            || !empty($category->getAffectedProductIds())
+            || $category->dataHasChangedFor('image')
+            || $category->dataHasChangedFor('request_path')
+            || $category->dataHasChangedFor('url_key')
+        ) {
             $this->fbeHelper->log("save category: " . $category->getName());
             try {
                 $this->categoryCollection->makeHttpRequestsAfterCategorySave(
