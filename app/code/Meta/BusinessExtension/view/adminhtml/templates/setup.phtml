@@ -11,14 +11,14 @@
     <select id="store">
         <?php foreach ($block->getSelectableStores() as $store): ?>
             <option
-                value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
-                data-installed="<?=
+                    value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
+                    data-installed="<?=
                     $escaper->escapeHtmlAttr($block->isFBEInstalled($store['store_id']) ? 'true' : 'false')
-                ?>"
-                data-pixel-id="<?= $escaper->escapeHtmlAttr($block->fetchPixelId($store['store_id'])) ?>"
-                data-system-user-name=
+                    ?>"
+                    data-pixel-id="<?= $escaper->escapeHtmlAttr($block->fetchPixelId($store['store_id'])) ?>"
+                    data-system-user-name=
                     "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
-                data-external-business-id=
+                    data-external-business-id=
                     "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
                 <?php if ($store['store_id'] === $block->getSelectedStoreId()): ?>
                     data-selected="true"
@@ -43,6 +43,7 @@
             , cleanConfigCacheUrl: '<?= $escaper->escapeHtml($block->getCleanCacheAjaxRoute()) ?>'
             , fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?"
             , deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>'
+            , customMagentoToken: '<?= $escaper->escapeJs($block->upsertApiKey()) ?>'
             , appId: '<?= $escaper->escapeHtml($block->getAppId()) ?>'
             , timeZone: 'America/Los_Angeles'
             , businessVertical: 'ECOMMERCE'
@@ -67,13 +68,13 @@
             var selectedStore = $('#store option[data-selected="true"]');
             selectedStore.attr('selected', 'selected').change();
 
-            $('#store').on('change', function() {
+            $('#store').on('change', function () {
                 const url = new URL(location.href);
                 url.searchParams.set('store_id', jQuery(this).val());
 
                 location.assign(url.search);
             });
-            fbeInstalls.startFBEInstallsProcess(); 
+            fbeInstalls.startFBEInstallsProcess();
         });
     </script>
 <?php endif; ?>

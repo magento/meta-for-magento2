@@ -28,12 +28,17 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
+use Meta\BusinessExtension\Helper\ApiKeyService;
 
 /**
  * @api
  */
 class Setup extends Template
 {
+    /**
+     * @var ApiKeyService
+     */
+    private $apiKeyService;
     /**
      * @var FBEHelper
      */
@@ -66,16 +71,18 @@ class Setup extends Template
      * @param SystemConfig $systemConfig
      * @param StoreRepositoryInterface $storeRepo
      * @param WebsiteCollectionFactory $websiteCollectionFactory
+     * @param ApiKeyService $apiKeyService
      * @param array $data
      */
     public function __construct(
-        Context $context,
-        RequestInterface $request,
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
+        Context                  $context,
+        RequestInterface         $request,
+        FBEHelper                $fbeHelper,
+        SystemConfig             $systemConfig,
         StoreRepositoryInterface $storeRepo,
         WebsiteCollectionFactory $websiteCollectionFactory,
-        array $data = []
+        ApiKeyService            $apiKeyService,
+        array                    $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
@@ -83,6 +90,7 @@ class Setup extends Template
         $this->systemConfig = $systemConfig;
         $this->storeRepo = $storeRepo;
         $this->websiteCollectionFactory = $websiteCollectionFactory;
+        $this->apiKeyService = $apiKeyService;
     }
 
     /**
@@ -279,7 +287,7 @@ class Setup extends Template
 
         return $collection->getFirstItem()->getWebsiteId();
     }
-    
+
     /**
      * Get fbe access token url endpoint
      *
@@ -348,5 +356,15 @@ class Setup extends Template
     public function getDefaultStoreViewId()
     {
         return $this->fbeHelper->getStore()->getId();
+    }
+
+    /**
+     * Call this method to check and generate the API key
+     *
+     * @return string
+     */
+    public function upsertApiKey()
+    {
+        return $this->apiKeyService->upsertApiKey();
     }
 }

@@ -1,19 +1,23 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="facebook" translate="label" sortOrder="1000">
             <label>Meta</label>
         </tab>
-        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0"
+                 showInStore="1">
             <class>separator-top</class>
             <label>Business Extension</label>
             <tab>facebook</tab>
             <resource>Meta_BusinessExtension::system_config</resource>
-            <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
                 <label>Setup</label>
                 <fieldset_css>meta-section-config</fieldset_css>
                 <attribute type="expanded">1</attribute>
-                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
                     <label>Activate Integration</label>
                     <config_path>facebook/business_extension/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -23,26 +27,38 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
-                <field id="pixel_id" translate="label" type="label" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="pixel_id" translate="label" type="label" sortOrder="30" showInDefault="1" showInWebsite="0"
+                       showInStore="1">
                     <label>Pixel Id</label>
                     <config_path>facebook/business_extension/pixel_id</config_path>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
-                <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0"
+                       showInStore="1">
                     <label>Module Info</label>
                     <depends>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo</frontend_model>
                 </field>
+                <field id="api_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Custom Magento + Meta Connector Token</label>
+                    <config_path>meta_extension/general/api_key</config_path>
+                    <comment>This token will be used by Meta's services to access Meta-specific information on your
+                        Magento Host
+                    </comment>
+                </field>
             </group>
-            <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0"
+                   showInStore="1">
                 <label>Debug</label>
                 <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
-                <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
                     <label>Enable Debug Mode</label>
                     <config_path>facebook/debug/debug_mode</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
