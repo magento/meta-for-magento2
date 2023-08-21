@@ -3,8 +3,8 @@
     <system>
         <section id="facebook_business_extension">
             <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
-                <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\FBEFieldSet</frontend_model>
-                <attribute type="group">catalog</attribute>
+<!--                <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\FBEFieldSet</frontend_model>-->
+<!--                <attribute type="group">catalog</attribute>-->
                 <label>Catalog Management</label>
                 <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
