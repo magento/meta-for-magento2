@@ -6,6 +6,8 @@
             <business_extension>
                 <active>1</active>
                 <onsite>0</onsite>
+                <meta_exception_logging_enabled>1</meta_exception_logging_enabled>
+                <meta_telemetry_logging_enabled>0</meta_telemetry_logging_enabled>
             </business_extension>
             <catalog_management>
                 <product_identifier>sku</product_identifier>

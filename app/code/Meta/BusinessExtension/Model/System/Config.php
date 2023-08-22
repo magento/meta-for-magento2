@@ -101,6 +101,11 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG =
         'facebook/business_extension/onsite';
 
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_EXCEPTION_LOGGING =
+        'facebook/business_extension/meta_exception_logging_enabled';
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_TELEMETRY_LOGGING =
+        'facebook/business_extension/meta_telemetry_logging_enabled';
+
     /**
      * @var StoreManagerInterface
      */
@@ -813,6 +818,38 @@ class Config
     }
 
     /**
+     * Check if persisting exception logs to Meta is enabled
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return string|null
+     */
+    public function isMetaExceptionLoggingEnabled(int $scopeId = null, string $scope = null): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_EXCEPTION_LOGGING,
+            $scopeId,
+            $scope
+        );
+    }
+
+    /**
+     * Check if persisting telemetry logs to Meta is enabled
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return string|null
+     */
+    public function isMetaTelemetryLoggingEnabled(int $scopeId = null, string $scope = null): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_TELEMETRY_LOGGING,
+            $scopeId,
+            $scope
+        );
+    }
+
+    /**
      * Get store weight unit
      *
      * @param int|null $scopeId
@@ -839,7 +876,7 @@ class Config
         }
         return $this->fbeInstalledFeatureResource->doesFeatureTypeExist($featureType, $storeId);
     }
-    
+
     /**
      * Check if FBE Catalog is Installed
      *

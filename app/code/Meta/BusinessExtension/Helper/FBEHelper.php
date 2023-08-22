@@ -275,8 +275,8 @@ class FBEHelper
         $errorMessage = $e->getMessage();
         $exceptionTrace = $e->getTraceAsString();
 
-        // If the log type is not set, just log the error message and trace.
-        if (!isset($context['log_type'])) {
+        // If the log type is not set or Meta extension logging is not enabled just log the error message and trace.
+        if (!isset($context['log_type']) || !$this->systemConfig->isMetaExceptionLoggingEnabled()) {
             $this->logger->error($errorMessage);
             $this->logger->error($exceptionTrace);
             return;

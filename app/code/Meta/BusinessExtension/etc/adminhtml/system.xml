@@ -33,6 +33,16 @@
                     <config_path>facebook/business_extension/pixel_id</config_path>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
+                <field id="meta_exception_logging_enabled" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <config_path>facebook/business_extension/meta_exception_logging_enabled</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
+                </field>
+                <field id="meta_telemetry_logging_enabled" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <config_path>facebook/business_extension/meta_telemetry_logging_enabled</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
+                </field>
                 <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0"
                        showInStore="1">
                     <label>Module Info</label>
