@@ -250,6 +250,21 @@ class FBEHelper
      */
     public function log($info, array $context = [])
     {
+        if (!isset($context['log_type'])) {
+            $this->logger->info($info);
+            return;
+        }
+
+        if (isset($context['store_id'])) {
+            $context['commerce_merchant_settings_id'] = $this->systemConfig->getCommerceAccountId($context['store_id']);
+        }
+
+        $timestamp = ['timestamp' => time()];
+        if (isset($context['extra_data'])) {
+            $context['extra_data'] = array_merge($context['extra_data'], $timestamp);
+        } else {
+            $context['extra_data'] = $timestamp;
+        }
         $this->logger->info($info, $context);
     }
 

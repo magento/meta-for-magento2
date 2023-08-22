@@ -22,7 +22,7 @@ namespace Meta\BusinessExtension\Model;
 
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 
-class PersistMetaLogImmediatelyHandler
+class PersistMetaTelemetryLogsHandler
 {
 
     /**
@@ -31,24 +31,25 @@ class PersistMetaLogImmediatelyHandler
     private $graphApiAdapter;
 
     /**
-     * PersistMetaLogImmediatelyHandler constructor
+     * PersistMetaTelemetryLogsHandler constructor
      *
      * @param GraphAPIAdapter $graphAPIAdapter
      */
     public function __construct(
-        GraphAPIAdapter $graphAPIAdapter,
+        GraphAPIAdapter $graphAPIAdapter
     ) {
         $this->graphApiAdapter = $graphAPIAdapter;
     }
 
     /**
-     * Consumer handler to persist exception logs from message queue to Meta
+     * Consumer handler to persist telemetry logs from message queue to Meta
      *
-     * @param string $message
+     * @param string $messages
      */
-    public function persistMetaLogImmediately(string $message)
+    public function persistMetaTelemetryLogs(string $messages)
     {
-        $context = json_decode($message, true);
-        $this->graphApiAdapter->persistLogToMeta($context);
+        $telemetryContext['event'] = 'persist_meta_telemetry_logs';
+        $telemetryContext['extra_data']['telemetry_logs'] = $messages;
+        $this->graphApiAdapter->persistLogToMeta($telemetryContext);
     }
 }

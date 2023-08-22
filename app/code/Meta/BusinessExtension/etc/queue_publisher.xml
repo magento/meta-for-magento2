@@ -3,4 +3,7 @@
     <publisher topic="persist.meta.log.immediately">
         <connection name="db" exchange="persist-meta-log-immediately-exchange" disabled="false"/>
     </publisher>
+    <publisher topic="persist.meta.telemetry.logs">
+        <connection name="db" exchange="persist-meta-telemetry-logs-exchange" disabled="false"/>
+    </publisher>
 </config>

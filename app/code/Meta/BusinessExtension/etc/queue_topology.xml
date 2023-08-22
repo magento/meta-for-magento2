@@ -3,4 +3,7 @@
   <exchange name="persist-meta-log-immediately-exchange" type="topic" connection="db">
     <binding id="PersistMetaLogImmediately" topic="persist.meta.log.immediately" destinationType="queue" destination="persist_meta_log_immediately"/>
   </exchange>
+  <exchange name="persist-meta-telemetry-logs-exchange" type="topic" connection="db">
+    <binding id="PersistMetaTelemetryLogs" topic="persist.meta.telemetry.logs" destinationType="queue" destination="persist_meta_telemetry_logs"/>
+  </exchange>
 </config>

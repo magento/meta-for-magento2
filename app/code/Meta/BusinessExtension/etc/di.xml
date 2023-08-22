@@ -23,6 +23,13 @@
             <argument name="publisher" xsi:type="object">Magento\Framework\MessageQueue\PublisherInterface</argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\MessageQueue\MergerFactory">
+        <arguments>
+            <argument name="mergers" xsi:type="array">
+                <item name="persist.meta.telemetry.logs.consumer" xsi:type="string">Meta\BusinessExtension\Model\PersistMetaTelemetryLogsMerger</item>
+            </argument>
+        </arguments>
+    </type>
     <preference for="Magento\Framework\App\Config\Storage\WriterInterface"
                 type="Magento\Framework\App\Config\Storage\Writer"/>
     <type name="Meta\BusinessExtension\Controller\Adminhtml\ApiKey\Index">
