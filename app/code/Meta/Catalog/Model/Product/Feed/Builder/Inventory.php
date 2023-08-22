@@ -103,7 +103,7 @@ class Inventory implements InventoryInterface
     public function getAvailability(): string
     {
         return $this->productStock && $this->productStock->getIsInStock()
-        && ($this->getInventory() - $this->systemConfig->getOutOfStockThreshold() > 0)
+        && ($this->getInventory() > 0)
             ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 
