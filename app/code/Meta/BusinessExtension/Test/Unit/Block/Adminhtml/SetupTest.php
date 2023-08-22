@@ -6,6 +6,7 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Meta\BusinessExtension\Helper\ApiKeyService;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use PHPUnit\Framework\TestCase;
 use Meta\BusinessExtension\Block\Adminhtml\Setup;
 use Magento\Framework\App\RequestInterface;
@@ -24,6 +25,11 @@ class SetupTest extends TestCase
      * @var MockObject
      */
     private $fbeHelper;
+
+    /**
+     * @var MockObject
+     */
+    private $graphAPIAdapter;
 
     /**
      * @var MockObject
@@ -62,6 +68,10 @@ class SetupTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->graphAPIAdapter = $this->getMockBuilder(GraphAPIAdapter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->systemConfig = $this->getMockBuilder(SystemConfig::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -90,6 +100,7 @@ class SetupTest extends TestCase
             $this->requestInterface,
             $this->fbeHelper,
             $this->systemConfig,
+            $this->graphAPIAdapter,
             $this->storeRepo,
             $this->websiteCollectionFactory,
             $this->apiKeyService,

@@ -281,6 +281,26 @@ class GraphAPIAdapter
     }
 
     /**
+     * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
+     *
+     * @param string $externalBusinessId
+     * @param mixed|null $accessToken
+     * @return string
+     * @throws GuzzleException
+     */
+    public function getCommerceExtensionIFrameURL($externalBusinessId, $accessToken = null)
+    {
+        $request = [
+            'access_token' => $accessToken ?: $this->accessToken,
+            'fields' => 'commerce_extension',
+            'fbe_external_business_id' => $externalBusinessId,
+        ];
+        $response = $this->callApi('GET', 'fbe_business', $request);
+        $response = json_decode($response->getBody()->__toString(), true);
+        return $response['commerce_extension']['uri'];
+    }
+
+    /**
      * Get commerce account data
      *
      * @param  mixed      $commerceAccountId

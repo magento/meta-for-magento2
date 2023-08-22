@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Block\Adminhtml;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Template;
@@ -43,6 +44,11 @@ class Setup extends Template
      * @var FBEHelper
      */
     private $fbeHelper;
+
+    /**
+     * @var GraphAPIAdapter
+     */
+    private $graphAPIAdapter;
 
     /**
      * @var RequestInterface
@@ -69,6 +75,7 @@ class Setup extends Template
      * @param RequestInterface $request
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
+     * @param GraphAPIAdapter $graphAPIAdapter
      * @param StoreRepositoryInterface $storeRepo
      * @param WebsiteCollectionFactory $websiteCollectionFactory
      * @param ApiKeyService $apiKeyService
@@ -79,6 +86,7 @@ class Setup extends Template
         RequestInterface         $request,
         FBEHelper                $fbeHelper,
         SystemConfig             $systemConfig,
+        GraphAPIAdapter          $graphAPIAdapter,
         StoreRepositoryInterface $storeRepo,
         WebsiteCollectionFactory $websiteCollectionFactory,
         ApiKeyService            $apiKeyService,
@@ -88,6 +96,7 @@ class Setup extends Template
         parent::__construct($context, $data);
         $this->request = $request;
         $this->systemConfig = $systemConfig;
+        $this->graphAPIAdapter = $graphAPIAdapter;
         $this->storeRepo = $storeRepo;
         $this->websiteCollectionFactory = $websiteCollectionFactory;
         $this->apiKeyService = $apiKeyService;
@@ -179,6 +188,16 @@ class Setup extends Template
     }
 
     /**
+     * Whether or not to enable the new Commerce Extension UI.
+     *
+     * @return bool
+     */
+    public function isCommerceExtensionEnabled()
+    {
+        return $this->systemConfig->isCommerceExtensionEnabled();
+    }
+
+    /**
      * Get external business id
      *
      * @param int $storeId
@@ -245,6 +264,20 @@ class Setup extends Template
     public function isFBEInstalled($storeId)
     {
         return $this->systemConfig->isFBEInstalled($storeId);
+    }
+
+    /**
+     * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
+     *
+     * @param int $storeId
+     * @return string
+     */
+    public function getCommerceExtensionIFrameURL($storeId)
+    {
+        return $this->graphAPIAdapter->getCommerceExtensionIFrameURL(
+            $this->systemConfig->getExternalBusinessId($storeId),
+            $this->systemConfig->getAccessToken($storeId),
+        );
     }
 
     /**
