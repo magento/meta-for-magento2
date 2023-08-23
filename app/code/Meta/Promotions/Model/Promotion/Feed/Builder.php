@@ -22,7 +22,6 @@ namespace Meta\Promotions\Model\Promotion\Feed;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\SalesRule\Model\ResourceModel\Rule\CollectionFactory as RuleCollection;
 use Magento\SalesRule\Model\Rule;
 use Magento\SalesRule\Model\RuleFactory;
@@ -30,27 +29,34 @@ use Magento\OfflineShipping\Model\SalesRule\Rule as ShippingRule;
 
 class Builder
 {
-    private const MIN_SUBTOTAL = '%02.2f %s';
-
-    //https://developers.facebook.com/docs/marketing-api/catalog/guides/offers-api#available-fields
-    private const ATTR_OFFER_ID = 'offer_id';
-    private const ATTR_OFFER_TITLE = 'title';
-    private const ATTR_OFFER_APPLICATION_TYPE = 'application_type';
-    private const ATTR_PUBLIC_COUPON_CODE = 'public_coupon_code';
-    private const ATTR_START_DATE = 'start_date_time';
-    private const ATTR_END_DATE = 'end_date_time';
-    private const ATTR_MIN_SUBTOTAL = 'min_subtotal';
-    private const ATTR_MIN_QUANTITY = 'min_quantity';
-    private const ATTR_TARGET_FILTER = 'target_filter';
-    private const ATTR_REDEEM_LIMIT = 'redeem_limit_per_user';
-    private const ATTR_VALUE_TYPE = 'value_type';
-    private const ATTR_FIXED_AMOUNT_OFF = 'fixed_amount_off';
-    private const ATTR_PERCENT_OFF = 'percent_off';
-    private const ATTR_TARGET_GRANULARITY = 'target_granularity';
-    private const ATTR_TARGET_TYPE = 'target_type';
-    private const ATTR_TARGET_SHIPPING_OPTIONS = 'target_shipping_option_types';
-    private const ATTR_TARGET_SELECTION = 'target_selection';
-    private const ATTR_TARGET_QUANTITY = 'target_quantity';
+    private const ATTR_RULE_ID = 'rule_id';
+    private const ATTR_NAME = 'name';
+    private const ATTR_DESCRIPTION = 'description';
+    private const ATTR_FROM_DATE = 'from_date';
+    private const ATTR_TO_DATE = 'to_date';
+    private const ATTR_USES_PER_CUSTOMER = 'uses_per_customer';
+    private const ATTR_IS_ACTIVE = 'is_active';
+    private const ATTR_CONDITION = 'condition';
+    private const ATTR_ACTION_CONDITION = 'action_condition';
+    private const ATTR_STOP_RULES_PROCESSING = 'stop_rules_processing';
+    private const ATTR_IS_ADVANCED = 'is_advanced';
+    private const ATTR_PRODUCT_IDS = 'product_ids';
+    private const ATTR_SORT_ORDER = 'sort_order';
+    private const ATTR_SIMPLE_ACTION = 'simple_action';
+    private const ATTR_DISCOUNT_AMOUNT = 'discount_amount';
+    private const ATTR_DISCOUNT_QTY = 'discount_qty';
+    private const ATTR_DISCOUNT_STEP = 'discount_step';
+    private const ATTR_APPLY_TO_SHIPPING = 'apply_to_shipping';
+    private const ATTR_TIMES_USED = 'times_used';
+    private const ATTR_IS_RSS = 'is_rss';
+    private const ATTR_COUPON_TYPE = 'coupon_type';
+    private const ATTR_USE_AUTO_GENERATION = 'use_auto_generation';
+    private const ATTR_USES_PER_COUPON = 'uses_per_coupon';
+    private const ATTR_PRIMARY_COUPON = 'primary_coupon';
+    private const ATTR_SIMPLE_FREE_SHIPPING = 'simple_free_shipping';
+    private const ATTR_STORE_LABELS = 'store_labels';
+    private const ATTR_WEBSITE_IDS = 'website_ids';
+    private const ATTR_CUSTOMER_GROUP_IDS = 'customer_group_ids';
 
     /**
      * @var FBEHelper
@@ -103,7 +109,7 @@ class Builder
      * @param int $storeId
      * @return $this
      */
-    public function setStoreId($storeId)
+    public function setStoreId($storeId): self
     {
         $this->storeId = $storeId;
         return $this;
@@ -113,238 +119,101 @@ class Builder
      * Build promo
      *
      * @param Rule $rule
-     * @return array|float[]|int[]|null[]|string[]
-     * @throws LocalizedException
+     * @return array
      */
-    public function buildPromoEntry(Rule $rule)
+    public function buildPromoEntry(Rule $rule): array
     {
-        $startDate = $rule->getFromDate() ? strtotime($rule->getFromDate()) : strtotime('now');
-        $endDate = $rule->getToDate();
-        if ($endDate) {
-            $endDate = strtotime($endDate);
-        }
+        $fromDate = $rule->getFromDate() ? strtotime($rule->getFromDate()) : null;
+        $toDate = $rule->getToDate() ? strtotime($rule->getToDate()) : null;
 
-        $entry = [
-            self::ATTR_OFFER_ID => rand(),
-            self::ATTR_OFFER_TITLE => $rule->getName(),
-            self::ATTR_START_DATE => $startDate,
-            self::ATTR_END_DATE => $endDate,
-            self::ATTR_REDEEM_LIMIT => $rule->getUsesPerCustomer(),
+        $isActive = $this->boolFlagToString((int)$rule->getIsActive());
+        $stopRulesProcessing = $this->boolFlagToString((int)$rule->getStopRulesProcessing());
+        $isAdvanced = $this->boolFlagToString((int)$rule->getIsAdvanced());
+        $applyToShipping = $this->boolFlagToString((int)$rule->getApplyToShipping());
+        $isRss = $this->boolFlagToString((int)$rule->getIsRss());
+        $useAutoGeneration = $this->boolFlagToString((int)$rule->getUseAutoGeneration());
+
+        return [
+            self::ATTR_RULE_ID => $rule->getRuleId(),
+            self::ATTR_NAME => $rule->getName(),
+            self::ATTR_DESCRIPTION => $rule->getDescription(),
+            self::ATTR_FROM_DATE => $fromDate,
+            self::ATTR_TO_DATE => $toDate,
+            self::ATTR_USES_PER_CUSTOMER => $rule->getUsesPerCustomer(),
+            self::ATTR_IS_ACTIVE => $isActive,
+            self::ATTR_CONDITION => $rule->getConditionsSerialized(),
+            self::ATTR_ACTION_CONDITION => $rule->getActionsSerialized(),
+            self::ATTR_STOP_RULES_PROCESSING => $stopRulesProcessing,
+            self::ATTR_IS_ADVANCED => $isAdvanced,
+            self::ATTR_PRODUCT_IDS => $rule->getProductIds(),
+            self::ATTR_SORT_ORDER => $rule->getSortOrder(),
+            self::ATTR_SIMPLE_ACTION => $rule->getSimpleAction(),
+            self::ATTR_DISCOUNT_AMOUNT => $rule->getDiscountAmount(),
+            self::ATTR_DISCOUNT_QTY => $rule->getDiscountQty(),
+            self::ATTR_DISCOUNT_STEP => $rule->getDiscountStep(),
+            self::ATTR_APPLY_TO_SHIPPING => $applyToShipping,
+            self::ATTR_TIMES_USED => $rule->getTimesUsed(),
+            self::ATTR_IS_RSS => $isRss,
+            self::ATTR_COUPON_TYPE => $this->getCouponTypeAsString($rule),
+            self::ATTR_USE_AUTO_GENERATION => $useAutoGeneration,
+            self::ATTR_USES_PER_COUPON => $rule->getUsesPerCoupon(),
+            self::ATTR_PRIMARY_COUPON => $rule->getCouponCode(),
+            self::ATTR_SIMPLE_FREE_SHIPPING => $this->getSimpleFreeShippingAsString($rule),
+            self::ATTR_STORE_LABELS => json_encode($rule->getStoreLabels()),
+            self::ATTR_WEBSITE_IDS => json_encode($rule->getWebsiteIds()),
+            self::ATTR_CUSTOMER_GROUP_IDS => json_encode($rule->getCustomerGroupIds()),
         ];
-
-        $entry = $this->applyCouponType($rule, $entry);
-
-        $skus = $this->getMatchingSkus($rule);
-        if (!empty($skus)) {
-            $entry += [self::ATTR_TARGET_SELECTION => "SPECIFIC_PRODUCTS"];
-            $entry += [self::ATTR_TARGET_FILTER => "{'retailer_id': {'is_any':" . json_encode($skus) . "}}"];
-        } else {
-            $entry += [self::ATTR_TARGET_SELECTION => "ALL_CATALOG_PRODUCTS"];
-            $entry += [self::ATTR_TARGET_FILTER => null];
-        }
-
-        return $this->applyDiscountAction($rule, $entry);
     }
 
     /**
-     * Apply Coupon Type
+     * Convert bool flag to string
+     *
+     * @param int $flag
+     * @return string
+     */
+    private function boolFlagToString(int $flag): string
+    {
+        return $flag ? 'true' : 'false';
+    }
+
+    /**
+     * Get coupon type string
      *
      * @param Rule $rule
-     * @param array $entry
-     * @return array|string[]
-     * @throws LocalizedException
+     * @return string
      */
-    private function applyCouponType(Rule $rule, array $entry): array
+    private function getCouponTypeAsString(Rule $rule): string
     {
         $couponType = $rule->getCouponType();
         switch ($couponType) {
             case Rule::COUPON_TYPE_NO_COUPON:
-                $entry += [self::ATTR_PUBLIC_COUPON_CODE => ''];
-                $entry += [self::ATTR_OFFER_APPLICATION_TYPE => 'AUTOMATIC_AT_CHECKOUT'];
-                break;
+                return 'coupon_type_no_coupon';
             case Rule::COUPON_TYPE_SPECIFIC:
-                $entry += [self::ATTR_PUBLIC_COUPON_CODE => $rule->getCouponCode()];
-                $entry += [self::ATTR_OFFER_APPLICATION_TYPE => 'BUYER_APPLIED'];
-                break;
+                return 'coupon_type_specific';
             case Rule::COUPON_TYPE_AUTO:
+                return 'coupon_type_auto';
             default:
-                throw new LocalizedException(__(sprintf('Unsupported coupon type: %s ', $couponType)));
+                return 'coupon_type_unknown';
         }
-
-        return $entry;
     }
 
     /**
-     * Generic apply discount
+     * Get simple free shipping string
      *
      * @param Rule $rule
-     * @param array $entry
-     * @return float[]|int[]|null[]|string[]
-     * @throws LocalizedException
+     * @return string
      */
-    private function applyDiscountAction(Rule $rule, array $entry): array
+    private function getSimpleFreeShippingAsString(Rule $rule): string
     {
-        $isShipping = $rule->getSimpleFreeShipping();
-        switch ($isShipping) {
-            case ShippingRule::FREE_SHIPPING_ADDRESS:
-                $entry = $this->applyDiscountActionFreeShipping($rule, $entry);
-                break;
+        $simple_free_shipping = $rule->getSimpleFreeShipping();
+        switch ($simple_free_shipping) {
             case ShippingRule::FREE_SHIPPING_ITEM:
-                throw new LocalizedException(__(sprintf('Unsupported free shipping: %s', $isShipping)));
+                return 'free_shipping_item';
+            case ShippingRule::FREE_SHIPPING_ADDRESS:
+                return 'free_shipping_address';
             default:
-                $entry = $this->applyDiscountActionNonFreeShipping($rule, $entry);
+                return 'no_free_shipping';
         }
-        return $entry;
-    }
-
-    /**
-     * Apply discount with free shipping
-     *
-     * @param Rule $rule
-     * @param array $entry
-     * @return array|int[]|null[]|string[]
-     */
-    private function applyDiscountActionFreeShipping(Rule $rule, array $entry): array
-    {
-        $entry += [self::ATTR_MIN_SUBTOTAL => $this->getMinSubtotal($rule)];
-        $entry += [self::ATTR_VALUE_TYPE => "PERCENTAGE"];
-        $entry += [self::ATTR_FIXED_AMOUNT_OFF => ""];
-        $entry += [self::ATTR_TARGET_GRANULARITY => "ITEM_LEVEL"];
-        $entry += [self::ATTR_TARGET_TYPE => 'SHIPPING'];
-        $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => "STANDARD"];
-        $entry += [self::ATTR_MIN_QUANTITY => '0'];
-        $entry += [self::ATTR_PERCENT_OFF => 100];
-        $entry += [self::ATTR_TARGET_QUANTITY => ''];
-
-        return $entry;
-    }
-
-    /**
-     * Apply Discount without free shipping
-     *
-     * @param Rule $rule
-     * @param array $entry
-     * @return float[]|int[]|null[]|string[]
-     * @throws LocalizedException
-     */
-    private function applyDiscountActionNonFreeShipping(Rule $rule, array $entry): array
-    {
-        $action = $rule->getSimpleAction();
-        switch ($action) {
-            case "by_percent":
-                $entry = $this->applyDiscountActionByPercent($rule, $entry);
-                break;
-            case "by_fixed":
-                $entry = $this->applyDiscountActionByFixed($rule, $entry);
-                break;
-            case "buy_x_get_y":
-                $entry = $this->applyDiscountActionBuyXGetY($rule, $entry);
-                break;
-            case "cart_fixed":
-            default:
-                throw new LocalizedException(__(sprintf('Unsupported discount action: %s', $action)));
-        }
-
-        return $entry;
-    }
-
-    /**
-     * Apply discount percentage
-     *
-     * @param Rule $rule
-     * @param array $entry
-     * @return array|null[]|string[]
-     */
-    private function applyDiscountActionByPercent(Rule $rule, array $entry): array
-    {
-        $entry += [self::ATTR_MIN_SUBTOTAL => $this->getMinSubtotal($rule)];
-        $entry += [self::ATTR_VALUE_TYPE => "PERCENTAGE"];
-        $entry += [self::ATTR_FIXED_AMOUNT_OFF => ""];
-        $entry += [self::ATTR_TARGET_GRANULARITY => "ORDER_LEVEL"];
-        $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
-        $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
-        $entry += [self::ATTR_MIN_QUANTITY => '0'];
-        $entry += [self::ATTR_PERCENT_OFF => (int) $rule->getDiscountAmount()];
-        $entry += [self::ATTR_TARGET_QUANTITY => ''];
-
-        return $entry;
-    }
-
-    /**
-     * Apply Fixed Discount
-     *
-     * @param Rule $rule
-     * @param array $entry
-     * @return array|string[]
-     */
-    private function applyDiscountActionByFixed(Rule $rule, array $entry): array
-    {
-        $entry += [self::ATTR_MIN_SUBTOTAL => ''];
-        $entry += [self::ATTR_VALUE_TYPE => "FIXED_AMOUNT"];
-        $entry += [self::ATTR_FIXED_AMOUNT_OFF => (int) $rule->getDiscountAmount()];
-        $entry += [self::ATTR_TARGET_GRANULARITY => "ORDER_LEVEL"];
-        $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
-        $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
-        $entry += [self::ATTR_MIN_QUANTITY => '0'];
-        $entry += [self::ATTR_PERCENT_OFF => ""];
-        $entry += [self::ATTR_TARGET_QUANTITY => ''];
-
-        return $entry;
-    }
-
-    /**
-     * Apply Discount Action for Buy X Get Y
-     *
-     * @param Rule $rule
-     * @param array $entry
-     * @return array|float[]|int[]|string[]
-     */
-    private function applyDiscountActionBuyXGetY(Rule $rule, array $entry): array
-    {
-        $entry += [self::ATTR_MIN_SUBTOTAL => ''];
-        $entry += [self::ATTR_VALUE_TYPE => "PERCENTAGE"];
-        $entry += [self::ATTR_FIXED_AMOUNT_OFF => ''];
-        $entry += [self::ATTR_TARGET_GRANULARITY => "ITEM_LEVEL"];
-        $entry += [self::ATTR_TARGET_TYPE => 'LINE_ITEM'];
-        $entry += [self::ATTR_TARGET_SHIPPING_OPTIONS => ''];
-        $entry += [self::ATTR_MIN_QUANTITY => $rule->getDiscountStep()];
-
-        $discountAmt = $rule->getDiscountAmount();
-        if ($discountAmt < 1) {
-            $entry += [self::ATTR_PERCENT_OFF => $discountAmt * 100];
-            $entry += [self::ATTR_TARGET_QUANTITY => 1];
-        } else {
-            $entry += [self::ATTR_PERCENT_OFF => "100"];
-            $entry += [self::ATTR_TARGET_QUANTITY => (int) $discountAmt];
-        }
-
-        return $entry;
-    }
-
-    /**
-     * Get minimum subtotal
-     *
-     * @param Rule $rule
-     * @return string|null
-     */
-    private function getMinSubtotal(Rule $rule)
-    {
-        //this assumes the first condition is "If ANY of these conditions are TRUE"
-        // or "If ALL of these conditions are TRUE"
-        $rootCondition = $rule->getConditions();
-        $conditions = null;
-        if ($rootCondition) {
-            $conditions = $rootCondition->getConditions();
-        }
-        //only supporting 1 condition
-        if ($conditions && count($conditions) == 1) {
-            $operator = $conditions[0]->getOperator() ?? '';
-            $attribute = $conditions[0]->getAttribute() ?? '';
-            if ($operator == '>=' && $attribute == 'base_subtotal') {
-                return sprintf(self::MIN_SUBTOTAL, $conditions[0]->getValue(), $this->getStoreCurrency());
-            }
-        }
-        return null;
     }
 
     /**
@@ -352,67 +221,37 @@ class Builder
      *
      * @return array
      */
-    public function getHeaderFields()
+    public function getHeaderFields(): array
     {
         return [
-            self::ATTR_OFFER_ID,
-            self::ATTR_OFFER_TITLE,
-            self::ATTR_START_DATE,
-            self::ATTR_END_DATE,
-            self::ATTR_REDEEM_LIMIT,
-            self::ATTR_PUBLIC_COUPON_CODE,
-            self::ATTR_OFFER_APPLICATION_TYPE,
-            self::ATTR_TARGET_SELECTION,
-            self::ATTR_TARGET_FILTER,
-            self::ATTR_MIN_SUBTOTAL,
-            self::ATTR_VALUE_TYPE,
-            self::ATTR_FIXED_AMOUNT_OFF,
-            self::ATTR_TARGET_GRANULARITY,
-            self::ATTR_TARGET_TYPE,
-            self::ATTR_TARGET_SHIPPING_OPTIONS,
-            self::ATTR_MIN_QUANTITY,
-            self::ATTR_PERCENT_OFF,
-            self::ATTR_TARGET_QUANTITY
+            self::ATTR_RULE_ID,
+            self::ATTR_NAME,
+            self::ATTR_DESCRIPTION,
+            self::ATTR_FROM_DATE,
+            self::ATTR_TO_DATE,
+            self::ATTR_USES_PER_CUSTOMER,
+            self::ATTR_IS_ACTIVE,
+            self::ATTR_CONDITION,
+            self::ATTR_ACTION_CONDITION,
+            self::ATTR_STOP_RULES_PROCESSING,
+            self::ATTR_IS_ADVANCED,
+            self::ATTR_PRODUCT_IDS,
+            self::ATTR_SORT_ORDER,
+            self::ATTR_SIMPLE_ACTION,
+            self::ATTR_DISCOUNT_AMOUNT,
+            self::ATTR_DISCOUNT_QTY,
+            self::ATTR_DISCOUNT_STEP,
+            self::ATTR_APPLY_TO_SHIPPING,
+            self::ATTR_TIMES_USED,
+            self::ATTR_IS_RSS,
+            self::ATTR_COUPON_TYPE,
+            self::ATTR_USE_AUTO_GENERATION,
+            self::ATTR_USES_PER_COUPON,
+            self::ATTR_PRIMARY_COUPON,
+            self::ATTR_SIMPLE_FREE_SHIPPING,
+            self::ATTR_STORE_LABELS,
+            self::ATTR_WEBSITE_IDS,
+            self::ATTR_CUSTOMER_GROUP_IDS,
         ];
-    }
-
-    /**
-     * Get match skus
-     *
-     * @param Rule $offer
-     * @return array
-     */
-    private function getMatchingSkus($offer): array
-    {
-        //TODO this isn't a reliable way to get products that match for an offer
-        $skus = [];
-        $ruleData = $offer->getActionsSerialized();
-        if ($ruleData) {
-            $ruleDataArray = json_decode($ruleData, true);
-            if (isset($ruleDataArray['conditions'])) {
-                $conditions = $ruleDataArray['conditions'];
-                foreach ($conditions as $condition) {
-                    if ($condition['attribute'] === 'sku') {
-                        $skuValues = $condition['value'];
-                        $skuValues = explode(",", $skuValues);
-                        foreach ($skuValues as $skuValue) {
-                            $skus[] = $skuValue;
-                        }
-                    }
-                }
-            }
-        }
-        return $skus;
-    }
-
-    /**
-     * Get store currency
-     *
-     * @return mixed
-     */
-    private function getStoreCurrency()
-    {
-        //TODO change this to take in current store id instead of default
-        return $this->fbeHelper->getStore()->getCurrentCurrency()->getCode();
     }
 }
