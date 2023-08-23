@@ -83,13 +83,9 @@ class UpdateMBESettings
      */
     public function execute()
     {
-        try {
-            $installedConfigs = $this->getMBEInstalledConfigs();
-            foreach ($installedConfigs as $config) {
-                $this->updateMBESettings($config->getScopeId());
-            }
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
+        $installedConfigs = $this->getMBEInstalledConfigs();
+        foreach ($installedConfigs as $config) {
+            $this->updateMBESettings($config->getScopeId());
         }
     }
 
@@ -112,15 +108,16 @@ class UpdateMBESettings
             $response = $this->graphAPIAdapter->getFBEInstalls($accessToken, $businessId);
             $this->saveFBEInstallsResponse->save($response['data'], $storeId);
             $this->fbeHelper->log("Updated MBE Settings for storeId: {$storeId}");
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
-            $this->fbeHelper->log($e->getMessage());
-            if (stripos($e->getMessage(), 'truncated') !== false) {
-                $this->fbeHelper->log('Full error: ' . $response->getBody());
-            }
-            throw $e;
         } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'update_mbe_settings_cron',
+                    'event_type' => 'update_mbe_settings'
+                ]
+            );
         }
     }
 
@@ -141,7 +138,15 @@ class UpdateMBESettings
 
             return $collection->getItems();
         } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $this->fbeHelper->getStore()->getId(),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'update_mbe_settings_cron',
+                    'event_type' => 'get_mbe_installed_configs'
+                ]
+            );
             return [];
         }
     }

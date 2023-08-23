@@ -84,7 +84,15 @@ class FbinstalledFeatures implements HttpPostActionInterface
             $json = $this->saveInstalledFeatures();
             return $result->setData($json);
         } catch (Exception $e) {
-            $this->fbeHelper->logCritical($e->getMessage());
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $this->request->getParam('storeId'),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'fbe_installs',
+                    'event_type' => 'save_installed_features'
+                ]
+            );
             throw new LocalizedException(
                 __('There was error while processing your request.' .
                 ' Please contact admin for more details.')

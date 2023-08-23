@@ -84,9 +84,17 @@ class FbeInstallsSave implements HttpPostActionInterface
             $json = $this->saveFbeInstalls();
             return $result->setData($json);
         } catch (Exception $e) {
-            $this->fbeHelper->logCritical($e->getMessage());
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $this->request->getParam('storeId'),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'fbe_installs',
+                    'event_type' => 'save_config'
+                ]
+            );
             throw new LocalizedException(
-                __('The was an error while getting MBE installed features.' .
+                __('The was an error while saving FbeInstalls config.' .
                 ' Please contact admin for more details.')
             );
         }
@@ -112,7 +120,15 @@ class FbeInstallsSave implements HttpPostActionInterface
             $success = $this->saveFbeInstallsResponse->save($data, $storeId);
             return ["success" => $success];
         } catch (Exception $e) {
-            $this->fbeHelper->logCritical($e->getMessage());
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'fbe_installs',
+                    'event_type' => 'save_config'
+                ]
+            );
             return [
                 'success' => false,
                 'message' => 'There was an issue saving FbeInstalls config.'

@@ -26,7 +26,7 @@ use Magento\Sales\Model\Order;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Model\Order\CreateOrder;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 /**
  * Helper class to sync (to magento), mark shipped, cancel,
@@ -45,14 +45,14 @@ class CommerceHelper
     private SystemConfig $systemConfig;
 
     /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
      * @var CreateOrder
      */
     private CreateOrder $createOrder;
+
+    /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
 
     /**
      * @var int
@@ -72,19 +72,19 @@ class CommerceHelper
     /**
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param SystemConfig $systemConfig
-     * @param LoggerInterface $logger
      * @param CreateOrder $createOrder
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         GraphAPIAdapter $graphAPIAdapter,
         SystemConfig $systemConfig,
-        LoggerInterface $logger,
-        CreateOrder $createOrder
+        CreateOrder $createOrder,
+        FBEHelper $fbeHelper
     ) {
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->systemConfig = $systemConfig;
-        $this->logger = $logger;
         $this->createOrder = $createOrder;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -115,7 +115,15 @@ class CommerceHelper
                 $orderIds[$magentoOrder->getIncrementId()] = $facebookOrderId;
             } catch (Exception $e) {
                 $this->exceptions[] = $e->getMessage();
-                $this->logger->critical($e->getMessage());
+                $this->fbeHelper->logException(
+                    $e,
+                    [
+                        'store_id' => $storeId,
+                        'log_type' => 'persist_meta_log_immediately',
+                        'event' => 'order_sync',
+                        'event_type' => 'create_magento_orders'
+                    ]
+                );
             }
         }
         if (!empty($orderIds)) {

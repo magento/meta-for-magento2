@@ -110,7 +110,15 @@ class FbeInstallsConfig implements HttpGetActionInterface
             }
             return $result->setData($json);
         } catch (Exception $e) {
-            $this->fbeHelper->logCritical($e->getMessage());
+            $this->fbeHelper->logException(
+                $e,
+                [
+                    'store_id' => $this->request->getParam('storeId'),
+                    'log_type' => 'persist_meta_log_immediately',
+                    'event' => 'fbe_installs',
+                    'event_type' => 'get_config'
+                ]
+            );
         }
     }
 
