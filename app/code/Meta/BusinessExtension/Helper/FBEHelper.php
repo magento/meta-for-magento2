@@ -104,6 +104,14 @@ class FBEHelper
     }
 
     /**
+     * @return GraphAPIAdapter
+     */
+    public function getGraphAPIAdapter(): GraphAPIAdapter
+    {
+        return $this->graphAPIAdapter;
+    }
+
+    /**
      * Returns the properly configured Graph Base URL
      */
     public function getGraphBaseURL()

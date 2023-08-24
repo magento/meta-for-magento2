@@ -25,9 +25,9 @@ use Magento\Catalog\Model\Category as Category;
 use Magento\Catalog\Model\Category\Image as CategoryImageService;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Meta\Catalog\Setup\MetaCatalogAttributes;
@@ -66,11 +66,6 @@ class CategoryCollection
     private ProductIdentifier $productIdentifier;
 
     /**
-     * @var GraphAPIAdapter
-     */
-    private $graphApiAdapter;
-
-    /**
      * @var CategoryImageService
      */
     private $imageService;
@@ -85,7 +80,6 @@ class CategoryCollection
      * @param FBEHelper $helper
      * @param SystemConfig $systemConfig
      * @param ProductIdentifier $productIdentifier
-     * @param GraphAPIAdapter $graphApiAdapter
      * @param CategoryImageService $imageService
      */
     public function __construct(
@@ -95,7 +89,6 @@ class CategoryCollection
         FBEHelper                   $helper,
         SystemConfig                $systemConfig,
         ProductIdentifier           $productIdentifier,
-        GraphAPIAdapter             $graphApiAdapter,
         CategoryImageService        $imageService
     )
     {
@@ -105,7 +98,6 @@ class CategoryCollection
         $this->fbeHelper = $helper;
         $this->systemConfig = $systemConfig;
         $this->productIdentifier = $productIdentifier;
-        $this->graphApiAdapter = $graphApiAdapter;
         $this->imageService = $imageService;
     }
 
@@ -201,9 +193,14 @@ class CategoryCollection
 
         $categoryURL = $this->getDirectCategoryURL($category);
 
+        // check if url path exist use it, otherwise url_key
+        $categoryURLHandle = empty($category->getData('url_path'))
+            ? $category->getUrlKey() : $category->getData('url_path');
+
         return [
             'cover_image_url' => $categoryImageURL,
-            'external_url' => $categoryURL
+            'external_url' => $categoryURL,
+            'external_url_handle' => $categoryURLHandle
         ];
     }
 
@@ -403,11 +400,7 @@ class CategoryCollection
      * @param $storeId
      * @return string|null
      */
-    private function pushCategoriesToFBCollections(
-        $categories,
-        $accessToken,
-        $storeId
-    ): ?string
+    private function pushCategoriesToFBCollections($categories, $accessToken, $storeId): ?string
     {
         $resArray = [];
 
@@ -435,6 +428,7 @@ class CategoryCollection
                     $storeId,
                     $setId
                 ));
+                $products = $this->getCategoryProducts($category, $storeId);
 
                 if ($setId) {
                     $this->fbeHelper->log(sprintf(
@@ -443,14 +437,22 @@ class CategoryCollection
                         $category->getName(),
                         $storeId
                     ));
-                    $requests[] = $this->updateCategoryWithFBRequestJson($category, $setId, $storeId);
+                    $requests[] = $this->updateCategoryWithFBRequestJson($category, $products, $setId, $storeId);
                 } else {
+                    if (count($products) === 0) {
+                        $this->fbeHelper->log(sprintf(
+                            "Category update: Empty CATEGORY %s and store %s, product set creation skipped",
+                            $category->getName(),
+                            $storeId
+                        ));
+                        continue;
+                    }
                     $this->fbeHelper->log(sprintf(
                         "Category update: Creating new FB product set for CATEGORY %s and store %s",
                         $category->getName(),
                         $storeId
                     ));
-                    $requests[] = $this->pushCategoryWithFBRequestJson($category, $catalogId, $storeId);
+                    $requests[] = $this->pushCategoryWithFBRequestJson($category, $products, $catalogId, $storeId);
                 }
                 $updatedCategories[] = $category;
 
@@ -501,16 +503,11 @@ class CategoryCollection
      * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
      * e.g. {'retailer_id': {'is_any': ['10', '100']}}
      *
-     * @param Category $category
+     * @param ProductCollection $productCollection
      * @return string
      */
-    private function getCategoryProductFilter(Category $category): string
+    private function getCategoryProductFilter(ProductCollection $productCollection): string
     {
-        $productCollection = $this->productCollectionFactory->create();
-        $productCollection->addAttributeToSelect('sku');
-        $productCollection->distinct(true);
-        $productCollection->addCategoriesFilter(['eq' => $category->getId()]);
-        $productCollection->getSelect()->limit(10000);
         $this->fbeHelper->log("product collection count:" . count($productCollection));
 
         $ids = [];
@@ -521,6 +518,29 @@ class CategoryCollection
         $this->fbeHelper->log("filter:" . $filter);
 
         return $filter;
+    }
+
+    /**
+     * Fetch products for product category
+     *
+     * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
+     * e.g. {'retailer_id': {'is_any': ['10', '100']}}
+     *
+     * @param Category $category
+     * @param $storeId
+     * @return ProductCollection
+     */
+    private function getCategoryProducts(Category $category, $storeId): ProductCollection
+    {
+        $productCollection = $this->productCollectionFactory->create();
+        $productCollection->setStoreId($storeId);
+        $productCollection->addAttributeToSelect('sku');
+        $productCollection->distinct(true);
+        $productCollection->addCategoriesFilter(['eq' => $category->getId()]);
+        $productCollection->getSelect()->limit(10000);
+        $this->fbeHelper->log("product collection count:" . count($productCollection));
+
+        return $productCollection;
     }
 
     /**
@@ -535,6 +555,7 @@ class CategoryCollection
      */
     private function updateCategoryWithFBRequestJson(
         Category          $category,
+        ProductCollection $products,
         string            $setId,
                           $storeId
     ): array
@@ -544,8 +565,9 @@ class CategoryCollection
             'relative_url' => $setId,
             'body' => http_build_query(array(
                 'name' => $this->getCategoryPathName($category, $storeId),
-                'filter' => $this->getCategoryProductFilter($category),
-                'metadata' => $this->getCategoryMetaData($category)
+                'filter' => $this->getCategoryProductFilter($products),
+                'metadata' => $this->getCategoryMetaData($category),
+                'retailer_id' => $category->getId()
             ))
         );
     }
@@ -563,6 +585,7 @@ class CategoryCollection
      */
     private function pushCategoryWithFBRequestJson(
         Category          $category,
+        ProductCollection $products,
         string            $catalogId,
                           $storeId
     ): array
@@ -572,8 +595,9 @@ class CategoryCollection
             'relative_url' => $catalogId . '/product_sets',
             'body' => http_build_query(array(
                 'name' => $this->getCategoryPathName($category, $storeId),
-                'filter' => $this->getCategoryProductFilter($category),
-                'metadata' => $this->getCategoryMetaData($category)
+                'filter' => $this->getCategoryProductFilter($products),
+                'metadata' => $this->getCategoryMetaData($category),
+                'retailer_id' => $category->getId()
             ))
         );
     }
@@ -598,9 +622,9 @@ class CategoryCollection
     ): array
     {
         $this->fbeHelper->log(sprintf('Pushing batch %d with %d categories', $currentBatch, count($requests)));
-        $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+        $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken);
-        $batch_response = $this->graphApiAdapter->graphAPIBatchRequest($requests);
+        $batch_response = $this->fbeHelper->getGraphAPIAdapter()->graphAPIBatchRequest($requests);
         $this->fbeHelper->log('Category push response ' . json_encode($batch_response));
         return $this->processCategoryBatchResponse($batch_response, $updated_categories, $storeId);
     }
@@ -762,9 +786,9 @@ class CategoryCollection
         $this->fbeHelper->log(sprintf('Deleting Product set batch %d with %d categories',
             $currentBatch,
             count($requests)));
-        $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
+        $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken);
-        $batchResponse = $this->graphApiAdapter->graphAPIBatchRequest($requests);
+        $batchResponse = $this->fbeHelper->getGraphAPIAdapter()->graphAPIBatchRequest($requests);
         $this->fbeHelper->log('Category delete batch response ' . json_encode($batchResponse));
 
         foreach ($batchResponse as $response) {
