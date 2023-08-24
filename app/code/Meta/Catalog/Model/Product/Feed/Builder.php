@@ -20,11 +20,13 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Model\Product\Feed;
 
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Catalog\Helper\Product\MappingConfig;
 use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
+use Meta\Catalog\Model\Product\Feed\Builder\AdditionalAttributes;
 use Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface;
 use Meta\Catalog\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Magento\Catalog\Model\Product;
@@ -76,6 +78,7 @@ class Builder
     private const ATTR_PRODUCT_TYPE = 'product_type';
     private const ATTR_VIDEO = 'video';
     private const ATTR_UNIT_PRICE = 'unit_price';
+    private const ATTR_METADATA = 'additional_metadata';
 
     // name of this column is sku, as Meta will identify this column with sku name
     private const ATTR_OTHER_ID = 'sku';
@@ -154,6 +157,11 @@ class Builder
     private MappingConfig $mappingConfig;
 
     /**
+     * @var AdditionalAttributes
+     */
+    private $additionalAttributes;
+
+    /**
      * @var array
      */
     private array $attrMap = [];
@@ -168,6 +176,7 @@ class Builder
      * @param Escaper $escaper
      * @param SystemConfig $systemConfig
      * @param MappingConfig $mappingConfig
+     * @param AdditionalAttributes $additionalAttributes
      */
     public function __construct(
         FBEHelper                 $fbeHelper,
@@ -176,7 +185,8 @@ class Builder
         ProductIdentifier         $productIdentifier,
         Escaper                   $escaper,
         SystemConfig              $systemConfig,
-        MappingConfig             $mappingConfig
+        MappingConfig             $mappingConfig,
+        AdditionalAttributes      $additionalAttributes
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -185,6 +195,7 @@ class Builder
         $this->escaper = $escaper;
         $this->systemConfig = $systemConfig;
         $this->mappingConfig = $mappingConfig;
+        $this->additionalAttributes = $additionalAttributes;
     }
 
     /**
@@ -453,25 +464,6 @@ class Builder
     }
 
     /**
-     * Get correct text for product attribute
-     *
-     * @param Product $product
-     * @param string $attribute
-     * @return string|false
-     */
-    private function getCorrectText(Product $product, $attribute)
-    {
-        if ($product->getData($attribute)) {
-            $text = $product->getAttributeText($attribute);
-            if (!$text) {
-                $text = $product->getData($attribute);
-            }
-            return $text;
-        }
-        return false;
-    }
-
-    /**
      * Get product brand
      *
      * @param Product $product
@@ -481,12 +473,12 @@ class Builder
     {
         $brand = isset($this->attrMap[self::ATTR_BRAND])
             ? $product->getData($this->attrMap[self::ATTR_BRAND])
-            : $this->getCorrectText($product, self::ATTR_BRAND);
+            : $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
         if (!$brand || $brand == '') {
-            $brand = $this->getCorrectText($product, self::ATTR_BRAND);
+            $brand = $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
         }
         if (!$brand) {
-            $brand = $this->getCorrectText($product, 'manufacturer');
+            $brand = $this->additionalAttributes->getCorrectText($product, 'manufacturer');
         }
         if (!$brand) {
             $brand = $this->getDefaultBrand();
@@ -608,9 +600,9 @@ class Builder
     {
         $gender = isset($this->attrMap[self::ATTR_GENDER])
                 ? $product->getData($this->attrMap[self::ATTR_GENDER])
-                : $this->getCorrectText($product, self::ATTR_GENDER);
+                : $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
         if (!$gender || $gender == '') {
-            $gender = $this->getCorrectText($product, self::ATTR_GENDER);
+            $gender = $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
         }
 
         if (!$gender) {
@@ -650,9 +642,9 @@ class Builder
     {
         $material = isset($this->attrMap[self::ATTR_MATERIAL])
             ? $product->getData($this->attrMap[self::ATTR_MATERIAL])
-            : $this->getCorrectText($product, self::ATTR_MATERIAL);
+            : $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
         if (!$material && $material == '') {
-            $material = $this->getCorrectText($product, self::ATTR_MATERIAL);
+            $material = $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
         }
         if ($material) {
             return is_array($material) ? implode(', ', $material) : $material;
@@ -670,14 +662,14 @@ class Builder
     {
         $pattern = isset($this->attrMap[self::ATTR_PATTERN])
             ? $product->getData($this->attrMap[self::ATTR_PATTERN])
-            : $this->getCorrectText($product, self::ATTR_PATTERN);
+            : $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
         if (!$pattern && $pattern == '') {
-            $pattern = $this->getCorrectText($product, self::ATTR_PATTERN);
+            $pattern = $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
         }
         if ($pattern) {
             return is_array($pattern) ? implode(', ', $pattern) : $pattern;
         }
-        return  '';
+        return '';
     }
 
     /**
@@ -763,11 +755,21 @@ class Builder
             self::ATTR_MATERIAL => $this->getMaterial($product),
             self::ATTR_PATTERN => $this->getPattern($product),
             self::ATTR_SHIPPING_WEIGHT => $this->getWeight($product),
+            self::ATTR_METADATA => json_encode($this->additionalAttributes->getAdditionalMetadata($product)),
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $entry[self::ATTR_UNIT_PRICE] = $this->getUnitPrice($product);
         }
+
+        $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
+        foreach ($customAttributes as $customAttribute) {
+            if (in_array($customAttribute, array_keys($entry))) {
+                continue;
+            }
+            $entry[$customAttribute] = $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
+        }
+
         return $entry;
     }
 
@@ -901,10 +903,19 @@ class Builder
             self::ATTR_MATERIAL,
             self::ATTR_PATTERN,
             self::ATTR_SHIPPING_WEIGHT,
+            self::ATTR_METADATA,
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $headerFields[] = self::ATTR_UNIT_PRICE;
+        }
+
+        $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
+        foreach ($customAttributes as $customAttribute) {
+            if (in_array($customAttribute, $headerFields)) {
+                continue;
+            }
+            $headerFields[] = $customAttribute;
         }
 
         if ($this->inventoryOnly) {
