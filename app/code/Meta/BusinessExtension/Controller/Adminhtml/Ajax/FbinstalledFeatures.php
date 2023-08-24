@@ -84,11 +84,10 @@ class FbinstalledFeatures implements HttpPostActionInterface
             $json = $this->saveInstalledFeatures();
             return $result->setData($json);
         } catch (Exception $e) {
-            $this->fbeHelper->logException(
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
                 [
                     'store_id' => $this->request->getParam('storeId'),
-                    'log_type' => 'persist_meta_log_immediately',
                     'event' => 'fbe_installs',
                     'event_type' => 'save_installed_features'
                 ]

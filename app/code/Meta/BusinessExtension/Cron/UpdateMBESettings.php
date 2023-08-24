@@ -109,11 +109,10 @@ class UpdateMBESettings
             $this->saveFBEInstallsResponse->save($response['data'], $storeId);
             $this->fbeHelper->log("Updated MBE Settings for storeId: {$storeId}");
         } catch (\Exception $e) {
-            $this->fbeHelper->logException(
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
                 [
                     'store_id' => $storeId,
-                    'log_type' => 'persist_meta_log_immediately',
                     'event' => 'update_mbe_settings_cron',
                     'event_type' => 'update_mbe_settings'
                 ]
@@ -138,11 +137,10 @@ class UpdateMBESettings
 
             return $collection->getItems();
         } catch (\Exception $e) {
-            $this->fbeHelper->logException(
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
                 [
                     'store_id' => $this->fbeHelper->getStore()->getId(),
-                    'log_type' => 'persist_meta_log_immediately',
                     'event' => 'update_mbe_settings_cron',
                     'event_type' => 'get_mbe_installed_configs'
                 ]

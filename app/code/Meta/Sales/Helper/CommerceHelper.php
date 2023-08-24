@@ -115,11 +115,10 @@ class CommerceHelper
                 $orderIds[$magentoOrder->getIncrementId()] = $facebookOrderId;
             } catch (Exception $e) {
                 $this->exceptions[] = $e->getMessage();
-                $this->fbeHelper->logException(
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
                     [
                         'store_id' => $storeId,
-                        'log_type' => 'persist_meta_log_immediately',
                         'event' => 'order_sync',
                         'event_type' => 'create_magento_orders'
                     ]
