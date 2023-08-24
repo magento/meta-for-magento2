@@ -662,12 +662,13 @@ class GraphAPIAdapter
      * @param mixed $fbOrderId
      * @param array $items
      * @param float|null $shippingRefundAmount
+     * @param float|null $deductionAmount
      * @param string $currency Order's currency code. Examples: "USD", "GBP"
      * @param null|string $reasonText
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
-    public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $currency, $reasonText = null)
+    public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $deductionAmount, $currency, $reasonText = null)
     {
         $request = [
             'access_token' => $this->accessToken,
@@ -686,6 +687,17 @@ class GraphAPIAdapter
         ];
         if ($reasonText) {
             $request['reason_text'] = $reasonText;
+        }
+        if ($deductionAmount > 0) {
+            $request['deductions'] = json_encode([
+                [
+                    'deduction_type' => "RETURN_SHIPPING",
+                    'deduction_amount' => [
+                        'amount' => $deductionAmount,
+                        'currency' => $currency
+                    ]
+                ]
+            ]);
         }
 
         $response = $this->callApi('POST', "{$fbOrderId}/refunds", $request);

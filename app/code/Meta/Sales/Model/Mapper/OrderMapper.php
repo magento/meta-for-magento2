@@ -82,13 +82,13 @@ class OrderMapper
      * @param OrderItemMapper $orderItemMapper
      */
     public function __construct(
-        StoreManagerInterface $storeManager,
-        GraphAPIAdapter $graphAPIAdapter,
-        SystemConfig $systemConfig,
-        OrderInterfaceFactory $orderFactory,
+        StoreManagerInterface        $storeManager,
+        GraphAPIAdapter              $graphAPIAdapter,
+        SystemConfig                 $systemConfig,
+        OrderInterfaceFactory        $orderFactory,
         OrderPaymentInterfaceFactory $paymentFactory,
         OrderAddressInterfaceFactory $orderAddressFactory,
-        OrderItemMapper $orderItemMapper
+        OrderItemMapper              $orderItemMapper
     ) {
         $this->storeManager = $storeManager;
         $this->graphAPIAdapter = $graphAPIAdapter;
@@ -290,6 +290,9 @@ class OrderMapper
         $orderSubtotalAmount = $data['estimated_payment_details']['subtotal']['items']['amount'];
         $orderTaxAmount = $data['estimated_payment_details']['tax']['amount'];
         $orderTotalAmount = $data['estimated_payment_details']['total_amount']['amount'];
+        // This is used to support multiple currencies for the order
+        // Since Shop Ads is only available in the US, we can set this to 1
+        $baseToOrderRate = 1;
 
         $order
             ->setOrderCurrencyCode($currencyCode)
@@ -300,6 +303,7 @@ class OrderMapper
             ->setTaxAmount($orderTaxAmount)
             ->setGrandTotal($orderTotalAmount)
             ->setBaseTotalPaid($orderTotalAmount)
+            ->setBaseToOrderRate($baseToOrderRate)
             ->setTotalPaid($orderTotalAmount)
             ->setBaseSubtotal($orderSubtotalAmount)
             ->setBaseGrandTotal($orderTotalAmount)

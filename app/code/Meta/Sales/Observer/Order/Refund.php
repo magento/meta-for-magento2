@@ -57,8 +57,8 @@ class Refund implements ObserverInterface
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      */
     public function __construct(
-        SystemConfig $systemConfig,
-        GraphAPIAdapter $graphAPIAdapter,
+        SystemConfig                  $systemConfig,
+        GraphAPIAdapter               $graphAPIAdapter,
         FacebookOrderInterfaceFactory $facebookOrderFactory
     ) {
         $this->systemConfig = $systemConfig;
@@ -113,8 +113,12 @@ class Refund implements ObserverInterface
             return;
         }
 
-        if ($creditmemo->getAdjustment() > 0) {
-            throw new Exception('Cannot refund order on Facebook. Refunds with adjustments are not yet supported.');
+        $deductionAmount = $creditmemo->getAdjustment();
+        if ($deductionAmount > 0) {
+            throw new Exception('Cannot refund order on Facebook. Adjustment Refunds are not yet supported.');
+        } elseif ($deductionAmount < 0) {
+            // Magento allows Adjustment Fees to be negative, but the Graph API deductions must always be positive
+            $deductionAmount = abs($deductionAmount);
         }
 
         $refundItems = $this->getRefundItems($creditmemo, $payment);
@@ -133,6 +137,7 @@ class Refund implements ObserverInterface
             $facebookOrder->getFacebookOrderId(),
             $refundItems,
             $shippingRefundAmount,
+            $deductionAmount,
             $currencyCode,
             $reasonText
         );
@@ -147,16 +152,18 @@ class Refund implements ObserverInterface
      * @param string $fbOrderId
      * @param array $items
      * @param float|null $shippingRefundAmount
+     * @param float|null $deductionAmount
      * @param string|null $currencyCode
      * @param string|null $reasonText
      * @throws GuzzleException
      * @throws Exception
      */
     private function refundOrder(
-        int $storeId,
-        string $fbOrderId,
-        array $items,
-        ?float $shippingRefundAmount,
+        int     $storeId,
+        string  $fbOrderId,
+        array   $items,
+        ?float  $shippingRefundAmount,
+        ?float  $deductionAmount,
         ?string $currencyCode,
         ?string $reasonText = null
     ) {
@@ -169,6 +176,7 @@ class Refund implements ObserverInterface
                 $fbOrderId,
                 $items,
                 $shippingRefundAmount,
+                $deductionAmount,
                 $currencyCode,
                 $reasonText
             );
@@ -191,7 +199,7 @@ class Refund implements ObserverInterface
      * @return array
      */
     private function getRefundItems(
-        CreditmemoInterface $creditmemo,
+        CreditmemoInterface   $creditmemo,
         OrderPaymentInterface $payment
     ): array {
         $refundItems = [];
