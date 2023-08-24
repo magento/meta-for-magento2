@@ -30,7 +30,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Security\Model\AdminSessionsManager;
-use Meta\BusinessExtension\Helper\GraphAPIConfig;
 use Throwable;
 
 /**
@@ -39,6 +38,8 @@ use Throwable;
 class FBEHelper
 {
     private const URL_TYPE_WEB = 'web';
+
+    public const PERSIST_META_LOG_IMMEDIATELY = 'persist_meta_log_immediately';
     /**
      * @var GraphAPIConfig
      */
@@ -322,6 +323,17 @@ class FBEHelper
         }
 
         $this->logger->error($errorMessage, $context);
+    }
+
+    /**
+     * Log exception and persist immediately with Meta
+     *
+     * @param Throwable $e
+     * @param array $context
+     */
+    public function logExceptionImmediatelyToMeta(Throwable $e, array $context = []) {
+        $context['log_type'] = self::PERSIST_META_LOG_IMMEDIATELY;
+        $this->logException($e, $context);
     }
 
     /**

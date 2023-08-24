@@ -117,13 +117,13 @@ class CategoryUpload extends AbstractAjax
         } catch (\Throwable $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
-            $this->fbeHelper->logException(
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
                 [
                     'store_id' => $storeId,
-                    'log_type' => 'persist_meta_log_immediately',
                     'event' => 'category_sync',
-                    'event_type' => 'manual_sync'
+                    'event_type' => 'all_categories_force_sync',
+                    'catalog_id' => $this->systemConfig->getCatalogId($storeId),
                 ]
             );
         }

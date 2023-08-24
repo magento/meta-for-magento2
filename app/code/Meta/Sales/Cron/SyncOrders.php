@@ -101,11 +101,10 @@ class SyncOrders
             } catch (Exception $e) {
                 $context = [
                     'store_id' => $store->getId(),
-                    'log_type' => 'persist_meta_log_immediately',
                     'event' => 'order_sync',
                     'event_type' => 'sync_orders_cron',
                 ];
-                $this->fbeHelper->logException($e, $context);
+                $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
             }
         }
     }

@@ -66,18 +66,21 @@ class CategorySyncCron
     public function execute()
     {
         foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+            $storeId = $store->getId();
             try {
-                if ($this->systemConfig->isCatalogSyncEnabled($store->getId())) {
-                    $this->categoryCollection->pushAllCategoriesToFbCollections($store->getId());
+                if ($this->systemConfig->isCatalogSyncEnabled($storeId)) {
+                    $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
                 }
             } catch (\Throwable $e) {
-                $context = [
-                    'store_id' => $this->fbeHelper->getStore()->getId(),
-                    'log_type' => 'persist_meta_log_immediately',
-                    'event' => 'category_sync',
-                    'event_type' => 'category_sync_cron',
-                ];
-                $this->fbeHelper->logException($e, $context);
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'category_sync',
+                        'event_type' => 'category_sync_cron',
+                        'catalog_id' => $this->systemConfig->getCatalogId($storeId)
+                    ]
+                );
             }
         }
     }

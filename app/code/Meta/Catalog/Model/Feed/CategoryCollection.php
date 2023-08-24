@@ -120,29 +120,41 @@ class CategoryCollection
         );
 
         foreach ($storeIds as $storeId) {
-            $categories = [];
-            if ($isNameChanged) {
-                $categories = $this->getAllActiveChildrenCategories($category, $storeId);
-            } else {
-                $categories[] = $this->categoryRepository->get($category->getId(), $storeId);;
-            }
+            try {
+                $categories = [];
+                if ($isNameChanged) {
+                    $categories = $this->getAllActiveChildrenCategories($category, $storeId);
+                } else {
+                    $categories[] = $this->categoryRepository->get($category->getId(), $storeId);;
+                }
 
-            if (!$this->systemConfig->isCatalogSyncEnabled($storeId)) {
-                $this->fbeHelper->log(
-                    "Category real time update: meta catalog sync is not enabled for store: " . $storeId
+                if (!$this->systemConfig->isCatalogSyncEnabled($storeId)) {
+                    $this->fbeHelper->log(
+                        "Category real time update: meta catalog sync is not enabled for store: " . $storeId
+                    );
+                    continue;
+                }
+
+                $accessToken = $this->systemConfig->getAccessToken($storeId);
+                if ($accessToken === null) {
+                    $this->fbeHelper->log(
+                        "can't find access token, won't update category with fb, storeId: " . $storeId
+                    );
+                    continue;
+                }
+
+                $this->pushCategoriesToFBCollections($categories, $accessToken, $storeId);
+            } catch (\Throwable $e) {
+                $extra_data = [
+                    'category_id' => $category->getId(),
+                    'category_name' => $category->getName(),
+                    'num_of_stores_for_category' => count($storeIds)
+                ];
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    $this->getCategoryLoggerContext($storeId, 'category_sync_real_time', $extra_data)
                 );
-                continue;
             }
-
-            $accessToken = $this->systemConfig->getAccessToken($storeId);
-            if ($accessToken === null) {
-                $this->fbeHelper->log(
-                    "can't find access token, won't update category with fb, storeId: " . $storeId
-                );
-                continue;
-            }
-
-            $this->pushCategoriesToFBCollections($categories, $accessToken, $storeId);
         }
     }
 
@@ -403,12 +415,10 @@ class CategoryCollection
     private function pushCategoriesToFBCollections($categories, $accessToken, $storeId): ?string
     {
         $resArray = [];
-
         $catalogId = $this->systemConfig->getCatalogId($storeId);
         $requests = [];
         $updatedCategories = [];
         $currentBatch = 1;
-
         foreach ($categories as $category) {
             try {
                 $syncEnabled = $category->getData(MetaCatalogAttributes::CATEGORY_SYNC_TO_FACEBOOK);
@@ -429,7 +439,6 @@ class CategoryCollection
                     $setId
                 ));
                 $products = $this->getCategoryProducts($category, $storeId);
-
                 if ($setId) {
                     $this->fbeHelper->log(sprintf(
                         "Category update: Updating FB product set %s for CATEGORY %s and store %s",
@@ -455,43 +464,48 @@ class CategoryCollection
                     $requests[] = $this->pushCategoryWithFBRequestJson($category, $products, $catalogId, $storeId);
                 }
                 $updatedCategories[] = $category;
-
                 if (count($requests) === self::BATCH_MAX) {
-
                     $resArray = array_merge($resArray,
-                        $this->flushCategoryBatchRequest(
-                            $requests,
-                            $updatedCategories,
-                            $currentBatch,
-                            $accessToken,
-                            $storeId
-                        ));
-
+                        $this->flushCategoryBatchRequest($requests, $updatedCategories,
+                            $currentBatch, $accessToken, $storeId));
                     $requests = [];
                     $updatedCategories = [];
                     $currentBatch++;
                 }
-
             } catch (\Throwable $e) {
                 $resArray[] = __(
                     "Error occurred while updating product category %1, " .
                     "please check the error log for more details",
                     $category->getName()
                 );
-                $this->fbeHelper->logException($e);
+                $extra_data = [
+                    'category_id' => $category->getId(),
+                    'category_name' => $category->getName(),
+                    'num_categories_for_update' => count($categories)
+                ];
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    $this->getCategoryLoggerContext($storeId, 'categories_push_to_meta', $extra_data)
+                );
             }
         }
-
         if (!empty($requests)) {
             try {
                 $resArray = array_merge($resArray,
-                    $this->flushCategoryBatchRequest($requests,
-                        $updatedCategories,
-                        $currentBatch,
-                        $accessToken,
-                        $storeId));
+                    $this->flushCategoryBatchRequest($requests, $updatedCategories,
+                        $currentBatch, $accessToken, $storeId));
             } catch (\Throwable $e) {
-                $this->fbeHelper->logException($e);
+                $extra_data = [
+                    'num_categories_for_update' => count($categories)
+                ];
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    $this->getCategoryLoggerContext(
+                        $storeId,
+                        'categories_push_to_meta_last_page',
+                        $extra_data
+                    )
+                );
             }
         }
         return json_encode($resArray);
@@ -752,7 +766,15 @@ class CategoryCollection
                         $currentBatch++;
                     }
                 } catch (\Throwable $e) {
-                    $this->fbeHelper->logException($e);
+                    $extra_data = [
+                        'category_id' => $category->getId(),
+                        'category_name' => $category->getName(),
+                        'num_categories_for_delete' => count($childrenCategories)
+                    ];
+                    $this->fbeHelper->logExceptionImmediatelyToMeta(
+                        $e,
+                        $this->getCategoryLoggerContext($storeId, 'delete_categories', $extra_data)
+                    );
                 }
             }
 
@@ -760,7 +782,15 @@ class CategoryCollection
                 try {
                     $this->flushCategoryDeleteBatchRequest($requests, $currentBatch, $accessToken, $storeId);
                 } catch (\Throwable $e) {
-                    $this->fbeHelper->logException($e);
+                    $extra_data = [
+                        'category_id' => $category->getId(),
+                        'category_name' => $category->getName(),
+                        'num_categories_for_delete' => count($childrenCategories)
+                    ];
+                    $this->fbeHelper->logExceptionImmediatelyToMeta(
+                        $e,
+                        $this->getCategoryLoggerContext($storeId, 'delete_categories_last_page', $extra_data)
+                    );
                 }
             }
         }
@@ -808,5 +838,24 @@ class CategoryCollection
                 ));
             }
         }
+    }
+
+    /**
+     * Return Category logger context for be logged
+     *
+     * @param $storeId
+     * @param $eventType
+     * @param $extra_data
+     * @return array
+     */
+    private function getCategoryLoggerContext($storeId, $eventType, $extra_data): array
+    {
+        return [
+            'store_id' => $storeId,
+            'event' => 'category_sync',
+            'event_type' => $eventType,
+            'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+            'extra_data' => $extra_data
+        ];
     }
 }

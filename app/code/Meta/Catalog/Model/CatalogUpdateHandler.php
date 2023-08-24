@@ -119,13 +119,14 @@ class CatalogUpdateHandler
      */
     private function execute(string $method)
     {
-        $batchId = $this->fbCatalogUpdateResourceModel->reserveProducts($method);
-        $productUpdates = $this->fbCatalogUpdateResourceModel->getReservedProducts($batchId);
-        if ($productUpdates->getSize() <= 0) {
-            return true;
-        }
-
+        $batchId = $this->fbCatalogUpdateResourceModel->getUniqueBatchId();
         try {
+            $this->fbCatalogUpdateResourceModel->reserveProductsForBatchId($method, $batchId);
+            $productUpdates = $this->fbCatalogUpdateResourceModel->getReservedProducts($batchId);
+            if ($productUpdates->getSize() <= 0) {
+                return true;
+            }
+
             $stores = $this->systemConfig->getStoreManager()->getStores(false, true);
             foreach ($stores as $store) {
                 $catalogId = $this->setupConfigs($store->getId());
@@ -141,8 +142,14 @@ class CatalogUpdateHandler
                     $this->processDeletes($productUpdates, $productIdentifer, $catalogId);
                 }
             }
-        } catch (GuzzleException | \Exception $e) {
-            $this->fbeHelper->logException($e);
+        } catch (\Throwable $e) {
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
+                $e,
+                [
+                    'event' => 'catalog_update_handler',
+                    'event_type' => $method
+                ]
+            );
             $this->fbCatalogUpdateResourceModel->clearBatchId($batchId);
             return false;
         }

@@ -22,6 +22,7 @@ namespace Meta\BusinessExtension\Logger;
 
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Logger\Handler\Base;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Monolog\Logger;
 
 class Handler extends Base
@@ -66,7 +67,7 @@ class Handler extends Base
     protected function write(array $record): void
     {
         $logTypeIsSet = isset($record['context']['log_type']);
-        if ($logTypeIsSet && $record['context']['log_type'] === 'persist_meta_log_immediately') {
+        if ($logTypeIsSet && $record['context']['log_type'] === FBEHelper::PERSIST_META_LOG_IMMEDIATELY) {
             $this->publisher->publish('persist.meta.log.immediately', json_encode($record['context']));
         } elseif ($logTypeIsSet && $record['context']['log_type'] === 'persist_meta_telemetry_logs') {
             $this->publisher->publish('persist.meta.telemetry.logs', json_encode($record['context']));

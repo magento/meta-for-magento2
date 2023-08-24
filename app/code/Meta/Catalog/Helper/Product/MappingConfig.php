@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Helper\Product;
 
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Store\Model\StoreManagerInterface;
-use Meta\BusinessExtension\Logger\Logger;
 
 class MappingConfig extends AbstractHelper
 {
@@ -17,9 +17,9 @@ class MappingConfig extends AbstractHelper
         'facebook_business_extension/attribute_mapping/custom_attribute_mapping';
 
     /**
-     * @var StoreManagerInterface
+     * @var SystemConfig
      */
-    private StoreManagerInterface $storeManager;
+    private SystemConfig $systemConfig;
 
     /**
      * @var Json
@@ -27,28 +27,28 @@ class MappingConfig extends AbstractHelper
     private Json $serialize;
 
     /**
-     * @var Logger
+     * @var FBEHelper
      */
-    private $logger;
+    private FBEHelper $fbeHelper;
 
     /**
      * Helper Constructor
      *
      * @param Context $context
-     * @param StoreManagerInterface $storeManager
+     * @param SystemConfig $systemConfig
      * @param Json $serialize
-     * @param Logger $logger
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         Context $context,
-        StoreManagerInterface $storeManager,
+        SystemConfig $systemConfig,
         Json $serialize,
-        Logger $logger
+        FBEHelper $fbeHelper
     ) {
         parent::__construct($context);
-        $this->storeManager = $storeManager;
+        $this->systemConfig = $systemConfig;
         $this->serialize = $serialize;
-        $this->logger = $logger;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -60,11 +60,12 @@ class MappingConfig extends AbstractHelper
     public function getAttributeMapping(): array
     {
         $metaAttrMappings = [];
+        $storeId = $this->_getRequest()->getParam('store');
         try {
             $attributeMaps = $this->scopeConfig->getValue(
                 self::XML_PATH_META_CATALOG_MAPPING,
                 ScopeInterface::SCOPE_STORE,
-                $this->_getRequest()->getParam('store')
+                $storeId
             );
             if ($attributeMaps == '' || $attributeMaps == null) {
                 return $metaAttrMappings;
@@ -75,8 +76,14 @@ class MappingConfig extends AbstractHelper
                 $metaAttrMappings[$row['meta_attributes']] = $row['product_attributes'];
             }
             return $metaAttrMappings;
-        } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage());
+        } catch (\Throwable $e) {
+            $context = [
+                'store_id' => $storeId,
+                'event' => 'product_feed_creation',
+                'event_type' => 'attribute_mapping_fetch',
+                'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+            ];
+            $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
         }
 
         return [];

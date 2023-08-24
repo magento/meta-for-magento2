@@ -172,7 +172,7 @@ class BatchApi
                         $requests[] = $this->buildProductRequest($product);
                     } catch (Exception $e) {
                         $exceptions++;
-                        $this->handleProductBuildException($exceptions, $e);
+                        $this->handleProductBuildException($exceptions, $e, $storeId);
                     }
 
                     if (count($requests) === self::BATCH_MAX) {
@@ -233,11 +233,17 @@ class BatchApi
      * @return void
      * @throws Exception
      */
-    private function handleProductBuildException(int $exceptions, Exception $e): void
+    private function handleProductBuildException(int $exceptions, Exception $e, $storeId): void
     {
         // Don't overload the logs, log the first 3 exceptions
         if ($exceptions <= 3) {
-            $this->fbeHelper->logException($e);
+            $context = [
+                'store_id' => $storeId,
+                'event' => 'batch_api',
+                'event_type' => 'batch_api_product_build',
+                'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+            ];
+            $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
         }
         // If it looks like a systemic failure : stop feed generation
         if ($exceptions > 100) {

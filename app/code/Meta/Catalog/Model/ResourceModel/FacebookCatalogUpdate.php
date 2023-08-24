@@ -133,16 +133,15 @@ class FacebookCatalogUpdate extends AbstractDb
      *
      * @param string $method
      * @param string $batchId
-     * @param int $limit
      * @return int
      */
-    public function setBatchIds(string $method, string $batchId, int $limit): int
+    public function reserveProductsForBatchId(string $method, string $batchId): int
     {
         $collection = $this->collectionFactory->create();
         $collection->addFieldToFilter('batch_id', ['null' => true]);
         $collection->addFieldToFilter('method', ['eq' => $method]);
         $collection->addFieldToSelect('row_id');
-        $collection->setPageSize($limit);
+        $collection->setPageSize(self::BATCH_LIMIT);
         $data = $collection->getData();
 
         $connection = $this->getConnection();
@@ -175,17 +174,14 @@ class FacebookCatalogUpdate extends AbstractDb
     }
 
     /**
-     * Reserve a batch of product updates
+     * Returns unique a batchId for product updates
      *
-     * @param string $method
      * @return string
      */
-    public function reserveProducts(string $method): string
+    public function getUniqueBatchId(): string
     {
         $prefix = $this->random->getRandomString(2);
-        $batchID = $this->random->getUniqueHash($prefix);
-        $this->setBatchIds($method, $batchID, self::BATCH_LIMIT);
-        return $batchID;
+        return $this->random->getUniqueHash($prefix);
     }
 
     /**

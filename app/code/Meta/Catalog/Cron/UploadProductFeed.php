@@ -98,11 +98,10 @@ class UploadProductFeed
             } catch (Exception $e) {
                 $context = [
                     'store_id' => $store->getId(),
-                    'log_type' => 'persist_meta_log_immediately',
                     'event' => 'catalog_sync',
                     'event_type' => 'upload_product_feed_cron',
                 ];
-                $this->fbeHelper->logException($e, $context);
+                $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
             }
         }
     }
