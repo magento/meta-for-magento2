@@ -76,6 +76,7 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD =
         'facebook/catalog_management/out_of_stock_threshold';
 
+    public const XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC = 'facebook/promotions/enable_promotions_sync';
     public const XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE = 'facebook/orders_sync/active';
     public const XML_PATH_FACEBOOK_ORDERS_SYNC_DEFAULT_ORDER_STATUS = 'facebook/orders_sync/default_order_status';
     public const XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER = 'facebook/orders_sync/auto_subscribe_to_newsletter';
@@ -767,6 +768,20 @@ class Config
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC, $scopeId, $scope) &&
             $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
+    }
+
+    /**
+     * Is promotions sync enabled
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isPromotionsSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC, $scopeId, $scope) &&
+            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope) &&
+            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG, $scopeId, $scope);
     }
 
     /**

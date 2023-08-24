@@ -97,7 +97,7 @@ class PushPromotions extends Field
     {
         /** @var Button $button */
         $button = $this->getLayout()->createBlock(Button::class);
-        return $button->setData(['id' => 'fb_push_promotions_btn', 'label' => __('Push Promotions to Facebook')])
+        return $button->setData(['id' => 'fb_push_promotions_btn', 'label' => __('Push Promotions to Meta')])
             ->toHtml();
     }
 
