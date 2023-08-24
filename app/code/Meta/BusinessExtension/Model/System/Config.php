@@ -69,6 +69,8 @@ class Config
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_LABEL_RUSH = 'facebook/shipping_methods/label_rush';
 
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN = 'facebook/business_extension/access_token';
+    public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CLIENT_ACCESS_TOKEN =
+        'facebook/business_extension/client_access_token';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ACCESS_TOKEN =
         'facebook/business_extension/page_access_token';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OUT_OF_STOCK_THRESHOLD =
@@ -570,6 +572,18 @@ class Config
     public function getAccessToken($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACCESS_TOKEN, $scopeId, $scope);
+    }
+
+    /**
+     * Get client access token
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return mixed
+     */
+    public function getClientAccessToken($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CLIENT_ACCESS_TOKEN, $scopeId, $scope);
     }
 
     /**
