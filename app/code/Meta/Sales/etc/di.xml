@@ -5,6 +5,10 @@
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>
+    <type name="Magento\OfflineShipping\Model\Config\Backend\Tablerate">
+        <plugin name="facebook_shipping_profiles" type="Meta\Sales\Plugin\ShippingSettingsUpdatePlugin"
+        />
+    </type>
     <type name="Meta\Sales\Helper\ShippingHelper">
         <arguments>
             <argument name="supportedShippingCarriers" xsi:type="array">
@@ -36,7 +40,8 @@
                 <item name="ADSONE" xsi:type="string">ADSOne</item>
                 <item name="AIR21" xsi:type="string">AIR21</item>
                 <item name="AIRPAK_EXPRESS" xsi:type="string">Airpak Express</item>
-                <item name="AIRSPEED_INTERNATIONAL_CORPORATION" xsi:type="string">Airspeed International Corporation</item>
+                <item name="AIRSPEED_INTERNATIONAL_CORPORATION" xsi:type="string">Airspeed International Corporation
+                </item>
                 <item name="ALFATREX" xsi:type="string">AlfaTrex</item>
                 <item name="ALLIED_EXPRESS" xsi:type="string">Allied Express</item>
                 <item name="ALLJOY_SUPPLY_CHAIN_CO_LTD" xsi:type="string">ALLJOY SUPPLY CHAIN CO., LTD</item>
@@ -52,7 +57,8 @@
                 <item name="ARROW_XL" xsi:type="string">Arrow XL</item>
                 <item name="ASENDIA_GERMANY" xsi:type="string">Asendia Germany</item>
                 <item name="ASENDIA_HK" xsi:type="string">Asendia HK</item>
-                <item name="ASENDIA_HK_PREMIUM_SERVICE_LATAM" xsi:type="string">Asendia HK - Premium Service (LATAM)</item>
+                <item name="ASENDIA_HK_PREMIUM_SERVICE_LATAM" xsi:type="string">Asendia HK - Premium Service (LATAM)
+                </item>
                 <item name="ASENDIA_UK" xsi:type="string">Asendia UK</item>
                 <item name="ASENDIA_USA" xsi:type="string">Asendia USA</item>
                 <item name="ASM" xsi:type="string">ASM</item>
@@ -69,8 +75,12 @@
                 <item name="BEST_EXPRESS" xsi:type="string">Best Express</item>
                 <item name="BEST_WAY_PARCEL" xsi:type="string">Best Way Parcel</item>
                 <item name="BIRDSYSTEM" xsi:type="string">BirdSystem</item>
-                <item name="BJS_DISTRIBUTION_STORAGE_COURIERS" xsi:type="string">BJS Distribution, Storage &amp; Couriers</item>
-                <item name="BJS_DISTRIBUTION_STORAGE_COURIERS_FTP" xsi:type="string">BJS Distribution, Storage &amp; Couriers - FTP</item>
+                <item name="BJS_DISTRIBUTION_STORAGE_COURIERS" xsi:type="string">BJS Distribution, Storage &amp;
+                    Couriers
+                </item>
+                <item name="BJS_DISTRIBUTION_STORAGE_COURIERS_FTP" xsi:type="string">BJS Distribution, Storage &amp;
+                    Couriers - FTP
+                </item>
                 <item name="BLUECARE_EXPRESS_LTD" xsi:type="string">Bluecare Express Ltd</item>
                 <item name="BLUEDART" xsi:type="string">Bluedart</item>
                 <item name="BLUE_STAR" xsi:type="string">Blue Star</item>
@@ -193,10 +203,13 @@
                 <item name="DYNAMIC_LOGISTICS" xsi:type="string">Dynamic Logistics</item>
                 <item name="EASY_MAIL" xsi:type="string">Easy Mail</item>
                 <item name="ECARGO" xsi:type="string">Ecargo</item>
-                <item name="ECMS_INTERNATIONAL_LOGISTICS_CO_LTD" xsi:type="string">ECMS International Logistics Co., Ltd.</item>
+                <item name="ECMS_INTERNATIONAL_LOGISTICS_CO_LTD" xsi:type="string">ECMS International Logistics Co.,
+                    Ltd.
+                </item>
                 <item name="ECOM_EXPRESS" xsi:type="string">Ecom Express</item>
                 <item name="EC_FIRSTCLASS" xsi:type="string">EC-Firstclass</item>
-                <item name="EFS_E_COMMERCE_FULFILLMENT_SERVICE" xsi:type="string">EFS (E-commerce Fulfillment Service)</item>
+                <item name="EFS_E_COMMERCE_FULFILLMENT_SERVICE" xsi:type="string">EFS (E-commerce Fulfillment Service)
+                </item>
                 <item name="EKART" xsi:type="string">Ekart</item>
                 <item name="ELTA_HELLENIC_POST" xsi:type="string">ELTA Hellenic Post</item>
                 <item name="EMIRATES_POST" xsi:type="string">Emirates Post</item>
@@ -255,7 +268,9 @@
                 <item name="INDIA_POST_DOMESTIC" xsi:type="string">India Post Domestic</item>
                 <item name="INDIA_POST_INTERNATIONAL" xsi:type="string">India Post International</item>
                 <item name="INPOST_PACZKOMATY" xsi:type="string">InPost Paczkomaty</item>
-                <item name="INSTANT_TIONG_NAM_EBIZ_EXPRESS_SDN_BHD" xsi:type="string">INSTANT (Tiong Nam Ebiz Express Sdn Bhd)</item>
+                <item name="INSTANT_TIONG_NAM_EBIZ_EXPRESS_SDN_BHD" xsi:type="string">INSTANT (Tiong Nam Ebiz Express
+                    Sdn Bhd)
+                </item>
                 <item name="INTERNATIONAL_SEUR" xsi:type="string">International Seur</item>
                 <item name="INTERNET_EXPRESS" xsi:type="string">Internet Express</item>
                 <item name="ISRAEL_POST" xsi:type="string">Israel Post</item>
@@ -294,8 +309,12 @@
                 <item name="LBC_EXPRESS" xsi:type="string">LBC Express</item>
                 <item name="LHT_EXPRESS" xsi:type="string">LHT Express</item>
                 <item name="LIETUVOS_PASTAS" xsi:type="string">Lietuvos Paštas</item>
-                <item name="LINE_CLEAR_EXPRESS_LOGISTICS_SDN_BHD" xsi:type="string">Line Clear Express &amp; Logistics Sdn Bhd</item>
-                <item name="LINK_BRIDGE_BEIJING_INTERNATIONAL_LOGISTICS_COLTD" xsi:type="string">Link Bridge(BeiJing)international logistics co.,ltd</item>
+                <item name="LINE_CLEAR_EXPRESS_LOGISTICS_SDN_BHD" xsi:type="string">Line Clear Express &amp; Logistics
+                    Sdn Bhd
+                </item>
+                <item name="LINK_BRIDGE_BEIJING_INTERNATIONAL_LOGISTICS_COLTD" xsi:type="string">Link
+                    Bridge(BeiJing)international logistics co.,ltd
+                </item>
                 <item name="LION_PARCEL" xsi:type="string">Lion Parcel</item>
                 <item name="LOGISTIC_WORLDWIDE_EXPRESS" xsi:type="string">Logistic Worldwide Express</item>
                 <item name="LOGWIN_LOGISTICS" xsi:type="string">Logwin Logistics</item>
@@ -414,20 +433,30 @@
                 <item name="SCUDEX_EXPRESS" xsi:type="string">Scudex Express</item>
                 <item name="SEINO" xsi:type="string">Seino</item>
                 <item name="SEKO_LOGISTICS" xsi:type="string">SEKO Logistics</item>
-                <item name="SENDING_TRANSPORTE_URGENTE_Y_COMUNICACION_SAU" xsi:type="string">Sending Transporte Urgente y Comunicacion, S.A.U</item>
+                <item name="SENDING_TRANSPORTE_URGENTE_Y_COMUNICACION_SAU" xsi:type="string">Sending Transporte Urgente
+                    y Comunicacion, S.A.U
+                </item>
                 <item name="SENDIT" xsi:type="string">Sendit</item>
                 <item name="SENDLE" xsi:type="string">Sendle</item>
                 <item name="SFC_SERVICE" xsi:type="string">SFC Service</item>
                 <item name="SF_EXPRESS" xsi:type="string">S.F. Express</item>
                 <item name="SF_INTERNATIONAL" xsi:type="string">S.F International</item>
                 <item name="SGT_CORRIERE_ESPRESSO" xsi:type="string">SGT Corriere Espresso</item>
-                <item name="SHANGHAI_WISE_SUPPLY_CHAIN_MANAGEMENT_CO_LTD" xsi:type="string">上海万色供应链管理有限公司（原：上海万色速递有限公司） Shanghai Wise Supply Chain Management Co., Ltd</item>
-                <item name="SHENZHEN_JINGHUADA_LOGISTICS_CO_LTD" xsi:type="string">Shenzhen Jinghuada Logistics Co., Ltd</item>
+                <item name="SHANGHAI_WISE_SUPPLY_CHAIN_MANAGEMENT_CO_LTD" xsi:type="string">上海万色供应链管理有限公司（原：上海万色速递有限公司）
+                    Shanghai Wise Supply Chain Management Co., Ltd
+                </item>
+                <item name="SHENZHEN_JINGHUADA_LOGISTICS_CO_LTD" xsi:type="string">Shenzhen Jinghuada Logistics Co.,
+                    Ltd
+                </item>
                 <item name="SHIPPIT" xsi:type="string">Shippit</item>
                 <item name="SHIPTOR" xsi:type="string">Shiptor</item>
                 <item name="SHOPFANSRU_LLC" xsi:type="string">ShopfansRU LLC</item>
-                <item name="SHREE_MARUTI_COURIER_SERVICES_PVT_LTD" xsi:type="string">Shree Maruti Courier Services Pvt Ltd</item>
-                <item name="SHREE_TIRUPATI_COURIER_SERVICES_PVT_LTD" xsi:type="string">SHREE TIRUPATI COURIER SERVICES PVT. LTD.</item>
+                <item name="SHREE_MARUTI_COURIER_SERVICES_PVT_LTD" xsi:type="string">Shree Maruti Courier Services Pvt
+                    Ltd
+                </item>
+                <item name="SHREE_TIRUPATI_COURIER_SERVICES_PVT_LTD" xsi:type="string">SHREE TIRUPATI COURIER SERVICES
+                    PVT. LTD.
+                </item>
                 <item name="SHUNYOU_POST" xsi:type="string">Shunyou Post</item>
                 <item name="SIMPLYPOST" xsi:type="string">SimplyPost</item>
                 <item name="SINGAPORE_POST" xsi:type="string">Singapore Post</item>
@@ -438,7 +467,9 @@
                 <item name="SKYNET_WORLDWIDE_EXPRESS" xsi:type="string">SkyNet Worldwide Express</item>
                 <item name="SKYNET_WORLDWIDE_EXPRESS_UAE" xsi:type="string">SkyNet Worldwide Express UAE</item>
                 <item name="SKYNET_WORLDWIDE_EXPRESS_UK" xsi:type="string">Skynet Worldwide Express UK</item>
-                <item name="SKYNET_WORLD_WIDE_EXPRESS_SOUTH_AFRICA" xsi:type="string">Skynet World Wide Express South Africa</item>
+                <item name="SKYNET_WORLD_WIDE_EXPRESS_SOUTH_AFRICA" xsi:type="string">Skynet World Wide Express South
+                    Africa
+                </item>
                 <item name="SKYPOSTAL" xsi:type="string">SkyPostal</item>
                 <item name="SMOOTH_COURIERS" xsi:type="string">Smooth Couriers</item>
                 <item name="SMSA_EXPRESS" xsi:type="string">SMSA Express</item>

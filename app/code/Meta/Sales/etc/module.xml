@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
     <module name="Meta_Sales">
         <sequence>
             <module name="Magento_Sales"/>
@@ -16,6 +17,7 @@
             <module name="Magento_Shipping"/>
             <module name="Meta_BusinessExtension"/>
             <module name="Meta_Catalog"/>
+            <module name="Magento_OfflineShipping"/>
         </sequence>
     </module>
 </config>
