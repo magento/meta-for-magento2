@@ -97,7 +97,8 @@ class Simple implements ProductRetrieverInterface
             ], null, 'left')
             ->addAttributeToFilter('type_id', $this->getProductType())
             ->addStoreFilter($storeId)
-            ->setStoreId($storeId);
+            ->setStoreId($storeId)
+            ->addMediaGalleryData();
 
         $collection
             ->getSelect()

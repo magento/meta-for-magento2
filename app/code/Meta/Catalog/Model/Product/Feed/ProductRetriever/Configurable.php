@@ -115,7 +115,8 @@ class Configurable implements ProductRetrieverInterface
             ], null, 'left')
             ->addAttributeToFilter('type_id', $this->getProductType())
             ->addStoreFilter($storeId)
-            ->setStoreId($storeId);
+            ->setStoreId($storeId)
+            ->addMediaGalleryData();
 
         $configurableCollection->getSelect()->limit($limit, $offset);
 
