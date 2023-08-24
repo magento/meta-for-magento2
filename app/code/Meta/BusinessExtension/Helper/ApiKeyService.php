@@ -62,7 +62,6 @@ class ApiKeyService
         if ($existingApiKey === null) {
             $this->logger->info('API key does not exist. Generating a new key.');
             $apiKey = $this->apiKeyGenerator->generate();
-            $this->logger->info($apiKey);
             $this->configWriter->save('meta_extension/general/api_key', $apiKey);
             $this->logger->info('API key has been generated and saved.');
             return $apiKey;
