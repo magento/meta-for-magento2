@@ -53,6 +53,9 @@ class Config
 
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID = 'facebook/business_extension/page_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID = 'facebook/business_extension/catalog_id';
+
+    public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_PARTNER_INTEGRATION_ID =
+        'facebook/business_extension/commerce_partner_integration_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID =
         'facebook/business_extension/commerce_account_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID = 'facebook/business_extension/feed_id';
@@ -681,6 +684,22 @@ class Config
     {
         return $this->getConfig(
             self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
+            $scopeId,
+            $scope
+        );
+    }
+
+    /**
+     * Get commerce partner integration ID
+     *
+     * @param $scopeId
+     * @param $scope
+     * @return mixed|null
+     */
+    public function getCommercePartnerIntegrationId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
+    {
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_PARTNER_INTEGRATION_ID,
             $scopeId,
             $scope
         );

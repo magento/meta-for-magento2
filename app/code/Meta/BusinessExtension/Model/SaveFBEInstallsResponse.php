@@ -86,11 +86,15 @@ class SaveFBEInstallsResponse
             return false;
         }
         $data = $response[0];
-        
+
         $this->savePixelId($data['pixel_id'] ?? '', $storeId);
         $this->saveProfiles($data['profiles'] ?? '', $storeId);
         $this->savePages($data['pages'] ?? '', $storeId);
         $this->saveCatalogId($data['catalog_id'] ?? '', $storeId);
+        $this->saveCommercePartnerIntegrationId(
+            $data['commerce_partner_integration_id'] ?? '',
+            $storeId
+        );
         $this->saveMerchantSettingsId($data['commerce_merchant_settings_id'] ?? '', $storeId);
         $this->saveInstalledFeatures($data['installed_features'] ?? '', $storeId);
         $this->systemConfig->cleanCache();
@@ -140,7 +144,7 @@ class SaveFBEInstallsResponse
             $this->fbeHelper->log("Saved fbe_installs profiles --- {$profiles} for storeID: {$storeId}");
         }
     }
-    
+
     /**
      * Save pages
      *
@@ -174,7 +178,7 @@ class SaveFBEInstallsResponse
         );
         $this->fbeHelper->log("Saved fbe_installs page_id --- {$pages[0]} for storeID: {$storeId}");
     }
-    
+
     /**
      * Save catalog id
      *
@@ -189,6 +193,27 @@ class SaveFBEInstallsResponse
             $storeId
         );
         $this->fbeHelper->log("Saved fbe_installs catalog_id --- {$catalogId} for storeID: {$storeId}");
+    }
+
+    /**
+     * Save commerce partner integration id
+     *
+     * @param int $commercePartnerIntegrationId
+     * @param int $storeId
+     * @return $this
+     */
+    public function saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId)
+    {
+        if ($commercePartnerIntegrationId) {
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_PARTNER_INTEGRATION_ID,
+                $commercePartnerIntegrationId,
+                $storeId
+            );
+            $this->fbeHelper->log("Saved fbe_installs commerce_partner_integration_id ---" .
+             "{$commercePartnerIntegrationId} for storeID: {$storeId}");
+        }
+        return $this;
     }
 
     /**

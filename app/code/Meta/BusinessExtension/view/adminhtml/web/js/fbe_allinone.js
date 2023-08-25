@@ -230,6 +230,7 @@ jQuery('#store').on('change', function() {
         let pixelId = responseObj.pixel_id;
         let profiles = responseObj.profiles;
         let catalogId = responseObj.catalog_id;
+        let commercePartnerIntegrationId = responseObj.commerce_partner_integration_id;
         let pageId = responseObj.page_id;
         let installedFeatures = responseObj.installed_features;
 
@@ -244,7 +245,7 @@ jQuery('#store').on('change', function() {
             _this.exchangeAccessToken(accessToken, businessManagerId);
             _this.saveProfilesData(profiles);
             _this.saveAAMSettings(pixelId);
-            _this.saveConfig(accessToken, catalogId, pageId);
+            _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
             _this.saveInstalledFeatures(installedFeatures);
             _this.cleanConfigCache();
             _this.setState({installed: 'true'});
@@ -266,7 +267,7 @@ jQuery('#store').on('change', function() {
         async : false,
         data: ajaxParam({
           pixelId: pixelId,
-          storeId: window.facebookBusinessExtensionConfig.storeId, 
+          storeId: window.facebookBusinessExtensionConfig.storeId,
         }),
         success: function onSuccess(data, _textStatus, _jqXHR) {
           var response = data;
@@ -311,16 +312,16 @@ jQuery('#store').on('change', function() {
       if (!fbeAccessTokenUrl) {
         console.error('Could not exchange access token. Token url not found.');
         return;
-      } 
+      }
       let requestData = {
-          'access_token': access_token, 
+          'access_token': access_token,
           'app_id': window.facebookBusinessExtensionConfig.appId,
           'fbe_external_business_id': window.facebookBusinessExtensionConfig.externalBusinessId,
           'scope': accessTokenScope.join()
       };
       jQuery.ajax({
         type: 'post',
-        url: fbeAccessTokenUrl.replace("business_manager_id", business_manager_id), 
+        url: fbeAccessTokenUrl.replace("business_manager_id", business_manager_id),
         async : false,
         data: requestData,
         success: function onSuccess(data, _textStatus, _jqXHR) {
@@ -415,7 +416,7 @@ jQuery('#store').on('change', function() {
         }
       });
     },
-    saveConfig: function saveConfig(accessToken, catalogId, pageId) {
+    saveConfig: function saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId) {
       var _this = this;
       jQuery.ajax({
         type: 'post',
@@ -426,6 +427,7 @@ jQuery('#store').on('change', function() {
           catalogId: catalogId,
           pageId: pageId,
           accessToken: accessToken,
+          commercePartnerIntegrationId: commercePartnerIntegrationId,
           storeId: window.facebookBusinessExtensionConfig.storeId,
         }),
         success: function onSuccess(data, _textStatus, _jqXHR) {
