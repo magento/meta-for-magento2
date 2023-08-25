@@ -692,8 +692,8 @@ class Config
     /**
      * Get commerce partner integration ID
      *
-     * @param $scopeId
-     * @param $scope
+     * @param int $scopeId
+     * @param int $scope
      * @return mixed|null
      */
     public function getCommercePartnerIntegrationId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)

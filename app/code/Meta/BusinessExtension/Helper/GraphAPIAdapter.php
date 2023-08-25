@@ -153,9 +153,9 @@ class GraphAPIAdapter
      * @param string $method
      * @param string $endpoint
      * @param array $request
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      * @throws GuzzleException
-     * @todo   implement custom logger class
+     * @todo implement custom logger class
      */
     private function callApi($method, $endpoint, $request)
     {
@@ -212,6 +212,50 @@ class GraphAPIAdapter
             }
             throw $e;
         }
+    }
+
+    /**
+     * Call api via CURL to transfer file
+     *
+     * @param string $endpoint
+     * @param array $params
+     * @param string $filePath
+     * @return mixed
+     */
+    private function callApiForFileTransfer($endpoint, $params, $filePath)
+    {
+        try {
+            $endpoint = "{$this->graphAPIConfig->getGraphBaseURL()}v{$this->graphAPIVersion}/".$endpoint;
+            $curl = $this->curlFactory->create();
+            $fileBaseName = $this->fileFactory->create(['filename' => $filePath, 'module' => ''])->getName();
+
+            $file = new CURLFile($filePath, mime_content_type($filePath), $fileBaseName);
+            $params = array_merge($params, ['file' => $file, 'access_token' => $this->accessToken]);
+            $curl->setOptions(
+                [ // This will override the $params to the post function
+                    CURLOPT_POSTFIELDS => $params
+                ]
+            );
+            $curl->post($endpoint, ['access_token' => '']); // Gets overridden, but still needs 1 param
+            $result = $curl->getBody();
+        } catch (\Exception $e) {
+            $result = $e->getMessage();
+        }
+
+        if ($this->debugMode) {
+            $this->logger->debug(
+                json_encode(
+                    [
+                        'endpoint' => "POST {$endpoint}",
+                        'file' => $filePath,
+                        'response' => $result
+                    ],
+                    JSON_PRETTY_PRINT
+                )
+            );
+        }
+
+        return json_decode($result);
     }
 
     /**
@@ -313,7 +357,7 @@ class GraphAPIAdapter
      * @param mixed|null $accessToken
      * @return array
      * @throws GuzzleException
-     * @todo   check store setup status
+     * @todo check store setup status
      */
     public function getCommerceAccountData($commerceAccountId, $accessToken = null)
     {
@@ -439,37 +483,24 @@ class GraphAPIAdapter
      */
     public function pushFeed($feedId, $feed)
     {
-        $endpoint = "{$this->graphAPIConfig->getGraphBaseURL()}v{$this->graphAPIVersion}/$feedId/uploads";
-        try {
-            $curl = $this->curlFactory->create();
-            $fileBaseName = $this->fileFactory->create(['filename' => $feed, 'module' => ''])->getName();
+        $endpoint = "{$feedId}/uploads";
+        return $this->callApiForFileTransfer($endpoint, [], $feed);
+    }
 
-            $file = new CURLFile($feed, mime_content_type($feed), $fileBaseName);
-            $curl->setOptions(
-                [ // This will override the $params to the post function
-                    CURLOPT_POSTFIELDS => ['file' => $file, 'access_token' => $this->accessToken]
-                ]
-            );
-            $curl->post($endpoint, ['access_token' => '']); // Gets overridden, but still needs 1 param
-            $result = $curl->getBody();
-        } catch (\Exception $e) {
-            $result = $e->getMessage();
-        }
-
-        if ($this->debugMode) {
-            $this->logger->debug(
-                json_encode(
-                    [
-                        'endpoint' => "POST {$endpoint}",
-                        'file' => $feed,
-                        'response' => $result
-                    ],
-                    JSON_PRETTY_PRINT
-                )
-            );
-        }
-
-        return json_decode($result);
+    /**
+     * Upload file
+     *
+     * @param mixed $commercePartnerIntegrationId
+     * @param string $filePath
+     * @param string $feedType
+     * @param string $updateType
+     * @return mixed
+     */
+    public function uploadFile($commercePartnerIntegrationId, $filePath, $feedType, $updateType)
+    {
+        $endpoint = "{$commercePartnerIntegrationId}/file_update";
+        $params = ['feed_type' => $feedType, 'update_type' => $updateType, 'update_time' => strtotime('now')];
+        return $this->callApiForFileTransfer($endpoint, $params, $filePath);
     }
 
     /**
@@ -668,8 +699,14 @@ class GraphAPIAdapter
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
-    public function refundOrder($fbOrderId, $items, $shippingRefundAmount, $deductionAmount, $currency, $reasonText = null)
-    {
+    public function refundOrder(
+        $fbOrderId,
+        $items,
+        $shippingRefundAmount,
+        $deductionAmount,
+        $currency,
+        $reasonText = null
+    ) {
         $request = [
             'access_token' => $this->accessToken,
             'idempotency_key' => $this->getUniqId(),
