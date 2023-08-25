@@ -314,6 +314,8 @@ class FBEHelper
             $context['commerce_merchant_settings_id'] = $this->systemConfig->getCommerceAccountId($context['store_id']);
         }
 
+        $context['seller_platform_app_version'] = $this->getMagentoVersion();
+
         // Add extension version to the extra data.
         $extensionVersion = ['extension_version' => $this->systemConfig->getModuleVersion()];
         if (isset($context['extra_data'])) {

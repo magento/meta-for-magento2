@@ -77,7 +77,7 @@ class PullOrders extends Field
     {
         /** @var Button $button */
         $button = $this->getLayout()->createBlock(Button::class);
-        return $button->setData(['id' => 'fb_pull_orders_btn', 'label' => __('Pull Orders from Facebook')])
+        return $button->setData(['id' => 'fb_pull_orders_btn', 'label' => __('Pull Orders from Meta')])
             ->toHtml();
     }
 }
