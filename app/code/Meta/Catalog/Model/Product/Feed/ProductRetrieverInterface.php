@@ -32,13 +32,6 @@ interface ProductRetrieverInterface
     public function setStoreId($storeId);
 
     /**
-     * Get product type
-     *
-     * @return string
-     */
-    public function getProductType();
-
-    /**
      * Retrieve products
      *
      * @param int $offset

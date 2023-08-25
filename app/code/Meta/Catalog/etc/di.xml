@@ -19,6 +19,7 @@
             <argument name="productRetrievers" xsi:type="array">
                 <item name="simpleProductRetriever" xsi:type="object">Meta\Catalog\Model\Product\Feed\ProductRetriever\Simple</item>
                 <item name="configurableProductRetriever" xsi:type="object">Meta\Catalog\Model\Product\Feed\ProductRetriever\Configurable</item>
+                <item name="otherProductRetriever" xsi:type="object">Meta\Catalog\Model\Product\Feed\ProductRetriever\Other</item>
             </argument>
         </arguments>
     </type>

@@ -26,6 +26,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Product\Feed\Builder;
 use Meta\Catalog\Model\Product\Feed\ProductRetriever\Configurable as ConfigurableProductRetriever;
 use Meta\Catalog\Model\Product\Feed\ProductRetriever\Simple as SimpleProductRetriever;
+use Meta\Catalog\Model\Product\Feed\ProductRetriever\Other as OtherProductRetriever;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Exception\LocalizedException;
@@ -76,6 +77,7 @@ class BatchApi
      * @param SystemConfig $systemConfig
      * @param SimpleProductRetriever $simpleProductRetriever
      * @param ConfigurableProductRetriever $configurableProductRetriever
+     * @param OtherProductRetriever $otherProductRetriever
      * @param Builder $builder
      */
     public function __construct(
@@ -84,6 +86,7 @@ class BatchApi
         SystemConfig $systemConfig,
         SimpleProductRetriever $simpleProductRetriever,
         ConfigurableProductRetriever $configurableProductRetriever,
+        OtherProductRetriever $otherProductRetriever,
         Builder $builder
     ) {
         $this->fbeHelper = $helper;
@@ -91,7 +94,8 @@ class BatchApi
         $this->systemConfig = $systemConfig;
         $this->productRetrievers = [
             $simpleProductRetriever,
-            $configurableProductRetriever
+            $configurableProductRetriever,
+            $otherProductRetriever
         ];
         $this->builder = $builder;
     }

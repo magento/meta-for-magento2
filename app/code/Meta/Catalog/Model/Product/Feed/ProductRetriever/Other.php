@@ -17,19 +17,28 @@ declare(strict_types=1);
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Meta\Catalog\Model\Product\Feed\ProductRetriever;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
-use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Catalog\Model\Product\Type as SimpleType;
+use Magento\Framework\Exception\LocalizedException;
 
-class Simple implements ProductRetrieverInterface
+class Other implements ProductRetrieverInterface
 {
-    private const LIMIT = 2000;
+    private const LIMIT = 20;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @var ProductRepositoryInterface
@@ -57,25 +66,33 @@ class Simple implements ProductRetrieverInterface
     private $productCollectionFactory;
 
     /**
+     * Constructor
+     *
      * @param FBEHelper $fbeHelper
      * @param CollectionFactory $productCollectionFactory
      * @param ProductRepositoryInterface $productRepo
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         FBEHelper $fbeHelper,
         CollectionFactory $productCollectionFactory,
         ProductRepositoryInterface $productRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        SystemConfig $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productRepo = $productRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
-     * @inheritDoc
+     * Set store id
+     *
+     * @param int $storeId
+     * @return ProductRetrieverInterface|void
      */
     public function setStoreId($storeId)
     {
@@ -84,14 +101,17 @@ class Simple implements ProductRetrieverInterface
     }
 
     /**
-     * Retrieve products
+     * @inheritDoc
      *
-     * @param int $offset
-     * @param int $limit
-     * @return array
+     * @throws LocalizedException
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function retrieve($offset = 1, $limit = self::LIMIT): array
     {
+        if ($this->systemConfig->isUnsupportedProductsDisabled()) {
+            return [];
+        }
+
         $storeId = $this->storeId ?? $this->fbeHelper->getStore()->getId();
 
         $collection = $this->productCollectionFactory->create();
@@ -107,7 +127,18 @@ class Simple implements ProductRetrieverInterface
                     'null' => true
                 ]
             ], null, 'left')
-            ->addAttributeToFilter('type_id', ProductType::TYPE_SIMPLE)
+            ->addAttributeToFilter([
+                [
+                    'attribute' => 'type_id',
+                    'neq' => ConfigurableType::TYPE_CODE
+                ]
+            ], null, 'left')
+            ->addAttributeToFilter([
+                [
+                    'attribute' => 'type_id',
+                    'neq' => SimpleType::TYPE_SIMPLE
+                ],
+            ], null, 'left')
             ->addStoreFilter($storeId)
             ->setStoreId($storeId);
 

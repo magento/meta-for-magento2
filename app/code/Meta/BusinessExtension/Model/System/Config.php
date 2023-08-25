@@ -104,6 +104,9 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG =
         'facebook/business_extension/onsite';
 
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS =
+        'facebook/business_extension/disable_unsupported_products';
+
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_UI_FLAG =
         'facebook/business_extension/commerce_extension';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_EXCEPTION_LOGGING =
@@ -906,6 +909,22 @@ class Config
     public function getWeightUnit(int $scopeId = null, string $scope = null)
     {
         return $this->getConfig('general/locale/weight_unit', $scopeId, $scope);
+    }
+
+    /**
+     * Check if unsupported products are disabled
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null) : bool
+    {
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS,
+            $scopeId,
+            $scope
+        );
     }
 
     /**

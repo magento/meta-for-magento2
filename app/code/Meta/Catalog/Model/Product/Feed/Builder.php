@@ -21,7 +21,11 @@ declare(strict_types=1);
 namespace Meta\Catalog\Model\Product\Feed;
 
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Catalog\Model\Product\Type as SimpleType;
+use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Related;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\GroupedProduct\Ui\DataProvider\Product\Form\Modifier\Grouped;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Catalog\Helper\Product\MappingConfig;
 use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
@@ -33,6 +37,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Escaper;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
@@ -82,6 +87,8 @@ class Builder
 
     // name of this column is sku, as Meta will identify this column with sku name
     private const ATTR_OTHER_ID = 'sku';
+
+    private const ATTR_UNSUPPORTED_PRODUCT_DATA = 'unsupported_product_data';
 
     private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
         '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
@@ -157,6 +164,11 @@ class Builder
     private MappingConfig $mappingConfig;
 
     /**
+     * @var Mapper
+     */
+    private Mapper $mapper;
+
+    /**
      * @var AdditionalAttributes
      */
     private $additionalAttributes;
@@ -169,24 +181,26 @@ class Builder
     /**
      * Constructor
      *
-     * @param FBEHelper $fbeHelper
-     * @param CategoryCollectionFactory $categoryCollectionFactory
-     * @param BuilderTools $builderTools
-     * @param ProductIdentifier $productIdentifier
-     * @param Escaper $escaper
-     * @param SystemConfig $systemConfig
-     * @param MappingConfig $mappingConfig
      * @param AdditionalAttributes $additionalAttributes
+     * @param BuilderTools $builderTools
+     * @param CategoryCollectionFactory $categoryCollectionFactory
+     * @param Escaper $escaper
+     * @param FBEHelper $fbeHelper
+     * @param Mapper $mapper
+     * @param MappingConfig $mappingConfig
+     * @param ProductIdentifier $productIdentifier
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        FBEHelper                 $fbeHelper,
-        CategoryCollectionFactory $categoryCollectionFactory,
+        AdditionalAttributes      $additionalAttributes,
         BuilderTools              $builderTools,
-        ProductIdentifier         $productIdentifier,
+        CategoryCollectionFactory $categoryCollectionFactory,
         Escaper                   $escaper,
-        SystemConfig              $systemConfig,
+        FBEHelper                 $fbeHelper,
+        Mapper                    $mapper,
         MappingConfig             $mappingConfig,
-        AdditionalAttributes      $additionalAttributes
+        ProductIdentifier         $productIdentifier,
+        SystemConfig              $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -194,6 +208,7 @@ class Builder
         $this->productIdentifier = $productIdentifier;
         $this->escaper = $escaper;
         $this->systemConfig = $systemConfig;
+        $this->mapper = $mapper;
         $this->mappingConfig = $mappingConfig;
         $this->additionalAttributes = $additionalAttributes;
     }
@@ -695,6 +710,96 @@ class Builder
     }
 
     /**
+     * Retrieves customizable options
+     *
+     * @param Product $product
+     * @return ?array
+     */
+    private function getCustomizableOptions(Product $product) : ?array
+    {
+        try {
+            $options = $product->getOptions();
+
+            if ($options == null) {
+                return null;
+            }
+
+            return array_map(function ($option) {
+                return $this->mapper->mapProductCustomOption($option);
+            }, $options);
+        } catch (\Exception $e) {
+            $this->fbeHelper->logException($e);
+            return null;
+        }
+    }
+
+    /**
+     * Retrieves digital options
+     *
+     * @param Product $product
+     * @return ?array
+     */
+    private function getDigitalOptions(Product $product) : ?array
+    {
+        try {
+            $downloadable_product_links = $product->getExtensionAttributes()->getDownloadableProductLinks();
+            $downloadable_product_samples = $product->getExtensionAttributes()->getDownloadableProductSamples();
+
+            if ($downloadable_product_links == null && $downloadable_product_samples == null) {
+                return null;
+            }
+
+            return [
+               'links' => array_map(function ($link) {
+                   return $this->mapper->mapDownloadableProductLink($link);
+               }, $downloadable_product_links),
+               'samples' => array_map(function ($sample) {
+                   return $this->mapper->mapDownloadableProductSample($sample);
+               }, $downloadable_product_samples),
+            ];
+        } catch (\Exception $e) {
+            $this->fbeHelper->logException($e);
+            return null;
+        }
+    }
+
+    /**
+     * Retrieves bundle options
+     *
+     * @param Product $product
+     * @return ?array
+     */
+    private function getBundleOptions(Product $product): ?array
+    {
+        try {
+            $bundle_product_options = $product->getExtensionAttributes()->getBundleProductOptions();
+            $product_links = $product->getProductLinks();
+
+            if ($bundle_product_options == null && $product_links == null) {
+                return null;
+            }
+
+            return [
+                'bundle' => $bundle_product_options == null
+                    ? null
+                    : array_map(function ($option) {
+                        return $this->mapper->mapBundleOption($option);
+                    }, $bundle_product_options),
+                // Groups
+                'associated' => $product_links == null
+                    ? null
+                    : (array)$this->mapper->mapProductLinks($product_links, Grouped::LINK_TYPE),
+                'upsell' => $product_links == null
+                    ? null
+                    : (array)$this->mapper->mapProductLinks($product_links, Related::DATA_SCOPE_UPSELL),
+            ];
+        } catch (\Exception $e) {
+            $this->fbeHelper->logException($e);
+            return null;
+        }
+    }
+
+    /**
      * Build product entry
      *
      * @param Product $product
@@ -768,6 +873,15 @@ class Builder
                 continue;
             }
             $entry[$customAttribute] = $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
+        }
+
+        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
+            $entry[self::ATTR_UNSUPPORTED_PRODUCT_DATA] = json_encode([
+                'type_hint' => $product->getTypeId(),
+                'customizable_options' => $this->getCustomizableOptions($product),
+                'digital_options' => $this->getDigitalOptions($product),
+                'bundle_options' => $this->getBundleOptions($product),
+            ]);
         }
 
         return $entry;
@@ -916,6 +1030,10 @@ class Builder
                 continue;
             }
             $headerFields[] = $customAttribute;
+        }
+
+        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
+            $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
         }
 
         if ($this->inventoryOnly) {
