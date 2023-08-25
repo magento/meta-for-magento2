@@ -70,4 +70,19 @@ class ApiKeyService
             return $existingApiKey;
         }
     }
+
+    /**
+     * Get the existing Api key or generate and return it.
+     *
+     * @return string
+     */
+    public function getCustomApiKey(): string
+    {
+        $existingApiKey = $this->scopeConfig->getValue('meta_extension/general/api_key');
+        if ($existingApiKey === null) {
+            return $this->upsertApiKey();
+        } else {
+            return $existingApiKey;
+        }
+    }
 }

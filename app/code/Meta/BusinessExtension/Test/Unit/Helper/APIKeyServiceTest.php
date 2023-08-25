@@ -49,7 +49,7 @@ class APIKeyServiceTest extends TestCase
             ->getMock();
     }
 
-    public function testGetApiKey()
+    public function testUpsertApiKey()
     {
         $apiKey = 'generated-api-key';
         $this->scopeConfig->method('getValue')
@@ -62,6 +62,23 @@ class APIKeyServiceTest extends TestCase
             $this->logger
         );
         $result = $apiKeyService->upsertApiKey();
+        $this->configWriter->expects($this->never())->method('save');
+        $this->assertEquals($apiKey, $result);
+    }
+
+    public function testCustomApiKey()
+    {
+        $apiKey = 'generated-api-key';
+        $this->scopeConfig->method('getValue')
+            ->with('meta_extension/general/api_key')
+            ->willReturn($apiKey);
+        $apiKeyService = new ApiKeyService(
+            $this->apiKeyGenerator,
+            $this->configWriter,
+            $this->scopeConfig,
+            $this->logger
+        );
+        $result = $apiKeyService->getCustomApiKey();
         $this->configWriter->expects($this->never())->method('save');
         $this->assertEquals($apiKey, $result);
     }

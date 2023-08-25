@@ -400,4 +400,14 @@ class Setup extends Template
     {
         return $this->apiKeyService->upsertApiKey();
     }
+
+    /**
+     * Call this method to Get the existing Api key or generate and return it.
+     *
+     * @return string
+     */
+    public function getCustomApiKey(): string
+    {
+        return $this->apiKeyService->getCustomApiKey();
+    }
 }

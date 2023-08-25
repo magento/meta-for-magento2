@@ -34,6 +34,13 @@ var ajaxify = function (url) {
   return url + '?isAjax=true&storeId=' + window.facebookBusinessExtensionConfig.storeId;
 };
 
+var getAndEncodeExternalClientMetadata = function () {
+    const metaData = {
+        customer_token: window.facebookBusinessExtensionConfig.customApiKey
+    };
+    return encodeURIComponent(JSON.stringify(metaData));
+}
+
 var ajaxParam = function (params) {
   if (window.FORM_KEY) {
     params.form_key = window.FORM_KEY;
@@ -343,8 +350,10 @@ jQuery('#store').on('change', function() {
              '&business_vertical='+window.facebookBusinessExtensionConfig.businessVertical+
              '&channel='+window.facebookBusinessExtensionConfig.channel+
              '&currency='+ window.facebookBusinessExtensionConfig.currency +
-             '&business_name='+ window.facebookBusinessExtensionConfig.businessName;
-     },
+             '&business_name='+ window.facebookBusinessExtensionConfig.businessName +
+             '&external_client_metadata=' + getAndEncodeExternalClientMetadata();
+
+    },
     render: function render() {
       var _this = this;
       try {
