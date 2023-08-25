@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
-use FacebookAds\Object\ServerSide\AdsPixelSettings;
 use PHPUnit\Framework\MockObject\MockObject;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
