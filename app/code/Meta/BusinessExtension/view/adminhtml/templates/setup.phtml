@@ -26,10 +26,10 @@ use Magento\Framework\Escaper;
             businessVertical: 'ECOMMERCE',
             channel: 'COMMERCE',
             currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>',
+            storeId: '<?= $escaper->escapeHtml($block->getSelectedStoreId()) ?>',
             businessName: 'Magento',
             debug: true,
             setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>',
-            commerceExtensionActive: <?=$block->isCommerceExtensionEnabled()?>,
             fbeAccessTokenUrl: '<?= $escaper->escapeHtml($block->getFbeAccessTokenUrl()) ?>',
             fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>',
             fbeInstallsSaveUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>',
@@ -55,8 +55,9 @@ use Magento\Framework\Escaper;
     </select>
     <?php if ($block->isCommerceExtensionEnabled() && $block->isFBEInstalled($block->getSelectedStoreId())): ?>
         <iframe
+                id="commerce-extension-iframe"
                 src="<?= $escaper->escapeHtmlAttr($block->getCommerceExtensionIFrameURL($block->getSelectedStoreId())) ?>"
-                height="1000"
+                scrolling="no"
                 style="border: 0; width: 100%; margin: 16px 0;"></iframe>
         <script>
             require([
@@ -66,7 +67,6 @@ use Magento\Framework\Escaper;
                 $('#store').on('change', function () {
                     const url = new URL(location.href);
                     url.searchParams.set('store_id', jQuery(this).val());
-                    window.facebookBusinessExtensionConfig.storeId = jQuery(this).val();
 
                     location.assign(url.search);
                 });

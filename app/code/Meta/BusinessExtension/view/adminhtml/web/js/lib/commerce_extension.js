@@ -22,12 +22,6 @@ var ajaxParam = function (params) {
     return params;
 };
 
-function consoleLog(message) {
-    if (window.facebookBusinessExtensionConfig.debug) {
-        console.log(message);
-    }
-}
-
 function parseURL(url) {
     var parser = document.createElement('a');
     parser.href = url;
@@ -58,8 +52,6 @@ function deleteFBAssets() {
                 msg = data.error_message;
             }
             cleanConfigCache();
-            consoleLog(msg);
-            consoleLog("Successfully uninstalled FBE");
         },
         error: function () {
             console.error('There was a problem deleting the connection, Please try again.');
@@ -74,7 +66,6 @@ function cleanConfigCache() {
         data: ajaxParam({}),
         success: function onSuccess(data, _textStatus, _jqXHR) {
             if (data.success) {
-                consoleLog('Config cache successfully cleaned');
                 window.location.reload();
             }
         },
@@ -84,34 +75,38 @@ function cleanConfigCache() {
     });
 }
 
-function handleCommerceExtensionDeletion(data) {
-    if (data) {
-        var responseObj = data;
-        consoleLog("Response from fb login:");
-        consoleLog(responseObj);
-        var success = responseObj.success;
-        if (success) {
-            let action = responseObj.action;
-            if (action != null && action === 'delete') {
-                // Delete asset ids stored in db instance.
-                deleteFBAssets();
-            } else {
-                consoleLog("No response received after setup");
-            }
+function handleCommerceExtensionDeletion(message) {
+    var success = message.success;
+    if (success) {
+        let action = message.action;
+        if (action != null && action === 'delete') {
+            // Delete asset ids stored in db instance.
+            deleteFBAssets();
         }
     }
 }
 
-function listenForCommerceExtensionDeletion(event) {
+function handleResizeEvent(message) {
+    if (message.event !== 'CommerceExtension::RESIZE') {
+        return;
+    }
+
+    var {height} = message;
+    document.getElementById('commerce-extension-iframe').height = height;
+}
+
+function listenForCommerceExtensionMessage(event) {
     var origin = event.origin || event.originalEvent.origin;
     var commerceExtensionOrigin = document.getElementById("commerce-extension-iframe").src;
     if (urlFromSameDomain(origin, new URL(commerceExtensionOrigin).origin)) {
-        // Make ajax calls to store data from fblogin and fb installs
-        consoleLog("Message from Meta Commerce Extension ");
-        handleCommerceExtensionDeletion(event.data); // Changed this line
+        var message = event.data;
+        if (message != null) {
+            handleCommerceExtensionDeletion(message);
+            handleResizeEvent(message);
+        }
     }
 }
 
 (function main() {
-    window.addEventListener('message', listenForCommerceExtensionDeletion);
+    window.addEventListener('message', listenForCommerceExtensionMessage);
 })();
