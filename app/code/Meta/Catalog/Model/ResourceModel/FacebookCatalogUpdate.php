@@ -160,7 +160,7 @@ class FacebookCatalogUpdate extends AbstractDb
         $connection = $this->getConnection();
         return $connection->delete(self::TABLE_NAME, ['batch_id = ?' => $batchId]);
     }
-    
+
     /**
      * Clear batch_id for batch group
      *
@@ -196,7 +196,7 @@ class FacebookCatalogUpdate extends AbstractDb
         $collection->addFieldToFilter('batch_id', ['eq' => $batchId]);
         return $collection;
     }
-    
+
     /**
      * Gets child product links to get child product ids for configurables
      *
@@ -211,6 +211,21 @@ class FacebookCatalogUpdate extends AbstractDb
             ->joinLeft(['e' => $this->getTable('catalog_product_entity')], "e.{$parentLinkField} = parent_id")
             ->where('e.entity_id IN (?)', $parentIds);
         return $this->getConnection()->fetchAll($select);
+    }
+
+    /**
+     * Delete all the product update entries
+     *
+     * @param $productId
+     * @return void
+     */
+    public function deleteUpdateProductEntries($sku): void
+    {
+        if ($sku === null) {
+            return;
+        }
+        $connection = $this->getConnection();
+        $connection->delete(self::TABLE_NAME, ['sku = ?' => $sku, 'method = ?' => 'update']);
     }
 
     /**
@@ -234,11 +249,11 @@ class FacebookCatalogUpdate extends AbstractDb
         $productIdsToSave = array_diff($productIds, $parentIdsToExclude);
         return $this->addProductIds($productIdsToSave, $method) + $this->addProductIds($childIds, $method);
     }
-    
+
     /**
      * Cleanup table by deleting updated entities older than a week
      *
-     * @return void
+     * @return int
      */
     public function cleanupTable()
     {

@@ -101,12 +101,12 @@ class AddCatalogSwitch implements DataPatchInterface
             'facebook/catalog_management/out_of_stock_threshold'
         );
 
-        if ($isCatalogSyncEnabled == null && $isDailyFeedSyncEnabled != null) {
+        if ($isCatalogSyncEnabled == null) {
             $connection->insert($coreConfigTable, [
                 'scope' => $storeId ? 'stores' : 'default',
                 'scope_id' => $storeId,
-                'path' => 'facebook/catalog_management/enable_catalog_sync',
-                'value' => $isDailyFeedSyncEnabled,
+                'path' => SystemConfig::XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC,
+                'value' => $isDailyFeedSyncEnabled === null ? true : $isDailyFeedSyncEnabled,
             ]);
         }
 

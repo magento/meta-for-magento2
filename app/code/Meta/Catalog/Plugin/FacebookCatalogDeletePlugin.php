@@ -91,6 +91,7 @@ class FacebookCatalogDeletePlugin
             ->setSku($identifier)
             ->setMethod('delete');
         try {
+            $this->catalogUpdateResourceModel->deleteUpdateProductEntries($identifier);
             $this->catalogUpdateResourceModel->save($catalogDelete);
         } catch (\Exception $e) {
             $this->fbeHelper->log('Unable to save product deletion to Facebook catalog update table.');

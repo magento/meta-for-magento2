@@ -614,8 +614,8 @@ class Builder
     private function getGender(Product $product)
     {
         $gender = isset($this->attrMap[self::ATTR_GENDER])
-                ? $product->getData($this->attrMap[self::ATTR_GENDER])
-                : $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
+            ? $product->getData($this->attrMap[self::ATTR_GENDER])
+            : $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
         if (!$gender || $gender == '') {
             $gender = $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
         }
