@@ -61,7 +61,7 @@ class ShippingFileBuilder
             $stream->writeCsv($profile);
         }
         $stream->unlock();
-        return $this->fileSystem->getUri(DirectoryList::APP) . '/' . $file;
+        return $directory->getAbsolutePath($file);
     }
 
     /**

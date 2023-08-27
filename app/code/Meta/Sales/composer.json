@@ -1,31 +1,32 @@
 {
-    "name": "meta/module-sales",
-    "description": "Meta Business Extension Sales module",
-    "type": "magento2-module",
-    "require": {
-        "php": "~8.1.0||~8.2.0",
-        "magento/framework": "*",
-        "magento/module-sales": "*",
-        "magento/module-sales-sequence": "*",
-        "magento/module-backend": "*",
-        "magento/module-config": "*",
-        "magento/module-catalog": "*",
-        "magento/module-configurable-product": "*",
-        "magento/module-store": "*",
-        "magento/module-directory": "*",
-        "magento/module-payment": "*",
-        "magento/module-shipping": "*",
-        "magento/module-newsletter": "*",
-        "meta/module-business-extension": "*",
-        "meta/module-catalog": "*"
-    },
-    "license": "Apache-2.0",
-    "autoload": {
-        "files": [
-            "registration.php"
-        ],
-        "psr-4": {
-            "Meta\\Sales\\": ""
-        }
+  "name": "meta/module-sales",
+  "description": "Meta Business Extension Sales module",
+  "type": "magento2-module",
+  "require": {
+    "php": "~8.1.0||~8.2.0",
+    "magento/framework": "*",
+    "magento/module-sales": "*",
+    "magento/module-sales-sequence": "*",
+    "magento/module-backend": "*",
+    "magento/module-config": "*",
+    "magento/module-catalog": "*",
+    "magento/module-configurable-product": "*",
+    "magento/module-store": "*",
+    "magento/module-directory": "*",
+    "magento/module-offline-shipping": "*",
+    "magento/module-payment": "*",
+    "magento/module-shipping": "*",
+    "magento/module-newsletter": "*",
+    "meta/module-business-extension": "*",
+    "meta/module-catalog": "*"
+  },
+  "license": "Apache-2.0",
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Meta\\Sales\\": ""
     }
+  }
 }

@@ -23,7 +23,12 @@ namespace Meta\Sales\Plugin;
 
 use Magento\OfflineShipping\Model\Config\Backend\Tablerate;
 use Magento\Framework\Exception\FileSystemException;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Filesystem;
+use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Magento\Framework\View\FileFactory;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Exception;
 
 class ShippingSettingsUpdatePlugin
 {
@@ -33,35 +38,72 @@ class ShippingSettingsUpdatePlugin
     protected ShippingDataFactory $shippingRatesFactory;
 
     /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
      * @var Filesystem
      */
     protected Filesystem $fileSystem;
 
     /**
+     * @var GraphAPIAdapter
+     */
+    protected $graphApiAdapter;
+
+    /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
+     * Constructor for Shipping settings update plugin
+     *
      * @param ShippingDataFactory $shippingRatesFactory
      * @param Filesystem $fileSystem
+     * @param GraphAPIAdapter $graphApiAdapter
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         ShippingDataFactory $shippingRatesFactory,
         FileSystem          $fileSystem,
+        GraphAPIAdapter     $graphApiAdapter,
+        FBEHelper           $fbeHelper,
+        SystemConfig        $systemConfig
     ) {
         $this->shippingRatesFactory = $shippingRatesFactory;
         $this->fileSystem = $fileSystem;
+        $this->graphApiAdapter = $graphApiAdapter;
+        $this->fbeHelper = $fbeHelper;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
      *  This function is called whenever shipping settings are saved in Magento
      *
-     * @param Tablerate $subject
      * @throws FileSystemException
      */
-    public function afterSave(Tablerate $subject,): void
+    public function afterSave(): void
     {
-        $shippingRates = $this->shippingRatesFactory->create();
-        $fileBuilder = new ShippingFileBuilder($this->fileSystem);
-        $shippingProfiles = [$shippingRates->buildTableRatesProfile(),
-            $shippingRates->buildFlatRateProfile(),
-            $shippingRates->buildFreeShippingProfile()];
-        $fileBuilder->createFile($shippingProfiles);
+        try {
+            $shippingRates = $this->shippingRatesFactory->create();
+            $fileBuilder = new ShippingFileBuilder($this->fileSystem);
+            $shippingProfiles = [
+             $shippingRates->buildTableRatesProfile(),
+             $shippingRates->buildFlatRateProfile(),
+             $shippingRates->buildFreeShippingProfile()
+            ];
+            $file_uri = $fileBuilder->createFile($shippingProfiles);
+            $partnerIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId();
+            $this->graphApiAdapter->uploadFile($partnerIntegrationId, $file_uri, "SHIPPING_PROFILES", "CREATE");
+        } catch (Exception $e) {
+            $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
+                'store_id' => $this->fbeHelper->getStore()->getId(),
+                'event' => 'shipping_profile_sync',
+                'event_type' => 'after_save'
+            ]);
+        }
     }
 }
