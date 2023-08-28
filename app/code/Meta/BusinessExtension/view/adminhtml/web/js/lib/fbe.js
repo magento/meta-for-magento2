@@ -117,7 +117,12 @@ jQuery('#store').on('change', function() {
             _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
             _this.saveInstalledFeatures(installedFeatures);
             _this.cleanConfigCache();
-            _this.setState({installed: 'true'});
+
+            if (window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionEnabled) {
+              window.location.reload();
+            } else {
+              _this.setState({installed: 'true'});
+            }
           }
         }else {
           _this.consoleLog("No response received after setup");
@@ -274,6 +279,7 @@ jQuery('#store').on('change', function() {
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.cleanConfigCacheUrl),
+        async: false,
         data: ajaxParam({}),
         success: function onSuccess(data, _textStatus, _jqXHR) {
           if (data.success) {

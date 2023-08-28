@@ -29,6 +29,7 @@ use Magento\Framework\Escaper;
             storeId: '<?= $escaper->escapeHtml($block->getSelectedStoreId()) ?>',
             businessName: 'Magento',
             debug: true,
+            isCommerceEmbeddedExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
             setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>',
             fbeAccessTokenUrl: '<?= $escaper->escapeHtml($block->getFbeAccessTokenUrl()) ?>',
             fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>',
