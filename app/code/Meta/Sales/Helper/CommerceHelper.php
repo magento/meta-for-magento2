@@ -26,6 +26,8 @@ use Magento\Sales\Model\Order;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Model\Order\CreateOrder;
+use Meta\Sales\Model\Order\CreateRefund;
+use Psr\Log\LoggerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 
 /**
@@ -55,6 +57,16 @@ class CommerceHelper
     private $fbeHelper;
 
     /**
+     * @var CreateRefund
+     */
+    private CreateRefund $createRefund;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var int
      */
     private int $ordersPulledTotal = 0;
@@ -73,18 +85,24 @@ class CommerceHelper
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param SystemConfig $systemConfig
      * @param CreateOrder $createOrder
+     * @param CreateRefund $createRefund
      * @param FBEHelper $fbeHelper
+     * @param LoggerInterface $logger
      */
     public function __construct(
         GraphAPIAdapter $graphAPIAdapter,
-        SystemConfig $systemConfig,
-        CreateOrder $createOrder,
-        FBEHelper $fbeHelper
+        SystemConfig    $systemConfig,
+        CreateOrder     $createOrder,
+        CreateRefund    $createRefund,
+        FBEHelper       $fbeHelper,
+        LoggerInterface $logger
     ) {
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->systemConfig = $systemConfig;
         $this->createOrder = $createOrder;
+        $this->createRefund = $createRefund;
         $this->fbeHelper = $fbeHelper;
+        $this->logger = $logger;
     }
 
     /**
@@ -97,12 +115,12 @@ class CommerceHelper
      */
     public function pullOrders(int $storeId, $cursorAfter = false)
     {
-        $pageId = $this->systemConfig->getPageId($storeId);
+        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
 
-        $ordersData = $this->graphAPIAdapter->getOrders($pageId, $cursorAfter);
+        $ordersData = $this->graphAPIAdapter->getOrders($ordersRootId, $cursorAfter);
 
         $this->ordersPulledTotal += count($ordersData['data']);
 
@@ -126,12 +144,55 @@ class CommerceHelper
             }
         }
         if (!empty($orderIds)) {
-            $this->graphAPIAdapter->acknowledgeOrders($pageId, $orderIds);
+            $this->graphAPIAdapter->acknowledgeOrders($ordersRootId, $orderIds);
         }
-
         if (isset($ordersData['paging']['next'])) {
             $this->pullOrders($storeId, $ordersData['paging']['cursors']['after']);
         }
+    }
+
+    /**
+     * Pulls orders that have refunds and fetches the corresponding refund details.
+     *
+     * @param int $storeId Store ID for which the refund orders need to be pulled.
+     * @return array Associative array containing the refund details with Facebook Order IDs as keys.
+     * @throws GuzzleException
+     */
+    public function pullRefundOrders(int $storeId)
+    {
+        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
+        $this->graphAPIAdapter
+            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+
+        // Pull orders with refunds
+        $ordersWithRefunds = $this->graphAPIAdapter->getOrders(
+            $ordersRootId,
+            false,
+            GraphAPIAdapter::ORDER_FILTER_REFUNDS
+        );
+        $refundOrdersDetails = [];
+
+        foreach ($ordersWithRefunds['data'] as $orderData) {
+            try {
+                $facebookOrderId = $orderData['id'];
+                // Get refund details for each order
+                $refundDetails = $this->graphAPIAdapter->getRefunds($facebookOrderId)[0];
+                $this->createRefund->execute($orderData, $refundDetails, $storeId);
+                $refundOrdersDetails[$facebookOrderId] = $refundDetails;
+            } catch (Exception $e) {
+                $this->exceptions[] = $e->getMessage();
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'order_sync',
+                        'event_type' => 'create_magento_orders'
+                    ]
+                );
+            }
+        }
+        return $refundOrdersDetails;
     }
 
     /**

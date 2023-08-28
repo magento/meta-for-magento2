@@ -220,7 +220,8 @@ class FBEHelper
      */
     public function getStore()
     {
-        return $this->storeManager->getDefaultStoreView();
+        $current_store = $this->storeManager->getStore();
+        return $current_store ?: $this->storeManager->getDefaultStoreView();
     }
 
     /**

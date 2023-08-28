@@ -35,6 +35,8 @@ use Meta\BusinessExtension\Helper\GraphAPIConfig;
 class GraphAPIAdapter
 {
     private const ORDER_STATE_CREATED = 'CREATED';
+    public const ORDER_FILTER_REFUNDS = 'refunds';
+    public const ORDER_FILTER_CANCELLATIONS = 'cancellations';
     private const GET_ORDERS_LIMIT = 25;
 
     /**
@@ -547,10 +549,11 @@ class GraphAPIAdapter
      *
      * @param mixed $pageId
      * @param false|string $cursorAfter
+     * @param string $filterType
      * @return array
      * @throws GuzzleException
      */
-    public function getOrders($pageId, $cursorAfter = false)
+    public function getOrders($pageId, $cursorAfter = false, $filterType = "")
     {
         $requestFields = [
             'id',
@@ -568,15 +571,50 @@ class GraphAPIAdapter
         ];
         $request = [
             'access_token' => $this->accessToken,
-            'state' => self::ORDER_STATE_CREATED,
             'fields' => implode(',', $requestFields),
             'limit' => self::GET_ORDERS_LIMIT,
         ];
+        if ($filterType === self::ORDER_FILTER_REFUNDS) {
+            $request['state'] = 'CREATED,IN_PROGRESS,COMPLETED';
+            $request['filters'] = 'has_refunds'; // Filter for orders with refunds
+        } elseif ($filterType === self::ORDER_FILTER_CANCELLATIONS) {
+            $request['state'] = 'CREATED,IN_PROGRESS,COMPLETED';
+            $request['filters'] = 'has_cancellations'; // Filter for orders with refunds
+        }
+
+        // Only consider orders updated 180 days or less ago
+        // This is for the return case.
+        $date180DaysAgo = time() - (180 * 24 * 60 * 60);
+        $request['updated_after'] = $date180DaysAgo;
+
         if ($cursorAfter) {
             $request['after'] = $cursorAfter;
         }
         $response = $this->callApi('GET', "{$pageId}/commerce_orders", $request);
         return json_decode($response->getBody()->__toString(), true);
+    }
+
+    /**
+     * Get refunds for a specific order. Returns an array of refund_order_item
+     *
+     * @param string $orderId
+     * @return array
+     * @throws GuzzleException
+     */
+    public function getRefunds($orderId)
+    {
+        $requestFields = [
+            'id',
+            'items{product_id,retailer_id,refund_subtotal,quantity}',
+            'refund_reason',
+            'refund_amount{subtotal,shipping,tax,total,amount,currency}',
+        ];
+        $request = [
+            'access_token' => $this->accessToken,
+            'fields' => implode(',', $requestFields),
+        ];
+        $response = $this->callApi('GET', "{$orderId}/refunds", $request);
+        return json_decode($response->getBody()->__toString(), true)['data'];
     }
 
     /**

@@ -27,6 +27,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\InvoiceManagementInterface;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\OrderRepository;
 use Magento\SalesSequence\Model\Manager as OrderSequenceManager;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
@@ -34,6 +35,7 @@ use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
 use Meta\Sales\Model\Config\Source\DefaultOrderStatus;
 use Meta\Sales\Model\FacebookOrder;
 use Meta\Sales\Model\Mapper\OrderMapper;
+use Psr\Log\LoggerInterface;
 
 /**
  * Create order from facebook api data
@@ -82,6 +84,16 @@ class CreateOrder
     private OrderSequenceManager $orderSequenceManager;
 
     /**
+     * @var OrderRepository
+     */
+    private $orderRepository;
+
+    /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
      * @param ManagerInterface $eventManager
      * @param OrderManagementInterface $orderManagement
      * @param SystemConfig $systemConfig
@@ -90,16 +102,20 @@ class CreateOrder
      * @param TransactionFactory $transactionFactory
      * @param OrderMapper $orderMapper
      * @param OrderSequenceManager $orderSequenceManager
+     * @param LoggerInterface $logger
+     * @param OrderRepository $orderRepository
      */
     public function __construct(
-        ManagerInterface $eventManager,
-        OrderManagementInterface $orderManagement,
-        SystemConfig $systemConfig,
+        ManagerInterface              $eventManager,
+        OrderManagementInterface      $orderManagement,
+        SystemConfig                  $systemConfig,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
-        InvoiceManagementInterface $invoiceManagement,
-        TransactionFactory $transactionFactory,
-        OrderMapper $orderMapper,
-        OrderSequenceManager $orderSequenceManager
+        InvoiceManagementInterface    $invoiceManagement,
+        TransactionFactory            $transactionFactory,
+        OrderMapper                   $orderMapper,
+        OrderSequenceManager          $orderSequenceManager,
+        LoggerInterface               $logger,
+        OrderRepository               $orderRepository
     ) {
         $this->eventManager = $eventManager;
         $this->orderManagement = $orderManagement;
@@ -109,6 +125,8 @@ class CreateOrder
         $this->transactionFactory = $transactionFactory;
         $this->orderMapper = $orderMapper;
         $this->orderSequenceManager = $orderSequenceManager;
+        $this->logger = $logger;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
@@ -132,28 +150,32 @@ class CreateOrder
      *
      * @param array $data
      * @param int $storeId
+     * @param bool $isRefundOrCancel
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
      */
-    public function execute(array $data, int $storeId): Order
+    public function execute(array $data, int $storeId, bool $isRefundOrCancel = false): Order
     {
         $facebookOrderId = $data['id'];
         $facebookOrder = $this->getFacebookOrder($facebookOrderId);
 
         if ($facebookOrder->getId()) {
             $msg = __(sprintf('Order with Facebook ID %s already exists in Magento', $facebookOrderId));
-            throw new LocalizedException($msg);
+//            throw new LocalizedException($msg);
+            $facebookOrder->getMagentoOrderId();
+            return $this->orderRepository->get($facebookOrder->getMagentoOrderId());
         }
 
         $order = $this->orderMapper->map($data, $storeId);
+        $this->logger->info(json_encode($order));
         $this->reserveOrderIncrementId($order);
         $channel = ucfirst($data['channel']);
 
         $this->orderManagement->place($order);
 
         $defaultStatus = $this->systemConfig->getDefaultOrderStatus($storeId);
-        if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING) {
+        if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING || $isRefundOrCancel) {
             $order->setState(Order::STATE_PROCESSING)
                 ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
 

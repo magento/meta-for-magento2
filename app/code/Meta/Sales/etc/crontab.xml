@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="facebook_automation">
         <job name="facebook_automation_sync_orders" instance="Meta\Sales\Cron\SyncOrders" method="execute">
             <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="facebook_automation_sync_refunds_and_cancellations"
+             instance="Meta\Sales\Cron\SyncRefundsAndCancellations" method="execute">
+            <schedule>*/2 * * * *</schedule>
         </job>
     </group>
 </config>

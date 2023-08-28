@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Sales\Observer\Order;
 
 use Exception;
+use Meta\Sales\Model\Order\CreateRefund;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -95,6 +96,17 @@ class Refund implements ObserverInterface
         $payment = $observer->getEvent()->getPayment();
         /** @var CreditmemoInterface $creditmemo */
         $creditmemo = $observer->getEvent()->getCreditmemo();
+        $comments = $creditmemo->getComments();
+
+        foreach ($comments as $comment) {
+            $commentText = $comment->getComment();
+            // You can now use $commentText, for example:
+            if (CreateRefund::CREDIT_MEMO_NOTE === $commentText) {
+                // This was a refund from Meta Commerce. No need to loop.
+                return;
+            }
+        }
+
         $storeId = $payment->getOrder()->getStoreId();
 
         if (!($this->systemConfig->isActiveExtension($storeId)
