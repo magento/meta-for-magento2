@@ -618,6 +618,25 @@ class GraphAPIAdapter
     }
 
     /**
+     * Get cancellations for a specific order. Returns an array of cancel_order_item
+     *
+     * @param string $orderId
+     * @return array
+     * @throws GuzzleException
+     */
+    public function getCancellations($orderId)
+    {
+        // Construct the request
+        $request = [
+            'access_token' => $this->accessToken,
+        ];
+        // Call the API
+        $response = $this->callApi('GET', "{$orderId}/cancellations", $request);
+        // Decode and return the data
+        return json_decode($response->getBody()->__toString(), true)['data'];
+    }
+
+    /**
      * Get order items
      *
      * @param mixed $fbOrderId

@@ -5,8 +5,8 @@
         <facebook>
             <business_extension>
                 <active>1</active>
-                <onsite>1</onsite>
-                <commerce_extension>1</commerce_extension>
+                <onsite>0</onsite>
+                <commerce_extension>0</commerce_extension>
                 <meta_exception_logging_enabled>1</meta_exception_logging_enabled>
                 <meta_telemetry_logging_enabled>0</meta_telemetry_logging_enabled>
                 <client_access_token>195311308289826|52dcd04d6c7ed113121b5eb4be23b4a7</client_access_token>

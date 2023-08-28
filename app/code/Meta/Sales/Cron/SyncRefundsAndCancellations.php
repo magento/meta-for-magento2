@@ -69,8 +69,7 @@ class SyncRefundsAndCancellations
         }
 
         $this->commerceHelper->pullRefundOrders($storeId);
-        // Next diff
-//        $this->commerceHelper->pullCanceledOrders($storeId);
+        $this->commerceHelper->pullCancelledOrders($storeId);
     }
 
     /**

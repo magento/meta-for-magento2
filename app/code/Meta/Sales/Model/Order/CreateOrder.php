@@ -167,6 +167,8 @@ class CreateOrder
             return $this->orderRepository->get($facebookOrder->getMagentoOrderId());
         }
 
+        $this->logger->debug(json_encode($data));
+
         $order = $this->orderMapper->map($data, $storeId);
         $this->logger->info(json_encode($order));
         $this->reserveOrderIncrementId($order);

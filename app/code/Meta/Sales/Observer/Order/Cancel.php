@@ -28,6 +28,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Sales\Model\Order\CreateCancellation;
 
 class Cancel implements ObserverInterface
 {
@@ -48,7 +49,7 @@ class Cancel implements ObserverInterface
      * @param GraphAPIAdapter $graphAPIAdapter
      */
     public function __construct(
-        SystemConfig $systemConfig,
+        SystemConfig    $systemConfig,
         GraphAPIAdapter $graphAPIAdapter
     ) {
         $this->systemConfig = $systemConfig;
@@ -72,6 +73,16 @@ class Cancel implements ObserverInterface
             && $this->systemConfig->isActiveOrderSync($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
+        }
+
+        $statusHistory = $order->getStatusHistoryCollection();
+        foreach ($statusHistory as $historyItem) {
+            if ($historyItem->getComment() &&
+                strpos($historyItem->getComment(), CreateCancellation::CANCELLATION_NOTE) !== false
+            ) {
+                // No-op if order was originally canceled on Facebook -- avoid infinite cancel loop.
+                return;
+            }
         }
 
         $facebookOrderId = $order->getExtensionAttributes()->getFacebookOrderId();

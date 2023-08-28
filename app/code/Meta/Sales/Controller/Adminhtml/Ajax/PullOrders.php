@@ -54,10 +54,10 @@ class PullOrders extends AbstractAjax
      * @param CommerceHelper $commerceHelper
      */
     public function __construct(
-        Context $context,
-        JsonFactory $resultJsonFactory,
-        SystemConfig $systemConfig,
-        FBEHelper $fbeHelper,
+        Context        $context,
+        JsonFactory    $resultJsonFactory,
+        SystemConfig   $systemConfig,
+        FBEHelper      $fbeHelper,
         CommerceHelper $commerceHelper
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
