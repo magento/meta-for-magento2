@@ -95,7 +95,7 @@ class ModuleInfo extends Field
     }
 
     /**
-     * Retrieve Commerce Account Id
+     * Retrieve Commerce Account ID
      *
      * @return string
      */

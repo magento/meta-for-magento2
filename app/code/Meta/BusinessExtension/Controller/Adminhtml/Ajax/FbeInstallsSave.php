@@ -67,7 +67,6 @@ class FbeInstallsSave implements HttpPostActionInterface
         $this->request = $request;
         $this->jsonFactory = $resultJsonFactory;
         $this->fbeHelper = $fbeHelper;
-        $this->request = $request;
         $this->saveFbeInstallsResponse = $saveFBEInstallsResponse;
     }
 

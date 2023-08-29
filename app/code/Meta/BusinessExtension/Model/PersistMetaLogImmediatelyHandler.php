@@ -36,7 +36,7 @@ class PersistMetaLogImmediatelyHandler
      * @param GraphAPIAdapter $graphAPIAdapter
      */
     public function __construct(
-        GraphAPIAdapter $graphAPIAdapter,
+        GraphAPIAdapter $graphAPIAdapter
     ) {
         $this->graphApiAdapter = $graphAPIAdapter;
     }

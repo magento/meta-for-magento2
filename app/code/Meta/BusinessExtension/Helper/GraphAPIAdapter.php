@@ -30,7 +30,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\View\FileFactory;
-use Meta\BusinessExtension\Helper\GraphAPIConfig;
 
 class GraphAPIAdapter
 {
@@ -177,7 +176,7 @@ class GraphAPIAdapter
                     )
                 );
             }
-            //            TODO: repalce with admin user local
+            // TODO: replace with admin user local
             $request['locale'] = 'en_US';
 
             // post request form_params should be used as it adds data in body rather than keeping it in URL
@@ -209,7 +208,7 @@ class GraphAPIAdapter
         } catch (BadResponseException $e) {
             $response = $e->getResponse();
             $this->logger->debug($e->getMessage());
-            if (stripos($e->getMessage(), 'truncated') !== 'false') {
+            if (stripos($e->getMessage(), 'truncated') !== false) {
                 $this->logger->debug('Full error: ' . (string)$response->getBody());
             }
             throw $e;
@@ -785,7 +784,7 @@ class GraphAPIAdapter
         if ($deductionAmount > 0) {
             $request['deductions'] = json_encode([
                 [
-                    'deduction_type' => "RETURN_SHIPPING",
+                    'deduction_type' => 'RETURN_SHIPPING',
                     'deduction_amount' => [
                         'amount' => $deductionAmount,
                         'currency' => $currency
@@ -821,7 +820,7 @@ class GraphAPIAdapter
     }
 
     /**
-     * Get product by retailer Id
+     * Get product by retailer ID
      *
      * @param mixed $catalogId
      * @param bool|int|string $retailerId

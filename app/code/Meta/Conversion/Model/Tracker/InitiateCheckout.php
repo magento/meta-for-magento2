@@ -13,7 +13,7 @@ use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 
 class InitiateCheckout implements TrackerInterface
 {
-    private const EVENT_TYPE = "InitiateCheckout";
+    private const EVENT_TYPE = 'InitiateCheckout';
 
     /**
      * @var MagentoDataHelper
@@ -103,12 +103,12 @@ class InitiateCheckout implements TrackerInterface
      * Get cart categories by quote
      *
      * @param CartInterface $quote
-     * @return array|string
+     * @return string
      */
-    private function getCartCategories(CartInterface $quote): array|string
+    private function getCartCategories(CartInterface $quote): string
     {
         if (!$quote) {
-            return [];
+            return '';
         }
 
         $items = $quote->getAllVisibleItems();
@@ -123,26 +123,26 @@ class InitiateCheckout implements TrackerInterface
                 $categoryNames[] = $category->getName();
             }
         }
-        return implode(',', $categoryNames);/** @phpstan-ignore-line */
+        return implode(',', $categoryNames); /** @phpstan-ignore-line */
     }
 
     /**
      * Get content type by quote
      *
      * @param CartInterface $quote
-     * @return array|string
+     * @return string
      */
-    private function getContentTypeByQuote(CartInterface $quote): array|string
+    private function getContentTypeByQuote(CartInterface $quote): string
     {
         if (!$quote) {
-            return [];
+            return '';
         }
 
         $items = $quote->getAllVisibleItems();
         foreach ($items as $item) {
             $product = $item->getProduct();
         }
-        return $this->magentoDataHelper->getContentType($product);/** @phpstan-ignore-line */
+        return $this->magentoDataHelper->getContentType($product); /** @phpstan-ignore-line */
     }
 
     /**

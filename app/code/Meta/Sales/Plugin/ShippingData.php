@@ -67,7 +67,7 @@ class ShippingData
         Flatrate          $flatRateModel,
         Tablerate         $tableRateModel,
         Freeshipping      $freeShippingModel,
-        CollectionFactory $tableRateCollection,
+        CollectionFactory $tableRateCollection
     ) {
         $this->flatRateModel = $flatRateModel;
         $this->tableRateModel = $tableRateModel;

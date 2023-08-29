@@ -9,7 +9,6 @@ use Meta\Conversion\Helper\MagentoDataHelper;
 
 class CustomizeProduct implements TrackerInterface
 {
-
     private const EVENT_TYPE = 'CustomizeProduct';
 
     /**

@@ -217,7 +217,7 @@ class SaveFBEInstallsResponse
     }
 
     /**
-     * Save commerce merchange settings id
+     * Save commerce merchant settings id
      *
      * @param int $merchantSettingsId
      * @param int $storeId

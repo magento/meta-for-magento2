@@ -94,7 +94,7 @@ class ViewCategory extends Common
     }
 
     /**
-     * Get Category Id
+     * Get Category ID
      *
      * @return mixed
      */

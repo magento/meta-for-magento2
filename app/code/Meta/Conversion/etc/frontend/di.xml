@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name = "Meta\Conversion\Controller\Pixel\Tracker">
+    <type name="Meta\Conversion\Controller\Pixel\Tracker">
         <arguments>
             <argument name="pixelEvents" xsi:type="array">
-                <item name = "facebook_businessextension_ssapi_view_category" xsi:type="object">Meta\Conversion\Model\Tracker\ViewCategory</item>
-                <item name = "facebook_businessextension_ssapi_view_content" xsi:type="object">Meta\Conversion\Model\Tracker\ViewContent</item>
-                <item name = "facebook_businessextension_ssapi_search" xsi:type="object">Meta\Conversion\Model\Tracker\Search</item>
-                <item name = "facebook_businessextension_ssapi_add_to_wishlist" xsi:type="object">Meta\Conversion\Model\Tracker\AddToWishlist</item>
-                <item name = "facebook_businessextension_ssapi_purchase" xsi:type="object">Meta\Conversion\Model\Tracker\Purchase</item>
-                <item name = "facebook_businessextension_ssapi_contact" xsi:type="object">Meta\Conversion\Model\Tracker\ViewContact</item>
-                <item name = "facebook_businessextension_ssapi_customer_registration_success" xsi:type="object">Meta\Conversion\Model\Tracker\CustomerRegistrationSuccess</item>
-                <item name = "facebook_businessextension_ssapi_initiate_checkout" xsi:type="object">Meta\Conversion\Model\Tracker\InitiateCheckout</item>
-                <item name = "facebook_businessextension_ssapi_customize_product" xsi:type="object">Meta\Conversion\Model\Tracker\CustomizeProduct</item>
-                <item name = "facebook_businessextension_ssapi_add_to_cart" xsi:type="object">Meta\Conversion\Model\Tracker\AddToCart</item>
-                <item name = "facebook_businessextension_ssapi_add_payment_info" xsi:type="object">Meta\Conversion\Model\Tracker\AddPaymentInfo</item>
+                <item name="facebook_businessextension_ssapi_view_category" xsi:type="object">Meta\Conversion\Model\Tracker\ViewCategory</item>
+                <item name="facebook_businessextension_ssapi_view_content" xsi:type="object">Meta\Conversion\Model\Tracker\ViewContent</item>
+                <item name="facebook_businessextension_ssapi_search" xsi:type="object">Meta\Conversion\Model\Tracker\Search</item>
+                <item name="facebook_businessextension_ssapi_add_to_wishlist" xsi:type="object">Meta\Conversion\Model\Tracker\AddToWishlist</item>
+                <item name="facebook_businessextension_ssapi_purchase" xsi:type="object">Meta\Conversion\Model\Tracker\Purchase</item>
+                <item name="facebook_businessextension_ssapi_contact" xsi:type="object">Meta\Conversion\Model\Tracker\ViewContact</item>
+                <item name="facebook_businessextension_ssapi_customer_registration_success" xsi:type="object">Meta\Conversion\Model\Tracker\CustomerRegistrationSuccess</item>
+                <item name="facebook_businessextension_ssapi_initiate_checkout" xsi:type="object">Meta\Conversion\Model\Tracker\InitiateCheckout</item>
+                <item name="facebook_businessextension_ssapi_customize_product" xsi:type="object">Meta\Conversion\Model\Tracker\CustomizeProduct</item>
+                <item name="facebook_businessextension_ssapi_add_to_cart" xsi:type="object">Meta\Conversion\Model\Tracker\AddToCart</item>
+                <item name="facebook_businessextension_ssapi_add_payment_info" xsi:type="object">Meta\Conversion\Model\Tracker\AddPaymentInfo</item>
             </argument>
         </arguments>
     </type>

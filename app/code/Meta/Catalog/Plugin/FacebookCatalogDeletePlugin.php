@@ -62,7 +62,7 @@ class FacebookCatalogDeletePlugin
         FacebookCatalogUpdate $catalogUpdateResourceModel,
         FacebookCatalogUpdateFactory $catalogUpdateFactory,
         Identifier $identifier,
-        FBEHelper $fbeHelper,
+        FBEHelper $fbeHelper
     ) {
         $this->catalogUpdateResourceModel = $catalogUpdateResourceModel;
         $this->catalogUpdateFactory = $catalogUpdateFactory;

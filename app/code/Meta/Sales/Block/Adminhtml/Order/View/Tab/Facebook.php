@@ -114,7 +114,7 @@ class Facebook extends Template implements TabInterface
     }
 
     /**
-     * Check if order is facebbok order
+     * Check if order is Facebook order
      *
      * @return bool
      */

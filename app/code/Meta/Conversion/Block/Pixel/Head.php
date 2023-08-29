@@ -98,7 +98,7 @@ class Head extends Common
 
     /**
      * Create JS code with the data processing options if required
-     * To learn about this options in Meta Pixel, read:
+     * To learn about these options in Meta Pixel, read:
      * https://developers.facebook.com/docs/marketing-apis/data-processing-options
      *
      * @return string

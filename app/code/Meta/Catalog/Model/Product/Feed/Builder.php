@@ -21,9 +21,7 @@ declare(strict_types=1);
 namespace Meta\Catalog\Model\Product\Feed;
 
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Catalog\Model\Product\Type as SimpleType;
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Related;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\GroupedProduct\Ui\DataProvider\Product\Form\Modifier\Grouped;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -214,7 +212,7 @@ class Builder
     }
 
     /**
-     * Set store Id
+     * Set store ID
      *
      * @param int $storeId
      * @return $this

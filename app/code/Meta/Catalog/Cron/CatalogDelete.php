@@ -35,7 +35,7 @@ class CatalogDelete
      * @param CatalogUpdateHandler $catalogUpdateHandler
      */
     public function __construct(
-        CatalogUpdateHandler $catalogUpdateHandler,
+        CatalogUpdateHandler $catalogUpdateHandler
     ) {
         $this->catalogUpdateHandler = $catalogUpdateHandler;
     }

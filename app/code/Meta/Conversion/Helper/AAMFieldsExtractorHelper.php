@@ -274,7 +274,7 @@ class AAMFieldsExtractorHelper
     }
 
     /**
-     * Return all of the match keys that can be extracted from user session
+     * Return all the match keys that can be extracted from user session
      *
      * @param Customer|null $customer
      * @return array

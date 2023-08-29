@@ -188,7 +188,7 @@ class Setup extends Template
     }
 
     /**
-     * Whether or not to enable the new Commerce Extension UI.
+     * Whether or not to enable the new Commerce Extension UI
      *
      * @return bool
      */

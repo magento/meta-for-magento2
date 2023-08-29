@@ -23,7 +23,6 @@ namespace Meta\Catalog\Test\Unit\Observer;
 use Magento\Framework\Event;
 use Magento\Framework\Message\ManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Model\System\Config;
 use Meta\Catalog\Model\Feed\CategoryCollection;
 use Meta\Catalog\Observer\ProcessCategoryAfterSaveEventObserver;
 use PHPUnit\Framework\MockObject\MockObject;

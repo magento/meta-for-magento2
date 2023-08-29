@@ -27,7 +27,6 @@ use Monolog\Logger;
 
 class Handler extends Base
 {
-
   /**
    * Publisher to enable putting logs onto message queue to be persisted async
    *
@@ -60,7 +59,7 @@ class Handler extends Base
     }
 
   /**
-   * Overwiting the write function to put logs onto message queue to be persisted to Meta async and logging locally
+   * Overriding the write function to put logs onto message queue to be persisted to Meta async and logging locally
    *
    * @param array $record
    */

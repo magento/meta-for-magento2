@@ -86,7 +86,7 @@ class SendToFacebook extends AbstractModifier
     }
 
     /**
-     * Get store Id
+     * Get store ID
      *
      * @return mixed
      */

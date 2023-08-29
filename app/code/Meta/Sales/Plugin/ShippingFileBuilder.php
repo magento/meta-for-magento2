@@ -35,9 +35,8 @@ class ShippingFileBuilder
      * @param Filesystem $filesystem
      */
     public function __construct(
-        Filesystem $filesystem,
+        Filesystem $filesystem
     ) {
-
         $this->fileSystem = $filesystem;
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Model\Order;
 
-use Exception;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;

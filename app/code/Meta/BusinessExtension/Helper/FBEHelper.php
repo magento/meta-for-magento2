@@ -40,6 +40,7 @@ class FBEHelper
     private const URL_TYPE_WEB = 'web';
 
     public const PERSIST_META_LOG_IMMEDIATELY = 'persist_meta_log_immediately';
+
     /**
      * @var GraphAPIConfig
      */
@@ -105,6 +106,8 @@ class FBEHelper
     }
 
     /**
+     * Get Graph API adapter
+     *
      * @return GraphAPIAdapter
      */
     public function getGraphAPIAdapter(): GraphAPIAdapter
@@ -334,7 +337,8 @@ class FBEHelper
      * @param Throwable $e
      * @param array $context
      */
-    public function logExceptionImmediatelyToMeta(Throwable $e, array $context = []) {
+    public function logExceptionImmediatelyToMeta(Throwable $e, array $context = [])
+    {
         $context['log_type'] = self::PERSIST_META_LOG_IMMEDIATELY;
         $this->logException($e, $context);
     }

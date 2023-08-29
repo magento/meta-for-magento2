@@ -50,7 +50,7 @@ class ProductRepository
     private $resourceConnection;
 
     /**
-     * ProductRepository construtor
+     * ProductRepository constructor
      *
      * @param Configurable $configurableProductType
      * @param CollectionFactory $collectionFactory

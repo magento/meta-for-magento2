@@ -40,10 +40,6 @@ class GraphAPIConfig extends AbstractHelper
             'facebook/internal/graph_base_url',
             ScopeInterface::SCOPE_STORE
         );
-        if ($baseURLOverride == null) {
-            return "https://graph.facebook.com/";
-        } else {
-            return $baseURLOverride;
-        }
+        return $baseURLOverride ?? 'https://graph.facebook.com/';
     }
 }

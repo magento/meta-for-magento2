@@ -35,7 +35,7 @@ class CatalogUpdateCleanup
      * @param FacebookCatalogUpdate $fbeCatalogUpdateResourceModel
      */
     public function __construct(
-        FacebookCatalogUpdate $fbeCatalogUpdateResourceModel,
+        FacebookCatalogUpdate $fbeCatalogUpdateResourceModel
     ) {
         $this->fbeCatalogUpdateResourceModel = $fbeCatalogUpdateResourceModel;
     }
