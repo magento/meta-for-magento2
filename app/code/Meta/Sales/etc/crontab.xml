@@ -7,7 +7,7 @@
         </job>
         <job name="facebook_automation_sync_refunds_and_cancellations"
              instance="Meta\Sales\Cron\SyncRefundsAndCancellations" method="execute">
-            <schedule>* * * * *</schedule>
+            <schedule>0 * * * *</schedule>
         </job>
     </group>
 </config>
