@@ -161,8 +161,6 @@ class CreateOrder
         $facebookOrder = $this->getFacebookOrder($facebookOrderId);
 
         if ($facebookOrder->getId()) {
-            $msg = __(sprintf('Order with Facebook ID %s already exists in Magento', $facebookOrderId));
-//            throw new LocalizedException($msg);
             $facebookOrder->getMagentoOrderId();
             return $this->orderRepository->get($facebookOrder->getMagentoOrderId());
         }
