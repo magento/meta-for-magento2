@@ -96,18 +96,19 @@ class CreateCancellation
         $cancelItems = $facebookCancellationData['items']['data'] ?? [];
         $shouldCancelOrder = $this->shouldCancelEntireOrder($magentoOrder, $cancelItems);
         $this->updateOrderQuantities($magentoOrder, $cancelItems);
+        if ($shouldCancelOrder) {
+            $magentoOrder->cancel();
+            $magentoOrder->setStatus(Order::STATE_CANCELED);
+        }
         if (isset($facebookCancellationData['cancel_reason'])) {
             $concatenatedString = "";
-
             if (isset($facebookCancellationData['cancel_reason']['reason_code'])) {
                 $concatenatedString .= 'Code: ' . $facebookCancellationData['cancel_reason']['reason_code'] . '. ';
             }
-
             if (isset($facebookCancellationData['cancel_reason']['reason_description'])) {
                 $concatenatedString .= 'Description: ' .
                     $facebookCancellationData['cancel_reason']['reason_description'];
             }
-
             if (!empty($concatenatedString)) {
                 $magentoOrder->addCommentToStatusHistory('Cancellation Details: ' . $concatenatedString);
             }
@@ -166,8 +167,6 @@ class CreateCancellation
             )
         );
         $totalQtyToCancel = array_sum(array_column($cancelItems, 'quantity'));
-        $this->logger->debug($totalQtyOrdered);
-        $this->logger->debug($totalQtyToCancel);
         return $totalQtyOrdered <= $totalQtyToCancel;
     }
 
@@ -193,8 +192,6 @@ class CreateCancellation
             }
             if (isset($skuToOrderItem[$retailerId])) {
                 $orderItem = $skuToOrderItem[$retailerId];
-                $this->logger->debug("trying to set qty canceled to:");
-                $this->logger->debug($qtyToCancel);
                 $orderItem->setQtyCanceled($qtyToCancel);
                 $orderItem->setTaxCanceled(
                     $orderItem->getTaxCanceled() +
@@ -204,9 +201,6 @@ class CreateCancellation
                     $orderItem->getHiddenTaxCanceled() +
                     $orderItem->getHiddenTaxAmount() * $orderItem->getQtyCanceled() / $orderItem->getQtyOrdered()
                 );
-                $orderItem->save();
-                $this->logger->debug("Now trying to cancel:");
-                $this->logger->debug("success");
             } else {
                 $this->fbeHelper->log(sprintf(
                     "Severe issue. Item with SKU: %s was not found in Magento for cancellation",

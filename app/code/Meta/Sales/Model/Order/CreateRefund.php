@@ -125,8 +125,6 @@ class CreateRefund
             // TODO if sellers need, support multi-stage returns.
             return;
         }
-        $this->logger->debug($magentoOrder->getBaseTotalPaid());
-
         // Initialize qtys to zero and create a SKU to order item mapping
         $qtys = [];
         $skuToOrderItem = [];
@@ -152,8 +150,6 @@ class CreateRefund
                 }
             }
         }
-        $this->logger->debug("GOOD DAY TO THEE");
-        $this->logger->debug(json_encode($qtys));
 
         $refundAmount = $facebookRefundData['refund_amount'];
 
@@ -202,7 +198,6 @@ class CreateRefund
         }
 
         $magentoOrder->setStatus(Order::STATE_CLOSED);
-
         $this->orderRepository->save($magentoOrder);
     }
 
@@ -233,14 +228,11 @@ class CreateRefund
      */
     private function createInvoice($order): Invoice
     {
-        $temp_total = $order->getBaseTotalPaid();
         $invoice = $this->invoiceManagement->prepareInvoice($order);
-        $this->logger->debug($order->getBaseTotalPaid());
         $invoice->register();
         $order = $invoice->getOrder();
         $transactionSave = $this->transactionFactory->create();
         $transactionSave->addObject($invoice)->addObject($order)->save();
-        $this->logger->debug($order->getBaseTotalPaid());
         return $invoice;
     }
 }
