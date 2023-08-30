@@ -23,6 +23,7 @@ namespace Meta\Sales\Plugin;
 
 use Magento\OfflineShipping\Model\Config\Backend\Tablerate;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Filesystem;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
@@ -58,6 +59,11 @@ class ShippingSettingsUpdatePlugin
     protected $systemConfig;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private StoreManagerInterface $storeManager;
+
+    /**
      * Constructor for Shipping settings update plugin
      *
      * @param ShippingDataFactory $shippingRatesFactory
@@ -65,19 +71,22 @@ class ShippingSettingsUpdatePlugin
      * @param GraphAPIAdapter $graphApiAdapter
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        ShippingDataFactory $shippingRatesFactory,
-        FileSystem          $fileSystem,
-        GraphAPIAdapter     $graphApiAdapter,
-        FBEHelper           $fbeHelper,
-        SystemConfig        $systemConfig
+        ShippingDataFactory   $shippingRatesFactory,
+        FileSystem            $fileSystem,
+        GraphAPIAdapter       $graphApiAdapter,
+        FBEHelper             $fbeHelper,
+        SystemConfig          $systemConfig,
+        StoreManagerInterface $storeManager,
     ) {
         $this->shippingRatesFactory = $shippingRatesFactory;
         $this->fileSystem = $fileSystem;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -87,23 +96,27 @@ class ShippingSettingsUpdatePlugin
      */
     public function afterSave(): void
     {
-        try {
-            $shippingRates = $this->shippingRatesFactory->create();
-            $fileBuilder = new ShippingFileBuilder($this->fileSystem);
-            $shippingProfiles = [
-             $shippingRates->buildTableRatesProfile(),
-             $shippingRates->buildFlatRateProfile(),
-             $shippingRates->buildFreeShippingProfile()
-            ];
-            $file_uri = $fileBuilder->createFile($shippingProfiles);
-            $partnerIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId();
-            $this->graphApiAdapter->uploadFile($partnerIntegrationId, $file_uri, "SHIPPING_PROFILES", "CREATE");
-        } catch (Exception $e) {
-            $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
-                'store_id' => $this->fbeHelper->getStore()->getId(),
-                'event' => 'shipping_profile_sync',
-                'event_type' => 'after_save'
-            ]);
+        foreach ($this->storeManager->getStores() as $store) {
+            try {
+                $shippingRates = $this->shippingRatesFactory->create();
+                $fileBuilder = new ShippingFileBuilder($this->fileSystem);
+                $shippingProfiles = [
+                    $shippingRates->buildTableRatesProfile(),
+                    $shippingRates->buildFlatRateProfile(),
+                    $shippingRates->buildFreeShippingProfile()
+                ];
+                $file_uri = $fileBuilder->createFile($shippingProfiles);
+                $partnerIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId($store->getId());
+                $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($store->getId()))
+                    ->setAccessToken($this->systemConfig->getAccessToken($store->getId()));
+                $this->graphApiAdapter->uploadFile($partnerIntegrationId, $file_uri, "SHIPPING_PROFILES", "CREATE");
+            } catch (Exception $e) {
+                $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
+                    'store_id' => $this->fbeHelper->getStore()->getId(),
+                    'event' => 'shipping_profile_sync',
+                    'event_type' => 'after_save'
+                ]);
+            }
         }
     }
 }
