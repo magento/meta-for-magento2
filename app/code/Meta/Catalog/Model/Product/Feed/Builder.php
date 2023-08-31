@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Model\Product\Feed;
 
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Related;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\GroupedProduct\Ui\DataProvider\Product\Form\Modifier\Grouped;
@@ -35,7 +34,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Escaper;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
@@ -603,6 +601,26 @@ class Builder
     }
 
     /**
+     * Get age group for product
+     *
+     * @param Product $product
+     * @return string
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
+    private function getAgeGroup(Product $product)
+    {
+        $ageGroup = '';
+        if(isset($this->attrMap[self::ATTR_AGE_GROUP])) {
+            $ageGroup = $product->getData($this->attrMap[self::ATTR_AGE_GROUP]);
+        }
+        if (empty($ageGroup)) {
+            $ageGroup = $this->additionalAttributes->getCorrectText($product, self::ATTR_AGE_GROUP);
+        }
+
+        return $ageGroup ?: '';
+    }
+
+    /**
      * Get gender for product
      *
      * @param Product $product
@@ -855,6 +873,7 @@ class Builder
             self::ATTR_ADDITIONAL_IMAGE_URL => $this->getAdditionalImages($product, $images),
             self::ATTR_STATUS => $this->getStatus($product),
             self::ATTR_GENDER => $this->getGender($product),
+            self::ATTR_AGE_GROUP => $this->getAgeGroup($product),
             self::ATTR_MATERIAL => $this->getMaterial($product),
             self::ATTR_PATTERN => $this->getPattern($product),
             self::ATTR_SHIPPING_WEIGHT => $this->getWeight($product),
@@ -1012,6 +1031,7 @@ class Builder
             self::ATTR_ADDITIONAL_IMAGE_URL,
             self::ATTR_STATUS,
             self::ATTR_GENDER,
+            self::ATTR_AGE_GROUP,
             self::ATTR_MATERIAL,
             self::ATTR_PATTERN,
             self::ATTR_SHIPPING_WEIGHT,
