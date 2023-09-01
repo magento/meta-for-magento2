@@ -343,9 +343,6 @@ class Builder
     private function trimAttribute($attrName, $attrValue)
     {
         $attrValue = trim((string)$attrValue);
-        if (!$attrValue) {
-            return '';
-        }
 
         // Facebook Product attributes
         // ref: https://developers.facebook.com/docs/commerce-platform/catalog/fields
