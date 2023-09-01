@@ -89,20 +89,31 @@ class PullOrders extends AbstractAjax
             return $response;
         }
 
+        $response = [];
+        $errors = [];
+
         try {
-            return ['success' => true, 'response' => $this->commerceHelper->pullPendingOrders((int)$storeId)];
+            $response['synced_orders'] = $this->commerceHelper->pullPendingOrders((int)$storeId);
         } catch (Exception $e) {
-            $response['success'] = false;
-            $response['message'] = $e->getMessage();
-            $this->fbeHelper->logExceptionImmediatelyToMeta(
-                $e,
-                [
-                    'store_id' => $storeId,
-                    'event' => 'order_sync',
-                    'event_type' => 'manual_sync'
-                ]
-            );
-            return ['success' => false, 'error_message' => $e->getMessage()];
+            $errors['failed_orders'] = $e->getMessage();
         }
+
+        try {
+            $response['synced_refunds'] = $this->commerceHelper->pullRefundOrders((int)$storeId);
+        } catch (Exception $e) {
+            $errors['failed_refunds'] = $e->getMessage();
+        }
+
+        try {
+            $response['synced_cancellations'] = $this->commerceHelper->pullCancelledOrders((int)$storeId);
+        } catch (Exception $e) {
+            $errors['failed_cancellations'] = $e->getMessage();
+        }
+
+        return [
+            'success' => true,
+            'response' => $response,
+            'errors' => $errors
+        ];
     }
 }
