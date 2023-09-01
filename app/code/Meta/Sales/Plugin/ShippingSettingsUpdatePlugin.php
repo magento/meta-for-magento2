@@ -21,14 +21,13 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Plugin;
 
-use Magento\OfflineShipping\Model\Config\Backend\Tablerate;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Filesystem;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
-use Magento\Framework\View\FileFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Magento\Config\Model\Config;
 use Exception;
 
 class ShippingSettingsUpdatePlugin
@@ -79,7 +78,7 @@ class ShippingSettingsUpdatePlugin
         GraphAPIAdapter       $graphApiAdapter,
         FBEHelper             $fbeHelper,
         SystemConfig          $systemConfig,
-        StoreManagerInterface $storeManager,
+        StoreManagerInterface $storeManager
     ) {
         $this->shippingRatesFactory = $shippingRatesFactory;
         $this->fileSystem = $fileSystem;
@@ -92,10 +91,15 @@ class ShippingSettingsUpdatePlugin
     /**
      *  This function is called whenever shipping settings are saved in Magento
      *
+     * @param Interceptor $config
      * @throws FileSystemException
      */
-    public function afterSave(): void
+    public function afterSave(Config $config): void
     {
+        $section_name = $config->getSection();
+        if ($section_name !== 'carriers') {
+            return;
+        }
         foreach ($this->storeManager->getStores() as $store) {
             try {
                 $shippingRates = $this->shippingRatesFactory->create();

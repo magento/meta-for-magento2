@@ -5,7 +5,7 @@
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>
-    <type name="Magento\OfflineShipping\Model\Config\Backend\Tablerate">
+    <type name="Magento\Config\Model\Config">
         <plugin name="facebook_shipping_profiles" type="Meta\Sales\Plugin\ShippingSettingsUpdatePlugin"
         />
     </type>
