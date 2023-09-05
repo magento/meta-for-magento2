@@ -6,8 +6,7 @@
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>
     <type name="Magento\Config\Model\Config">
-        <plugin name="facebook_shipping_profiles" type="Meta\Sales\Plugin\ShippingSettingsUpdatePlugin"
-        />
+        <plugin name="facebook_shipping_profiles" type="Meta\Sales\Plugin\ShippingSettingsUpdatePlugin"/>
     </type>
     <type name="Meta\Sales\Helper\ShippingHelper">
         <arguments>

@@ -18,7 +18,6 @@ declare(strict_types=1);
  * limitations under the License.
  */
 
-
 namespace Meta\Sales\Plugin;
 
 use Magento\Framework\Exception\FileSystemException;
@@ -26,7 +25,6 @@ use Magento\Config\Model\Config;
 
 class ShippingSettingsUpdatePlugin
 {
-    
     /**
      * @var ShippingSyncer
      */
@@ -42,15 +40,14 @@ class ShippingSettingsUpdatePlugin
     }
 
     /**
-     *  This function is called whenever shipping settings are saved in Magento
+     * This function is called whenever shipping settings are saved in Magento
      *
-     * @param Interceptor $config
-     * @throws FileSystemException
+     * @param Config $config
      */
     public function afterSave(Config $config): void
     {
-        $section_name = $config->getSection();
-        if ($section_name !== 'carriers') {
+        $sectionName = $config->getSection();
+        if ($sectionName !== 'carriers') {
             return;
         }
         $this->shippingSyncer->syncShippingProfiles();

@@ -34,7 +34,6 @@ use Meta\Catalog\Setup\MetaCatalogAttributes;
 
 class CategoryCollection
 {
-
     /**
      * @var ProductCollectionFactory
      */
@@ -90,8 +89,7 @@ class CategoryCollection
         SystemConfig                $systemConfig,
         ProductIdentifier           $productIdentifier,
         CategoryImageService        $imageService
-    )
-    {
+    ) {
         $this->categoryCollection = $categoryCollection;
         $this->categoryRepository = $categoryRepository;
         $this->productCollectionFactory = $productCollectionFactory;
@@ -125,7 +123,7 @@ class CategoryCollection
                 if ($isNameChanged) {
                     $categories = $this->getAllActiveChildrenCategories($category, $storeId);
                 } else {
-                    $categories[] = $this->categoryRepository->get($category->getId(), $storeId);;
+                    $categories[] = $this->categoryRepository->get($category->getId(), $storeId);
                 }
 
                 if (!$this->systemConfig->isCatalogSyncEnabled($storeId)) {
@@ -145,14 +143,14 @@ class CategoryCollection
 
                 $this->pushCategoriesToFBCollections($categories, $accessToken, $storeId);
             } catch (\Throwable $e) {
-                $extra_data = [
+                $extraData = [
                     'category_id' => $category->getId(),
                     'category_name' => $category->getName(),
                     'num_of_stores_for_category' => count($storeIds)
                 ];
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
-                    $this->getCategoryLoggerContext($storeId, 'category_sync_real_time', $extra_data)
+                    $this->getCategoryLoggerContext($storeId, 'category_sync_real_time', $extraData)
                 );
             }
         }
@@ -164,7 +162,7 @@ class CategoryCollection
      * If the category is Tops we might create "Default Category > Men > Tops"
      *
      * @param Category $category
-     * @param $storeId
+     * @param int $storeId
      * @return string
      */
     private function getCategoryPathName(Category $category, $storeId)
@@ -218,6 +216,7 @@ class CategoryCollection
 
     /**
      * Get category landing page URL.
+     *
      * It first tries request path and URL finder for category, if fails to fetch it return category canonical URL
      *
      * @param Category $category
@@ -230,9 +229,9 @@ class CategoryCollection
             $url = $category->getUrl();
 
             // if url returned by getURL is category admin page url, replace it with category canonical URL
-            if (str_contains($url, 'admin/catalog/category/view/s')) {
+            if (strpos($url, 'admin/catalog/category/view/s') !== false) {
                 // if nothing works return URL by category ID (canonical URL)
-                $urlKey = $category->getUrlKey() ? $category->getUrlKey() : $category->formatUrlKey($category->getName());
+                $urlKey = $category->getUrlKey() ?? $category->formatUrlKey($category->getName());
 
                 $url = $category->getUrlInstance()->getDirectUrl(
                     sprintf('catalog/category/view/s/%s/id/%s/', $urlKey, $category->getId())
@@ -263,7 +262,7 @@ class CategoryCollection
      *
      * @param Category $category
      * @param string $setId
-     * @param $storeId
+     * @param int $storeId
      * @throws \Throwable
      */
     private function saveFBProductSetID(Category $category, string $setId, $storeId): void
@@ -281,8 +280,10 @@ class CategoryCollection
     }
 
     /**
+     * Save category for store
+     *
      * @param Category $category
-     * @param $storeId
+     * @param int $storeId
      */
     private function saveCategoryForStore(Category $category, $storeId): void
     {
@@ -308,7 +309,7 @@ class CategoryCollection
      * Get all children node in category tree recursion is being used.
      *
      * @param Category $category
-     * @param $storeId
+     * @param int $storeId
      * @param bool $onlyActiveCategories
      * @return Collection
      * @throws \Throwable
@@ -326,16 +327,16 @@ class CategoryCollection
             ->setStoreId($storeId)
             ->addAttributeToSelect('*')
             ->addAttributeToFilter(
-                array(
-                    array(
+                [
+                    [
                         "attribute" => "path",
                         "like" => $categoryPath . "/%"
-                    ),
-                    array(
+                    ],
+                    [
                         "attribute" => "path",
                         "like" => $categoryPath
-                    )
-                )
+                    ]
+                ]
             );
 
         if ($onlyActiveCategories) {
@@ -348,7 +349,7 @@ class CategoryCollection
      * Get all children categories
      *
      * @param Category $category
-     * @param $storeId
+     * @param int $storeId
      * @return Collection
      * @throws \Throwable
      */
@@ -361,9 +362,8 @@ class CategoryCollection
     /**
      * Get all active categories
      *
-     * @param $storeId
+     * @param int $storeId
      * @return Collection
-     * @throws \Throwable
      * @throws \Throwable
      */
     private function getAllActiveCategories($storeId): Collection
@@ -381,15 +381,14 @@ class CategoryCollection
      * Initial collection call after fbe installation, please not we only push leaf category to collection,
      * this means if a category contains any category, we won't create a collection for it.
      *
-     * @param $storeId
+     * @param int $storeId
      * @return string|null
      * @throws \Throwable
      */
     public function pushAllCategoriesToFbCollections($storeId): ?string
     {
-
         $accessToken = $this->systemConfig->getAccessToken($storeId);
-        if ($accessToken == null) {
+        if (!$accessToken) {
             $this->fbeHelper->log(
                 "Category force update: can't find access token, abort pushAllCategoriesToFbCollections"
             );
@@ -407,9 +406,9 @@ class CategoryCollection
     /**
      * Push categories to FB collections
      *
-     * @param  $categories
-     * @param $accessToken
-     * @param $storeId
+     * @param Collection $categories
+     * @param string $accessToken
+     * @param int $storeId
      * @return string|null
      */
     private function pushCategoriesToFBCollections($categories, $accessToken, $storeId): ?string
@@ -422,7 +421,7 @@ class CategoryCollection
         foreach ($categories as $category) {
             try {
                 $syncEnabled = $category->getData(MetaCatalogAttributes::CATEGORY_SYNC_TO_FACEBOOK);
-                if ($syncEnabled === "0") {
+                if ($syncEnabled === '0') {
                     $this->fbeHelper->log(
                         sprintf(
                             "Category update: user disabled category sync, category name: %s for store id: %s",
@@ -478,14 +477,14 @@ class CategoryCollection
                     "please check the error log for more details",
                     $category->getName()
                 );
-                $extra_data = [
+                $extraData = [
                     'category_id' => $category->getId(),
                     'category_name' => $category->getName(),
                     'num_categories_for_update' => count($categories)
                 ];
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
-                    $this->getCategoryLoggerContext($storeId, 'categories_push_to_meta', $extra_data)
+                    $this->getCategoryLoggerContext($storeId, 'categories_push_to_meta', $extraData)
                 );
             }
         }
@@ -495,7 +494,7 @@ class CategoryCollection
                     $this->flushCategoryBatchRequest($requests, $updatedCategories,
                         $currentBatch, $accessToken, $storeId));
             } catch (\Throwable $e) {
-                $extra_data = [
+                $extraData = [
                     'num_categories_for_update' => count($categories)
                 ];
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
@@ -503,7 +502,7 @@ class CategoryCollection
                     $this->getCategoryLoggerContext(
                         $storeId,
                         'categories_push_to_meta_last_page',
-                        $extra_data
+                        $extraData
                     )
                 );
             }
@@ -541,7 +540,7 @@ class CategoryCollection
      * e.g. {'retailer_id': {'is_any': ['10', '100']}}
      *
      * @param Category $category
-     * @param $storeId
+     * @param int $storeId
      * @return ProductCollection
      */
     private function getCategoryProducts(Category $category, $storeId): ProductCollection
@@ -563,8 +562,9 @@ class CategoryCollection
      * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
      *
      * @param Category $category
+     * @param ProductCollection $products
      * @param string $setId
-     * @param $storeId
+     * @param int $storeId
      * @return array
      */
     private function updateCategoryWithFBRequestJson(
@@ -593,8 +593,9 @@ class CategoryCollection
      * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
      *
      * @param Category $category
+     * @param ProductCollection $products
      * @param string $catalogId
-     * @param $storeId
+     * @param int $storeId
      * @return array
      */
     private function pushCategoryWithFBRequestJson(
@@ -674,7 +675,6 @@ class CategoryCollection
                         $setId = $responseData['id'];
                         $this->saveFBProductSetID($category, $setId, $storeId);
                     }
-
                 } else {
                     $this->fbeHelper->log(sprintf(
                         "Error occurred while syncing category %s, response body %s",
@@ -699,7 +699,7 @@ class CategoryCollection
     /**
      * Returns request JSON for product set delete batch API
      *
-     * Api link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
+     * API link: https://developers.facebook.com/docs/marketing-api/reference/product-set/
      *
      * @param string $setId
      * @return array
@@ -712,9 +712,8 @@ class CategoryCollection
         );
     }
 
-
     /**
-     * Call the api delete existing product set under category
+     * Call the API delete existing product set under category
      *
      * When user deletes a category on magento, we first get all sub categories(including itself), and check if we
      * have created a collection set on fb side, if yes then we make delete api call.
@@ -766,14 +765,14 @@ class CategoryCollection
                         $currentBatch++;
                     }
                 } catch (\Throwable $e) {
-                    $extra_data = [
+                    $extraData = [
                         'category_id' => $category->getId(),
                         'category_name' => $category->getName(),
                         'num_categories_for_delete' => count($childrenCategories)
                     ];
                     $this->fbeHelper->logExceptionImmediatelyToMeta(
                         $e,
-                        $this->getCategoryLoggerContext($storeId, 'delete_categories', $extra_data)
+                        $this->getCategoryLoggerContext($storeId, 'delete_categories', $extraData)
                     );
                 }
             }
@@ -782,14 +781,14 @@ class CategoryCollection
                 try {
                     $this->flushCategoryDeleteBatchRequest($requests, $currentBatch, $accessToken, $storeId);
                 } catch (\Throwable $e) {
-                    $extra_data = [
+                    $extraData = [
                         'category_id' => $category->getId(),
                         'category_name' => $category->getName(),
                         'num_categories_for_delete' => count($childrenCategories)
                     ];
                     $this->fbeHelper->logExceptionImmediatelyToMeta(
                         $e,
-                        $this->getCategoryLoggerContext($storeId, 'delete_categories_last_page', $extra_data)
+                        $this->getCategoryLoggerContext($storeId, 'delete_categories_last_page', $extraData)
                     );
                 }
             }
@@ -801,8 +800,8 @@ class CategoryCollection
      *
      * @param array $requests
      * @param int $currentBatch
-     * @param $accessToken
-     * @param $storeId
+     * @param string $accessToken
+     * @param int $storeId
      * @return void
      * @throws \Throwable
      */
@@ -843,19 +842,19 @@ class CategoryCollection
     /**
      * Return Category logger context for be logged
      *
-     * @param $storeId
-     * @param $eventType
-     * @param $extra_data
+     * @param int $storeId
+     * @param string $eventType
+     * @param array $extraData
      * @return array
      */
-    private function getCategoryLoggerContext($storeId, $eventType, $extra_data): array
+    private function getCategoryLoggerContext($storeId, $eventType, $extraData): array
     {
         return [
             'store_id' => $storeId,
             'event' => 'category_sync',
             'event_type' => $eventType,
             'catalog_id' => $this->systemConfig->getCatalogId($storeId),
-            'extra_data' => $extra_data
+            'extra_data' => $extraData
         ];
     }
 }

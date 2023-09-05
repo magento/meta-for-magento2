@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Plugin;
 
-use Magento\Framework\Exception\FileSystemException;
+use Exception;
 use Magento\Framework\Filesystem;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
@@ -29,11 +29,10 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class ShippingSyncer
 {
-
     /**
-     * @var ShippingDataFactory
+     * @var ShippingFileBuilder
      */
-    protected ShippingDataFactory $shippingRatesFactory;
+    private ShippingFileBuilder $shippingFileBuilder;
 
     /**
      * @var FBEHelper
@@ -43,17 +42,17 @@ class ShippingSyncer
     /**
      * @var Filesystem
      */
-    protected Filesystem $fileSystem;
+    private Filesystem $fileSystem;
 
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    private GraphAPIAdapter $graphApiAdapter;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * @var StoreManagerInterface
@@ -73,6 +72,7 @@ class ShippingSyncer
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param StoreManagerInterface $storeManager
+     * @param ShippingFileBuilder $shippingFileBuilder
      * @param ShippingData $shippingData
      */
     public function __construct(
@@ -81,42 +81,47 @@ class ShippingSyncer
         FBEHelper             $fbeHelper,
         SystemConfig          $systemConfig,
         StoreManagerInterface $storeManager,
-        ShippingData          $shippingData,
+        ShippingFileBuilder   $shippingFileBuilder,
+        ShippingData          $shippingData
     ) {
         $this->fileSystem = $fileSystem;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->storeManager = $storeManager;
+        $this->shippingFileBuilder = $shippingFileBuilder;
         $this->shippingData = $shippingData;
     }
 
     /**
      * Syncing shipping profiles to Meta
      *
-     * @param string $access_token
-     * @param string $partner_integration_id
+     * @param string|null $accessToken
+     * @param string|null $partnerIntegrationId
      * @return void
-     * @throws FileSystemException
      */
-    public function syncShippingProfiles(string $access_token = null, string $partner_integration_id = null)
+    public function syncShippingProfiles(string $accessToken = null, string $partnerIntegrationId = null)
     {
         foreach ($this->storeManager->getStores() as $store) {
             try {
-                $fileBuilder = new ShippingFileBuilder($this->fileSystem);
-                $this->shippingData->setStoreId($store->getId());
+                $this->shippingData->setStoreId((int)$store->getId());
                 $shippingProfiles = [
                     $this->shippingData->buildShippingProfile(ShippingProfileTypes::TABLE_RATE),
                     $this->shippingData->buildShippingProfile(ShippingProfileTypes::FLAT_RATE),
                     $this->shippingData->buildShippingProfile(ShippingProfileTypes::FREE_SHIPPING),
                 ];
-                $file_uri = $fileBuilder->createFile($shippingProfiles);
-                $access_token = $access_token ?? $this->systemConfig->getAccessToken($store->getId());
-                $partner_integration_id = $partner_integration_id ??
+                $fileUri = $this->shippingFileBuilder->createFile($shippingProfiles);
+                $accessToken = $accessToken ?? $this->systemConfig->getAccessToken($store->getId());
+                $partnerIntegrationId = $partnerIntegrationId ??
                     $this->systemConfig->getCommercePartnerIntegrationId($store->getId());
                 $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($store->getId()))
-                    ->setAccessToken($access_token);
-                $this->graphApiAdapter->uploadFile($partner_integration_id, $file_uri, "SHIPPING_PROFILES", "CREATE");
+                    ->setAccessToken($accessToken);
+                $this->graphApiAdapter->uploadFile(
+                    $partnerIntegrationId,
+                    $fileUri,
+                    'SHIPPING_PROFILES',
+                    'CREATE'
+                );
             } catch (Exception $e) {
                 $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
                     'store_id' => $this->fbeHelper->getStore()->getId(),

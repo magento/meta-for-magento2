@@ -28,17 +28,17 @@ class ShippingData
     /**
      * @var CollectionFactory
      */
-    protected CollectionFactory $tableRateCollection;
+    private CollectionFactory $tableRateCollection;
 
     /**
      * @var ScopeConfigInterface
      */
-    protected ScopeConfigInterface $scopeConfig;
+    private ScopeConfigInterface $scopeConfig;
 
     /**
-     * @var string
+     * @var int
      */
-    private string $storeId;
+    private int $storeId;
 
     public const ATTR_ENABLED = 'enabled';
     public const ATTR_TITLE = 'title';
@@ -62,14 +62,15 @@ class ShippingData
     }
 
     /**
-     * Setter for store id
+     * Setter for store ID
      *
-     * @param string $store_id
-     * @return void
+     * @param int $storeId
+     * @return $this
      */
-    public function setStoreId(string $store_id)
+    public function setStoreId($storeId)
     {
-        $this->storeId = $store_id;
+        $this->storeId = $storeId;
+        return $this;
     }
 
     /**
@@ -150,7 +151,9 @@ class ShippingData
     }
 
     /**
-     *  Returns shipping methods for table rate settings as specified here: https://experienceleague.adobe.com/docs/commerce-admin/stores-sales/delivery/basic-methods/shipping-table-rate.html?lang=en
+     * Returns shipping methods for table rate settings as specified in the Adobe API documentation
+     *
+     * Link: https://experienceleague.adobe.com/docs/commerce-admin/stores-sales/delivery/basic-methods/shipping-table-rate.html
      *
      * @return array
      */

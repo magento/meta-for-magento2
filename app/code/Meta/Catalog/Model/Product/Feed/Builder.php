@@ -607,7 +607,7 @@ class Builder
     private function getAgeGroup(Product $product)
     {
         $ageGroup = '';
-        if(isset($this->attrMap[self::ATTR_AGE_GROUP])) {
+        if (isset($this->attrMap[self::ATTR_AGE_GROUP])) {
             $ageGroup = $product->getData($this->attrMap[self::ATTR_AGE_GROUP]);
         }
         if (empty($ageGroup)) {

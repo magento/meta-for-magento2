@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-
-namespace Meta\Sales\Plugin;
-
-use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\Framework\Exception\FileSystemException;
-use Magento\Framework\Filesystem;
-
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -24,12 +17,19 @@ use Magento\Framework\Filesystem;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+namespace Meta\Sales\Plugin;
+
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Filesystem;
+
 class ShippingFileBuilder
 {
     /**
      * @var Filesystem
      */
-    protected Filesystem $fileSystem;
+    private Filesystem $fileSystem;
 
     /**
      * @param Filesystem $filesystem
@@ -50,7 +50,7 @@ class ShippingFileBuilder
     public function createFile(array $shippingProfiles): string
     {
         $file = 'export/shipping_profiles.csv';
-        $directory = $this->fileSystem->getDirectoryWrite(DirectoryList::APP);
+        $directory = $this->fileSystem->getDirectoryWrite(DirectoryList::VAR_DIR);
         $directory->create('export');
 
         $stream = $directory->openFile($file, 'w+');

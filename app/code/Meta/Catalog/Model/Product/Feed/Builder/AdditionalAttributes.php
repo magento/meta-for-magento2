@@ -128,9 +128,8 @@ class AdditionalAttributes
      * @param string $attribute
      * @return mixed
      */
-    public function getCorrectText(Product $product, string $attribute): mixed
+    public function getCorrectText(Product $product, string $attribute)
     {
-
         if ($product->getData($attribute)) {
             $text = $product->getAttributeText($attribute);
             if (!$text) {

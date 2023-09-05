@@ -53,7 +53,6 @@ class PostFBEOnboardingSync extends AbstractAjax
     private $shippingSyncer;
 
     /**
-
      * Construct
      *
      * @param Context $context
@@ -61,6 +60,7 @@ class PostFBEOnboardingSync extends AbstractAjax
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param CatalogSyncHelper $catalogSyncHelper
+     * @param ShippingSyncer $shippingSyncer
      */
     public function __construct(
         Context $context,
