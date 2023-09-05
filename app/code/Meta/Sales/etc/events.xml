@@ -12,6 +12,9 @@
     <event name="sales_order_payment_refund">
         <observer name="facebook_order_refund" instance="Meta\Sales\Observer\Order\Refund" />
     </event>
+    <event name="facebook_fbe_onboarding_after">
+        <observer name="facebook_sync_shipping_profiles" instance="Meta\Sales\Observer\Facebook\SyncShippingProfiles" />
+    </event>
     <event name="facebook_order_create_after">
         <observer name="facebook_order_create_after" instance="Meta\Sales\Observer\Facebook\OrderCreateAfter" />
     </event>

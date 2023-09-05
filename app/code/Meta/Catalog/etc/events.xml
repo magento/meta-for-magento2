@@ -6,4 +6,7 @@
     <event name="catalog_category_delete_before">
         <observer name="custom_delete_category" instance="Meta\Catalog\Observer\ProcessCategoryBeforeDeleteEventObserver" />
     </event>
+    <event name="facebook_fbe_onboarding_after">
+        <observer name="facebook_sync_full_catalog" instance="Meta\Catalog\Observer\Facebook\SyncFullCatalog" />
+    </event>
 </config>

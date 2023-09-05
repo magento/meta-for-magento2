@@ -21,8 +21,6 @@ declare(strict_types=1);
 namespace Meta\Sales\Plugin;
 
 use Exception;
-use Magento\Framework\Filesystem;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -39,11 +37,6 @@ class ShippingSyncer
      * @var FBEHelper
      */
     private FBEHelper $fbeHelper;
-
-    /**
-     * @var Filesystem
-     */
-    private Filesystem $fileSystem;
 
     /**
      * @var GraphAPIAdapter
@@ -68,7 +61,6 @@ class ShippingSyncer
     /**
      * Constructor for Shipping settings update plugin
      *
-     * @param Filesystem $fileSystem
      * @param GraphAPIAdapter $graphApiAdapter
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
@@ -77,7 +69,6 @@ class ShippingSyncer
      * @param ShippingData $shippingData
      */
     public function __construct(
-        FileSystem            $fileSystem,
         GraphAPIAdapter       $graphApiAdapter,
         FBEHelper             $fbeHelper,
         SystemConfig          $systemConfig,
@@ -85,7 +76,6 @@ class ShippingSyncer
         ShippingFileBuilder   $shippingFileBuilder,
         ShippingData          $shippingData
     ) {
-        $this->fileSystem = $fileSystem;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
@@ -97,46 +87,45 @@ class ShippingSyncer
     /**
      * Syncing shipping profiles to Meta
      *
-     * @param string $event_type
-     * @param StoreInterface|null $store
+     * @param string $eventType
+     * @param int|null $storeId
      * @return void
      */
-    public function syncShippingProfiles(string $event_type, StoreInterface $store = null)
+    public function syncShippingProfiles(string $eventType, $storeId = null)
     {
-        if ($store !== null) {
-            $this->syncShippingProfilesForStore($event_type, $store);
+        if ($storeId !== null) {
+            $this->syncShippingProfilesForStore($eventType, $storeId);
             return;
         }
         foreach ($this->storeManager->getStores() as $store) {
-            $this->syncShippingProfilesForStore($event_type, $store);
+            $this->syncShippingProfilesForStore($eventType, $store->getId());
         }
     }
 
     /**
      * Syncing shipping profiles for an individual store
      *
-     * @param string $event_type
-     * @param StoreInterface $store
+     * @param string $eventType
+     * @param int $storeId
      * @return void
      */
-    private function syncShippingProfilesForStore(string $event_type, StoreInterface $store)
+    private function syncShippingProfilesForStore(string $eventType, $storeId)
     {
+        $accessToken = $this->systemConfig->getAccessToken($storeId);
+        $partnerIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId($storeId);
+        if ($accessToken === null || $partnerIntegrationId === null) {
+            return;
+        }
+
         try {
-            $accessToken = $accessToken ?? $this->systemConfig->getAccessToken($store->getId());
-            if ($accessToken === null) {
-                return;
-            }
-            $this->shippingData->setStoreId((int)$store->getId());
+            $this->shippingData->setStoreId($storeId);
             $shippingProfiles = [
                 $this->shippingData->buildShippingProfile(ShippingProfileTypes::TABLE_RATE),
                 $this->shippingData->buildShippingProfile(ShippingProfileTypes::FLAT_RATE),
                 $this->shippingData->buildShippingProfile(ShippingProfileTypes::FREE_SHIPPING),
             ];
             $fileUri = $this->shippingFileBuilder->createFile($shippingProfiles);
-            $accessToken = $accessToken ?? $this->systemConfig->getAccessToken($store->getId());
-            $partnerIntegrationId = $partnerIntegrationId ??
-                $this->systemConfig->getCommercePartnerIntegrationId($store->getId());
-            $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($store->getId()))
+            $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
                 ->setAccessToken($accessToken);
             $this->graphApiAdapter->uploadFile(
                 $partnerIntegrationId,
@@ -148,7 +137,7 @@ class ShippingSyncer
             $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
                 'store_id' => $this->fbeHelper->getStore()->getId(),
                 'event' => 'shipping_profile_sync',
-                'event_type' => $event_type
+                'event_type' => $eventType
             ]);
         }
     }

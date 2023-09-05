@@ -22,10 +22,10 @@ namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Helper\CatalogSyncHelper;
 use Magento\Backend\App\Action\Context;
-use Meta\Sales\Plugin\ShippingSyncer;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Event\ManagerInterface as EventManager;
+use Throwable;
 
 class PostFBEOnboardingSync extends AbstractAjax
 {
@@ -43,14 +43,9 @@ class PostFBEOnboardingSync extends AbstractAjax
     private $systemConfig;
 
     /**
-     * @var CatalogSyncHelper
+     * @var EventManager
      */
-    private $catalogSyncHelper;
-
-    /**
-     * @var ShippingSyncer
-     */
-    private $shippingSyncer;
+    private EventManager $eventManager;
 
     /**
      * Construct
@@ -59,22 +54,18 @@ class PostFBEOnboardingSync extends AbstractAjax
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
-     * @param CatalogSyncHelper $catalogSyncHelper
-     * @param ShippingSyncer $shippingSyncer
      */
     public function __construct(
-        Context           $context,
-        JsonFactory       $resultJsonFactory,
-        FBEHelper         $fbeHelper,
-        SystemConfig      $systemConfig,
-        CatalogSyncHelper $catalogSyncHelper,
-        ShippingSyncer    $shippingSyncer
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        FBEHelper $fbeHelper,
+        SystemConfig $systemConfig,
+        EventManager $eventManager
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
-        $this->catalogSyncHelper = $catalogSyncHelper;
-        $this->shippingSyncer = $shippingSyncer;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -93,8 +84,7 @@ class PostFBEOnboardingSync extends AbstractAjax
         }
 
         try {
-            $store = $this->systemConfig->getStoreManager()->getStore($storeId);
-            $storeName = $store->getName();
+            $storeName = $this->systemConfig->getStoreManager()->getStore($storeId)->getName();
             if (!$this->systemConfig->getAccessToken($storeId)) {
                 $response['success'] = false;
                 $response['message'] = __(
@@ -110,15 +100,15 @@ class PostFBEOnboardingSync extends AbstractAjax
                 return $response;
             }
 
-            // Immediately after onboarding we initiate full catalog sync.
-            // It syncs all products and all categories to Meta Catalog
-            $this->catalogSyncHelper->syncFullCatalog($storeId);
-            $this->shippingSyncer->syncShippingProfiles('post_fbe_onboarding', $store);
+            // Dispatch the facebook_post_fbe_onboarding_sync event,
+            // so observers in other Meta modules can subscribe and trigger their syncs,
+            // such as full catalog sync, and shipping profiles sync
+            $this->eventManager->dispatch('facebook_fbe_onboarding_after', ['store_id' => $storeId]);
 
             $response['success'] = true;
             $response['message'] = 'Post FBE Onboarding Sync successful';
             return $response;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
             $this->fbeHelper->logExceptionImmediatelyToMeta(
