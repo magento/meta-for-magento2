@@ -22,75 +22,23 @@ declare(strict_types=1);
 namespace Meta\Sales\Plugin;
 
 use Magento\Framework\Exception\FileSystemException;
-use Magento\Store\Model\StoreManagerInterface;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Framework\Filesystem;
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
-use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Config\Model\Config;
-use Exception;
 
 class ShippingSettingsUpdatePlugin
 {
+    
     /**
-     * @var ShippingDataFactory
+     * @var ShippingSyncer
      */
-    protected ShippingDataFactory $shippingRatesFactory;
+    private ShippingSyncer $shippingSyncer;
 
     /**
-     * @var FBEHelper
-     */
-    private FBEHelper $fbeHelper;
-
-    /**
-     * @var Filesystem
-     */
-    protected Filesystem $fileSystem;
-
-    /**
-     * @var GraphAPIAdapter
-     */
-    protected $graphApiAdapter;
-
-    /**
-     * @var SystemConfig
-     */
-    protected $systemConfig;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private StoreManagerInterface $storeManager;
-
-    /**
-     * @var ShippingData
-     */
-    private ShippingData $shippingData;
-
-    /**
-     * Constructor for Shipping settings update plugin
-     *
-     * @param Filesystem $fileSystem
-     * @param GraphAPIAdapter $graphApiAdapter
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param StoreManagerInterface $storeManager
-     * @param ShippingData $shippingData
+     * @param ShippingSyncer $shippingSyncer
      */
     public function __construct(
-        FileSystem            $fileSystem,
-        GraphAPIAdapter       $graphApiAdapter,
-        FBEHelper             $fbeHelper,
-        SystemConfig          $systemConfig,
-        StoreManagerInterface $storeManager,
-        ShippingData          $shippingData,
+        ShippingSyncer $shippingSyncer
     ) {
-        $this->fileSystem = $fileSystem;
-        $this->graphApiAdapter = $graphApiAdapter;
-        $this->fbeHelper = $fbeHelper;
-        $this->systemConfig = $systemConfig;
-        $this->storeManager = $storeManager;
-        $this->shippingData = $shippingData;
+        $this->shippingSyncer = $shippingSyncer;
     }
 
     /**
@@ -105,27 +53,6 @@ class ShippingSettingsUpdatePlugin
         if ($section_name !== 'carriers') {
             return;
         }
-        foreach ($this->storeManager->getStores() as $store) {
-            try {
-                $fileBuilder = new ShippingFileBuilder($this->fileSystem);
-                $this->shippingData->setStoreId((string)$store->getId());
-                $shippingProfiles = [
-                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::TABLE_RATE),
-                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::FLAT_RATE),
-                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::FREE_SHIPPING),
-                ];
-                $file_uri = $fileBuilder->createFile($shippingProfiles);
-                $partnerIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId($store->getId());
-                $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($store->getId()))
-                    ->setAccessToken($this->systemConfig->getAccessToken($store->getId()));
-                $this->graphApiAdapter->uploadFile($partnerIntegrationId, $file_uri, "SHIPPING_PROFILES", "CREATE");
-            } catch (Exception $e) {
-                $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
-                    'store_id' => $this->fbeHelper->getStore()->getId(),
-                    'event' => 'shipping_profile_sync',
-                    'event_type' => 'after_save'
-                ]);
-            }
-        }
+        $this->shippingSyncer->syncShippingProfiles();
     }
 }

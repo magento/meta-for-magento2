@@ -24,6 +24,7 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Helper\CatalogSyncHelper;
 use Magento\Backend\App\Action\Context;
+use Meta\Sales\Plugin\ShippingSyncer;
 use Magento\Framework\Controller\Result\JsonFactory;
 
 class PostFBEOnboardingSync extends AbstractAjax
@@ -47,6 +48,12 @@ class PostFBEOnboardingSync extends AbstractAjax
     private $catalogSyncHelper;
 
     /**
+     * @var ShippingSyncer
+     */
+    private $shippingSyncer;
+
+    /**
+
      * Construct
      *
      * @param Context $context
@@ -60,12 +67,14 @@ class PostFBEOnboardingSync extends AbstractAjax
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
-        CatalogSyncHelper $catalogSyncHelper
+        CatalogSyncHelper $catalogSyncHelper,
+        ShippingSyncer $shippingSyncer
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->catalogSyncHelper = $catalogSyncHelper;
+        $this->shippingSyncer = $shippingSyncer;
     }
 
     /**
@@ -75,7 +84,7 @@ class PostFBEOnboardingSync extends AbstractAjax
      */
     public function executeForJson(): array
     {
-        $storeId = $this->getRequest()->getParam('storeId');
+        $storeId = (int)$this->getRequest()->getParam('storeId');
         if (!$storeId) {
             $response['success'] = false;
             $response['message'] = __('StoreId param is not set for Post FBE onboarding sync');
@@ -103,6 +112,7 @@ class PostFBEOnboardingSync extends AbstractAjax
             // Immediately after onboarding we initiate full catalog sync.
             // It syncs all products and all categories to Meta Catalog
             $this->catalogSyncHelper->syncFullCatalog($storeId);
+            $this->shippingSyncer->syncShippingProfiles();
 
             $response['success'] = true;
             $response['message'] = 'Post FBE Onboarding Sync successful';
