@@ -13,6 +13,7 @@
         "magento/module-eav": "*",
         "magento/module-security": "*",
         "magento/module-store": "*",
+        "meta/module-catalog": "*",
         "facebook/php-business-sdk": "^15.0.0"
     },
     "autoload": {

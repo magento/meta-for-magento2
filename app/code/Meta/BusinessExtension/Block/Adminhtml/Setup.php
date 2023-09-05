@@ -225,6 +225,16 @@ class Setup extends Template
     }
 
     /**
+     * Fetch configuration ajax route
+     *
+     * @return mixed
+     */
+    public function fetchPostFBEOnboardingSyncAjaxRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/postFBEOnboardingSync');
+    }
+
+    /**
      * Get delete asset ids ajax route
      *
      * @return mixed

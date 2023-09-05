@@ -144,11 +144,11 @@ class FeedApi
     /**
      * Creates new feed and save it
      *
-     * @param $catalogId
-     * @param $feedName
+     * @param string $catalogId
+     * @param string $feedName
      * @throws GuzzleException
      */
-    private function createNewFeedAndSave($catalogId, $feedName)
+    private function createNewFeedAndSave(string $catalogId, string $feedName)
     {
         $feedId = $this->graphApiAdapter->createEmptyFeed($catalogId, $feedName);
 
@@ -173,10 +173,11 @@ class FeedApi
     /**
      * Verify is feed exists in Meta Catalog, if not returns null
      *
-     * @param $feedId
-     * @param $catalogFeeds
+     * @param string $feedId
+     * @param array $catalogFeeds
+     * @return string|null
      */
-    private function verifyFeedExistsInMetaCatalog($feedId, $catalogFeeds)
+    private function verifyFeedExistsInMetaCatalog(string $feedId, array $catalogFeeds): ?string
     {
         // make sure feed exists on meta side, not deleted
         if ($feedId) {
@@ -193,10 +194,10 @@ class FeedApi
     /**
      * Saves FB Feed ID to configurations
      *
-     * @param $feedId
+     * @param string $feedId
      * @return void
      */
-    private function saveFeedId($feedId): void
+    private function saveFeedId(string $feedId): void
     {
         $this->systemConfig->saveConfig(
             SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID,
@@ -282,15 +283,21 @@ class FeedApi
      * Execute function
      *
      * @param int|null $storeId
-     * @return bool|mixed
-     * @throws Exception
+     * @throws \Throwable
      */
     public function execute($storeId = null)
     {
         $this->storeId = $storeId;
         $this->builder->setStoreId($this->storeId);
+        $accessToken = $this->systemConfig->getAccessToken($storeId);
+        if ($accessToken === null) {
+            $this->logger->critical(
+                "Full Catalog Sync: can't find access token"
+            );
+            return null;
+        }
         $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
-            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+            ->setAccessToken($accessToken);
         try {
             $feedId = $this->getFbFeedId();
             if (!$feedId) {
@@ -298,7 +305,7 @@ class FeedApi
             }
             $feed = $this->generateProductFeed();
             return $this->graphApiAdapter->pushProductFeed($feedId, $feed);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->critical($e);
             throw $e;
         }

@@ -255,6 +255,7 @@ jQuery('#store').on('change', function() {
             _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
             _this.saveInstalledFeatures(installedFeatures);
             _this.cleanConfigCache();
+            _this.postFBEOnboardingSync();
 
             if (window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionEnabled) {
               window.location.reload();
@@ -450,6 +451,25 @@ jQuery('#store').on('change', function() {
         },
         error: function() {
           console.error('There was a problem saving config');
+        }
+      });
+    },
+    postFBEOnboardingSync: function postFBEOnboardingSync() {
+      var _this = this;
+      jQuery.ajax({
+        type: 'post',
+        url: ajaxify(window.facebookBusinessExtensionConfig.postFBEOnboardingSync),
+        async : true,
+        data: ajaxParam({
+          storeId: window.facebookBusinessExtensionConfig.storeId,
+        }),
+        success: function onSuccess(data, _textStatus, _jqXHR) {
+          if(data.success) {
+              _this.consoleLog('Post FBE Onboarding sync completed');
+          }
+        },
+        error: function() {
+          console.error('There was a problem with Post FBE onboarding sync');
         }
       });
     },
