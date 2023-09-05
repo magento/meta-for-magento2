@@ -173,11 +173,11 @@ class FeedApi
     /**
      * Verify is feed exists in Meta Catalog, if not returns null
      *
-     * @param string $feedId
+     * @param string|null $feedId
      * @param array $catalogFeeds
      * @return string|null
      */
-    private function verifyFeedExistsInMetaCatalog(string $feedId, array $catalogFeeds): ?string
+    private function verifyFeedExistsInMetaCatalog(?string $feedId, array $catalogFeeds): ?string
     {
         // make sure feed exists on meta side, not deleted
         if ($feedId) {
