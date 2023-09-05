@@ -20,33 +20,25 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Plugin;
 
-use Magento\OfflineShipping\Model\Carrier\Flatrate;
-use Magento\OfflineShipping\Model\Carrier\Freeshipping;
-use Magento\OfflineShipping\Model\Carrier\Tablerate;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\OfflineShipping\Model\ResourceModel\Carrier\Tablerate\CollectionFactory;
-use Magento\Shipping\Model\Carrier\AbstractCarrier;
 
 class ShippingData
 {
     /**
-     * @var Flatrate
-     */
-    protected Flatrate $flatRateModel;
-
-    /**
-     * @var Tablerate
-     */
-    protected Tablerate $tableRateModel;
-
-    /**
-     * @var Freeshipping
-     */
-    protected Freeshipping $freeShippingModel;
-
-    /**
      * @var CollectionFactory
      */
     protected CollectionFactory $tableRateCollection;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected ScopeConfigInterface $scopeConfig;
+
+    /**
+     * @var string
+     */
+    private string $storeId;
 
     public const ATTR_ENABLED = 'enabled';
     public const ATTR_TITLE = 'title';
@@ -58,78 +50,50 @@ class ShippingData
     public const ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT = 'free_shipping_minimum_order_amount';
 
     /**
-     * @param Flatrate $flatRateModel
-     * @param Tablerate $tableRateModel
-     * @param Freeshipping $freeShippingModel
      * @param CollectionFactory $tableRateCollection
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        Flatrate          $flatRateModel,
-        Tablerate         $tableRateModel,
-        Freeshipping      $freeShippingModel,
-        CollectionFactory $tableRateCollection
+        CollectionFactory    $tableRateCollection,
+        ScopeConfigInterface $scopeConfig
     ) {
-        $this->flatRateModel = $flatRateModel;
-        $this->tableRateModel = $tableRateModel;
-        $this->freeShippingModel = $freeShippingModel;
+        $this->scopeConfig = $scopeConfig;
         $this->tableRateCollection = $tableRateCollection;
     }
 
     /**
-     * A function that builds a table rates shipping profile
+     * Setter for store id
      *
-     * @return array
+     * @param string $store_id
+     * @return void
      */
-    public function buildTableRatesProfile(): array
+    public function setStoreId(string $store_id)
     {
-        return $this->buildShippingProfile($this->tableRateModel, true);
-    }
-
-    /**
-     * A function that builds a flat-rate shipping profile
-     *
-     * @return array
-     */
-    public function buildFlatRateProfile(): array
-    {
-        return $this->buildShippingProfile($this->flatRateModel, false);
-    }
-
-    /**
-     * A function that builds a free shipping profile
-     *
-     * @return array
-     */
-    public function buildFreeShippingProfile(): array
-    {
-        return $this->buildShippingProfile($this->freeShippingModel, false);
+        $this->storeId = $store_id;
     }
 
     /**
      * Returns shipping profiles based on the AbstractModel carrier passed in
      *
-     * @param AbstractCarrier $model
-     * @param bool $tableRates
+     * @param string $shippingProfileType
      * @return array
      */
-    private function buildShippingProfile(AbstractCarrier $model, bool $tableRates): array
+    public function buildShippingProfile(string $shippingProfileType): array
     {
-        $isEnabled = $model->getConfigData('active');
-        $title = $model->getConfigData('title');
-        $methodName = $model->getConfigData('name');
-        $price = (float)$model->getConfigData("price") ?? 0.0;
-        $allowedCountries = $model->getConfigData('specificcountry');
-        if ($tableRates) {
+        $isEnabled = $this->getFieldFromModel($shippingProfileType, 'active');
+        $title = $this->getFieldFromModel($shippingProfileType, 'title');
+        $methodName = $this->getFieldFromModel($shippingProfileType, 'name');
+        $price = (float)$this->getFieldFromModel($shippingProfileType, 'price') ?? 0.0;
+        $allowedCountries = $this->getFieldFromModel($shippingProfileType, 'specificcountries');
+        if ($shippingProfileType === ShippingProfileTypes::TABLE_RATE) {
             $shippingMethods = $this->getShippingMethodsInfoForTableRates();
         } else {
             $shippingMethods = $this->buildShippingMethodsInfo($allowedCountries, $price);
         }
-
-        $freeShippingThreshold = $model->getConfigData('free_shipping_subtotal');
-
-        $handlingFee = $model->getConfigData('handling_fee');
-        $handlingFeeType = $model->getConfigData('handling_type');
-        $shippingType = $model->getConfigData('type');
+        $freeShippingThreshold = $this->getFieldFromModel($shippingProfileType, 'free_shipping_subtotal');
+        $handlingFee = $this->getFieldFromModel($shippingProfileType, 'handling_fee');
+        $handlingFeeType = $this->getFieldFromModel($shippingProfileType, 'handling_type');
+        $shippingType = $this->getFieldFromModel($shippingProfileType, 'type');
         return [
             self::ATTR_ENABLED => $isEnabled,
             self::ATTR_TITLE => $title,
@@ -140,6 +104,19 @@ class ShippingData
             self::ATTR_SHIPPING_FEE_TYPE => $shippingType,
             self::ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT => $freeShippingThreshold,
         ];
+    }
+
+    /**
+     * Get field from abstract carrier DB
+     *
+     * @param string $shippingProfileType
+     * @param string $field
+     * @return mixed
+     */
+    private function getFieldFromModel(string $shippingProfileType, string $field)
+    {
+        $path = 'carriers/' . $shippingProfileType . '/' . $field;
+        return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $this->storeId);
     }
 
     /**

@@ -63,29 +63,34 @@ class ShippingSettingsUpdatePlugin
     private StoreManagerInterface $storeManager;
 
     /**
+     * @var ShippingData
+     */
+    private ShippingData $shippingData;
+
+    /**
      * Constructor for Shipping settings update plugin
      *
-     * @param ShippingDataFactory $shippingRatesFactory
      * @param Filesystem $fileSystem
      * @param GraphAPIAdapter $graphApiAdapter
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param StoreManagerInterface $storeManager
+     * @param ShippingData $shippingData
      */
     public function __construct(
-        ShippingDataFactory   $shippingRatesFactory,
         FileSystem            $fileSystem,
         GraphAPIAdapter       $graphApiAdapter,
         FBEHelper             $fbeHelper,
         SystemConfig          $systemConfig,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        ShippingData          $shippingData,
     ) {
-        $this->shippingRatesFactory = $shippingRatesFactory;
         $this->fileSystem = $fileSystem;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->storeManager = $storeManager;
+        $this->shippingData = $shippingData;
     }
 
     /**
@@ -102,12 +107,12 @@ class ShippingSettingsUpdatePlugin
         }
         foreach ($this->storeManager->getStores() as $store) {
             try {
-                $shippingRates = $this->shippingRatesFactory->create();
                 $fileBuilder = new ShippingFileBuilder($this->fileSystem);
+                $this->shippingData->setStoreId((string)$store->getId());
                 $shippingProfiles = [
-                    $shippingRates->buildTableRatesProfile(),
-                    $shippingRates->buildFlatRateProfile(),
-                    $shippingRates->buildFreeShippingProfile()
+                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::TABLE_RATE),
+                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::FLAT_RATE),
+                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::FREE_SHIPPING),
                 ];
                 $file_uri = $fileBuilder->createFile($shippingProfiles);
                 $partnerIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId($store->getId());
