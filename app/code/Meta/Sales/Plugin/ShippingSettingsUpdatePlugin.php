@@ -50,6 +50,6 @@ class ShippingSettingsUpdatePlugin
         if ($sectionName !== 'carriers') {
             return;
         }
-        $this->shippingSyncer->syncShippingProfiles();
+        $this->shippingSyncer->syncShippingProfiles('after_save');
     }
 }

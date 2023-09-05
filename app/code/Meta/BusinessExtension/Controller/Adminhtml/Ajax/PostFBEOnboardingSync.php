@@ -63,12 +63,12 @@ class PostFBEOnboardingSync extends AbstractAjax
      * @param ShippingSyncer $shippingSyncer
      */
     public function __construct(
-        Context $context,
-        JsonFactory $resultJsonFactory,
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
+        Context           $context,
+        JsonFactory       $resultJsonFactory,
+        FBEHelper         $fbeHelper,
+        SystemConfig      $systemConfig,
         CatalogSyncHelper $catalogSyncHelper,
-        ShippingSyncer $shippingSyncer
+        ShippingSyncer    $shippingSyncer
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->fbeHelper = $fbeHelper;
@@ -93,7 +93,8 @@ class PostFBEOnboardingSync extends AbstractAjax
         }
 
         try {
-            $storeName = $this->systemConfig->getStoreManager()->getStore($storeId)->getName();
+            $store = $this->systemConfig->getStoreManager()->getStore($storeId);
+            $storeName = $store->getName();
             if (!$this->systemConfig->getAccessToken($storeId)) {
                 $response['success'] = false;
                 $response['message'] = __(
@@ -112,7 +113,7 @@ class PostFBEOnboardingSync extends AbstractAjax
             // Immediately after onboarding we initiate full catalog sync.
             // It syncs all products and all categories to Meta Catalog
             $this->catalogSyncHelper->syncFullCatalog($storeId);
-            $this->shippingSyncer->syncShippingProfiles();
+            $this->shippingSyncer->syncShippingProfiles('post_fbe_onboarding', $store);
 
             $response['success'] = true;
             $response['message'] = 'Post FBE Onboarding Sync successful';

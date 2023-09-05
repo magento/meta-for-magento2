@@ -22,6 +22,7 @@ namespace Meta\Sales\Plugin;
 
 use Exception;
 use Magento\Framework\Filesystem;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -96,39 +97,59 @@ class ShippingSyncer
     /**
      * Syncing shipping profiles to Meta
      *
-     * @param string|null $accessToken
-     * @param string|null $partnerIntegrationId
+     * @param string $event_type
+     * @param StoreInterface|null $store
      * @return void
      */
-    public function syncShippingProfiles(string $accessToken = null, string $partnerIntegrationId = null)
+    public function syncShippingProfiles(string $event_type, StoreInterface $store = null)
     {
+        if ($store !== null) {
+            $this->syncShippingProfilesForStore($event_type, $store);
+            return;
+        }
         foreach ($this->storeManager->getStores() as $store) {
-            try {
-                $this->shippingData->setStoreId((int)$store->getId());
-                $shippingProfiles = [
-                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::TABLE_RATE),
-                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::FLAT_RATE),
-                    $this->shippingData->buildShippingProfile(ShippingProfileTypes::FREE_SHIPPING),
-                ];
-                $fileUri = $this->shippingFileBuilder->createFile($shippingProfiles);
-                $accessToken = $accessToken ?? $this->systemConfig->getAccessToken($store->getId());
-                $partnerIntegrationId = $partnerIntegrationId ??
-                    $this->systemConfig->getCommercePartnerIntegrationId($store->getId());
-                $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($store->getId()))
-                    ->setAccessToken($accessToken);
-                $this->graphApiAdapter->uploadFile(
-                    $partnerIntegrationId,
-                    $fileUri,
-                    'SHIPPING_PROFILES',
-                    'CREATE'
-                );
-            } catch (Exception $e) {
-                $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
-                    'store_id' => $this->fbeHelper->getStore()->getId(),
-                    'event' => 'shipping_profile_sync',
-                    'event_type' => 'after_save'
-                ]);
+            $this->syncShippingProfilesForStore($event_type, $store);
+        }
+    }
+
+    /**
+     * Syncing shipping profiles for an individual store
+     *
+     * @param string $event_type
+     * @param StoreInterface $store
+     * @return void
+     */
+    private function syncShippingProfilesForStore(string $event_type, StoreInterface $store)
+    {
+        try {
+            $accessToken = $accessToken ?? $this->systemConfig->getAccessToken($store->getId());
+            if ($accessToken === null) {
+                return;
             }
+            $this->shippingData->setStoreId((int)$store->getId());
+            $shippingProfiles = [
+                $this->shippingData->buildShippingProfile(ShippingProfileTypes::TABLE_RATE),
+                $this->shippingData->buildShippingProfile(ShippingProfileTypes::FLAT_RATE),
+                $this->shippingData->buildShippingProfile(ShippingProfileTypes::FREE_SHIPPING),
+            ];
+            $fileUri = $this->shippingFileBuilder->createFile($shippingProfiles);
+            $accessToken = $accessToken ?? $this->systemConfig->getAccessToken($store->getId());
+            $partnerIntegrationId = $partnerIntegrationId ??
+                $this->systemConfig->getCommercePartnerIntegrationId($store->getId());
+            $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($store->getId()))
+                ->setAccessToken($accessToken);
+            $this->graphApiAdapter->uploadFile(
+                $partnerIntegrationId,
+                $fileUri,
+                'SHIPPING_PROFILES',
+                'CREATE'
+            );
+        } catch (Exception $e) {
+            $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
+                'store_id' => $this->fbeHelper->getStore()->getId(),
+                'event' => 'shipping_profile_sync',
+                'event_type' => $event_type
+            ]);
         }
     }
 }
