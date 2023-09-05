@@ -86,7 +86,8 @@ class PersistConfiguration extends AbstractAjax
                 ->saveCatalogId($catalogId, $storeId)
                 ->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId)
                 ->saveInstalledFlag($storeId)
-                ->completeOnsiteOnboarding($accessToken, $pageId, $storeId);
+                ->completeOnsiteOnboarding($accessToken, $pageId, $storeId)
+                ->enableCatalogSync($commercePartnerIntegrationId, $storeId);
 
             $response['success'] = true;
             $response['message'] = 'Configuration successfully saved';
@@ -143,6 +144,27 @@ class PersistConfiguration extends AbstractAjax
             );
             $this->fbeHelper->log('Commerce Partner Integration ID saved on instance --- '
                 . $commercePartnerIntegrationId);
+        }
+        return $this;
+    }
+
+    /**
+     * Based on commerce PI presence it enables catalog sync.
+     *
+     * @param int $commercePartnerIntegrationId
+     * @param int $storeId
+     * @return $this
+     */
+    public function enableCatalogSync($commercePartnerIntegrationId, $storeId)
+    {
+        if ($commercePartnerIntegrationId) {
+            $this->fbeHelper->log(sprintf('Catalog sync is enabled for store %s', $storeId));
+
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC,
+                true,
+                $storeId
+            );
         }
         return $this;
     }
