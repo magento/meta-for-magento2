@@ -118,7 +118,7 @@ class ShippingSyncer
         }
 
         try {
-            $this->shippingData->setStoreId($storeId);
+            $this->shippingData->setStoreId((int)$storeId);
             $shippingProfiles = [
                 $this->shippingData->buildShippingProfile(ShippingProfileTypes::TABLE_RATE),
                 $this->shippingData->buildShippingProfile(ShippingProfileTypes::FLAT_RATE),
