@@ -65,7 +65,7 @@ class SyncShippingProfiles implements ObserverInterface
         $storeId = $observer->getEvent()->getStoreId();
 
         try {
-            $this->shippingSyncer->syncShippingProfiles('meta_observer');
+            $this->shippingSyncer->syncShippingProfiles('meta_observer', $storeId);
         } catch (Throwable $e) {
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
