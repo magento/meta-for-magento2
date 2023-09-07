@@ -90,6 +90,21 @@ class UpdateMBESettings
     }
 
     /**
+     * Trigger polling to update MBE Settings by webhook
+     *
+     * @param int $storeId
+     * @return void
+     */
+    public function updateMBESettingsByStoreId(int $storeId)
+    {
+        try {
+            $this->updateMBESettings($storeId);
+        } catch (\Exception $e) {
+            $this->fbeHelper->logException($e);
+        }
+    }
+
+    /**
      * Update MBE settings through the 'fbe_installs' API
      *
      * @param int $storeId
