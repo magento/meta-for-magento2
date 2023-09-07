@@ -33,7 +33,6 @@ use Meta\Catalog\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Escaper;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
@@ -145,11 +144,6 @@ class Builder
     private $inventoryOnly = false;
 
     /**
-     * @var Escaper
-     */
-    private $escaper;
-
-    /**
      * @var SystemConfig
      */
     private $systemConfig;
@@ -180,7 +174,6 @@ class Builder
      * @param AdditionalAttributes $additionalAttributes
      * @param BuilderTools $builderTools
      * @param CategoryCollectionFactory $categoryCollectionFactory
-     * @param Escaper $escaper
      * @param FBEHelper $fbeHelper
      * @param Mapper $mapper
      * @param MappingConfig $mappingConfig
@@ -191,7 +184,6 @@ class Builder
         AdditionalAttributes      $additionalAttributes,
         BuilderTools              $builderTools,
         CategoryCollectionFactory $categoryCollectionFactory,
-        Escaper                   $escaper,
         FBEHelper                 $fbeHelper,
         Mapper                    $mapper,
         MappingConfig             $mappingConfig,
@@ -202,7 +194,6 @@ class Builder
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->builderTools = $builderTools;
         $this->productIdentifier = $productIdentifier;
-        $this->escaper = $escaper;
         $this->systemConfig = $systemConfig;
         $this->mapper = $mapper;
         $this->mappingConfig = $mappingConfig;
@@ -851,7 +842,7 @@ class Builder
             self::ATTR_RETAILER_ID => $this->trimAttribute(self::ATTR_RETAILER_ID, $retailerId),
             self::ATTR_OTHER_ID => $otherId,
             self::ATTR_ITEM_GROUP_ID => $this->getItemGroupId($product),
-            self::ATTR_NAME => $this->escaper->escapeUrl($productTitle),
+            self::ATTR_NAME => $productTitle,
             self::ATTR_DESCRIPTION => $this->getDescription($product),
             self::ATTR_RICH_DESCRIPTION => $this->getRichDescription($product),
             self::ATTR_AVAILABILITY => $this->getAvailability($product, $inventory),
