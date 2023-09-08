@@ -4,9 +4,6 @@
         <job name="facebook_automation_upload_product_feed" instance="Meta\Catalog\Cron\UploadProductFeed" method="execute">
             <schedule>0 1 * * *</schedule>
         </job>
-        <job name="facebook_automation_upload_inventory" instance="Meta\Catalog\Cron\UploadInventory" method="execute">
-            <schedule>*/15 * * * *</schedule>
-        </job>
         <job name="facebook_automation_catalog_update" instance="Meta\Catalog\Cron\CatalogUpdate" method="execute">
             <schedule>5,15,25,35,45,55 * * * *</schedule>
         </job>
