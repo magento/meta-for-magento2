@@ -70,21 +70,4 @@ class Uploader
     {
         return $this->methodFeedApi->execute($storeId);
     }
-
-    /**
-     * Upload product inventory to Facebook
-     *
-     * @param int|null $storeId
-     * @return array
-     * @throws LocalizedException
-     */
-    public function uploadInventory($storeId = null)
-    {
-        try {
-            $response = $this->methodBatchApi->generateProductRequestData($storeId, null, true);
-        } catch (Exception $e) {
-            throw new LocalizedException(__($e->getMessage()));
-        }
-        return $response;
-    }
 }
