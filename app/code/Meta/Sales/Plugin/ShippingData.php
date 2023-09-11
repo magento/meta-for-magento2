@@ -85,7 +85,17 @@ class ShippingData
         $title = $this->getFieldFromModel($shippingProfileType, 'title');
         $methodName = $this->getFieldFromModel($shippingProfileType, 'name');
         $price = (float)$this->getFieldFromModel($shippingProfileType, 'price') ?? 0.0;
-        $allowedCountries = $this->getFieldFromModel($shippingProfileType, 'specificcountries');
+        $shippingType = $this->getFieldFromModel($shippingProfileType, 'type');
+        // As per adobe docs, when shipping type is none, and shipping profile type is flatRate, shipping is free
+        if ($shippingType === null && $shippingProfileType === ShippingProfileTypes::FLAT_RATE) {
+            $price = 0.0;
+        }
+        $allowSpecificCountrySelection = $this->getFieldFromModel($shippingProfileType, 'sallowspecific');
+        if ($allowSpecificCountrySelection) {
+            $allowedCountries = $this->getFieldFromModel($shippingProfileType, 'specificcountry');
+        } else {
+            $allowedCountries = "*";
+        }
         if ($shippingProfileType === ShippingProfileTypes::TABLE_RATE) {
             $shippingMethods = $this->getShippingMethodsInfoForTableRates();
         } else {
@@ -94,7 +104,6 @@ class ShippingData
         $freeShippingThreshold = $this->getFieldFromModel($shippingProfileType, 'free_shipping_subtotal');
         $handlingFee = $this->getFieldFromModel($shippingProfileType, 'handling_fee');
         $handlingFeeType = $this->getFieldFromModel($shippingProfileType, 'handling_type');
-        $shippingType = $this->getFieldFromModel($shippingProfileType, 'type');
         return [
             self::ATTR_ENABLED => $isEnabled,
             self::ATTR_TITLE => $title,
@@ -123,21 +132,13 @@ class ShippingData
     /**
      * A function that builds shipping methods info for shipping profiles which are not table rates
      *
-     * @param string|null $allowedCountries
+     * @param string $allowedCountries
      * @param float $price
      * @return array
      */
-    private function buildShippingMethodsInfo(?string $allowedCountries, float $price): array
+    private function buildShippingMethodsInfo(string $allowedCountries, float $price): array
     {
         $result = [];
-        if ($allowedCountries === null) {
-            $result[] = ['price' => $price,
-                'country' => '*',
-                'state' => '*',
-                'zip' => '*'
-            ];
-            return $result;
-        }
         $allowedCountries = explode(",", $allowedCountries);
         foreach ($allowedCountries as $country) {
             $result[] = [
@@ -161,26 +162,30 @@ class ShippingData
     {
         $shippingMethodsInfo = [];
         $collection = $this->tableRateCollection->create();
-        $tableRates = $collection->getData();
-        foreach ($tableRates as $rate) {
+        $collection->getSelect()
+            ->joinLeft(
+                ['region' => $collection->getTable('directory_country_region')],
+                'main_table.dest_region_id = region.region_id',
+                ['region.code AS region_code']
+            );
+        foreach ($collection as $rate) {
+            $rate->getName();
             // Determine the condition type (weight, price, or number of items)
             $conditionType = null;
-            $conditionValue = null;
-            if ($rate['condition_name'] === 'package_weight') {
+            $conditionValue = $rate->getConditionValue();
+            $conditionName = $rate->getConditionName();
+            if ($conditionName === 'package_weight') {
                 $conditionType = 'weight';
-                $conditionValue = $rate['condition_value'];
-            } elseif ($rate['condition_name'] === 'package_value_with_discount') {
+            } elseif ($conditionName === 'package_value_with_discount') {
                 $conditionType = 'price';
-                $conditionValue = $rate['condition_value'];
-            } elseif ($rate['condition_name'] === 'package_qty') {
+            } elseif ($conditionName === 'package_qty') {
                 $conditionType = 'item_qty';
-                $conditionValue = $rate['condition_value'];
             }
             $shippingMethodsInfo[] = [
-                'price' => $rate['price'],
-                'country' => $rate['dest_country'],
-                'state' => $rate['dest_region_id'],
-                'zip' => $rate['dest_zip'],
+                'price' => $rate->getPrice(),
+                'country' => $rate->getDestCountryId(),
+                'state' => $rate->getRegionCode(),
+                'zip' => $rate->getDestZip(),
                 'condition' => [
                     'type' => $conditionType,
                     'amount' => $conditionValue,
