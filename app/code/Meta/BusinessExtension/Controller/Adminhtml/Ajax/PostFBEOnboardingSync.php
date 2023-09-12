@@ -54,6 +54,7 @@ class PostFBEOnboardingSync extends AbstractAjax
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
+     * @param EventManager $eventManager
      */
     public function __construct(
         Context $context,
@@ -99,7 +100,6 @@ class PostFBEOnboardingSync extends AbstractAjax
                 ));
                 return $response;
             }
-
             // Dispatch the facebook_post_fbe_onboarding_sync event,
             // so observers in other Meta modules can subscribe and trigger their syncs,
             // such as full catalog sync, and shipping profiles sync

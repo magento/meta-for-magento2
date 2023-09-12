@@ -36,6 +36,8 @@ use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
  */
 class Config
 {
+    public const META_PRODUCT_SET_ID = 'meta_product_set_id';
+    public const CATEGORY_SYNC_TO_FACEBOOK = 'sync_to_facebook_catalog';
     private const VERSION_CACHE_KEY = 'meta-business-extension-version';
     private const EXTENSION_PACKAGE_NAME = 'meta/meta-for-magento2';
 

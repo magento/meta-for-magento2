@@ -21,13 +21,13 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Framework\App\Action\HttpDeleteActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Security\Model\AdminSessionsManager;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Framework\App\ResourceConnection;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 
 class Fbdeleteasset implements HttpDeleteActionInterface
@@ -54,11 +54,6 @@ class Fbdeleteasset implements HttpDeleteActionInterface
     private $adminSessionManager;
 
     /**
-     * @var ResourceConnection
-     */
-    private $resourceConnection;
-
-    /**
      * @var SystemConfig
      */
     private $systemConfig;
@@ -74,30 +69,35 @@ class Fbdeleteasset implements HttpDeleteActionInterface
     private $fbeInstalledFeatureResource;
 
     /**
+     * @var EventManager
+     */
+    private EventManager $eventManager;
+
+    /**
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
      * @param AdminSessionsManager $adminSessionManager
-     * @param ResourceConnection $resourceConnection
      * @param SystemConfig $systemConfig
      * @param RequestInterface $request
      * @param FacebookInstalledFeature $fbeInstalledFeatureResource
+     * @param EventManager $eventManager
      */
     public function __construct(
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
         AdminSessionsManager $adminSessionManager,
-        ResourceConnection $resourceConnection,
         SystemConfig $systemConfig,
         RequestInterface $request,
-        FacebookInstalledFeature $fbeInstalledFeatureResource
+        FacebookInstalledFeature $fbeInstalledFeatureResource,
+        EventManager $eventManager
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->fbeHelper = $fbeHelper;
         $this->adminSessionManager = $adminSessionManager;
-        $this->resourceConnection = $resourceConnection;
         $this->systemConfig = $systemConfig;
         $this->request = $request;
         $this->fbeInstalledFeatureResource = $fbeInstalledFeatureResource;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -146,6 +146,9 @@ class Fbdeleteasset implements HttpDeleteActionInterface
         try {
             $this->deleteConfigKeys($storeId);
             $this->deleteInstalledFeatures($storeId);
+
+            $this->eventManager->dispatch('facebook_delete_assets_after', ['store_id' => $storeId]);
+
             $response = [
                 'success' => true,
                 'message' => __('' . self::DELETE_SUCCESS_MESSAGE),

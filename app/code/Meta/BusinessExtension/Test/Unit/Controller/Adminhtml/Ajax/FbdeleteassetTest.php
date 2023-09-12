@@ -23,11 +23,11 @@ namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 use Magento\Security\Model\AdminSessionsManager;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbdeleteasset;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Magento\Framework\App\ResourceConnection;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 
@@ -77,18 +77,18 @@ class FbdeleteassetTest extends TestCase
         $resultJsonFactory = $this->createMock(JsonFactory::class);
         $this->fbeHelper = $this->createMock(FBEHelper::class);
         $sessionManager = $this->createMock(AdminSessionsManager::class);
-        $resourceConnection = $this->createMock(ResourceConnection::class);
         $this->systemConfig = $this->createMock(SystemConfig::class);
         $this->fbeInstalledFeatureResource = $this->createMock(FacebookInstalledFeature::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
+        $eventManager = $this->createMock(EventManager::class);
         $this->fbdeleteasset = new Fbdeleteasset(
             $resultJsonFactory,
             $this->fbeHelper,
             $sessionManager,
-            $resourceConnection,
             $this->systemConfig,
             $this->request,
-            $this->fbeInstalledFeatureResource
+            $this->fbeInstalledFeatureResource,
+            $eventManager
         );
     }
 

@@ -30,7 +30,6 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
-use Meta\Catalog\Setup\MetaCatalogAttributes;
 
 class CategoryCollection
 {
@@ -275,7 +274,7 @@ class CategoryCollection
             $setId
         ));
 
-        $category->setData(MetaCatalogAttributes::META_PRODUCT_SET_ID, $setId);
+        $category->setData(SystemConfig::META_PRODUCT_SET_ID, $setId);
         $this->saveCategoryForStore($category, $storeId);
     }
 
@@ -318,8 +317,7 @@ class CategoryCollection
         Category $category,
         $storeId,
         bool $onlyActiveCategories = false
-    ): Collection
-    {
+    ): Collection {
         $this->fbeHelper->log("searching children category for " . $category->getName());
         $categoryPath = $category->getPath();
 
@@ -420,17 +418,18 @@ class CategoryCollection
         $currentBatch = 1;
         foreach ($categories as $category) {
             try {
-                $syncEnabled = $category->getData(MetaCatalogAttributes::CATEGORY_SYNC_TO_FACEBOOK);
+                $syncEnabled = $category->getData(SystemConfig::CATEGORY_SYNC_TO_FACEBOOK);
                 if ($syncEnabled === '0') {
                     $this->fbeHelper->log(
                         sprintf(
                             "Category update: user disabled category sync, category name: %s for store id: %s",
                             $category->getName(),
                             $storeId
-                        ));
+                        )
+                    );
                     continue;
                 }
-                $setId = $category->getData(MetaCatalogAttributes::META_PRODUCT_SET_ID);
+                $setId = $category->getData(SystemConfig::META_PRODUCT_SET_ID);
                 $this->fbeHelper->log(sprintf(
                     "Category update: setId for CATEGORY %s and store %s is %s",
                     $category->getName(),
@@ -494,9 +493,7 @@ class CategoryCollection
                     $this->flushCategoryBatchRequest($requests, $updatedCategories,
                         $currentBatch, $accessToken, $storeId));
             } catch (\Throwable $e) {
-                $extraData = [
-                    'num_categories_for_update' => count($categories)
-                ];
+                $extraData = ['num_categories_for_update' => count($categories)];
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
                     $this->getCategoryLoggerContext(
@@ -571,21 +568,19 @@ class CategoryCollection
         Category          $category,
         ProductCollection $products,
         string            $setId,
-                          $storeId
-    ): array
-    {
+        int               $storeId
+    ): array {
         return array(
             'method' => 'POST',
             'relative_url' => $setId,
-            'body' => http_build_query(array(
+            'body' => http_build_query([
                 'name' => $this->getCategoryPathName($category, $storeId),
                 'filter' => $this->getCategoryProductFilter($products),
                 'metadata' => $this->getCategoryMetaData($category),
                 'retailer_id' => $category->getId()
-            ))
+            ])
         );
     }
-
 
     /**
      * Returns request JSON for creating new product set batch API
@@ -602,18 +597,17 @@ class CategoryCollection
         Category          $category,
         ProductCollection $products,
         string            $catalogId,
-                          $storeId
-    ): array
-    {
+        int               $storeId
+    ): array {
         return array(
             'method' => 'POST',
             'relative_url' => $catalogId . '/product_sets',
-            'body' => http_build_query(array(
+            'body' => http_build_query([
                 'name' => $this->getCategoryPathName($category, $storeId),
                 'filter' => $this->getCategoryProductFilter($products),
                 'metadata' => $this->getCategoryMetaData($category),
                 'retailer_id' => $category->getId()
-            ))
+            ])
         );
     }
 
@@ -632,10 +626,9 @@ class CategoryCollection
         array $requests,
         array $updated_categories,
         int   $currentBatch,
-              $accessToken,
-              $storeId
-    ): array
-    {
+        $accessToken,
+        $storeId
+    ): array {
         $this->fbeHelper->log(sprintf('Pushing batch %d with %d categories', $currentBatch, count($requests)));
         $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken);
@@ -645,18 +638,19 @@ class CategoryCollection
     }
 
     /**
+     * function processes category batch response
+     *
      * @param array $batchResponse
      * @param array $updatedCategories
-     * @param null $storeId
+     * @param $storeId
      * @return array
      * @throws \Throwable
      */
     private function processCategoryBatchResponse(
         array $batchResponse,
         array $updatedCategories,
-              $storeId
-    ): array
-    {
+        $storeId
+    ): array {
         $categoryCount = count($updatedCategories);
         $responseCount = count($batchResponse);
 
@@ -669,7 +663,7 @@ class CategoryCollection
                 $responseData = json_decode($response['body'], true);
 
                 if ($httpStatusCode == 200) {
-                    $setId = $category->getData(MetaCatalogAttributes::META_PRODUCT_SET_ID);
+                    $setId = $category->getData(SystemConfig::META_PRODUCT_SET_ID);
 
                     if ($setId === null && array_key_exists('id', $responseData)) {
                         $setId = $responseData['id'];
@@ -693,7 +687,6 @@ class CategoryCollection
             ));
             return $batchResponse;
         }
-
     }
 
     /**
@@ -706,10 +699,10 @@ class CategoryCollection
      */
     private function deleteCategoryWithFBRequestJson(string $setId): array
     {
-        return array(
+        return [
             'method' => 'DELETE',
             'relative_url' => $setId,
-        );
+        ];
     }
 
     /**
@@ -745,9 +738,10 @@ class CategoryCollection
                     $this->fbeHelper->log(sprintf(
                         "Deleted category name: %s, store: %s",
                         $childrenCategory->getName(),
-                        $storeId));
+                        $storeId
+                    ));
 
-                    $setId = $childrenCategory->getData(MetaCatalogAttributes::META_PRODUCT_SET_ID);
+                    $setId = $childrenCategory->getData(SystemConfig::META_PRODUCT_SET_ID);
                     if ($setId == null) {
                         $this->fbeHelper->log(sprintf(
                             "cant find product set id, won't make category delete api, store: %s",
@@ -808,13 +802,14 @@ class CategoryCollection
     private function flushCategoryDeleteBatchRequest(
         array $requests,
         int   $currentBatch,
-              $accessToken,
-              $storeId
-    ): void
-    {
-        $this->fbeHelper->log(sprintf('Deleting Product set batch %d with %d categories',
+        $accessToken,
+        $storeId
+    ): void {
+        $this->fbeHelper->log(sprintf(
+            'Deleting Product set batch %d with %d categories',
             $currentBatch,
-            count($requests)));
+            count($requests)
+        ));
         $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken);
         $batchResponse = $this->fbeHelper->getGraphAPIAdapter()->graphAPIBatchRequest($requests);

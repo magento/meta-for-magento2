@@ -6,13 +6,10 @@ namespace Meta\Catalog\Setup;
 
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class MetaCatalogAttributes
 {
-
-    public const CATEGORY_SYNC_TO_FACEBOOK = 'sync_to_facebook_catalog';
-
-    public const META_PRODUCT_SET_ID = 'meta_product_set_id';
 
     /**
      * Returns array of product attributes to be created
@@ -66,7 +63,7 @@ class MetaCatalogAttributes
     public function getCategoryAttributes(): array
     {
         return [
-            self::CATEGORY_SYNC_TO_FACEBOOK => [
+            SystemConfig::CATEGORY_SYNC_TO_FACEBOOK => [
                 'type' => 'int',
                 'label' => 'Sync to Facebook Catalog',
                 'input' => 'boolean',
@@ -88,7 +85,7 @@ class MetaCatalogAttributes
     public function getCategoryProductSetIdAttribute(): array
     {
         return [
-            self::META_PRODUCT_SET_ID => [
+            SystemConfig::META_PRODUCT_SET_ID => [
                 'type' => 'varchar',
                 'label' => 'Meta Product Set Id',
                 'input' => 'text',

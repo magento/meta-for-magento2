@@ -9,4 +9,13 @@
     <event name="facebook_fbe_onboarding_after">
         <observer name="facebook_sync_full_catalog" instance="Meta\Catalog\Observer\Facebook\SyncFullCatalog" />
     </event>
+    <event name="facebook_update_catalog_configuration_after">
+        <observer name="facebook_sync_full_catalog" instance="Meta\Catalog\Observer\Facebook\SyncFullCatalog" />
+    </event>
+    <event name="facebook_delete_assets_after">
+        <observer name="facebook_catalog_clear_product_set_ids" instance="Meta\Catalog\Observer\Facebook\ClearProductSetIds" />
+    </event>
+    <event name="facebook_update_catalog_configuration">
+        <observer name="facebook_catalog_clear_product_set_ids" instance="Meta\Catalog\Observer\Facebook\ClearProductSetIds" />
+    </event>
 </config>
