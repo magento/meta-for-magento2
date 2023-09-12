@@ -5,7 +5,7 @@
         <service class="Meta\BusinessExtension\Api\SettingsWebhookListenerInterface"
                  method="processSettingsWebhookRequest"/>
         <resources>
-            <resource ref="Meta_BusinessExtension::settings_sync"/>
+            <resource ref="anonymous"/>
         </resources>
     </route>
 </routes>

@@ -23,11 +23,13 @@ namespace Meta\BusinessExtension\Model\Api;
 use Exception;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
-use Meta\BusinessExtension\Cron\UpdateMBESettings;
-use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
 use Meta\BusinessExtension\Api\SettingsWebhookListenerInterface;
 use Meta\BusinessExtension\Api\SettingsWebhookRequestInterface;
+use Meta\BusinessExtension\Cron\UpdateMBESettings;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
 {
@@ -56,6 +58,9 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      */
     private $collectionFactory;
 
+    /** @var Authenticator */
+    private Authenticator $authenticator;
+
     /**
      * @param StoreManagerInterface $storeManager
      * @param UpdateMBESettings $updateMBESettings
@@ -68,13 +73,15 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         UpdateMBESettings $updateMBESettings,
         SystemConfig          $systemConfig,
         FBEHelper             $fbeHelper,
-        CollectionFactory $collectionFactory
+        CollectionFactory $collectionFactory,
+        Authenticator $authenticator
     ) {
         $this->storeManager = $storeManager;
         $this->systemConfig = $systemConfig;
         $this->updateMBESettings = $updateMBESettings;
         $this->fbeHelper = $fbeHelper;
         $this->collectionFactory = $collectionFactory;
+        $this->authenticator = $authenticator;
     }
 
     /**
@@ -82,9 +89,11 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      *
      * @param SettingsWebhookRequestInterface[] $settingsWebhookRequest
      * @return void
+     * @throws UnauthorizedTokenException
      */
     public function processSettingsWebhookRequest(array $settingsWebhookRequest): void
     {
+        $this->authenticator->authenticateRequest();
         foreach ($settingsWebhookRequest as $setting) {
             $this->updateSetting($setting);
         }

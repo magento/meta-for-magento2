@@ -3,16 +3,16 @@
 namespace Meta\BusinessExtension\Test\Unit\Block\Adminhtml;
 
 use Magento\Backend\Block\Template\Context;
+use Magento\Framework\App\RequestInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
-use Meta\BusinessExtension\Helper\ApiKeyService;
+use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
+use Meta\BusinessExtension\Block\Adminhtml\Setup;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
-use PHPUnit\Framework\TestCase;
-use Meta\BusinessExtension\Block\Adminhtml\Setup;
-use Magento\Framework\App\RequestInterface;
-use PHPUnit\Framework\MockObject\MockObject;
+use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 class SetupTest extends TestCase
 {

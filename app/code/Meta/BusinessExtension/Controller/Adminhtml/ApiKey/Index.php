@@ -1,17 +1,33 @@
 <?php
 
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 namespace Meta\BusinessExtension\Controller\Adminhtml\ApiKey;
 
 use Magento\Backend\App\Action;
-use Magento\Framework\Controller\ResultFactory;
-use Meta\BusinessExtension\Model\ApiKeyGenerator;
 use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\Controller\ResultFactory;
+use Meta\BusinessExtension\Model\Api\CustomApiKey\KeyGenerator;
 use Psr\Log\LoggerInterface;
 
 class Index extends Action
 {
     /**
-     * @var ApiKeyGenerator
+     * @var KeyGenerator
      */
     protected $apiKeyGenerator;
 
@@ -29,13 +45,13 @@ class Index extends Action
      * Index constructor
      *
      * @param Action\Context $context
-     * @param ApiKeyGenerator $apiKeyGenerator
+     * @param KeyGenerator $apiKeyGenerator
      * @param WriterInterface $configWriter
      * @param LoggerInterface $logger
      */
     public function __construct(
         Action\Context  $context,
-        ApiKeyGenerator $apiKeyGenerator,
+        KeyGenerator    $apiKeyGenerator,
         WriterInterface $configWriter,
         LoggerInterface $logger
     ) {

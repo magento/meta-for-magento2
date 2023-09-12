@@ -1,14 +1,14 @@
 <?php
 
-namespace Meta\BusinessExtension\Test\Unit\Helper;
+namespace Meta\BusinessExtension\Test\Unit\Api\CustomApiKey;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use Meta\BusinessExtension\Helper\ApiKeyService;
-use Meta\BusinessExtension\Model\ApiKeyGenerator;
+use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
+use Meta\BusinessExtension\Model\Api\CustomApiKey\KeyGenerator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class APIKeyServiceTest extends TestCase
 {
@@ -35,7 +35,7 @@ class APIKeyServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->apiKeyGenerator = $this->getMockBuilder(ApiKeyGenerator::class)
+        $this->apiKeyGenerator = $this->getMockBuilder(KeyGenerator::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->configWriter = $this->getMockBuilder(WriterInterface::class)
