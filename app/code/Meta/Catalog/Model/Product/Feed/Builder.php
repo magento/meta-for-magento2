@@ -432,14 +432,18 @@ class Builder
         if (!$description) {
             $description = $product->getShortDescription();
         }
+
+        // Fallback, if description is empty.
         if (!$description) {
-            return '';
+            return $product->getName();
         }
 
-        return $this->trimAttribute(
+        $description = $this->trimAttribute(
             self::ATTR_RICH_DESCRIPTION,
             strip_tags($description, self::ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION)
         );
+
+        return preg_replace("/<([a-z][a-z0-9]*)[^>]*?(\/?)>/si",'<$1$2>', $description);
     }
 
     /**
