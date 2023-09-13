@@ -20,7 +20,9 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Model\Product\Feed;
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Related;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\GroupedProduct\Ui\DataProvider\Product\Form\Modifier\Grouped;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -169,6 +171,16 @@ class Builder
     private array $attrMap = [];
 
     /**
+     * @var Configurable
+     */
+    private Configurable $resourceConfigurable;
+
+    /**
+     * @var ProductRepositoryInterface
+     */
+    private ProductRepositoryInterface $productRepository;
+
+    /**
      * Constructor
      *
      * @param AdditionalAttributes $additionalAttributes
@@ -188,7 +200,9 @@ class Builder
         Mapper                    $mapper,
         MappingConfig             $mappingConfig,
         ProductIdentifier         $productIdentifier,
-        SystemConfig              $systemConfig
+        SystemConfig              $systemConfig,
+        Configurable $resourceConfigurable,
+        ProductRepositoryInterface $productRepository
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
@@ -198,6 +212,8 @@ class Builder
         $this->mapper = $mapper;
         $this->mappingConfig = $mappingConfig;
         $this->additionalAttributes = $additionalAttributes;
+        $this->resourceConfigurable = $resourceConfigurable;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -281,6 +297,15 @@ class Builder
         $mainImage = $product->getImage();
 
         $additionalImages = [];
+        if (empty($mainImage) && $product->getTypeId() === Product\Type::TYPE_SIMPLE) {
+
+            $parentIds = $this->resourceConfigurable->getParentIdsByChild($product->getId());
+            if (!empty($parentIds)) {
+                $product = $this->productRepository->getById(current($parentIds));
+                $mainImage = $product->getImage();
+            }
+        }
+
         if (!empty($product->getMediaGalleryImages())) {
             foreach ($product->getMediaGalleryImages() as $img) {
                 if ($img['file'] === $mainImage) {
