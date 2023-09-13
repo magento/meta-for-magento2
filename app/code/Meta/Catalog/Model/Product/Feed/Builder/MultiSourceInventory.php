@@ -156,6 +156,11 @@ class MultiSourceInventory implements InventoryInterface
             return 0;
         }
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
+
+        if (!$this->product->getExtensionAttributes()->getStockItem()->getManageStock() && $this->stockStatus) {
+            return InventoryInterface::UNMANAGED_STOCK_QTY; // fake quantity to make product available if Manage Stock is off
+        }
+
         $quantityAvailableForCatalog = (int) $this->stockQty - $outOfStockThreshold;
         return $quantityAvailableForCatalog > 0 ? $quantityAvailableForCatalog : 0;
     }
