@@ -10,31 +10,30 @@
 <?php else: ?>
     <script>
         window.facebookBusinessExtensionConfig = {
-            popupOrigin: "https://business.facebook.com",
-            setPixelId: '<?= $escaper->escapeHtml($block->getPixelAjaxRoute()) ?>',
-            setAccessToken: '<?= $escaper->escapeHtml($block->getAccessTokenAjaxRoute()) ?>',
-            setProfilesData: '<?= $escaper->escapeHtml($block->getProfilesAjaxRoute()) ?>',
-            saveConfig: '<?= $escaper->escapeHtml($block->fetchConfigurationAjaxRoute()) ?>',
-            postFBEOnboardingSync: '<?= $escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) ?>',
-            cleanConfigCacheUrl: '<?= $escaper->escapeHtml($block->getCleanCacheAjaxRoute()) ?>',
-            fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?",
-            deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>',
             appId: '<?= $escaper->escapeHtml($block->getAppId()) ?>',
-            timeZone: 'America/Los_Angeles',
+            businessName: 'Magento',
             businessVertical: 'ECOMMERCE',
             channel: 'COMMERCE',
+            cleanConfigCacheUrl: '<?= $escaper->escapeHtml($block->getCleanCacheAjaxRoute()) ?>',
             currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>',
-            storeId: '<?= $escaper->escapeHtml($block->getSelectedStoreId()) ?>',
-            businessName: 'Magento',
+            customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>',
             debug: true,
-            isCommerceEmbeddedExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
-            setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>',
+            deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>',
             fbeAccessTokenUrl: '<?= $escaper->escapeHtml($block->getFbeAccessTokenUrl()) ?>',
             fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>',
             fbeInstallsSaveUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>',
+            fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?",
+            isCommerceEmbeddedExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
+            popupOrigin: "https://business.facebook.com",
+            postFBEOnboardingSync: '<?= $escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) ?>',
+            saveConfig: '<?= $escaper->escapeHtml($block->fetchConfigurationAjaxRoute()) ?>',
+            setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>',
+            setAccessToken: '<?= $escaper->escapeHtml($block->getAccessTokenAjaxRoute()) ?>',
             setInstalledFeatures: '<?= $escaper->escapeHtml($block->getInstalledFeaturesAjaxRouteUrl()) ?>',
-            customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>'
-
+            setPixelId: '<?= $escaper->escapeHtml($block->getPixelAjaxRoute()) ?>',
+            setProfilesData: '<?= $escaper->escapeHtml($block->getProfilesAjaxRoute()) ?>',
+            storeId: '<?= $escaper->escapeHtml($block->getSelectedStoreId()) ?>',
+            timeZone: 'America/Los_Angeles'
         }
     </script>
     <select id="store">
