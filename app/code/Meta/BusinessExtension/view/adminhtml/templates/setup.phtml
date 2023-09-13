@@ -19,11 +19,14 @@
             customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>',
             debug: true,
             deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>',
+            externalBusinessId: '<?= $escaper->escapeHtml($block->getExternalBusinessId($block->getSelectedStoreId())) ?>',
             fbeAccessTokenUrl: '<?= $escaper->escapeHtml($block->getFbeAccessTokenUrl()) ?>',
             fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>',
             fbeInstallsSaveUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>',
             fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?",
+            installed: '<?= $escaper->escapeHtml($block->isFBEInstalled($block->getSelectedStoreId())) ? 'true' : 'false' ?>',
             isCommerceEmbeddedExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
+            pixelId: '<?= $escaper->escapeHtml($block->fetchPixelId($block->getSelectedStoreId())) ?>',
             popupOrigin: "https://business.facebook.com",
             postFBEOnboardingSync: '<?= $escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) ?>',
             saveConfig: '<?= $escaper->escapeHtml($block->fetchConfigurationAjaxRoute()) ?>',
@@ -33,6 +36,7 @@
             setPixelId: '<?= $escaper->escapeHtml($block->getPixelAjaxRoute()) ?>',
             setProfilesData: '<?= $escaper->escapeHtml($block->getProfilesAjaxRoute()) ?>',
             storeId: '<?= $escaper->escapeHtml($block->getSelectedStoreId()) ?>',
+            systemUserName: '<?= $escaper->escapeHtml($block->getExternalBusinessId($block->getSelectedStoreId())) ?>',
             timeZone: 'America/Los_Angeles'
         }
     </script>
@@ -40,12 +44,6 @@
         <?php foreach ($block->getSelectableStores() as $store): ?>
             <option
                     value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
-                    data-installed="<?= $escaper->escapeHtmlAttr($block->isFBEInstalled($store['store_id']) ? 'true' : 'false') ?>"
-                    data-pixel-id="<?= $escaper->escapeHtmlAttr($block->fetchPixelId($store['store_id'])) ?>"
-                    data-system-user-name=
-                    "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
-                    data-external-business-id=
-                    "<?= $escaper->escapeHtmlAttr($block->getExternalBusinessId($store['store_id'])) ?>"
                 <?php if ($store['store_id'] === $block->getSelectedStoreId()): ?>
                     data-selected="true"
                     selected="selected"
@@ -53,6 +51,19 @@
             ><?= $escaper->escapeHtml(__($store['name'])) ?></option>
         <?php endforeach; ?>
     </select>
+    <script>
+        require([
+            'jquery',
+        ], function ($) {
+            $('#store').on('change', function () {
+                const url = new URL(location.href);
+                url.searchParams.set('store_id', jQuery(this).val());
+
+                location.assign(url.search);
+            });
+        });
+    </script>
+
     <?php if ($block->isCommerceExtensionEnabled() && $block->isFBEInstalled($block->getSelectedStoreId())): ?>
         <iframe
                 id="commerce-extension-iframe"
@@ -64,12 +75,6 @@
                 'jquery',
                 'Meta_BusinessExtension/js/commerce_extension_allinone'
             ], function ($) {
-                $('#store').on('change', function () {
-                    const url = new URL(location.href);
-                    url.searchParams.set('store_id', jQuery(this).val());
-
-                    location.assign(url.search);
-                });
             });
         </script>
     <?php else: ?>
@@ -83,15 +88,6 @@
                 'Meta_BusinessExtension/js/fbe_allinone',
                 'Meta_BusinessExtension/js/fbe_installs'
             ], function ($, fbeAllInOne, fbeInstalls) {
-                // Initialize FBE to the server-selected Store.
-                var selectedStore = $('#store option[data-selected="true"]');
-                selectedStore.attr('selected', 'selected').change();
-
-                $('#store').on('change', function () {
-                    const url = new URL(location.href);
-                    url.searchParams.set('store_id', jQuery(this).val());
-                    location.assign(url.search);
-                });
                 fbeInstalls.startFBEInstallsProcess();
             });
         </script>

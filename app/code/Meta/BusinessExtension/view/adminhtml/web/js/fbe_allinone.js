@@ -186,17 +186,7 @@ var ajaxParam = function (params) {
   return params;
 };
 
-jQuery('#store').on('change', function() {
-  if (jQuery(this).val() === 'select-store') {
-    jQuery('#fbe-iframe').empty();
-    return false;
-  }
-  window.facebookBusinessExtensionConfig.storeId = jQuery(this).val();
-  window.facebookBusinessExtensionConfig.installed = jQuery(this).find(':selected').data('installed');
-  window.facebookBusinessExtensionConfig.pixelId = jQuery(this).find(':selected').data('pixel-id');
-  window.facebookBusinessExtensionConfig.systemUserName = jQuery(this).find(':selected').data('system-user-name') + '_system_user';
-  window.facebookBusinessExtensionConfig.externalBusinessId = jQuery(this).find(':selected').data('external-business-id');
-
+jQuery(document).ready(function() {
   var FBEFlowContainer = React.createClass({
 
     getDefaultProps: function() {
