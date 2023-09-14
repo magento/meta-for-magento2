@@ -554,9 +554,17 @@ div.fbe-flow-container .settings-section .advanced-options h2{
     height: auto;
 }
 
+.admin__menu .level-0.item-facebook > a {
+    padding-top: 4px;
+}
 .admin__menu .level-0.item-facebook > a:before {
     content: url('../images/meta.svg');
+    filter: contrast(0) grayscale(1) brightness(1.50);
     height: 28px;
     margin: 0 auto;
-    width: 30px;
+    width: 38px;
+}
+.admin__menu .level-0.item-facebook:hover > a:before,
+.admin__menu .level-0.item-facebook._active > a:before {
+    filter: contrast(0) grayscale(1) brightness(2) ;
 }
