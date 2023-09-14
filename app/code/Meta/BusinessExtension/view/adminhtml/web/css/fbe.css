@@ -7,6 +7,29 @@
  * of patent rights can be found in the PATENTS file in the code directory.
  */
 
+.page-header.meta-header {
+    align-items: center;
+    display: flex;
+    margin-bottom: 0;
+}
+.meta-header-title {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 16px;
+}
+.meta-header-title h1 {
+    margin: 0;
+}
+.meta-header-title-icon {
+    height: 32px;
+    margin-right: 4px;
+}
+.meta-header-store-picker {
+    margin-right: 16px;
+}
+
 #fbe-wrapper {
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);
     display: block;

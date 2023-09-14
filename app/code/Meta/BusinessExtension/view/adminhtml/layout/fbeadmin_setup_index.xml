@@ -1,16 +1,30 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <title>
-            Meta Business Extension
-        </title>
-        <css src="Meta_BusinessExtension::css/fbe.css" />
-    </head>
     <body>
+        <referenceBlock remove="true" name="header.inner.left" />
+        <referenceBlock remove="true" name="header.inner.right" />
+        <referenceContainer name="header" htmlClass="page-header row meta-header">
+            <container name="meta.header.title_container" htmlTag="div" htmlClass="meta-header-title" />
+            <container name="meta.header.dropdown" htmlTag="div" htmlClass="page-header-actions meta-header-store-picker" />
+            <container name="meta.header.actions" htmlTag="div" htmlClass="page-header-actions" />
+        </referenceContainer>
+        <move element="user" before="-" destination="meta.header.actions" />
+        <move element="notification.messages" after="user" destination="meta.header.actions" />
+        <move element="global.search" destination="meta.header.actions" />
+
+        <block template="Meta_BusinessExtension::header_title.phtml" name="meta.admin.title" />
+        <move element="meta.admin.title" destination="meta.header.title_container" />
+
+        <block class="Meta\BusinessExtension\Block\Adminhtml\Setup"
+               template="Meta_BusinessExtension::store_picker.phtml"
+               name="meta.admin.store_picker" />
+        <move element="meta.admin.store_picker" destination="meta.header.dropdown" />
+
         <referenceContainer name="content">
             <block class="Meta\BusinessExtension\Block\Adminhtml\Setup"
                    template="Meta_BusinessExtension::setup.phtml"
                    name="fbe.admin.setup" />
         </referenceContainer>
+
     </body>
 </page>
