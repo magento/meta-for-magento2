@@ -10,7 +10,7 @@
              dependsOnModule="Meta_BusinessExtension"
              resource="Meta_BusinessExtension::facebook"/>
         <add id="Meta_BusinessExtension::facebook_business_extension"
-             title="Setup"
+             title="Overview"
              translate="title"
              module="Meta_BusinessExtension"
              parent="Meta_BusinessExtension::facebook"
