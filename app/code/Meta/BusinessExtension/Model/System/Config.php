@@ -804,8 +804,21 @@ class Config
     public function isPromotionsSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC, $scopeId, $scope) &&
-            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope) &&
-            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG, $scopeId, $scope);
+            $this->isOnsitePostOnboardingState($scopeId, $scope);
+    }
+
+    /**
+     * Check if extension is in post-onboarding onsite checkout state
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    private function isOnsitePostOnboardingState($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
+    {
+        return $this->isOnsiteCheckoutEnabled($scopeId, $scope) &&
+            $this->isActiveExtension($scopeId, $scope) &&
+            $this->isFBEInstalled($scopeId, $scope);
     }
 
     /**
