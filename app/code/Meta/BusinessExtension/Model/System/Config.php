@@ -173,12 +173,12 @@ class Config
      * @SuppressWarnings(PHPMD.ExcessivePublicCount)
      */
     public function __construct(
-        StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
-        ResourceConfig $resourceConfig,
-        TypeListInterface $cacheTypeList,
-        CacheInterface $cache,
-        ComposerInformation $composerInformation,
+        StoreManagerInterface    $storeManager,
+        ScopeConfigInterface     $scopeConfig,
+        ResourceConfig           $resourceConfig,
+        TypeListInterface        $cacheTypeList,
+        CacheInterface           $cache,
+        ComposerInformation      $composerInformation,
         FacebookInstalledFeature $fbeInstalledFeatureResource
     ) {
         $this->storeManager = $storeManager;
@@ -207,7 +207,7 @@ class Config
      */
     public function getModuleVersion(): string
     {
-        $this->version = (string) ($this->version ?: $this->cache->load(self::VERSION_CACHE_KEY));
+        $this->version = (string)($this->version ?: $this->cache->load(self::VERSION_CACHE_KEY));
         if (!$this->version) {
             $installedPackages = $this->composerInformation->getInstalledMagentoPackages();
             $extensionVersion = $installedPackages[self::EXTENSION_PACKAGE_NAME]['version'] ?? null;
@@ -803,8 +803,7 @@ class Config
      */
     public function isPromotionsSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC, $scopeId, $scope) &&
-            $this->isOnsitePostOnboardingState($scopeId, $scope);
+        return !!$this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC, $scopeId, $scope);
     }
 
     /**
@@ -814,11 +813,37 @@ class Config
      * @param string $scope
      * @return bool
      */
-    private function isOnsitePostOnboardingState($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
+    private function isPostOnboardingState($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
-        return $this->isOnsiteCheckoutEnabled($scopeId, $scope) &&
-            $this->isActiveExtension($scopeId, $scope) &&
+        return $this->isActiveExtension($scopeId, $scope) &&
             $this->isFBEInstalled($scopeId, $scope);
+    }
+
+    /**
+     * Return only the set of stores which have FBE installed (working token, etc...)
+     */
+    public function getAllFBEInstalledStores()
+    {
+        $stores = $this->storeManager->getStores();
+        return array_filter($stores, function ($store) {
+            $scopeId = $store->getId();
+            return $this->isPostOnboardingState($scopeId);
+        });
+    }
+
+    /**
+     * Return only the set of stores which have FBE installed (working token, etc...)
+     */
+    public function getAllOnsiteFBEInstalledStores()
+    {
+        $stores = $this->storeManager->getStores();
+        return array_filter($stores, function ($store) {
+            $scopeId = $store->getId();
+            return $this->isPostOnboardingState($scopeId) &&
+                $this->isOnsiteCheckoutEnabled($scopeId) &&
+                // A slight nuance. You can be installed, but not "onsite" -- unless you have valid commerce account.
+                $this->getCommerceAccountId($scopeId);
+        });
     }
 
     /**
@@ -952,7 +977,7 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null) : bool
+    public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null): bool
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS,

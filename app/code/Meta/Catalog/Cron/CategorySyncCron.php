@@ -50,8 +50,8 @@ class CategorySyncCron
      */
     public function __construct(
         CategoryCollection $categoryCollection,
-        SystemConfig $systemConfig,
-        FBEHelper $fbeHelper
+        SystemConfig       $systemConfig,
+        FBEHelper          $fbeHelper
     ) {
         $this->categoryCollection = $categoryCollection;
         $this->systemConfig = $systemConfig;
@@ -65,7 +65,7 @@ class CategorySyncCron
      */
     public function execute()
     {
-        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+        foreach ($this->systemConfig->getAllFBEInstalledStores() as $store) {
             $storeId = $store->getId();
             try {
                 if ($this->systemConfig->isCatalogSyncEnabled($storeId)) {

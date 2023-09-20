@@ -77,11 +77,11 @@ class CatalogUpdateHandler
      */
     public function __construct(
         FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel,
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
-        ProductRepository $productRepository,
-        GraphAPIAdapter $graphAPIAdapter,
-        BatchApi $batchApi
+        FBEHelper                    $fbeHelper,
+        SystemConfig                 $systemConfig,
+        ProductRepository            $productRepository,
+        GraphAPIAdapter              $graphAPIAdapter,
+        BatchApi                     $batchApi
     ) {
         $this->fbCatalogUpdateResourceModel = $fbCatalogUpdateResourceModel;
         $this->fbeHelper = $fbeHelper;
@@ -100,7 +100,7 @@ class CatalogUpdateHandler
     {
         return $this->execute('update');
     }
-    
+
     /**
      * Process delete message
      *
@@ -127,7 +127,7 @@ class CatalogUpdateHandler
                 return true;
             }
 
-            $stores = $this->systemConfig->getStoreManager()->getStores(false, true);
+            $stores = $this->systemConfig->getAllFBEInstalledStores();
             foreach ($stores as $store) {
                 $catalogId = $this->setupConfigs($store->getId());
                 $storeId = (int)$store->getId();
@@ -173,17 +173,17 @@ class CatalogUpdateHandler
         $debugMode = $this->systemConfig->isDebugMode($storeId);
         $catalogId = $this->systemConfig->getCatalogId($storeId);
         $accessToken = $this->systemConfig->getAccessToken($storeId);
-        
+
         if (!($catalogId && $accessToken)) {
             return false;
         }
 
         $this->graphApiAdapter->setDebugMode($debugMode)
-                ->setAccessToken($accessToken);
-        
+            ->setAccessToken($accessToken);
+
         return $catalogId;
     }
-    
+
     /**
      * Process product batch
      *
@@ -199,7 +199,7 @@ class CatalogUpdateHandler
         $parentProducts = $this->productRepository->getParentProducts($productIds, $storeId);
         $products = $this->productRepository->getCollection($productIds, $storeId);
         $productLinks = $this->productRepository->getParentProductLink($productIds);
-        
+
         $requestData = [];
         foreach ($products as $product) {
             if (isset($productLinks[$product->getId()])) {

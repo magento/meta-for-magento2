@@ -316,7 +316,7 @@ class CategoryCollection
     private function getAllChildrenCategories(
         Category $category,
         $storeId,
-        bool $onlyActiveCategories = false
+        bool     $onlyActiveCategories = false
     ): Collection {
         $this->fbeHelper->log("searching children category for " . $category->getName());
         $categoryPath = $category->getPath();
@@ -444,7 +444,7 @@ class CategoryCollection
                         $category->getName(),
                         $storeId
                     ));
-                    $requests[] = $this->updateCategoryWithFBRequestJson($category, $products, $setId, $storeId);
+                    $requests[] = $this->updateCategoryWithFBRequestJson($category, $products, $setId, (int)$storeId);
                 } else {
                     if (count($products) === 0) {
                         $this->fbeHelper->log(sprintf(
@@ -463,9 +463,17 @@ class CategoryCollection
                 }
                 $updatedCategories[] = $category;
                 if (count($requests) === self::BATCH_MAX) {
-                    $resArray = array_merge($resArray,
-                        $this->flushCategoryBatchRequest($requests, $updatedCategories,
-                            $currentBatch, $accessToken, $storeId));
+                    // TODO: phpcs: array_merge(...) is used in a loop and is a resources greedy construction.
+                    $resArray = array_merge(
+                        $resArray,
+                        $this->flushCategoryBatchRequest(
+                            $requests,
+                            $updatedCategories,
+                            $currentBatch,
+                            $accessToken,
+                            $storeId
+                        )
+                    );
                     $requests = [];
                     $updatedCategories = [];
                     $currentBatch++;
@@ -489,9 +497,16 @@ class CategoryCollection
         }
         if (!empty($requests)) {
             try {
-                $resArray = array_merge($resArray,
-                    $this->flushCategoryBatchRequest($requests, $updatedCategories,
-                        $currentBatch, $accessToken, $storeId));
+                $resArray = array_merge(
+                    $resArray,
+                    $this->flushCategoryBatchRequest(
+                        $requests,
+                        $updatedCategories,
+                        $currentBatch,
+                        $accessToken,
+                        $storeId
+                    )
+                );
             } catch (\Throwable $e) {
                 $extraData = ['num_categories_for_update' => count($categories)];
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
@@ -570,7 +585,7 @@ class CategoryCollection
         string            $setId,
         int               $storeId
     ): array {
-        return array(
+        return [
             'method' => 'POST',
             'relative_url' => $setId,
             'body' => http_build_query([
@@ -579,7 +594,7 @@ class CategoryCollection
                 'metadata' => $this->getCategoryMetaData($category),
                 'retailer_id' => $category->getId()
             ])
-        );
+        ];
     }
 
     /**
@@ -599,7 +614,7 @@ class CategoryCollection
         string            $catalogId,
         int               $storeId
     ): array {
-        return array(
+        return [
             'method' => 'POST',
             'relative_url' => $catalogId . '/product_sets',
             'body' => http_build_query([
@@ -608,7 +623,7 @@ class CategoryCollection
                 'metadata' => $this->getCategoryMetaData($category),
                 'retailer_id' => $category->getId()
             ])
-        );
+        ];
     }
 
     /**

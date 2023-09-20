@@ -95,7 +95,7 @@ class SyncRefundsAndCancellations
      */
     public function execute()
     {
-        foreach ($this->storeManager->getStores() as $store) {
+        foreach ($this->systemConfig->getAllOnsiteFBEInstalledStores() as $store) {
             try {
                 $this->pullRefundsAndCancellationsForStore((int)$store->getId());
             } catch (Exception $e) {
