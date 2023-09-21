@@ -112,7 +112,6 @@ class Configurable implements ProductRetrieverInterface
 
         $configurableCollection = $this->productCollectionFactory->create();
         $configurableCollection->addAttributeToSelect('*')
-            ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
             ->addAttributeToFilter([
                 [
                     'attribute' => 'send_to_facebook',

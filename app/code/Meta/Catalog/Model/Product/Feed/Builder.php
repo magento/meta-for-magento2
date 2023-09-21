@@ -33,6 +33,7 @@ use Meta\Catalog\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
@@ -580,6 +581,10 @@ class Builder
      */
     private function getStatus(Product $product)
     {
+        if ($product->getVisibility() == Visibility::VISIBILITY_NOT_VISIBLE) {
+            return 'archived';
+        }
+
         $status = isset($this->attrMap[self::ATTR_STATUS])
             ? $product->getData($this->attrMap[self::ATTR_STATUS]) : $product->getStatus();
         if (!$status || $status == '') {

@@ -96,7 +96,6 @@ class Simple implements ProductRetrieverInterface
 
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect('*')
-            ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
             ->addAttributeToFilter([
                 [
                     'attribute' => 'send_to_facebook',
