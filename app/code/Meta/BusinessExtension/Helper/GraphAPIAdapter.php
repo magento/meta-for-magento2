@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Helper;
 
 use CURLFile;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
@@ -84,6 +86,11 @@ class GraphAPIAdapter
     private $graphAPIConfig;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * GraphAPIAdapter constructor.
      *
      * @param SystemConfig $systemConfig
@@ -91,13 +98,15 @@ class GraphAPIAdapter
      * @param CurlFactory $curlFactory
      * @param FileFactory $fileFactory
      * @param GraphAPIConfig $graphAPIConfig
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        SystemConfig    $systemConfig,
-        LoggerInterface $logger,
-        CurlFactory     $curlFactory,
-        FileFactory     $fileFactory,
-        GraphAPIConfig  $graphAPIConfig
+        SystemConfig         $systemConfig,
+        LoggerInterface      $logger,
+        CurlFactory          $curlFactory,
+        FileFactory          $fileFactory,
+        GraphAPIConfig       $graphAPIConfig,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->logger = $logger;
         $this->accessToken = $systemConfig->getAccessToken();
@@ -112,6 +121,7 @@ class GraphAPIAdapter
         $this->curlFactory = $curlFactory;
         $this->fileFactory = $fileFactory;
         $this->graphAPIConfig = $graphAPIConfig;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -226,7 +236,7 @@ class GraphAPIAdapter
     private function callApiForFileTransfer($endpoint, $params, $filePath)
     {
         try {
-            $endpoint = "{$this->graphAPIConfig->getGraphBaseURL()}v{$this->graphAPIVersion}/".$endpoint;
+            $endpoint = "{$this->graphAPIConfig->getGraphBaseURL()}v{$this->graphAPIVersion}/" . $endpoint;
             $curl = $this->curlFactory->create();
             $fileBaseName = $this->fileFactory->create(['filename' => $filePath, 'module' => ''])->getName();
 
@@ -348,7 +358,15 @@ class GraphAPIAdapter
         ];
         $response = $this->callApi('GET', 'fbe_business', $request);
         $response = json_decode($response->getBody()->__toString(), true);
-        return $response['commerce_extension']['uri'];
+        $baseURLOverride = $this->scopeConfig->getValue(
+            'facebook/internal/extension_base_url',
+            ScopeInterface::SCOPE_STORE
+        );
+        $uri = $response['commerce_extension']['uri'];
+        if ($baseURLOverride) {
+            $uri = str_replace('https://www.commercepartnerhub.com/', $baseURLOverride, $uri);
+        }
+        return $uri;
     }
 
     /**

@@ -19,10 +19,9 @@
             </debug>
             <!-- Internal. Overrides default graph base URL
             <internal>
-                <graph_base_url>
-                    https://graph.facebook.com/
-                </graph_base_url>
-            </internal> -->
+                <graph_base_url>https://graph.facebook.com/</graph_base_url>
+                <extension_base_url>https://www.201331.od.commercepartnerhub.com/</extension_base_url>
+            </internal>-->
         </facebook>
     </default>
 </config>
