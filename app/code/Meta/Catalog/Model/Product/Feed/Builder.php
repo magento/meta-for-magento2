@@ -36,6 +36,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Catalog\Model\Product\Feed\Builder\UnsupportedProducts;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -85,6 +86,7 @@ class Builder
     private const ATTR_OTHER_ID = 'sku';
 
     private const ATTR_UNSUPPORTED_PRODUCT_DATA = 'unsupported_product_data';
+    private const ATTR_FEATURES = 'features';
 
     private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
         '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
@@ -155,9 +157,9 @@ class Builder
     private MappingConfig $mappingConfig;
 
     /**
-     * @var Mapper
+     * @var UnsupportedProducts
      */
-    private Mapper $mapper;
+    private UnsupportedProducts $unsupportedProducts;
 
     /**
      * @var AdditionalAttributes
@@ -176,7 +178,7 @@ class Builder
      * @param BuilderTools $builderTools
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param FBEHelper $fbeHelper
-     * @param Mapper $mapper
+     * @param UnsupportedProducts $unsupportedProducts
      * @param MappingConfig $mappingConfig
      * @param ProductIdentifier $productIdentifier
      * @param SystemConfig $systemConfig
@@ -186,7 +188,7 @@ class Builder
         BuilderTools              $builderTools,
         CategoryCollectionFactory $categoryCollectionFactory,
         FBEHelper                 $fbeHelper,
-        Mapper                    $mapper,
+        UnsupportedProducts       $unsupportedProducts,
         MappingConfig             $mappingConfig,
         ProductIdentifier         $productIdentifier,
         SystemConfig              $systemConfig
@@ -196,7 +198,7 @@ class Builder
         $this->builderTools = $builderTools;
         $this->productIdentifier = $productIdentifier;
         $this->systemConfig = $systemConfig;
-        $this->mapper = $mapper;
+        $this->unsupportedProducts = $unsupportedProducts;
         $this->mappingConfig = $mappingConfig;
         $this->additionalAttributes = $additionalAttributes;
     }
@@ -719,96 +721,6 @@ class Builder
     }
 
     /**
-     * Retrieves customizable options
-     *
-     * @param Product $product
-     * @return ?array
-     */
-    private function getCustomizableOptions(Product $product) : ?array
-    {
-        try {
-            $options = $product->getOptions();
-
-            if ($options == null) {
-                return null;
-            }
-
-            return array_map(function ($option) {
-                return $this->mapper->mapProductCustomOption($option);
-            }, $options);
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
-            return null;
-        }
-    }
-
-    /**
-     * Retrieves digital options
-     *
-     * @param Product $product
-     * @return ?array
-     */
-    private function getDigitalOptions(Product $product) : ?array
-    {
-        try {
-            $downloadable_product_links = $product->getExtensionAttributes()->getDownloadableProductLinks();
-            $downloadable_product_samples = $product->getExtensionAttributes()->getDownloadableProductSamples();
-
-            if ($downloadable_product_links == null && $downloadable_product_samples == null) {
-                return null;
-            }
-
-            return [
-               'links' => array_map(function ($link) {
-                   return $this->mapper->mapDownloadableProductLink($link);
-               }, $downloadable_product_links),
-               'samples' => array_map(function ($sample) {
-                   return $this->mapper->mapDownloadableProductSample($sample);
-               }, $downloadable_product_samples),
-            ];
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
-            return null;
-        }
-    }
-
-    /**
-     * Retrieves bundle options
-     *
-     * @param Product $product
-     * @return ?array
-     */
-    private function getBundleOptions(Product $product): ?array
-    {
-        try {
-            $bundle_product_options = $product->getExtensionAttributes()->getBundleProductOptions();
-            $product_links = $product->getProductLinks();
-
-            if ($bundle_product_options == null && $product_links == null) {
-                return null;
-            }
-
-            return [
-                'bundle' => $bundle_product_options == null
-                    ? null
-                    : array_map(function ($option) {
-                        return $this->mapper->mapBundleOption($option);
-                    }, $bundle_product_options),
-                // Groups
-                'associated' => $product_links == null
-                    ? null
-                    : (array)$this->mapper->mapProductLinks($product_links, Grouped::LINK_TYPE),
-                'upsell' => $product_links == null
-                    ? null
-                    : (array)$this->mapper->mapProductLinks($product_links, Related::DATA_SCOPE_UPSELL),
-            ];
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
-            return null;
-        }
-    }
-
-    /**
      * Build product entry
      *
      * @param Product $product
@@ -885,12 +797,14 @@ class Builder
             $entry[$customAttribute] = $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
         }
 
+        $entry[self::ATTR_FEATURES] = json_encode($this->unsupportedProducts->getFeatures($product));
+
         if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
             $entry[self::ATTR_UNSUPPORTED_PRODUCT_DATA] = json_encode([
                 'type_hint' => $product->getTypeId(),
-                'customizable_options' => $this->getCustomizableOptions($product),
-                'digital_options' => $this->getDigitalOptions($product),
-                'bundle_options' => $this->getBundleOptions($product),
+                'customizable_options' => $this->unsupportedProducts->getCustomizableOptions($product),
+                'digital_options' => $this->unsupportedProducts->getDigitalOptions($product),
+                'bundle_options' => $this->unsupportedProducts->getBundleOptions($product),
             ]);
         }
 
@@ -1043,6 +957,7 @@ class Builder
             $headerFields[] = $customAttribute;
         }
 
+        $headerFields[] = self::ATTR_FEATURES;
         if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
             $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
         }
