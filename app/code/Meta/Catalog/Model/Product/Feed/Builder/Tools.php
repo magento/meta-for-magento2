@@ -190,9 +190,16 @@ class Tools
      */
     public function getProductPrice(Product $product)
     {
+        $price = $product->getPrice();
+        // Prevent zero prices from configurable or grouped products.
+        if ($product->getTypeId() != Product\Type::TYPE_SIMPLE) {
+            $price = $product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue();
+        }
+
         $price = $this->systemConfig->isPriceInclTax()
-            ? $this->catalogHelper->getTaxPrice($product, $product->getPrice(), true)
-            : $product->getPrice();
+            ? $this->catalogHelper->getTaxPrice($product, $price, true)
+            : $price;
+
         return $this->formatPrice($price, $product->getStoreId());
     }
 

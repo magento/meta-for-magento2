@@ -25,6 +25,7 @@ use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Product\Feed\Builder;
 use Meta\Catalog\Model\Product\Feed\ProductRetriever\Configurable as ConfigurableProductRetriever;
+use Meta\Catalog\Model\Product\Feed\ProductRetriever\Grouped as GroupedProductRetriever;
 use Meta\Catalog\Model\Product\Feed\ProductRetriever\Simple as SimpleProductRetriever;
 use Meta\Catalog\Model\Product\Feed\ProductRetriever\Other as OtherProductRetriever;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
@@ -37,26 +38,6 @@ class BatchApi
     private const ATTR_UPDATE = 'UPDATE';
     private const ATTR_DELETE = 'DELETE';
     private const ATTR_DATA = 'data';
-
-    /**
-     * @var FBEHelper
-     */
-    private $fbeHelper;
-
-    /**
-     * @var GraphAPIAdapter
-     */
-    private $graphApiAdapter;
-
-    /**
-     * @var SystemConfig
-     */
-    private $systemConfig;
-
-    /**
-     * @var ProductRetrieverInterface[]
-     */
-    private $productRetrievers;
 
     /**
      * @var Builder
@@ -77,6 +58,7 @@ class BatchApi
         GraphAPIAdapter $graphApiAdapter,
         SystemConfig $systemConfig,
         SimpleProductRetriever $simpleProductRetriever,
+        GroupedProductRetriever $groupedProductRetriever,
         ConfigurableProductRetriever $configurableProductRetriever,
         OtherProductRetriever $otherProductRetriever,
         Builder $builder
@@ -86,6 +68,7 @@ class BatchApi
         $this->systemConfig = $systemConfig;
         $this->productRetrievers = [
             $simpleProductRetriever,
+            $groupedProductRetriever,
             $configurableProductRetriever,
             $otherProductRetriever
         ];
