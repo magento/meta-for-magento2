@@ -375,7 +375,6 @@ jQuery(document).ready(function() {
              '&timezone='+window.facebookBusinessExtensionConfig.timeZone+
              '&external_business_id='+window.facebookBusinessExtensionConfig.externalBusinessId+
              '&installed='+this.state.installed+
-             '&system_user_name='+window.facebookBusinessExtensionConfig.systemUserName+
              '&business_vertical='+window.facebookBusinessExtensionConfig.businessVertical+
              '&channel='+window.facebookBusinessExtensionConfig.channel+
              '&currency='+ window.facebookBusinessExtensionConfig.currency +
