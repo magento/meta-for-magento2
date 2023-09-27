@@ -72,15 +72,16 @@ jQuery(document).ready(function() {
           if (FBUtils.urlFromSameDomain(origin, window.facebookBusinessExtensionConfig.popupOrigin)) {
             // Make ajax calls to store data from fblogin and fb installs
             _this.consoleLog("Message from fblogin ");
-            _this.saveFBLoginData(event.data);
+
+            const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+            _this.saveFBLoginData(message);
           }
         }, false);
       }
     },
-    saveFBLoginData: function saveFBLoginData(data) {
+    saveFBLoginData: function saveFBLoginData(responseObj) {
       const _this = this;
-      if (data) {
-        let responseObj = JSON.parse(data);
+      if (responseObj) {
         _this.consoleLog("Response from fb login:");
         _this.consoleLog(responseObj);
         let businessManagerId = responseObj.business_manager_id;
