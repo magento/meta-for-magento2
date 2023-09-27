@@ -131,9 +131,8 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
                 $fbeResponse['commerce_partner_integration_id'],
                 $fbeResponse['pixel_id'],
             );
-
         // Step 4 - Verify Catalog id updated correctly
-        if ($this->systemConfig->getCatalogId() !== $fbeResponse['catalog_id']) {
+        if ($this->systemConfig->getCatalogId((int)$storeId) !== $fbeResponse['catalog_id']) {
             $this->throwException('Catalog config update failed for external_business_id: '.$externalBusinessId);
         }
     }
