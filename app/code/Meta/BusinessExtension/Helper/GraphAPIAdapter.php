@@ -935,15 +935,8 @@ class GraphAPIAdapter
      */
     public function persistLogToMeta($context)
     {
-        $extraData = $this->getContextData($context, 'extra_data', []);
-        $token = $this->accessToken;
-        if (!$token) {
-            $token = $this->clientAccessToken;
-            $extraData = array_merge($extraData, ['access_token_used' => 'client']);
-        }
-
         $request = [
-            'access_token' => $token,
+            'access_token' => $this->accessToken,
             'event' => $this->getContextData($context, 'event'),
             'event_type' => $this->getContextData($context, 'event_type'),
             'commerce_merchant_settings_id' => $this->getContextData($context, 'commerce_merchant_settings_id'),
@@ -958,7 +951,7 @@ class GraphAPIAdapter
             'flow_step' => $this->getContextData($context, 'flow_step'),
             'incoming_params' => $this->getContextData($context, 'incoming_params'),
             'seller_platform_app_version' => $this->getContextData($context, 'seller_platform_app_version'),
-            'extra_data' => $extraData,
+            'extra_data' => $this->getContextData($context, 'extra_data', []),
         ];
 
         $response = $this->callApi('POST', "commerce_seller_logs", $request);
