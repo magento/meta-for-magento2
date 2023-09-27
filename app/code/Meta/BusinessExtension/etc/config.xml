@@ -7,6 +7,7 @@
                 <active>1</active>
                 <onsite>0</onsite>
                 <commerce_extension>0</commerce_extension>
+                <commerce_extension_splash>0</commerce_extension_splash>
                 <meta_exception_logging_enabled>1</meta_exception_logging_enabled>
                 <meta_telemetry_logging_enabled>0</meta_telemetry_logging_enabled>
                 <client_access_token>195311308289826|52dcd04d6c7ed113121b5eb4be23b4a7</client_access_token>
@@ -20,7 +21,7 @@
             <!-- Internal. Overrides default graph base URL
             <internal>
                 <graph_base_url>https://graph.facebook.com/</graph_base_url>
-                <extension_base_url>https://www.201331.od.commercepartnerhub.com/</extension_base_url>
+                <extension_base_url>https://www.my-od.commercepartnerhub.com/</extension_base_url>
             </internal>-->
         </facebook>
     </default>

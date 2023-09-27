@@ -212,51 +212,63 @@ jQuery(document).ready(function() {
             _this.consoleLog("Message from fblogin ");
 
             const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-            _this.saveFBLoginData(message);
+            if (!message) {
+              return;
+            }
+
+            _this.handleMessage(message);
           }
         }, false);
       }
     },
-    saveFBLoginData: function saveFBLoginData(responseObj) {
+    handleMessage: function handleMessage(message) {
       const _this = this;
-      if (responseObj) {
-        _this.consoleLog("Response from fb login:");
-        _this.consoleLog(responseObj);
-        let businessManagerId = responseObj.business_manager_id;
-        let accessToken = responseObj.access_token;
-        let success = responseObj.success;
-        let pixelId = responseObj.pixel_id;
-        let profiles = responseObj.profiles;
-        let catalogId = responseObj.catalog_id;
-        let commercePartnerIntegrationId = responseObj.commerce_partner_integration_id;
-        let pageId = responseObj.page_id;
-        let installedFeatures = responseObj.installed_features;
+      _this.consoleLog("Response from fb login:");
+      _this.consoleLog(message);
 
-        if(success) {
-          let action = responseObj.action;
-          if(action != null && action === 'delete') {
-            // Delete asset ids stored in db instance.
-            _this.consoleLog("Successfully uninstalled FBE");
-            _this.deleteFBAssets();
-          }else if(action != null && action === 'create') {
-            _this.savePixelId(pixelId);
-            _this.exchangeAccessToken(accessToken, businessManagerId);
-            _this.saveProfilesData(profiles);
-            _this.saveAAMSettings(pixelId);
-            _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
-            _this.saveInstalledFeatures(installedFeatures);
-            _this.cleanConfigCache();
-            _this.postFBEOnboardingSync();
+      // "FBE Iframe" uses the 'action' field in its messages.
+      // "Commerce Extension" uses the 'type' field in its messages.
+      const action = message.action;
+      const messageEvent = message.event;
 
-            if (window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionEnabled) {
-              window.location.reload();
-            } else {
-              _this.setState({installed: 'true'});
-            }
+      if (action === 'delete' || messageEvent === 'CommerceExtension::UNINSTALL') {
+        // Delete asset ids stored in db instance.
+        _this.consoleLog("Successfully uninstalled FBE");
+        _this.deleteFBAssets();
+      }
+
+      if (action === 'create' || messageEvent === 'CommerceExtension::INSTALL') {
+        const success = message.success;
+        if (success) {
+          const businessManagerId = message.business_manager_id;
+          const accessToken = message.access_token;
+          const pixelId = message.pixel_id;
+          const profiles = message.profiles;
+          const catalogId = message.catalog_id;
+          const commercePartnerIntegrationId = message.commerce_partner_integration_id;
+          const pageId = message.page_id;
+          const installedFeatures = message.installed_features;
+
+          _this.savePixelId(pixelId);
+          _this.exchangeAccessToken(accessToken, businessManagerId);
+          _this.saveProfilesData(profiles);
+          _this.saveAAMSettings(pixelId);
+          _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
+          _this.saveInstalledFeatures(installedFeatures);
+          _this.cleanConfigCache();
+          _this.postFBEOnboardingSync();
+
+          if (window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionEnabled) {
+            window.location.reload();
+          } else {
+            _this.setState({installed: 'true'});
           }
-        }else {
-          _this.consoleLog("No response received after setup");
         }
+      }
+
+      if (messageEvent === 'CommerceExtension::RESIZE') {
+        const {height} = message;
+        document.getElementById('fbe-iframe').height = height;
       }
     },
     savePixelId: function savePixelId(pixelId) {
@@ -510,14 +522,24 @@ jQuery(document).ready(function() {
 
     },
     render: function render() {
-      var _this = this;
+      const _this = this;
+      const isNewSplashPage = window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionSplashEnabled;
       try {
         _this.consoleLog("query params --"+_this.queryParams());
         return React.createElement(
           'iframe',
           {
-            src:window.facebookBusinessExtensionConfig.fbeLoginUrl + _this.queryParams(),
-            style: {border:'none',width:'1100px',height:'700px'}
+            id: 'fbe-iframe',
+            src: window.facebookBusinessExtensionConfig.fbeLoginUrl + _this.queryParams(),
+            style: {
+              border: 'none',
+              width: '1100px',
+              height: isNewSplashPage ? undefined : '700px',
+              minHeight: isNewSplashPage ? '700px' : undefined,
+            },
+            scrolling: window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionSplashEnabled
+              ? 'no'
+              : undefined,
           }
         );
       } catch (err) {
@@ -529,7 +551,7 @@ jQuery(document).ready(function() {
   // Render
   ReactDOM.render(
     React.createElement(FBEFlowContainer, null),
-    document.getElementById('fbe-iframe')
+    document.getElementById('fbe-iframe-container')
   );
 });
 // Code to display the above container.

@@ -25,13 +25,14 @@
             fbeAccessTokenUrl: '<?= $escaper->escapeHtml($block->getFbeAccessTokenUrl()) ?>',
             fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>',
             fbeInstallsSaveUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>',
-            fbeLoginUrl: "https://business.facebook.com/fbe-iframe-get-started/?",
+            fbeLoginUrl: '<?= $escaper->escapeHtml($block->getSplashPageURL()) ?>',
             installed: '<?=
                 $escaper->escapeHtml($block->isFBEInstalled($block->getSelectedStoreId())) ? 'true' : 'false'
             ?>',
             isCommerceEmbeddedExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
+            isCommerceEmbeddedExtensionSplashEnabled: <?=$block->isCommerceExtensionSplashEnabled() ? 'true' : 'false'?>,
             pixelId: '<?= $escaper->escapeHtml($block->fetchPixelId($block->getSelectedStoreId())) ?>',
-            popupOrigin: "https://business.facebook.com",
+            popupOrigin: '<?= $escaper->escapeHtml($block->getPopupOrigin()) ?>',
             postFBEOnboardingSync: '<?= $escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) ?>',
             saveConfig: '<?= $escaper->escapeHtml($block->fetchConfigurationAjaxRoute()) ?>',
             setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>',
@@ -63,7 +64,7 @@
         </script>
     <?php else: ?>
         <div>
-            <div id="fbe-iframe">
+            <div id="fbe-iframe-container">
             </div>
         </div>
         <script>

@@ -114,6 +114,13 @@ class Config
 
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_UI_FLAG =
         'facebook/business_extension/commerce_extension';
+
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_SPLASH_UI_FLAG =
+        'facebook/business_extension/commerce_extension_splash';
+
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL =
+        'facebook/internal/extension_base_url';
+
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_EXCEPTION_LOGGING =
         'facebook/business_extension/meta_exception_logging_enabled';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_TELEMETRY_LOGGING =
@@ -321,6 +328,38 @@ class Config
             $scopeId,
             $scope
         );
+    }
+
+    /**
+     * Is commerce extension UI Splash Screen is enabled
+     *
+     * @param int|null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isCommerceExtensionSplashEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
+    {
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_SPLASH_UI_FLAG,
+            $scopeId,
+            $scope
+        );
+    }
+
+    /**
+     * The base URL for rendering the Commerce Extension Splash page.
+     *
+     * @param int|null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function getCommerceExtensionBaseURL($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): string
+    {
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL,
+            $scopeId,
+            $scope
+        ) ?? 'https://www.commercepartnerhub.com/';
     }
 
     /**
