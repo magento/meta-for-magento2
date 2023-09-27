@@ -34,8 +34,6 @@
             </argument>
         </arguments>
     </type>
-    <preference for="Magento\Framework\App\Config\Storage\WriterInterface"
-                type="Magento\Framework\App\Config\Storage\Writer"/>
     <type name="Meta\BusinessExtension\Controller\Adminhtml\ApiKey\Index">
         <arguments>
             <argument name="configWriter" xsi:type="object">Magento\Framework\App\Config\Storage\WriterInterface;
