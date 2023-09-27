@@ -25,12 +25,9 @@ if ($block->getFacebookPixelID()) {
                         'event' => 'ViewContent',
                         'payload' => [
                             'content_type' => $block->getContentType(),
-                            'content_ids' => $block->getContentIDs(),
+                            'content_ids' => json_encode($block->getContentIDs()),
                             'content_name' => $block->escapeUrl($block->getContentName()) ?? '',
-                            'contents' => [
-                                'id' => $block->getContentIDs() ?? '',
-                                'quantity' => 1
-                            ],
+                            'contents' => json_encode($block->getContents()),
                             'content_category' => $block->getContentCategory() ?? '',
                             'value' => $block->getValue() ?? '',
                             'currency' => $block->getCurrency() ?? ''
