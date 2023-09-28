@@ -82,11 +82,11 @@ class Tools
     public function __construct(
         PriceCurrencyInterface $priceCurrency,
         ObjectManagerInterface $objectManager,
-        Escaper $escaper,
-        SystemConfig $systemConfig,
-        CatalogHelper $catalogHelper,
-        ModuleManager $moduleManager,
-        StoreManagerInterface $storeManager
+        Escaper                $escaper,
+        SystemConfig           $systemConfig,
+        CatalogHelper          $catalogHelper,
+        ModuleManager          $moduleManager,
+        StoreManagerInterface  $storeManager
     ) {
         $this->priceCurrency = $priceCurrency;
         $this->objectManager = $objectManager;
@@ -144,7 +144,7 @@ class Tools
                 $baseCurrency->getCode()
             );
             // workaround for 2.4.3
-            $price = trim($price, $currencySymbol);
+            $price = trim($price, $currencySymbol ?? '');
             return $price;
         } catch (Exception $e) {
             return '';
@@ -204,10 +204,10 @@ class Tools
      */
     public function getProductSalePrice(Product $product)
     {
-        if ($product->getFinalPrice() > 0 && $product->getPrice() > $product->getFinalPrice()) {
+        if ($product->getSpecialPrice() > 0 && $product->getPrice() > $product->getSpecialPrice()) {
             $price = $this->systemConfig->isPriceInclTax()
-                ? $this->catalogHelper->getTaxPrice($product, $product->getFinalPrice(), true)
-                : $product->getFinalPrice();
+                ? $this->catalogHelper->getTaxPrice($product, $product->getSpecialPrice(), true)
+                : $product->getSpecialPrice();
             return $this->formatPrice($price, $product->getStoreId());
         }
         return '';
