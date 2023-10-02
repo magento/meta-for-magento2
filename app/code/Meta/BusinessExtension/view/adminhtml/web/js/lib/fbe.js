@@ -394,7 +394,7 @@ jQuery(document).ready(function() {
             src: window.facebookBusinessExtensionConfig.fbeLoginUrl + _this.queryParams(),
             style: {
               border: 'none',
-              width: '1100px',
+              width: isNewSplashPage ? '100%' : '1100px',
               height: isNewSplashPage ? undefined : '700px',
               minHeight: isNewSplashPage ? '700px' : undefined,
             },
