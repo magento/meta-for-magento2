@@ -194,7 +194,9 @@ class Setup extends Template
      */
     public function isCommerceExtensionEnabled()
     {
-        return $this->systemConfig->isCommerceExtensionEnabled();
+        $storeID = $this->getSelectedStoreId();
+        $storeHasCommercePartnerIntegration = !!$this->systemConfig->getCommercePartnerIntegrationId($storeID);
+        return $storeHasCommercePartnerIntegration || $this->systemConfig->isCommerceExtensionEnabled();
     }
 
     /**
@@ -227,13 +229,14 @@ class Setup extends Template
      *
      * @return string
      */
-    public function getSplashPageURL() {
+    public function getSplashPageURL()
+    {
         if (!$this->systemConfig->isCommerceExtensionSplashEnabled()) {
             return 'https://business.facebook.com/fbe-iframe-get-started/?';
         }
 
         $base_url = $this->systemConfig->getCommerceExtensionBaseURL();
-        return $base_url.'commerce_extension/splash/?';
+        return $base_url . 'commerce_extension/splash/?';
     }
 
     /**
