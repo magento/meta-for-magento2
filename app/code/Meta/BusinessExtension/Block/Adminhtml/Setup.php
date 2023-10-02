@@ -200,8 +200,7 @@ class Setup extends Template
     }
 
     /**
-     * Whether to enable the pre-onboarding Splash page for the
-     * new Commerce Extension.
+     * Whether to enable the pre-onboarding Splash page for the new Commerce Extension.
      *
      * @return bool
      */
