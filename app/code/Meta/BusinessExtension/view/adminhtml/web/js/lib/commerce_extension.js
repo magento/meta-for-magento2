@@ -78,8 +78,8 @@ function cleanConfigCache() {
 function handleCommerceExtensionDeletion(message) {
     var success = message.success;
     if (success) {
-        let action = message.action;
-        if (action != null && action === 'delete') {
+        const messageEvent = message.event;
+        if (messageEvent === 'CommerceExtension::UNINSTALL') {
             // Delete asset ids stored in db instance.
             deleteFBAssets();
         }
