@@ -200,23 +200,13 @@ class Setup extends Template
     }
 
     /**
-     * Whether to enable the pre-onboarding Splash page for the new Commerce Extension.
-     *
-     * @return bool
-     */
-    public function isCommerceExtensionSplashEnabled()
-    {
-        return $this->systemConfig->isCommerceExtensionSplashEnabled();
-    }
-
-    /**
      * The expected origin for the Messages received from the FBE iframe/popup.
      *
      * @return string
      */
     public function getPopupOrigin()
     {
-        if (!$this->systemConfig->isCommerceExtensionSplashEnabled()) {
+        if (!$this->systemConfig->isCommerceExtensionEnabled()) {
             return 'https://business.facebook.com';
         }
 
@@ -230,7 +220,7 @@ class Setup extends Template
      */
     public function getSplashPageURL()
     {
-        if (!$this->systemConfig->isCommerceExtensionSplashEnabled()) {
+        if (!$this->systemConfig->isCommerceExtensionEnabled()) {
             return 'https://business.facebook.com/fbe-iframe-get-started/?';
         }
 

@@ -115,9 +115,6 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_UI_FLAG =
         'facebook/business_extension/commerce_extension';
 
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_SPLASH_UI_FLAG =
-        'facebook/business_extension/commerce_extension_splash';
-
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL =
         'facebook/internal/extension_base_url';
 
@@ -325,22 +322,6 @@ class Config
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_UI_FLAG,
-            $scopeId,
-            $scope
-        );
-    }
-
-    /**
-     * Is commerce extension UI Splash Screen is enabled
-     *
-     * @param int|null $scopeId
-     * @param string $scope
-     * @return bool
-     */
-    public function isCommerceExtensionSplashEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
-    {
-        return (bool)$this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_SPLASH_UI_FLAG,
             $scopeId,
             $scope
         );

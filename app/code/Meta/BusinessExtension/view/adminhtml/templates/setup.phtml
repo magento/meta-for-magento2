@@ -29,8 +29,7 @@
             installed: '<?=
                 $escaper->escapeHtml($block->isFBEInstalled($block->getSelectedStoreId())) ? 'true' : 'false'
             ?>',
-            isCommerceEmbeddedExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
-            isCommerceEmbeddedExtensionSplashEnabled: <?=$block->isCommerceExtensionSplashEnabled() ? 'true' : 'false'?>,
+            isCommerceExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
             pixelId: '<?= $escaper->escapeHtml($block->fetchPixelId($block->getSelectedStoreId())) ?>',
             popupOrigin: '<?= $escaper->escapeHtml($block->getPopupOrigin()) ?>',
             postFBEOnboardingSync: '<?= $escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) ?>',

@@ -258,7 +258,7 @@ jQuery(document).ready(function() {
           _this.cleanConfigCache();
           _this.postFBEOnboardingSync();
 
-          if (window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionEnabled) {
+          if (window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled) {
             window.location.reload();
           } else {
             _this.setState({installed: 'true'});
@@ -522,7 +522,7 @@ jQuery(document).ready(function() {
     },
     render: function render() {
       const _this = this;
-      const isNewSplashPage = window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionSplashEnabled;
+      const isNewSplashPage = window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled;
       try {
         _this.consoleLog("query params --"+_this.queryParams());
         return React.createElement(
@@ -536,7 +536,7 @@ jQuery(document).ready(function() {
               height: isNewSplashPage ? undefined : '700px',
               minHeight: isNewSplashPage ? '700px' : undefined,
             },
-            scrolling: window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionSplashEnabled
+            scrolling: window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled
               ? 'no'
               : undefined,
           }
