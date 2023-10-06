@@ -64,18 +64,22 @@ class CatalogConfigUpdateHelper
      * @param string $catalogId
      * @param string $commercePartnerIntegrationId
      * @param string $pixelId
+     * @param bool $triggerFullSync
      * @return void
      */
     public function updateCatalogConfiguration(
         int $storeId,
         string $catalogId,
         string $commercePartnerIntegrationId,
-        string $pixelId
+        string $pixelId,
+        bool $triggerFullSync = true,
     ): void {
         $oldCatalogId = $this->systemConfig->getCatalogId($storeId);
         try {
+            $isCatalogUpdated = $oldCatalogId != $catalogId;
+
             // if Catalog id is updated, only then we update the config
-            if ($oldCatalogId != $catalogId) {
+            if ($isCatalogUpdated) {
                 // updates catalog id
                 $this->systemConfig->saveConfig(
                     SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID,
@@ -115,7 +119,9 @@ class CatalogConfigUpdateHelper
             // Dispatch the facebook_update_catalog_configuration_after event,
             // so observers in other Meta modules can subscribe and trigger their syncs,
             // such as full catalog sync, and shipping profiles sync
-            $this->eventManager->dispatch('facebook_update_catalog_configuration_after', ['store_id' => $storeId]);
+            if ($triggerFullSync || $isCatalogUpdated) {
+                $this->eventManager->dispatch('facebook_update_catalog_configuration_after', ['store_id' => $storeId]);
+            }
         } catch (\Throwable $e) {
             $context = [
                 'store_id' => $storeId,
