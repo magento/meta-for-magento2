@@ -564,7 +564,7 @@ class Config
      */
     public function cleanCache()
     {
-        $this->cacheTypeList->cleanType(\Magento\Framework\App\Cache\Type\Config::TYPE_IDENTIFIER);
+        $this->scopeConfig->clean();
         return $this;
     }
 
