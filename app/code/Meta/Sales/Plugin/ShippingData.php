@@ -49,6 +49,8 @@ class ShippingData
     public const ATTR_SHIPPING_FEE_TYPE = 'shipping_fee_type';
     public const ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT = 'free_shipping_minimum_order_amount';
 
+    public const EXTERNAL_REFERENCE_ID = 'external_reference_id';
+
     /**
      * @param CollectionFactory $tableRateCollection
      * @param ScopeConfigInterface $scopeConfig
@@ -104,6 +106,7 @@ class ShippingData
         $freeShippingThreshold = $this->getFieldFromModel($shippingProfileType, 'free_shipping_subtotal');
         $handlingFee = $this->getFieldFromModel($shippingProfileType, 'handling_fee');
         $handlingFeeType = $this->getFieldFromModel($shippingProfileType, 'handling_type');
+        $externalReferenceId = $this->getExternalReferenceID($shippingProfileType);
         return [
             self::ATTR_ENABLED => $isEnabled,
             self::ATTR_TITLE => $title,
@@ -113,6 +116,7 @@ class ShippingData
             self::ATTR_HANDLING_FEE_TYPE => $handlingFeeType,
             self::ATTR_SHIPPING_FEE_TYPE => $shippingType,
             self::ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT => $freeShippingThreshold,
+            self::EXTERNAL_REFERENCE_ID => $externalReferenceId
         ];
     }
 
@@ -127,6 +131,26 @@ class ShippingData
     {
         $path = 'carriers/' . $shippingProfileType . '/' . $field;
         return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $this->storeId);
+    }
+
+    /**
+     * Get external reference id for shipping settings which meta will use to identify the selected shipping option
+     *
+     * @param string $shippingProfileType
+     * @return string
+     */
+    private function getExternalReferenceID(string $shippingProfileType): string
+    {
+        switch ($shippingProfileType) {
+            case ShippingProfileTypes::TABLE_RATE:
+                return ShippingMethodTypes::TABLE_RATE;
+            case ShippingProfileTypes::FLAT_RATE:
+                return ShippingMethodTypes::FLAT_RATE;
+            case ShippingProfileTypes::FREE_SHIPPING:
+                return ShippingMethodTypes::FREE_SHIPPING;
+            default:
+                return "";
+        }
     }
 
     /**

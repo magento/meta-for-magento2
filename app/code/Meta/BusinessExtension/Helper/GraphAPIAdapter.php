@@ -33,6 +33,9 @@ use Psr\Log\LoggerInterface;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\View\FileFactory;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class GraphAPIAdapter
 {
     private const ORDER_STATE_CREATED = 'CREATED';
@@ -580,7 +583,7 @@ class GraphAPIAdapter
             'estimated_payment_details',
             'ship_by_date',
             'order_status',
-            'selected_shipping_option',
+            'selected_shipping_option{name, reference_id, price, calculated_tax, estimated_shipping_time}',
             'shipping_address{first_name, last_name, street1, street2, city, postal_code, country}',
             'payments',
             'promotion_details{applied_amount, coupon_code, target_granularity, sponsor, campaign_name}',

@@ -31,9 +31,11 @@ use Magento\Sales\Model\Order\Payment;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Sales\Plugin\ShippingMethodTypes;
 
 /**
  * Map facebook order data to magento order
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class OrderMapper
 {
@@ -120,6 +122,7 @@ class OrderMapper
 
         $channel = ucfirst($data['channel']);
         $shippingOptionName = $data['selected_shipping_option']['name'];
+        $shippingReferenceId = $data['selected_shipping_option']['reference_id'];
         $billingAddress = $this->getOrderBillingAddress($data);
         $shippingAddress = clone $billingAddress;
         $shippingAddress
@@ -146,7 +149,7 @@ class OrderMapper
 
         $this->applyTotalsToOrder($order, $data, $storeId);
 
-        $shippingMethod = $this->getShippingMethod($shippingOptionName, $storeId);
+        $shippingMethod = $this->getShippingMethod($shippingOptionName, $shippingReferenceId, $storeId);
         $shippingDescription = $this->getShippingMethodLabel($shippingOptionName, $storeId);
 
         $order->setStoreId($storeId)
@@ -172,12 +175,19 @@ class OrderMapper
      * Get Magento shipping method code. For example: "flatrate_flatrate"
      *
      * @param string $shippingOptionName (possible values: "standard", "expedited", "rush")
+     * @param string $shippingReferenceId
      * @param int $storeId
      * @return string|null
      * @throws LocalizedException
      */
-    private function getShippingMethod(string $shippingOptionName, int $storeId): ?string
+    private function getShippingMethod(string $shippingOptionName, string $shippingReferenceId, int $storeId): ?string
     {
+        $static_shipping_options = [ShippingMethodTypes::FREE_SHIPPING,
+                                    ShippingMethodTypes::FLAT_RATE,
+                                    ShippingMethodTypes::TABLE_RATE];
+        if (in_array($shippingReferenceId, $static_shipping_options)) {
+            return $shippingReferenceId;
+        }
         $map = $this->systemConfig->getShippingMethodsMap($storeId);
         foreach (['standard', 'expedited', 'rush'] as $item) {
             if (stripos($shippingOptionName, $item) !== false && isset($map[$item])) {
