@@ -99,7 +99,8 @@ class ShippingData
             $allowedCountries = "*";
         }
         if ($shippingProfileType === ShippingProfileTypes::TABLE_RATE) {
-            $shippingMethods = $this->getShippingMethodsInfoForTableRates();
+            $selectedCondition = $this->getFieldFromModel(ShippingProfileTypes::TABLE_RATE, 'condition_name');
+            $shippingMethods = $this->getShippingMethodsInfoForTableRates($selectedCondition);
         } else {
             $shippingMethods = $this->buildShippingMethodsInfo($allowedCountries, $price);
         }
@@ -180,9 +181,10 @@ class ShippingData
      *
      * Link: https://experienceleague.adobe.com/docs/commerce-admin/stores-sales/delivery/basic-methods/shipping-table-rate.html
      *
+     * @param string $selectedCondition
      * @return array
      */
-    protected function getShippingMethodsInfoForTableRates(): array
+    protected function getShippingMethodsInfoForTableRates(string $selectedCondition): array
     {
         $shippingMethodsInfo = [];
         $collection = $this->tableRateCollection->create();
@@ -190,20 +192,23 @@ class ShippingData
             ->joinLeft(
                 ['region' => $collection->getTable('directory_country_region')],
                 'main_table.dest_region_id = region.region_id',
-                ['region.code AS region_code']
+                [new \Zend_Db_Expr('IFNULL(region.code, \'*\') AS region_code')]
             );
         foreach ($collection as $rate) {
+            $conditionName = $rate->getConditionName();
+            if ($conditionName !== $selectedCondition) {
+                continue;
+            }
             $rate->getName();
             // Determine the condition type (weight, price, or number of items)
             $conditionType = null;
             $conditionValue = $rate->getConditionValue();
-            $conditionName = $rate->getConditionName();
             if ($conditionName === 'package_weight') {
                 $conditionType = 'weight';
             } elseif ($conditionName === 'package_value_with_discount') {
                 $conditionType = 'price';
             } elseif ($conditionName === 'package_qty') {
-                $conditionType = 'item_qty';
+                $conditionType = 'number_of_items';
             }
             $shippingMethodsInfo[] = [
                 'price' => $rate->getPrice(),
