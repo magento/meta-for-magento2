@@ -13,7 +13,7 @@
         appId: '<?= $escaper->escapeHtml($block->getAppId()) ?>',
         businessName: 'Magento',
         businessVertical: 'ECOMMERCE',
-        channel: <?=$block->isCommerceExtensionEnabled() ? 'COMMERCE' : 'COMMERCE_OFFSITE'?>,
+        channel: <?=$block->isCommerceExtensionEnabled() ? "'COMMERCE'" : "'COMMERCE_OFFSITE'"?>,
         cleanConfigCacheUrl: '<?= $escaper->escapeHtml($block->getCleanCacheAjaxRoute()) ?>',
         currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>',
         customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>',
