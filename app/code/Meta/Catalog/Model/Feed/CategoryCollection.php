@@ -459,7 +459,7 @@ class CategoryCollection
                         $category->getName(),
                         $storeId
                     ));
-                    $requests[] = $this->pushCategoryWithFBRequestJson($category, $products, $catalogId, $storeId);
+                    $requests[] = $this->pushCategoryWithFBRequestJson($category, $products, $catalogId, (int)$storeId);
                 }
                 $updatedCategories[] = $category;
                 if (count($requests) === self::BATCH_MAX) {
