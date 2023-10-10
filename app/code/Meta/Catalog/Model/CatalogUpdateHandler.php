@@ -204,7 +204,9 @@ class CatalogUpdateHandler
         foreach ($products as $product) {
             if (isset($productLinks[$product->getId()])) {
                 $parentProduct = $parentProducts->getItemById($productLinks[$product->getId()]);
-                $product = $this->productRepository->loadParentProductData($product, $parentProduct);
+                if ($parentProduct) {
+                    $product = $this->productRepository->loadParentProductData($product, $parentProduct);
+                }
             }
             if ($product->getSendToFacebook() === false) {
                 continue;
