@@ -328,7 +328,7 @@ class Config
      *
      * @param int|null $scopeId
      * @param string $scope
-     * @return bool
+     * @return string
      */
     public function getCommerceExtensionBaseURL($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): string
     {
@@ -989,8 +989,8 @@ class Config
     /**
      * Check if unsupported products are disabled
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param int|null $scopeId
+     * @param string|null $scope
      * @return bool
      */
     public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null): bool

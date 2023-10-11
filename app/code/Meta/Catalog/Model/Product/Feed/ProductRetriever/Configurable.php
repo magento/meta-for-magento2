@@ -92,9 +92,9 @@ class Configurable implements ProductRetrieverInterface
      * Set store id
      *
      * @param int $storeId
-     * @return ProductRetrieverInterface|void
+     * @return ProductRetrieverInterface
      */
-    public function setStoreId($storeId)
+    public function setStoreId($storeId): ProductRetrieverInterface
     {
         $this->storeId = $storeId;
         return $this;

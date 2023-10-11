@@ -972,7 +972,7 @@ class Builder
     /**
      * Get base url media
      *
-     * @return mixed
+     * @return string
      */
     public function getBaseUrlMedia()
     {

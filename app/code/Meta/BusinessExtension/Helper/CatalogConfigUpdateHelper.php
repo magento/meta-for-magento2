@@ -72,7 +72,7 @@ class CatalogConfigUpdateHelper
         string $catalogId,
         string $commercePartnerIntegrationId,
         string $pixelId,
-        bool $triggerFullSync = true,
+        bool $triggerFullSync = true
     ): void {
         $oldCatalogId = $this->systemConfig->getCatalogId($storeId);
         try {

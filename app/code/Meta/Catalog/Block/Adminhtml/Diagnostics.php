@@ -165,7 +165,7 @@ class Diagnostics extends Template
      * Get admin url
      *
      * @param ProductInterface $product
-     * @param int $store
+     * @param int|null $store
      * @return string
      */
     public function getAdminUrl(ProductInterface $product, int $store = null)

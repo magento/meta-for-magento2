@@ -38,7 +38,6 @@ use Magento\Framework\View\FileFactory;
  */
 class GraphAPIAdapter
 {
-    private const ORDER_STATE_CREATED = 'CREATED';
     public const ORDER_FILTER_REFUNDS = 'refunds';
     public const ORDER_FILTER_CANCELLATIONS = 'cancellations';
     private const GET_ORDERS_LIMIT = 25;

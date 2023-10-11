@@ -438,9 +438,8 @@ class FBEHelper
     /**
      * Check admin permissions
      *
-     * @param string $pixelId
-     * @param int $storeId
      * @return void
+     * @throws LocalizedException
      */
     public function checkAdminEndpointPermission()
     {

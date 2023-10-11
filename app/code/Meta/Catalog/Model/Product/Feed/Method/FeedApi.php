@@ -149,6 +149,7 @@ class FeedApi
      *
      * @param string $catalogId
      * @param string $feedName
+     * @return mixed
      * @throws GuzzleException
      */
     private function createNewFeedAndSave(string $catalogId, string $feedName)
