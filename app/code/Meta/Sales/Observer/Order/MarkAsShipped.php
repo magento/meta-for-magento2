@@ -53,9 +53,9 @@ class MarkAsShipped implements ObserverInterface
      * @param Shipper $shipper
      */
     public function __construct(
-        SystemConfig $systemConfig,
+        SystemConfig    $systemConfig,
         LoggerInterface $logger,
-        Shipper $shipper
+        Shipper         $shipper
     ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
@@ -88,7 +88,7 @@ class MarkAsShipped implements ObserverInterface
             return;
         }
 
-        if (!($this->systemConfig->isOrdersSyncEnabled($storeId)
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
         }

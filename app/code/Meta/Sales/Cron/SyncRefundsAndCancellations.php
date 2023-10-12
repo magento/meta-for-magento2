@@ -79,7 +79,7 @@ class SyncRefundsAndCancellations
      */
     private function pullRefundsAndCancellationsForStore(int $storeId)
     {
-        if (!($this->systemConfig->isOrdersSyncEnabled($storeId)
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
         }

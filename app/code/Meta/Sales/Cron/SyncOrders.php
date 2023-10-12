@@ -79,7 +79,7 @@ class SyncOrders
      */
     private function pullOrdersForStore(int $storeId)
     {
-        if (!($this->systemConfig->isOrdersSyncEnabled($storeId)
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
         }

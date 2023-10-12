@@ -109,7 +109,7 @@ class Refund implements ObserverInterface
 
         $storeId = $payment->getOrder()->getStoreId();
 
-        if (!($this->systemConfig->isOrdersSyncEnabled($storeId)
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
         }
