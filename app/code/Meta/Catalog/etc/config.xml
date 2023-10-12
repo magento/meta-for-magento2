@@ -3,9 +3,8 @@
     <default>
         <facebook>
             <catalog_management>
-                <enable_catalog_sync>0</enable_catalog_sync>
+                <enable_catalog_sync>1</enable_catalog_sync>
                 <price_incl_tax>0</price_incl_tax>
-                <collections_sync>0</collections_sync>
                 <out_of_stock_threshold>0</out_of_stock_threshold>
             </catalog_management>
         </facebook>

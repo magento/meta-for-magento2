@@ -3,7 +3,7 @@
     <default>
         <facebook>
             <orders_sync>
-                <active>0</active>
+                <active>1</active>
                 <default_order_status>pending</default_order_status>
                 <auto_subscribe_to_newsletter>1</auto_subscribe_to_newsletter>
                 <default_fulfillment_location>1</default_fulfillment_location>

@@ -83,7 +83,7 @@ class PullOrders extends AbstractAjax
             $storeId = $storeParam;
         }
 
-        if (!$this->systemConfig->isActiveOrderSync($storeId)) {
+        if (!$this->systemConfig->isOrdersSyncEnabled($storeId)) {
             $response['success'] = false;
             $response['error_message'] = __('Enable order sync before pulling orders.');
             return $response;

@@ -393,15 +393,16 @@ class Config
     }
 
     /**
-     * Is active order sync
+     * Is order sync enabled
      *
      * @param int $scopeId
      * @param int $scope
      * @return bool
      */
-    public function isActiveOrderSync($scopeId = null, $scope = null): bool
+    public function isOrderSyncEnabled($scopeId = null, $scope = null): bool
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, $scopeId, $scope) &&
+            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
     }
 
     /**
@@ -819,7 +820,8 @@ class Config
      */
     public function isPromotionsSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
-        return !!$this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC, $scopeId, $scope) &&
+            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
     }
 
     /**
