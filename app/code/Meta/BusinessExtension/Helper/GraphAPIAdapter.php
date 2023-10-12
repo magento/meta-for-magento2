@@ -566,13 +566,13 @@ class GraphAPIAdapter
     /**
      * Get orders
      *
-     * @param mixed $pageId
+     * @param mixed $ordersRootId Commerce Account ID or Page ID
      * @param false|string $cursorAfter
      * @param string $filterType
      * @return array
      * @throws GuzzleException
      */
-    public function getOrders($pageId, $cursorAfter = false, $filterType = "")
+    public function getOrders($ordersRootId, $cursorAfter = false, $filterType = "")
     {
         $requestFields = [
             'id',
@@ -609,7 +609,7 @@ class GraphAPIAdapter
         if ($cursorAfter) {
             $request['after'] = $cursorAfter;
         }
-        $response = $this->callApi('GET', "{$pageId}/commerce_orders", $request);
+        $response = $this->callApi('GET', "{$ordersRootId}/commerce_orders", $request);
         return json_decode($response->getBody()->__toString(), true);
     }
 
@@ -683,12 +683,12 @@ class GraphAPIAdapter
     /**
      * Acknowledge orders
      *
-     * @param mixed $pageId
+     * @param mixed $ordersRootId Commerce Account ID or Page ID
      * @param array $orderIds
      * @return mixed
      * @throws GuzzleException
      */
-    public function acknowledgeOrders($pageId, array $orderIds)
+    public function acknowledgeOrders($ordersRootId, array $orderIds)
     {
         $request = [];
         foreach ($orderIds as $magentoOrderId => $fbOrderId) {
@@ -696,7 +696,7 @@ class GraphAPIAdapter
         }
         $response = $this->callApi(
             'POST',
-            "{$pageId}/acknowledge_orders",
+            "{$ordersRootId}/acknowledge_orders",
             [
                 'access_token' => $this->accessToken,
                 'idempotency_key' => $this->getUniqId(),

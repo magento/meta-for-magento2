@@ -115,11 +115,11 @@ class CommerceHelper
      */
     public function pullOrders(int $storeId, $cursorAfter = false)
     {
-        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
 
+        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
         $ordersData = $this->graphAPIAdapter->getOrders($ordersRootId, $cursorAfter);
 
         $this->ordersPulledTotal += count($ordersData['data']);
@@ -158,14 +158,14 @@ class CommerceHelper
      * @return array Associative array containing the refund details with Facebook Order IDs as keys.
      * @throws GuzzleException
      */
-    public function pullRefundOrders(int $storeId)
+    public function pullRefundOrders(int $storeId): array
     {
-        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
 
         // Pull orders with refunds
+        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
         $ordersWithRefunds = $this->graphAPIAdapter->getOrders(
             $ordersRootId,
             false,
@@ -202,14 +202,14 @@ class CommerceHelper
      * @return array Associative array containing the cancellation details with Facebook Order IDs as keys.
      * @throws GuzzleException
      */
-    public function pullCancelledOrders(int $storeId)
+    public function pullCancelledOrders(int $storeId): array
     {
-        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
 
         // Pull orders with cancellations
+        $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
         $ordersWithCancellations = $this->graphAPIAdapter->getOrders(
             $ordersRootId,
             false,
