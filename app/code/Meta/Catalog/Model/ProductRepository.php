@@ -92,6 +92,7 @@ class ProductRepository
         $childProduct->setName($product->getName());
         $childProduct->setConfigurableSettings($configurableSettings);
         $childProduct->setParentProductUrl($product->getProductUrl());
+        $childProduct->setVisibility($product->getVisibility());
         //todo put all these attributes to a list
         if (!$childProduct->getDescription()) {
             $childProduct->setDescription($product->getDescription());
