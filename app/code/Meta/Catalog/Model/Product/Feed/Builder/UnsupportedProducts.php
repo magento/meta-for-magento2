@@ -74,6 +74,7 @@ class UnsupportedProducts
                 break;
             case 'downloadable':
             case 'digital':
+            case 'virtual':
                 $features[] = 'NON_SHIPPABLE';
                 break;
         }

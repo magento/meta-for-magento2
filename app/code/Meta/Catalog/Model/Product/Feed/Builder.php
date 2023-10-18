@@ -797,7 +797,8 @@ class Builder
             $entry[$customAttribute] = $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
         }
 
-        $entry[self::ATTR_FEATURES] = json_encode($this->unsupportedProducts->getFeatures($product));
+        $features = $this->unsupportedProducts->getFeatures($product);
+        $entry[self::ATTR_FEATURES] = count($features) > 0 ? json_encode($features) : null;
 
         if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
             $entry[self::ATTR_UNSUPPORTED_PRODUCT_DATA] = json_encode([
