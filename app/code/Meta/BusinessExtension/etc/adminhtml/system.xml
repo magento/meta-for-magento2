@@ -87,6 +87,11 @@
                     <config_path>facebook/debug/debug_mode</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="delete_connection" translate="label comment" type="select" sortOrder="20" showInDefault="0"
+                       showInWebsite="0" showInStore="1">
+                    <label>Delete Meta Connection</label>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\DeleteConnection</frontend_model>
+                </field>
             </group>
         </section>
     </system>
