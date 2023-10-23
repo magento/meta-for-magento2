@@ -27,7 +27,8 @@ interface InventoryInterface
 
     public const STATUS_OUT_OF_STOCK = 'out of stock';
 
-    public const UNMANAGED_STOCK_QTY = 9999;
+    // -1 is unmanaged inventory in Meta catalog
+    public const UNMANAGED_STOCK_QTY = -1;
 
     /**
      * Init inventory for product

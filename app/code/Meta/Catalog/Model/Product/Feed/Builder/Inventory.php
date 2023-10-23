@@ -102,8 +102,14 @@ class Inventory implements InventoryInterface
      */
     public function getAvailability(): string
     {
+        $inventory = $this->getInventory();
+
+        // unmanaged stock is always available
+        if ($inventory === self::UNMANAGED_STOCK_QTY) {
+            return self::STATUS_IN_STOCK;
+        }
         return $this->productStock && $this->productStock->getIsInStock()
-        && ($this->getInventory() > 0)
+        && ($inventory > 0)
             ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 
@@ -119,7 +125,7 @@ class Inventory implements InventoryInterface
         }
 
         if (!$this->productStock->getManageStock()) {
-            return self::UNMANAGED_STOCK_QTY; // fake quantity to make product available if Manage Stock is off
+            return self::UNMANAGED_STOCK_QTY;
         }
 
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
