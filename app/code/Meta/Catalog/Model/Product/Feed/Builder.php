@@ -412,6 +412,14 @@ class Builder
 
         // phpcs:ignore
         $description = html_entity_decode($description);
+
+        // remove style tag and its content from description
+        // phpcs:ignore
+        $description = html_entity_decode(preg_replace(
+            '/<\s*style.+?<\s*\/\s*style.*?>/',
+            '',
+            $description
+        ));
         // phpcs:ignore
         $description = html_entity_decode(preg_replace('/<[^<]+?>/', '', $description));
         return $this->builderTools->lowercaseIfAllCaps($description);
@@ -438,6 +446,17 @@ class Builder
         if (!$description) {
             return '';
         }
+
+        // phpcs:ignore
+        $description = html_entity_decode($description);
+
+        // remove style tag and its content from description
+        // phpcs:ignore
+        $description = html_entity_decode(preg_replace(
+            '/<\s*style.+?<\s*\/\s*style.*?>/',
+            '',
+            $description
+        ));
 
         return $this->trimAttribute(
             self::ATTR_RICH_DESCRIPTION,
