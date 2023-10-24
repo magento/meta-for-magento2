@@ -142,7 +142,8 @@ class OrderItemMapper
             ->setRowTotal($rowTotal)
             ->setDiscountAmount($discountAmount)
             ->setBaseDiscountAmount($discountAmount)
-            ->setProductType($product->getTypeId());
+            ->setProductType($product->getTypeId())
+            ->setStoreId($storeId);
 
         if ($rowTotal != 0) {
             $orderItem->setTaxPercent(round(($taxAmount / $rowTotal) * 100, 2));
