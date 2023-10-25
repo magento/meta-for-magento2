@@ -583,7 +583,7 @@ class GraphAPIAdapter
             'ship_by_date',
             'order_status',
             'selected_shipping_option{name, reference_id, price, calculated_tax, estimated_shipping_time}',
-            'shipping_address{first_name, last_name, street1, street2, city, postal_code, country}',
+            'shipping_address{first_name, last_name, street1, street2, city, postal_code, state, country}',
             'payments',
             'promotion_details{applied_amount, coupon_code, target_granularity, sponsor, campaign_name}',
             'last_updated',
