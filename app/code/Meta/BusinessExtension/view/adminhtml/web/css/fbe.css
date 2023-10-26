@@ -30,6 +30,14 @@
     margin-right: 16px;
 }
 
+.commerce-extension-error {
+    background-color: rgb(255, 235, 235);
+    border: 1px solid rgb(217, 54, 22);
+    border-radius: 4px;
+    max-width: 800px;
+    padding: 16px;
+}
+
 #fbe-wrapper {
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);
     display: block;
