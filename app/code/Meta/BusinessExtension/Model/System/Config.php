@@ -207,17 +207,21 @@ class Config
      */
     public function getModuleVersion(): string
     {
-        $this->version = (string)($this->version ?: $this->cache->load(self::VERSION_CACHE_KEY));
-        if (!$this->version) {
-            $installedPackages = $this->composerInformation->getInstalledMagentoPackages();
-            $extensionVersion = $installedPackages[self::EXTENSION_PACKAGE_NAME]['version'] ?? null;
-            if (!empty($extensionVersion)) {
-                $this->version = $extensionVersion;
-            } else {
-                $this->version = 'dev';
-            }
-            $this->cache->save($this->version, self::VERSION_CACHE_KEY, [AppConfig::CACHE_TAG]);
+        $cachedVersion = $this->cache->load(self::VERSION_CACHE_KEY);
+        if ($cachedVersion) {
+            // Once we've calculated the version for this session, default to the cached value.
+            return $cachedVersion;
         }
+        $installedPackages = $this->composerInformation->getInstalledMagentoPackages();
+        // We are now setting the "DEV" version locally as well as via composer to facilitate logging.
+        // If there is ever a conflict, we should prefer Composer's value.
+        $officialExtensionVersion = $installedPackages[self::EXTENSION_PACKAGE_NAME]['version'] ?? null;
+        if ($officialExtensionVersion) {
+            $this->version = $officialExtensionVersion;
+        } else {
+            $this->version = (string)($this->version ?: 'dev');
+        }
+        $this->cache->save($this->version, self::VERSION_CACHE_KEY, [AppConfig::CACHE_TAG]);
         return $this->version;
     }
 
