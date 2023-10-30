@@ -86,8 +86,13 @@ class LogCatalogSetup
     public function execute()
     {
         foreach ($this->systemConfig->getAllFBEInstalledStores() as $store) {
+            $storeId = $store->getId();
             try {
-                $storeId = $store->getId();
+                $accessToken = $this->systemConfig->getAccessToken($storeId);
+                if (!$accessToken) {
+                    continue;
+                }
+
                 $this->graphAPIAdapter->persistLogToMeta([
                     'event' => 'log_catalog_setup_data',
                     'event_type' => 'log_catalog_setup',
@@ -108,7 +113,7 @@ class LogCatalogSetup
                     ]);
             } catch (\Exception $e) {
                     $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
-                    'catalog_id' => $this->systemConfig->getCatalogId(),
+                    'store_id' => $storeId,
                     'event' => 'log_catalog_setup_cron_exception',
                     'event_type' => 'log_catalog_setup'
                     ]);
