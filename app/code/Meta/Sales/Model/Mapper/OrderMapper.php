@@ -32,6 +32,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Plugin\ShippingMethodTypes;
+use Meta\Sales\Helper\ShippingHelper;
 
 /**
  * Map facebook order data to magento order
@@ -75,6 +76,11 @@ class OrderMapper
     private OrderItemMapper $orderItemMapper;
 
     /**
+     * @var ShippingHelper
+     */
+    private ShippingHelper $shippingHelper;
+
+    /**
      * @param StoreManagerInterface $storeManager
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param SystemConfig $systemConfig
@@ -82,6 +88,7 @@ class OrderMapper
      * @param OrderPaymentInterfaceFactory $paymentFactory
      * @param OrderAddressInterfaceFactory $orderAddressFactory
      * @param OrderItemMapper $orderItemMapper
+     * @param ShippingHelper $shippingHelper
      */
     public function __construct(
         StoreManagerInterface        $storeManager,
@@ -90,7 +97,8 @@ class OrderMapper
         OrderInterfaceFactory        $orderFactory,
         OrderPaymentInterfaceFactory $paymentFactory,
         OrderAddressInterfaceFactory $orderAddressFactory,
-        OrderItemMapper              $orderItemMapper
+        OrderItemMapper              $orderItemMapper,
+        ShippingHelper               $shippingHelper
     ) {
         $this->storeManager = $storeManager;
         $this->graphAPIAdapter = $graphAPIAdapter;
@@ -99,6 +107,7 @@ class OrderMapper
         $this->paymentFactory = $paymentFactory;
         $this->orderAddressFactory = $orderAddressFactory;
         $this->orderItemMapper = $orderItemMapper;
+        $this->shippingHelper = $shippingHelper;
     }
 
     /**
@@ -183,8 +192,8 @@ class OrderMapper
     private function getShippingMethod(string $shippingOptionName, string $shippingReferenceId, int $storeId): ?string
     {
         $static_shipping_options = [ShippingMethodTypes::FREE_SHIPPING,
-                                    ShippingMethodTypes::FLAT_RATE,
-                                    ShippingMethodTypes::TABLE_RATE];
+            ShippingMethodTypes::FLAT_RATE,
+            ShippingMethodTypes::TABLE_RATE];
         if (in_array($shippingReferenceId, $static_shipping_options)) {
             return $shippingReferenceId;
         }
@@ -229,8 +238,13 @@ class OrderMapper
             ? [$data['shipping_address']['street1'], $data['shipping_address']['street2']]
             : $data['shipping_address']['street1'];
 
+        $regionName = $this->shippingHelper->getRegionNameFromCode(
+            $data['shipping_address']['state'],
+            $data['shipping_address']['country']
+        );
+
         $addressData = [
-            'region' => $data['shipping_address']['state'] ?? null,
+            'region' => $regionName,
             'postcode' => $data['shipping_address']['postal_code'],
             'firstname' => $data['shipping_address']['first_name'],
             'lastname' => $data['shipping_address']['last_name'],

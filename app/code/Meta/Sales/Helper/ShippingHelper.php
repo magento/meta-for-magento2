@@ -37,10 +37,10 @@ class ShippingHelper extends AbstractHelper
      * @param array $supportedShippingCarriers
      */
     public function __construct(
-        Context $context,
-        RegionFactory $regionFactory,
+        Context         $context,
+        RegionFactory   $regionFactory,
         LoggerInterface $logger,
-        array $supportedShippingCarriers = []
+        array           $supportedShippingCarriers = []
     ) {
         parent::__construct($context);
         $this->regionFactory = $regionFactory;
@@ -79,6 +79,26 @@ class ShippingHelper extends AbstractHelper
     }
 
     /**
+     * Gets the region name from state code
+     *
+     * @param null|string $stateCode - State code
+     * @param null|string $countryCode - Country code
+     * @return null|string
+     */
+    public function getRegionNameFromCode(?string $stateCode, ?string $countryCode): ?string
+    {
+        $regionName = $stateCode ?? null;
+        try {
+            $region = $this->regionFactory->create();
+            $region = $region->loadByCode($stateCode, $countryCode);
+            $regionName = $region->getDefaultName() ?? $regionName;
+        } catch (Exception $e) {
+            $this->logger->critical($e->getMessage());
+        }
+        return $regionName;
+    }
+
+    /**
      * A map for popular US carriers with long titles
      *
      * @return array
@@ -86,8 +106,8 @@ class ShippingHelper extends AbstractHelper
     private function getSupplementaryCarriersMap()
     {
         return [
-            'UPS'   => 'United Parcel Service',
-            'USPS'  => 'United States Postal Service',
+            'UPS' => 'United Parcel Service',
+            'USPS' => 'United States Postal Service',
             'FEDEX' => 'Federal Express',
         ];
     }
