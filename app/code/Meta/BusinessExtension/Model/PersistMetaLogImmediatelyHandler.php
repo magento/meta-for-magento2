@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Model;
 
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class PersistMetaLogImmediatelyHandler
 {
@@ -31,14 +32,22 @@ class PersistMetaLogImmediatelyHandler
     private $graphApiAdapter;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * PersistMetaLogImmediatelyHandler constructor
      *
      * @param GraphAPIAdapter $graphAPIAdapter
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        GraphAPIAdapter $graphAPIAdapter
+        GraphAPIAdapter $graphAPIAdapter,
+        SystemConfig $systemConfig
     ) {
         $this->graphApiAdapter = $graphAPIAdapter;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -49,6 +58,10 @@ class PersistMetaLogImmediatelyHandler
     public function persistMetaLogImmediately(string $message)
     {
         $context = json_decode($message, true);
-        $this->graphApiAdapter->persistLogToMeta($context);
+        $accessToken = null;
+        if ($context['store_id']) {
+            $accessToken = $this->systemConfig->getAccessToken($context['store_id']);
+        }
+        $this->graphApiAdapter->persistLogToMeta($context, $accessToken);
     }
 }

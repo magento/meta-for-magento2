@@ -48,6 +48,7 @@ class PersistMetaTelemetryLogsHandler
      */
     public function persistMetaTelemetryLogs(string $messages)
     {
+        $telemetryContext = [];
         $telemetryContext['event'] = 'persist_meta_telemetry_logs';
         $telemetryContext['extra_data']['telemetry_logs'] = $messages;
         $this->graphApiAdapter->persistLogToMeta($telemetryContext);

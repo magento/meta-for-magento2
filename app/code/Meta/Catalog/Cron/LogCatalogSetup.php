@@ -93,30 +93,33 @@ class LogCatalogSetup
                     continue;
                 }
 
-                $this->graphAPIAdapter->persistLogToMeta([
-                    'event' => 'log_catalog_setup_data',
-                    'event_type' => 'log_catalog_setup',
-                    'catalog_id' => $this->systemConfig->getCatalogId($storeId),
-                    'commerce_merchant_settings_id' => $this->systemConfig->getCommerceAccountId($storeId),
-                    'extra_data' => [
-                        'items' => json_encode(
-                            [
-                                'item_count' => $this->queryItemCount(),
-                                'group_count' => $this->queryGroupCount(),
-                                'breakdown' => $this->queryBreakdown(),
-                            ]
-                        ),
-                        'extensions' => self::$logInstalledModules
+                $this->graphAPIAdapter->persistLogToMeta(
+                    [
+                        'event' => 'log_catalog_setup_data',
+                        'event_type' => 'log_catalog_setup',
+                        'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+                        'commerce_merchant_settings_id' => $this->systemConfig->getCommerceAccountId($storeId),
+                        'extra_data' => [
+                            'items' => json_encode(
+                                [
+                                    'item_count' => $this->queryItemCount(),
+                                    'group_count' => $this->queryGroupCount(),
+                                    'breakdown' => $this->queryBreakdown(),
+                                ]
+                            ),
+                            'extensions' => self::$logInstalledModules
                                 ? json_encode($this->fullModuleList->getAll())
                                 : null
-                            ]
-                    ]);
+                        ]
+                    ],
+                    $accessToken
+                );
             } catch (\Exception $e) {
-                    $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
+                $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
                     'store_id' => $storeId,
                     'event' => 'log_catalog_setup_cron_exception',
                     'event_type' => 'log_catalog_setup'
-                    ]);
+                ]);
             }
         }
     }

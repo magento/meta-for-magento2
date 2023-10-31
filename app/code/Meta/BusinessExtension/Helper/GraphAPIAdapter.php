@@ -932,13 +932,14 @@ class GraphAPIAdapter
      * Persist log to Meta
      *
      * @param mixed[] $context
+     * @param null|string $accessToken
      * @return mixed
      * @throws GuzzleException
      */
-    public function persistLogToMeta($context)
+    public function persistLogToMeta($context, $accessToken = null)
     {
         $request = [
-            'access_token' => $this->accessToken,
+            'access_token' => $accessToken ?? $this->accessToken,
             'event' => $this->getContextData($context, 'event'),
             'event_type' => $this->getContextData($context, 'event_type'),
             'commerce_merchant_settings_id' => $this->getContextData($context, 'commerce_merchant_settings_id'),
