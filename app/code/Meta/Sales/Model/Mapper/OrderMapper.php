@@ -31,6 +31,7 @@ use Magento\Sales\Model\Order\Payment;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Sales\Plugin\ShippingData;
 use Meta\Sales\Plugin\ShippingMethodTypes;
 use Meta\Sales\Helper\ShippingHelper;
 
@@ -76,6 +77,11 @@ class OrderMapper
     private OrderItemMapper $orderItemMapper;
 
     /**
+     * @var ShippingData
+     */
+    private ShippingData $shippingData;
+
+    /**
      * @var ShippingHelper
      */
     private ShippingHelper $shippingHelper;
@@ -88,6 +94,7 @@ class OrderMapper
      * @param OrderPaymentInterfaceFactory $paymentFactory
      * @param OrderAddressInterfaceFactory $orderAddressFactory
      * @param OrderItemMapper $orderItemMapper
+     * @param ShippingData $shippingData
      * @param ShippingHelper $shippingHelper
      */
     public function __construct(
@@ -98,6 +105,7 @@ class OrderMapper
         OrderPaymentInterfaceFactory $paymentFactory,
         OrderAddressInterfaceFactory $orderAddressFactory,
         OrderItemMapper              $orderItemMapper,
+        ShippingData                 $shippingData,
         ShippingHelper               $shippingHelper
     ) {
         $this->storeManager = $storeManager;
@@ -107,6 +115,7 @@ class OrderMapper
         $this->paymentFactory = $paymentFactory;
         $this->orderAddressFactory = $orderAddressFactory;
         $this->orderItemMapper = $orderItemMapper;
+        $this->shippingData = $shippingData;
         $this->shippingHelper = $shippingHelper;
     }
 
@@ -130,8 +139,8 @@ class OrderMapper
             ->setAccessToken($accessToken);
 
         $channel = ucfirst($data['channel']);
-        $shippingOptionName = $data['selected_shipping_option']['name'];
-        $shippingReferenceId = $data['selected_shipping_option']['reference_id'];
+        $metaShippingOptionName = $data['selected_shipping_option']['name'];
+        $magentoShippingReferenceID = $data['selected_shipping_option']['reference_id'];
         $billingAddress = $this->getOrderBillingAddress($data);
         $shippingAddress = clone $billingAddress;
         $shippingAddress
@@ -158,13 +167,16 @@ class OrderMapper
 
         $this->applyTotalsToOrder($order, $data, $storeId);
 
-        $shippingMethod = $this->getShippingMethod($shippingOptionName, $shippingReferenceId, $storeId);
-        $shippingDescription = $this->getShippingMethodLabel($shippingOptionName, $storeId);
+        $shippingMethod = $this->getShippingMethod($metaShippingOptionName, $magentoShippingReferenceID, $storeId);
+        $shippingDescription = $this->getShippingDescription($metaShippingOptionName, $shippingMethod, $storeId);
+        // This should never happen, as it means Meta has passed a shipping method with no equivalent in Magento.
+        // @todo strictly handle this edge case by canceling the entire Meta order if this happens.
+        $fallbackShippingDescription = $metaShippingOptionName . " - {$shippingMethod}";
 
         $order->setStoreId($storeId)
             // @todo have to set shipping method like this
             ->setShippingMethod($shippingMethod)
-            ->setShippingDescription($shippingDescription ?? $shippingOptionName . " / {$shippingMethod}")
+            ->setShippingDescription($shippingDescription ?? $fallbackShippingDescription)
             ->setPayment($payment);
 
         // @todo implement paging and tax for order items
@@ -191,10 +203,7 @@ class OrderMapper
      */
     private function getShippingMethod(string $shippingOptionName, string $shippingReferenceId, int $storeId): ?string
     {
-        $static_shipping_options = [ShippingMethodTypes::FREE_SHIPPING,
-            ShippingMethodTypes::FLAT_RATE,
-            ShippingMethodTypes::TABLE_RATE];
-        if (in_array($shippingReferenceId, $static_shipping_options)) {
+        if (in_array($shippingReferenceId, $this->getSyncableShippingMethodTypes())) {
             return $shippingReferenceId;
         }
         $map = $this->systemConfig->getShippingMethodsMap($storeId);
@@ -224,6 +233,49 @@ class OrderMapper
             }
         }
         return null;
+    }
+
+    /**
+     * Get ShippingMethodDescription
+     *
+     * @param string $metaShippingTitle
+     * @param string $shippingMethod
+     * @param int $storeId
+     * @return string|null
+     */
+    private function getShippingDescription(string $metaShippingTitle, string $shippingMethod, int $storeId): ?string
+    {
+        $shippingLabel = $this->getShippingMethodLabel($metaShippingTitle, $storeId);
+        if ($shippingLabel) {
+            return $shippingLabel;
+        }
+
+        if (in_array($shippingMethod, $this->getSyncableShippingMethodTypes())) {
+            $this->shippingData->setStoreId($storeId);
+            [$carrier] = explode('_', $shippingMethod);
+            // Possible values are string, '' and null. Falsey check is acceptable here.
+            if ($carrier) {
+                $shippingMethodName = $this->shippingData->getFieldFromModel($carrier, 'name');
+                $shippingOptionTitle = $this->shippingData->getFieldFromModel($carrier, 'title');
+                return $shippingOptionTitle . ' - ' . $shippingMethodName;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * This function returns a list of shipping methods that can be synced to Meta
+     *
+     * @return array
+     */
+    public function getSyncableShippingMethodTypes(): array
+    {
+        return [
+            ShippingMethodTypes::FREE_SHIPPING,
+            ShippingMethodTypes::FLAT_RATE,
+            ShippingMethodTypes::TABLE_RATE
+        ];
     }
 
     /**
