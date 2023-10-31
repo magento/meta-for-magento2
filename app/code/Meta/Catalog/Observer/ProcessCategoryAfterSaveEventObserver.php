@@ -24,7 +24,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\Catalog\Model\Feed\CategoryCollection;
+use Meta\Catalog\Model\Category\CategoryCollection;
 
 class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
 {

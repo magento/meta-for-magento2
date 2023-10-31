@@ -50,6 +50,21 @@ class Identifier
     }
 
     /**
+     * Get product's identifier col name(SKU or entity ID, depending on configuration)
+     *
+     * @return string
+     */
+    public function getProductIdentifierColName(): string
+    {
+        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            return 'sku';
+        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            return 'entity_id';
+        }
+        return '';
+    }
+
+    /**
      * Get product's identifier (SKU or ID, depending on configuration)
      *
      * @param ProductInterface $product
