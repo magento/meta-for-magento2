@@ -128,7 +128,7 @@ class ShippingData
      * @param string $field
      * @return mixed
      */
-    private function getFieldFromModel(string $shippingProfileType, string $field)
+    public function getFieldFromModel(string $shippingProfileType, string $field)
     {
         $path = 'carriers/' . $shippingProfileType . '/' . $field;
         return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $this->storeId);

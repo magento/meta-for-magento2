@@ -22,7 +22,7 @@ namespace Meta\Catalog\Helper;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Model\Feed\CategoryCollection;
+use Meta\Catalog\Model\Category\CategoryCollection;
 use Meta\Catalog\Model\Product\Feed\Uploader;
 
 class CatalogSyncHelper

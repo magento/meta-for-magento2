@@ -25,7 +25,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\AbstractAjax;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Model\Feed\CategoryCollection;
+use Meta\Catalog\Model\Category\CategoryCollection;
 
 class CategoryUpload extends AbstractAjax
 {

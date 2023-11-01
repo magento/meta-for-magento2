@@ -268,15 +268,17 @@ class FBEHelper
             return;
         }
 
+        $extraData = ['timestamp' => time()];
+
         if (isset($context['store_id'])) {
+            $extraData['store_id'] = $context['store_id'];
             $context['commerce_merchant_settings_id'] = $this->systemConfig->getCommerceAccountId($context['store_id']);
         }
 
-        $timestamp = ['timestamp' => time()];
         if (isset($context['extra_data'])) {
-            $context['extra_data'] = array_merge($context['extra_data'], $timestamp);
+            $context['extra_data'] = array_merge($context['extra_data'], $extraData);
         } else {
-            $context['extra_data'] = $timestamp;
+            $context['extra_data'] = $extraData;
         }
         $this->logger->info($info, $context);
     }
@@ -313,19 +315,19 @@ class FBEHelper
         $context['exception_message'] = $errorMessage;
         $context['exception_code'] = $e->getCode();
         $context['exception_trace'] = $exceptionTrace;
+        $context['seller_platform_app_version'] = $this->getMagentoVersion();
+
+        $extraData = ['extension_version' => $this->systemConfig->getModuleVersion()];
 
         if (isset($context['store_id'])) {
+            $extraData['store_id'] = $context['store_id'];
             $context['commerce_merchant_settings_id'] = $this->systemConfig->getCommerceAccountId($context['store_id']);
         }
 
-        $context['seller_platform_app_version'] = $this->getMagentoVersion();
-
-        // Add extension version to the extra data.
-        $extensionVersion = ['extension_version' => $this->systemConfig->getModuleVersion()];
         if (isset($context['extra_data'])) {
-            $context['extra_data'] = array_merge($context['extra_data'], $extensionVersion);
+            $context['extra_data'] = array_merge($context['extra_data'], $extraData);
         } else {
-            $context['extra_data'] = $extensionVersion;
+            $context['extra_data'] = $extraData;
         }
 
         $this->logger->error($errorMessage, $context);
