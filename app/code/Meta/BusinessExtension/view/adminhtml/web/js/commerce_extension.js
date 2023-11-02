@@ -104,6 +104,13 @@ require(['jquery'], function (jQuery) {
     const resetLink = document.getElementById('commerce-extension-reset-link');
     if (resetLink != null) {
         resetLink.addEventListener('click', function () {
+            const confirmationText = "Are you sure you want to delete the connection?\n\n" +
+                'Your store will no longer be connected to Meta and you will need to reconnect your ' +
+                'assets to restore the connection.';
+            if (!confirm(confirmationText)) {
+                return;
+            }
+
             deleteFBAssetsAndReloadPage();
             return false;
         });
