@@ -10,6 +10,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Sales\Model\Order\Shipment\Track;
 use Psr\Log\LoggerInterface;
+use Magento\Directory\Model\Region;
 
 class ShippingHelper extends AbstractHelper
 {
@@ -83,19 +84,13 @@ class ShippingHelper extends AbstractHelper
      *
      * @param null|string $stateCode - State code
      * @param null|string $countryCode - Country code
-     * @return null|string
+     * @return Region
      */
-    public function getRegionNameFromCode(?string $stateCode, ?string $countryCode): ?string
+    public function getRegionFromCode(?string $stateCode, ?string $countryCode): Region
     {
-        $regionName = $stateCode ?? null;
-        try {
-            $region = $this->regionFactory->create();
-            $region = $region->loadByCode($stateCode, $countryCode);
-            $regionName = $region->getDefaultName() ?? $regionName;
-        } catch (Exception $e) {
-            $this->logger->critical($e->getMessage());
-        }
-        return $regionName;
+        $region = $this->regionFactory->create();
+        $region = $region->loadByCode($stateCode, $countryCode);
+        return $region;
     }
 
     /**

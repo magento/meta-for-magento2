@@ -290,13 +290,14 @@ class OrderMapper
             ? [$data['shipping_address']['street1'], $data['shipping_address']['street2']]
             : $data['shipping_address']['street1'];
 
-        $regionName = $this->shippingHelper->getRegionNameFromCode(
+        $region = $this->shippingHelper->getRegionFromCode(
             $data['shipping_address']['state'],
             $data['shipping_address']['country']
         );
 
         $addressData = [
-            'region' => $regionName,
+            'region_id' => $region->getRegionId() ?? null,
+            'region' => $region->getDefaultName() ?? $data['shipping_address']['state'],
             'postcode' => $data['shipping_address']['postal_code'],
             'firstname' => $data['shipping_address']['first_name'],
             'lastname' => $data['shipping_address']['last_name'],
@@ -309,8 +310,8 @@ class OrderMapper
 
         /** @var Order\Address $billingAddress */
         $billingAddress = $this->orderAddressFactory->create(['data' => $addressData]);
-        $billingAddress->setAddressType(Order\Address::TYPE_BILLING);
 
+        $billingAddress->setAddressType(Order\Address::TYPE_BILLING);
         return $billingAddress;
     }
 
