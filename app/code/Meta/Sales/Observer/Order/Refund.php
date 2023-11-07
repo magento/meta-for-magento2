@@ -126,7 +126,7 @@ class Refund implements ObserverInterface
 
         $deductionAmount = $creditmemo->getAdjustment();
         if ($deductionAmount > 0) {
-            throw new Exception('Cannot refund order on Facebook. Adjustment Refunds are not yet supported.');
+            throw new Exception('Cannot refund order on Meta. Adjustment Refunds are not yet supported.');
         } elseif ($deductionAmount < 0) {
             // Magento allows Adjustment Fees to be negative, but the Graph API deductions must always be positive
             $deductionAmount = abs($deductionAmount);
@@ -153,7 +153,7 @@ class Refund implements ObserverInterface
             $reasonText
         );
 
-        $payment->getOrder()->addCommentToStatusHistory('Refunded order on Facebook');
+        $payment->getOrder()->addCommentToStatusHistory('Refunded order on Meta.');
     }
 
     /**

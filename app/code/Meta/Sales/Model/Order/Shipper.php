@@ -191,7 +191,7 @@ class Shipper
             $fulfillmentAddress
         );
 
-        $comment = "Marked order as shipped on Facebook with {$track->getTitle()}. Tracking #: {$track->getNumber()}.";
+        $comment = "Marked order as shipped on Meta with {$track->getTitle()}. Tracking #: {$track->getNumber()}.";
         $shipment->getOrder()->addCommentToStatusHistory($comment);
 
         // @todo Update order totals

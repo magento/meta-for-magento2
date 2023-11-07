@@ -77,7 +77,7 @@ class CategoryFeed extends Field
     {
         /** @var Button $button */
         $button = $this->getLayout()->createBlock(Button::class);
-        return $button->setData(['id' => 'fb_category_upload_btn', 'label' => __('Upload to Meta')])
+        return $button->setData(['id' => 'fb_category_upload_btn', 'label' => __('Push Categories to Meta')])
             ->toHtml();
     }
 }

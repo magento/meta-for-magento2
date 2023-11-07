@@ -91,7 +91,7 @@ class Cancel implements ObserverInterface
 
         $this->cancelOrder((int)$storeId, $facebookOrderId);
 
-        $order->addCommentToStatusHistory("Cancelled order on Facebook.");
+        $order->addCommentToStatusHistory("Canceled order on Meta.");
     }
 
     /**

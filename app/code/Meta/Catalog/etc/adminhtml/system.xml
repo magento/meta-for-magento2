@@ -24,7 +24,7 @@
                     <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
                 </field>
                 <field id="category_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Push All Categories to Meta Catalog</label>
+                    <label>Push Categories</label>
                     <depends>
                         <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
                     </depends>

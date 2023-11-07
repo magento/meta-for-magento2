@@ -150,7 +150,7 @@ class Diagnostics extends Text
             return '';
         }
 
-        $diagnosticsHtml = '<p style="font-weight: bold;">Facebook diagnostic report:</p><ul>';
+        $diagnosticsHtml = '<p style="font-weight: bold;">Meta diagnostic report:</p><ul>';
         foreach ($diagnosticsReport as $errorItem) {
             $diagnosticsHtml .= '<li class="message message-warning list-item" style="list-style-type: none;">' .
                 $this->_escaper->escapeHtml($errorItem['title']) . ': ' .
