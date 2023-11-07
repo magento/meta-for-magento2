@@ -23,6 +23,7 @@ namespace Meta\BusinessExtension\Model\Api;
 use Exception;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Meta\BusinessExtension\Api\CoreConfigInterface;
 use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
 use Meta\BusinessExtension\Api\SettingsWebhookListenerInterface;
 use Meta\BusinessExtension\Api\SettingsWebhookRequestInterface;
@@ -64,12 +65,18 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     private GraphAPIAdapter $graphApiAdapter;
 
     /**
+     * @var CoreConfigFactory
+     */
+    private CoreConfigFactory $coreConfigFactory;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param FBEHelper $fbeHelper
      * @param CollectionFactory $collectionFactory
      * @param Authenticator $authenticator
      * @param CatalogConfigUpdateHelper $catalogConfigUpdateHelper
      * @param GraphAPIAdapter $graphApiAdapter
+     * @param CoreConfigFactory $coreConfigFactory
      */
     public function __construct(
         SystemConfig              $systemConfig,
@@ -77,7 +84,8 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         CollectionFactory         $collectionFactory,
         Authenticator             $authenticator,
         CatalogConfigUpdateHelper $catalogConfigUpdateHelper,
-        GraphAPIAdapter           $graphApiAdapter
+        GraphAPIAdapter           $graphApiAdapter,
+        CoreConfigFactory $coreConfigFactory
     ) {
         $this->systemConfig = $systemConfig;
         $this->fbeHelper = $fbeHelper;
@@ -85,10 +93,11 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         $this->authenticator = $authenticator;
         $this->catalogConfigUpdateHelper = $catalogConfigUpdateHelper;
         $this->graphApiAdapter = $graphApiAdapter;
+        $this->coreConfigFactory = $coreConfigFactory;
     }
 
     /**
-     * Process webhook request
+     * Process webhook POST request
      *
      * @param SettingsWebhookRequestInterface[] $settingsWebhookRequest
      * @return void
@@ -104,7 +113,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     }
 
     /**
-     * Process webhook request
+     * Process webhook POST request
      *
      * @param SettingsWebhookRequestInterface $setting
      * @throws LocalizedException
@@ -114,12 +123,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
 
         // Step 1 - Get StoreId by business_extension_id
         $externalBusinessId = $setting->getExternalBusinessId();
-        $installedConfigs = $this->getMBEInstalledConfigsByExternalBusinessId($externalBusinessId);
-        if (empty($installedConfigs)) {
-            $this->throwException('No store id is found for found for external_business_id: '.$externalBusinessId);
-        }
-        // StoreId and externalBusinessId is 1:1 mapping, hence get $storeIds[0] as $storeId in below.
-        $storeId = $installedConfigs[0]->getScopeId();
+        $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
 
         // Step 2 - Trigger Magento polling Graph API fbe_install,
         $fbeResponse = $this->getMBESettings((int)$storeId);
@@ -135,6 +139,23 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         if ($this->systemConfig->getCatalogId((int)$storeId) !== $fbeResponse['catalog_id']) {
             $this->throwException('Catalog config update failed for external_business_id: '.$externalBusinessId);
         }
+    }
+
+    /**
+     * Get storeId
+     *
+     * @param  string $externalBusinessId
+     * @return string
+     * @throws LocalizedException
+     */
+    private function getStoreIdByExternalBusinessId(string $externalBusinessId): string
+    {
+        $installedConfigs = $this->getMBEInstalledConfigsByExternalBusinessId($externalBusinessId);
+        if (empty($installedConfigs)) {
+            $this->throwException('No store id is found for found for external_business_id: '.$externalBusinessId);
+        }
+        // StoreId and externalBusinessId is 1:1 mapping, hence get $storeIds[0] as $storeId in below.
+        return $installedConfigs[0]->getScopeId();
     }
 
     /**
@@ -181,7 +202,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     }
 
     /**
-     * Get config values where MBE is installed for external_business_Id
+     * Get config values where MBE is installed for $externalBusinessId
      *
      * @param string $externalBusinessId
      * @return array
@@ -205,5 +226,47 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
             $this->fbeHelper->logException($e);
             return [];
         }
+    }
+
+    /**
+     * Process webhook GET request to pull core config from Magento to Meta
+     *
+     * @param string $externalBusinessId
+     * @return CoreConfigInterface
+     * @throws LocalizedException
+     * @throws UnauthorizedTokenException
+     */
+    public function getCoreConfig(string $externalBusinessId): CoreConfigInterface
+    {
+        $this->authenticator->authenticateRequest();
+        $coreConfig = $this->coreConfigFactory->create();
+        $coreConfigData =  $this->getCoreConfigByExternalBusinessId($externalBusinessId);
+        return $coreConfig->addData($coreConfigData);
+    }
+
+    /**
+     * Fetch core config by externalBusinessId
+     *
+     * @param string $externalBusinessId
+     * @return array
+     * @throws LocalizedException
+     */
+    private function getCoreConfigByExternalBusinessId(string $externalBusinessId): array
+    {
+        $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
+        return [
+            'externalBusinessId' => $externalBusinessId,
+            'isOrderSyncEnabled' => $this->systemConfig->isOrderSyncEnabled($storeId),
+            'isCatalogSyncEnabled' => $this->systemConfig->isCatalogSyncEnabled($storeId),
+            'isPromotionsSyncEnabled' => $this->systemConfig->isPromotionsSyncEnabled($storeId),
+            'isOnsiteCheckoutEnabled' =>  $this->systemConfig->isOnsiteCheckoutEnabled($storeId),
+            'productIdentifierAttr' => $this->systemConfig->getProductIdentifierAttr($storeId),
+            'outOfStockThreshold' => $this->systemConfig->getOutOfStockThreshold($storeId),
+            'isCommerceExtensionEnabled' => $this->systemConfig->isCommerceExtensionEnabled($storeId),
+            'feedId' => $this->systemConfig->getFeedId($storeId),
+            'installedMetaExtensionVersion' => $this->systemConfig->getModuleVersion(),
+            'graphApiVersion' => $this->graphApiAdapter->getGraphApiVersion(),
+            'magentoVersion' => $this->fbeHelper->getMagentoVersion(),
+        ];
     }
 }

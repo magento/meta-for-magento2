@@ -5,6 +5,8 @@
                 type="Meta\BusinessExtension\Model\Api\SettingsWebhookListenerImpl"/>
     <preference for="Meta\BusinessExtension\Api\SettingsWebhookRequestInterface"
                 type="Meta\BusinessExtension\Model\Api\SettingsWebhookRequestImpl"/>
+    <preference for="Meta\BusinessExtension\Api\CoreConfigInterface"
+                type="Meta\BusinessExtension\Model\Api\CoreConfig"/>
     <virtualType name="Meta\BusinessExtension\Model\Logger\ApiDebugger" type="Magento\Framework\Logger\Handler\Base">
         <arguments>
             <argument name="fileName" xsi:type="string">/var/log/facebook/api.log</argument>
