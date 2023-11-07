@@ -137,7 +137,7 @@ class OrderItemMapper
             ->setQtyOrdered($quantity)
             ->setBasePrice($originalPrice)
             ->setOriginalPrice($originalPrice)
-            ->setPrice($originalPrice)
+            ->setPrice($pricePerUnit)
             ->setTaxAmount($taxAmount)
             ->setRowTotal($rowTotal)
             ->setDiscountAmount($discountAmount)
