@@ -14,8 +14,6 @@ var IEOverlay = require('./IEOverlay');
 var FBModal = require('./Modal');
 var FBUtils = require('./utils');
 
-const accessTokenScope = ['manage_business_extension', 'business_management', 'ads_management', 'pages_read_engagement', 'catalog_management'];
-
 var jQuery = (function (jQuery) {
   if (jQuery && typeof jQuery === 'function') {
     return jQuery;
@@ -63,7 +61,7 @@ jQuery(document).ready(function() {
     },
 
     bindMessageEvents: function bindMessageEvents() {
-      var _this = this;
+      const _this = this;
       if (FBUtils.isIE() && window.MessageChannel) {
         // do nothing, wait for our messaging utils to be ready
       } else {
@@ -102,7 +100,6 @@ jQuery(document).ready(function() {
       if (action === 'create' || messageEvent === 'CommerceExtension::INSTALL') {
         const success = message.success;
         if (success) {
-          const businessManagerId = message.business_manager_id;
           const accessToken = message.access_token;
           const pixelId = message.pixel_id;
           const profiles = message.profiles;
@@ -112,7 +109,7 @@ jQuery(document).ready(function() {
           const installedFeatures = message.installed_features;
 
           _this.savePixelId(pixelId);
-          _this.exchangeAccessToken(accessToken, businessManagerId);
+          _this.saveAccessToken(accessToken);
           _this.saveProfilesData(profiles);
           _this.saveAAMSettings(pixelId);
           _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
@@ -134,7 +131,7 @@ jQuery(document).ready(function() {
       }
     },
     savePixelId: function savePixelId(pixelId) {
-      var _this = this;
+      const _this = this;
       if (!pixelId) {
         console.error('Meta Business Extension Error: got no pixel_id');
         return;
@@ -164,7 +161,7 @@ jQuery(document).ready(function() {
       });
     },
     saveAccessToken: function saveAccessToken(accessToken) {
-      var _this = this;
+      const _this = this;
       if (!accessToken) {
         console.error('Meta Business Extension Error: got no access token');
         return;
@@ -172,7 +169,7 @@ jQuery(document).ready(function() {
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.setAccessToken),
-        async : false,
+        async: false,
         data: ajaxParam({
           accessToken: accessToken,
         }),
@@ -184,34 +181,8 @@ jQuery(document).ready(function() {
         }
       });
     },
-    exchangeAccessToken: function exchangeAccessToken(access_token, business_manager_id) {
-      const _this = this;
-      const fbeAccessTokenUrl = window.facebookBusinessExtensionConfig.fbeAccessTokenUrl;
-      if (!fbeAccessTokenUrl) {
-        console.error('Could not exchange access token. Token url not found.');
-        return;
-      }
-      let requestData = {
-          'access_token': access_token,
-          'app_id': window.facebookBusinessExtensionConfig.appId,
-          'fbe_external_business_id': window.facebookBusinessExtensionConfig.externalBusinessId,
-          'scope': accessTokenScope.join()
-      };
-      jQuery.ajax({
-        type: 'post',
-        url: fbeAccessTokenUrl.replace("business_manager_id", business_manager_id),
-        async : false,
-        data: requestData,
-        success: function onSuccess(data, _textStatus, _jqXHR) {
-            _this.saveAccessToken(data.access_token);
-        },
-        error: function () {
-          console.error('There was an error getting access_token');
-        }
-      });
-    },
     saveProfilesData: function saveProfilesData(profiles) {
-      var _this = this;
+      const _this = this;
       if (!profiles) {
         console.error('Meta Business Extension Error: got no profiles data');
         return;
@@ -232,8 +203,8 @@ jQuery(document).ready(function() {
       });
     },
     saveAAMSettings: function saveAAMSettings(pixelId){
-      var _this = this;
-        jQuery.ajax({
+      const _this = this;
+      jQuery.ajax({
         'type': 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.setAAMSettings),
         async : false,
@@ -254,7 +225,7 @@ jQuery(document).ready(function() {
       });
     },
     saveInstalledFeatures: function saveInstalledFeatures(installedFeatures) {
-      var _this = this;
+      const _this = this;
       if (!installedFeatures) {
         console.error('Meta Business Extension Error: got no installed_features data');
         return;
@@ -279,7 +250,7 @@ jQuery(document).ready(function() {
       });
     },
     cleanConfigCache : function cleanConfigCache() {
-      var _this = this;
+      const _this = this;
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.cleanConfigCacheUrl),
@@ -296,7 +267,7 @@ jQuery(document).ready(function() {
       });
     },
     saveConfig: function saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId) {
-      var _this = this;
+      const _this = this;
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.saveConfig),
@@ -320,7 +291,7 @@ jQuery(document).ready(function() {
       });
     },
     postFBEOnboardingSync: function postFBEOnboardingSync() {
-      var _this = this;
+      const _this = this;
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.postFBEOnboardingSync),
@@ -339,8 +310,8 @@ jQuery(document).ready(function() {
       });
     },
     deleteFBAssets: function deleteFBAssets() {
-      var _this = this;
-        jQuery.ajax({
+      const _this = this;
+      jQuery.ajax({
         type: 'delete',
         url: ajaxify(window.facebookBusinessExtensionConfig.deleteConfigKeys),
         data: ajaxParam({

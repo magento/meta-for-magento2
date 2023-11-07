@@ -452,18 +452,4 @@ class FBEHelper
         }
     }
 
-    /**
-     * Get fbe access token url endpoint
-     *
-     * @return string
-     */
-    public function getFbeAccessTokenUrl()
-    {
-        $apiVersion = $this->graphAPIAdapter->getGraphApiVersion();
-        if (!$apiVersion) {
-            return null;
-        }
-        $baseUrl = $this->getGraphBaseURL();
-        return "{$baseUrl}/{$apiVersion}/business_manager_id/access_token";
-    }
 }

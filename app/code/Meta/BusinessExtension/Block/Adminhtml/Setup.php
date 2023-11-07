@@ -363,16 +363,6 @@ class Setup extends Template
     }
 
     /**
-     * Get fbe access token url endpoint
-     *
-     * @return string
-     */
-    public function getFbeAccessTokenUrl()
-    {
-        return $this->fbeHelper->getFbeAccessTokenUrl();
-    }
-
-    /**
      * Get fbe installs config url endpoint
      *
      * @return string
