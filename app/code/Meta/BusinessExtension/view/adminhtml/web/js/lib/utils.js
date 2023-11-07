@@ -11,12 +11,12 @@
 
 var FBUtils = (function(){
     return {
-        isIE : function isIE() {
-            return (
-                /MSIE |Trident\/|Edge\//.test(window.navigator.userAgent)
-            );
+        parseURL: function parseURL(url) {
+            const parser = document.createElement('a');
+            parser.href = url;
+            return parser;
         },
-        
+
         urlFromSameDomain : function urlFromSameDomain(url1, url2) {
             var u1 = FBUtils.parseURL(url1);
             var u2 = FBUtils.parseURL(url2);
