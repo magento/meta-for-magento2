@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Model\Api;
 
 use Magento\Framework\DataObject;
-use Magento\Tests\NamingConvention\true\string;
 use Meta\BusinessExtension\Api\CoreConfigInterface;
 
 class CoreConfig extends DataObject implements CoreConfigInterface
