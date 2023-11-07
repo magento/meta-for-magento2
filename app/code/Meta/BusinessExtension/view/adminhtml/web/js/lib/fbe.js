@@ -10,8 +10,6 @@
 
 var React = require('./react');
 var ReactDOM = require('./react-dom');
-var IEOverlay = require('./IEOverlay');
-var FBModal = require('./Modal');
 var FBUtils = require('./utils');
 
 var jQuery = (function (jQuery) {
@@ -386,52 +384,3 @@ jQuery(document).ready(function() {
     document.getElementById('fbe-iframe-container')
   );
 });
-// Code to display the above container.
-var displayFBModal = function displayFBModal() {
-  if (FBUtils.isIE()) {
-    IEOverlay().render();
-  }
-  var QueryString = function () {
-    // This function is anonymous, is executed immediately and
-    // the return value is assigned to QueryString!
-    var query_string = {};
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      // If first entry with this name
-      if (typeof query_string[pair[0]] === "undefined") {
-        query_string[pair[0]] = decodeURIComponent(pair[1]);
-        // If second entry with this name
-      } else if (typeof query_string[pair[0]] === "string") {
-        var arr = [query_string[pair[0]], decodeURIComponent(pair[1])];
-        query_string[pair[0]] = arr;
-        // If third or later entry with this name
-      } else {
-        query_string[pair[0]].push(decodeURIComponent(pair[1]));
-      }
-    }
-    return query_string;
-  }();
-  if (QueryString.p) {
-    window.facebookBusinessExtensionConfig.popupOrigin = QueryString.p;
-  }
-};
-
-(function main() {
-  // Logic for when to display the container.
-  if (document.readyState === 'interactive') {
-    // in case the document is already rendered
-    displayFBModal();
-  } else if (document.addEventListener) {
-    // modern browsers
-    document.addEventListener('DOMContentLoaded', displayFBModal);
-  } else {
-    document.attachEvent('onreadystatechange', function () {
-      // IE <= 8
-      if (document.readyState === 'complete') {
-        displayFBModal();
-      }
-    });
-  }
-})();

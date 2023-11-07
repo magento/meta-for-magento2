@@ -10,146 +10,7 @@
 'use strict';
 
 var React = require('./react');
-
-var IEOverlay = function () {
-    var Overlay = React.createClass({
-        displayName: 'Overlay',
-
-        render: function render() {
-            var overLayStyles = {
-                width: '600px',
-                height: '150px',
-                position: 'relative',
-                top: '50%',
-                left: '50%',
-                marginTop: '-75px',
-                marginLeft: '-300px',
-                backgroundColor: 'white',
-                textAlign: 'center',
-                fontFamily: 'helvetica, arial, sans-serif',
-                zIndex: '11'
-            };
-
-            var h1Styles = {
-                fontSize: '24px',
-                lineHeight: '28px',
-                color: '#141823',
-                fontWeight: 'normal',
-                paddingTop: '44px'
-            };
-
-            var h2Styles = {
-                fontSize: '14px',
-                lineHeight: '20px',
-                color: '#9197a3',
-                fontWeight: 'normal'
-            };
-
-            return React.createElement(
-                'div',
-                { style: overLayStyles, id: 'ieOverlay' },
-                React.createElement(
-                    'h1',
-                    { style: h1Styles },
-                    'Internet Explorer Is Not Supported'
-                ),
-                React.createElement(
-                    'h2',
-                    { style: h2Styles },
-                    'Please use a modern browser such as Google Chrome or Mozilla Firefox'
-                )
-            );
-        }
-    });
-
-    return {
-        render: function render() {
-            var containerId = 'page:main-container';
-            var containerEl = document.getElementById(containerId);
-            containerEl.style.position = 'relative';
-
-            var ieContainer = document.createElement('div');
-            ieContainer.id = 'ie-container';
-
-            ieContainer.style.width = '100%';
-            ieContainer.style.height = '100%';
-            ieContainer.style.position = 'absolute';
-            ieContainer.style.top = '0';
-            ieContainer.style.left = '0';
-            ieContainer.style.backgroundColor = 'rgba(0,0,0,0.3)';
-
-            containerEl.appendChild(ieContainer);
-            ReactDOM.render(React.createElement(Overlay, null), ieContainer);
-        }
-    };
-}();
-
-module.exports = IEOverlay;
-
-},{"./react":5}],2:[function(require,module,exports){
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the code directory.
- */
-'use strict';
-
-var React = require('./react');
-
-var FBModal = React.createClass({
-    displayName: 'Modal',
-
-    render: function render() {
-        return React.createElement(
-            'div',
-            { className: 'modal-container' },
-            React.createElement(
-                'div',
-                { className: 'modal' },
-                React.createElement(
-                    'div',
-                    { className: 'modal-header' },
-                    this.props.title
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'modal-content' },
-                    this.props.message
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'modal-close' },
-                    React.createElement(
-                        'button',
-                        { onClick: this.props.onClose, className: 'medium blue' },
-                        'OK'
-                    )
-                )
-            )
-        );
-    }
-});
-
-module.exports = FBModal;
-
-},{"./react":5}],3:[function(require,module,exports){
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the code directory.
- */
-'use strict';
-
-var React = require('./react');
 var ReactDOM = require('./react-dom');
-var IEOverlay = require('./IEOverlay');
-var FBModal = require('./Modal');
 var FBUtils = require('./utils');
 
 var jQuery = (function (jQuery) {
@@ -524,57 +385,7 @@ jQuery(document).ready(function() {
     document.getElementById('fbe-iframe-container')
   );
 });
-// Code to display the above container.
-var displayFBModal = function displayFBModal() {
-  if (FBUtils.isIE()) {
-    IEOverlay().render();
-  }
-  var QueryString = function () {
-    // This function is anonymous, is executed immediately and
-    // the return value is assigned to QueryString!
-    var query_string = {};
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      // If first entry with this name
-      if (typeof query_string[pair[0]] === "undefined") {
-        query_string[pair[0]] = decodeURIComponent(pair[1]);
-        // If second entry with this name
-      } else if (typeof query_string[pair[0]] === "string") {
-        var arr = [query_string[pair[0]], decodeURIComponent(pair[1])];
-        query_string[pair[0]] = arr;
-        // If third or later entry with this name
-      } else {
-        query_string[pair[0]].push(decodeURIComponent(pair[1]));
-      }
-    }
-    return query_string;
-  }();
-  if (QueryString.p) {
-    window.facebookBusinessExtensionConfig.popupOrigin = QueryString.p;
-  }
-};
-
-(function main() {
-  // Logic for when to display the container.
-  if (document.readyState === 'interactive') {
-    // in case the document is already rendered
-    displayFBModal();
-  } else if (document.addEventListener) {
-    // modern browsers
-    document.addEventListener('DOMContentLoaded', displayFBModal);
-  } else {
-    document.attachEvent('onreadystatechange', function () {
-      // IE <= 8
-      if (document.readyState === 'complete') {
-        displayFBModal();
-      }
-    });
-  }
-})();
-
-},{"./IEOverlay":1,"./Modal":2,"./react":5,"./react-dom":4,"./utils":6}],4:[function(require,module,exports){
+},{"./react":3,"./react-dom":2,"./utils":4}],2:[function(require,module,exports){
 (function (global){(function (){
 /**
  * ReactDOM v0.14.3
@@ -619,7 +430,7 @@ var displayFBModal = function displayFBModal() {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"react":5}],5:[function(require,module,exports){
+},{"react":3}],3:[function(require,module,exports){
 (function (global){(function (){
 /**
  * React v0.14.3
@@ -19799,7 +19610,7 @@ var displayFBModal = function displayFBModal() {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
@@ -19818,32 +19629,17 @@ var FBUtils = (function(){
                 /MSIE |Trident\/|Edge\//.test(window.navigator.userAgent)
             );
         },
-
-        parseURL : function parseURL(url) {
-            var parser = document.createElement('a');
-            parser.href = url;
-            return parser;
-        },
-
+        
         urlFromSameDomain : function urlFromSameDomain(url1, url2) {
             var u1 = FBUtils.parseURL(url1);
             var u2 = FBUtils.parseURL(url2);
             var u1host = u1.host.replace('web.', 'www.');
             var u2host = u2.host.replace('web.', 'www.');
             return u1.protocol === u2.protocol && u1host === u2host;
-        },
-
-        togglePopupOriginWeb : function togglePopupOriginWeb(fae_origin) {
-            var current_origin = window.facebookAdsExtensionConfig.popupOrigin;
-            if (fae_origin.includes('web.') && !current_origin.includes('web.')) {
-                window.facebookAdsExtensionConfig.popupOrigin = current_origin.replace('www.', 'web.');
-            } else if (!fae_origin.includes('web.') && current_origin.includes('web.')) {
-                window.facebookAdsExtensionConfig.popupOrigin = current_origin.replace('web.', 'www.');
-            }
         }
     }
 }());
 
 module.exports = FBUtils;
 
-},{}]},{},[3]);
+},{}]},{},[1]);
