@@ -8,11 +8,11 @@
  */
 'use strict';
 
-var React = require('./react');
-var ReactDOM = require('./react-dom');
-var FBUtils = require('./utils');
+const React = require('./react');
+const ReactDOM = require('./react-dom');
+const FBUtils = require('./utils');
 
-var jQuery = (function (jQuery) {
+const jQuery = (function (jQuery) {
   if (jQuery && typeof jQuery === 'function') {
     return jQuery;
   } else {
@@ -26,18 +26,18 @@ var jQuery = (function (jQuery) {
   }
 })(window.jQuery);
 
-var ajaxify = function (url) {
+const ajaxify = function (url) {
   return url + '?isAjax=true&storeId=' + window.facebookBusinessExtensionConfig.storeId;
 };
 
-var getAndEncodeExternalClientMetadata = function () {
+const getAndEncodeExternalClientMetadata = function () {
     const metaData = {
         customer_token: window.facebookBusinessExtensionConfig.customApiKey
     };
     return encodeURIComponent(JSON.stringify(metaData));
 }
 
-var ajaxParam = function (params) {
+const ajaxParam = function (params) {
   if (window.FORM_KEY) {
     params.form_key = window.FORM_KEY;
   }
@@ -45,44 +45,34 @@ var ajaxParam = function (params) {
 };
 
 jQuery(document).ready(function() {
-  var FBEFlowContainer = React.createClass({
+  const FBEFlowContainer = React.createClass({
 
     getDefaultProps: function() {
-        console.log("init props installed "+window.facebookBusinessExtensionConfig.installed);
         return {
             installed: window.facebookBusinessExtensionConfig.installed
         };
     },
     getInitialState: function() {
-        console.log("change state");
         return {installed: this.props.installed};
     },
 
     bindMessageEvents: function bindMessageEvents() {
       const _this = this;
-      if (FBUtils.isIE() && window.MessageChannel) {
-        // do nothing, wait for our messaging utils to be ready
-      } else {
-        window.addEventListener('message', function (event) {
-          var origin = event.origin || event.originalEvent.origin;
-          if (FBUtils.urlFromSameDomain(origin, window.facebookBusinessExtensionConfig.popupOrigin)) {
-            // Make ajax calls to store data from fblogin and fb installs
-            _this.consoleLog("Message from fblogin ");
 
-            const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-            if (!message) {
-              return;
-            }
-
-            _this.handleMessage(message);
+      window.addEventListener('message', function (event) {
+        const origin = event.origin || event.originalEvent.origin;
+        if (FBUtils.urlFromSameDomain(origin, window.facebookBusinessExtensionConfig.popupOrigin)) {
+          const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+          if (!message) {
+            return;
           }
-        }, false);
-      }
+
+          _this.handleMessage(message);
+        }
+      }, false);
     },
     handleMessage: function handleMessage(message) {
       const _this = this;
-      _this.consoleLog("Response from fb login:");
-      _this.consoleLog(message);
 
       // "FBE Iframe" uses the 'action' field in its messages.
       // "Commerce Extension" uses the 'type' field in its messages.
@@ -91,7 +81,6 @@ jQuery(document).ready(function() {
 
       if (action === 'delete' || messageEvent === 'CommerceExtension::UNINSTALL') {
         // Delete asset ids stored in db instance.
-        _this.consoleLog("Successfully uninstalled FBE");
         _this.deleteFBAssets();
       }
 
@@ -143,10 +132,9 @@ jQuery(document).ready(function() {
           storeId: window.facebookBusinessExtensionConfig.storeId,
         }),
         success: function onSuccess(data, _textStatus, _jqXHR) {
-          var response = data;
+          const response = data;
           let msg = '';
           if (response.success) {
-            _this.setState({pixelId: response.pixelId});
             msg = "The Meta Pixel with ID: " + response.pixelId + " is now installed on your website.";
           } else {
             msg = "There was a problem saving the pixel. Please try again";
@@ -355,7 +343,6 @@ jQuery(document).ready(function() {
       const _this = this;
       const isNewSplashPage = window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled;
       try {
-        _this.consoleLog("query params --"+_this.queryParams());
         return React.createElement(
           'iframe',
           {
