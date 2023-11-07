@@ -69,13 +69,12 @@ You can download and install our extension in [Magento marketplace](https://mark
 - Optional `php bin/magento setup:static-content:deploy`
 - Execute `php bin/magento setup:di:compile`
 - Execute `php bin/magento cache:clean`
-- Execute `php bin/magento cron:run` three times
 
 #### Manual Installation
 * extract files from an archive.
 * Execute command `cd /var/www/Magento/app/code` or
  `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.
-* Move all files from the /app/code/* directory in your extracted archive to the /app/code directory in your Magento project. Your Magento directory should now have a subdirectory named /app/code/Meta/BusinessExtension.
+* Move all files from the app/code/* directory in your extracted archive to the app/code directory in your Magento project. Your Magento directory should now have a subdirectory named app/code/Meta/BusinessExtension.
 
 
 ##### ENABLE EXTENSION
@@ -100,11 +99,10 @@ Execute the following commands to manually install Meta Business Extension.
 - Optional `php bin/magento setup:static-content:deploy`
 - Execute `php bin/magento setup:di:compile`
 - Execute `php bin/magento cache:clean`
-- Execute `php bin/magento cron:run` three times
 ### Verify Installation
 - Upon successful installation, login to your Magento Admin panel.
-- You should see a "Meta" Icon on the left hand side.
-- Click "Setup" to link a Meta Account.
+- You should see a "Facebook & Instagram" Icon on the left hand side.
+- Click "Overview" to link a Meta Account.
 
 ## Need help?
 
@@ -113,7 +111,7 @@ Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help
 ## Requirements
 
 Meta Business Extension For Magento 2 requires
-* Magento version 2.4.4, 2.4.5 (2.4.6 support coming soon)
+* Magento version 2.4.2-2.4.6
 * PHP 7.4 or greater
 * Memory limit of 1 GB or greater (2 GB or higher is preferred)
 
