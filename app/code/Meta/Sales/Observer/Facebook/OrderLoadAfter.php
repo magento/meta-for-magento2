@@ -18,16 +18,15 @@ declare(strict_types=1);
  * limitations under the License.
  */
 
-namespace Meta\Sales\Plugin;
+namespace Meta\Sales\Observer\Facebook;
 
-use Exception;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Sales\Model\Order;
 use Meta\Sales\Helper\OrderHelper;
 use Psr\Log\LoggerInterface;
 
-class OrderGet
+class OrderLoadAfter implements ObserverInterface
 {
     /**
      * @var OrderHelper
@@ -52,24 +51,24 @@ class OrderGet
     }
 
     /**
-     * After get order collection plugin
+     * Load order's extension attributes
      *
-     * @param OrderRepositoryInterface $subject
-     * @param OrderCollection $orderCollection
-     * @return OrderCollection
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter) $subject
+     * @param Observer $observer
+     * @return void
      */
-    public function afterGetList(OrderRepositoryInterface $subject, OrderCollection $orderCollection)
+    public function execute(Observer $observer)
     {
+        /** @var Order $order */
+        $order = $observer->getEvent()->getOrder();
+
+        if (!($order && $order->getId())) {
+            return;
+        }
+
         try {
-            foreach ($orderCollection->getItems() as $order) {
-                /** @var OrderInterface $order */
-                $this->orderHelper->setFacebookOrderExtensionAttributes($order);
-            }
-        } catch (Exception $e) {
+            $this->orderHelper->setFacebookOrderExtensionAttributes($order);
+        } catch (\Exception $e) {
             $this->logger->critical($e);
         }
-        return $orderCollection;
     }
 }

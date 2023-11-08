@@ -28,6 +28,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Order\CreateCancellation;
 
 class Cancel implements ObserverInterface
@@ -43,17 +44,25 @@ class Cancel implements ObserverInterface
     private GraphAPIAdapter $graphAPIAdapter;
 
     /**
+     * @var OrderHelper
+     */
+    private OrderHelper $orderHelper;
+
+    /**
      * Constructor
      *
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
+     * @param OrderHelper $orderHelper
      */
     public function __construct(
         SystemConfig    $systemConfig,
-        GraphAPIAdapter $graphAPIAdapter
+        GraphAPIAdapter $graphAPIAdapter,
+        OrderHelper     $orderHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
+        $this->orderHelper = $orderHelper;
     }
 
     /**
@@ -84,6 +93,7 @@ class Cancel implements ObserverInterface
             }
         }
 
+        $this->orderHelper->setFacebookOrderExtensionAttributes($order);
         $facebookOrderId = $order->getExtensionAttributes()->getFacebookOrderId();
         if (!$facebookOrderId) {
             return;

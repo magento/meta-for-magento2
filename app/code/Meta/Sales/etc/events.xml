@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="sales_order_load_after">
+        <observer name="facebook_order_load_after" instance="Meta\Sales\Observer\Facebook\OrderLoadAfter" />
+    </event>
     <event name="sales_order_shipment_save_after">
         <observer name="facebook_order_mark_as_shipped" instance="Meta\Sales\Observer\Order\MarkAsShipped" />
     </event>

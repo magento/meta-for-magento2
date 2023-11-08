@@ -29,6 +29,7 @@ use Magento\Sales\Model\Order\Shipment\Track;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
+use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Helper\ShippingHelper;
 
 class Shipper
@@ -53,18 +54,26 @@ class Shipper
     private ShippingHelper $shippingHelper;
 
     /**
+     * @var OrderHelper
+     */
+    private OrderHelper $orderHelper;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param ShippingHelper $shippingHelper
+     * @param OrderHelper $orderHelper
      */
     public function __construct(
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphAPIAdapter,
-        ShippingHelper $shippingHelper
+        ShippingHelper $shippingHelper,
+        OrderHelper $orderHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->shippingHelper = $shippingHelper;
+        $this->orderHelper = $orderHelper;
     }
 
     /**
@@ -143,11 +152,15 @@ class Shipper
      */
     public function markAsShipped(Shipment $shipment)
     {
-        $storeId = $shipment->getOrder()->getStoreId();
-        $fbOrderId = $shipment->getOrder()->getExtensionAttributes()->getFacebookOrderId();
+        $order = $shipment->getOrder();
+
+        $this->orderHelper->setFacebookOrderExtensionAttributes($order);
+        $fbOrderId = $order->getExtensionAttributes()->getFacebookOrderId();
         if (!$fbOrderId) {
             return;
         }
+
+        $storeId = $order->getStoreId();
 
         $itemsToShip = [];
         /** @var Item $shipmentItem */
