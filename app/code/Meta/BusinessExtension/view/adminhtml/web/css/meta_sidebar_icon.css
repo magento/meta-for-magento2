@@ -7,43 +7,11 @@
  * of patent rights can be found in the PATENTS file in the code directory.
  */
 
-/* Styles related to overriding the Magento header to include a Store Picker on Meta Setup page. */
-.page-header.meta-header {
-    align-items: center;
-    display: flex;
-    margin-bottom: 0;
-}
-.meta-header-title {
-    align-items: center;
-    display: flex;
-    flex-grow: 1;
-    flex-shrink: 1;
-    margin-right: 16px;
-}
-.meta-header-title h1 {
-    margin: 0;
-}
-.meta-header-title-icon {
-    height: 32px;
-    margin-right: 4px;
-}
-.meta-header-store-picker {
-    margin-right: 16px;
-}
-
-/* Styles related to Meta Commerce Extension */
-.commerce-extension-error {
-    background-color: rgb(255, 235, 235);
-    border: 1px solid rgb(217, 54, 22);
-    border-radius: 4px;
-    max-width: 800px;
-    padding: 16px;
-}
-
 /* Add a grayscale Meta logo to the left sidebar item for this extension. */
 .admin__menu .level-0.item-facebook > a {
     padding-top: 4px;
 }
+
 .admin__menu .level-0.item-facebook > a:before {
     content: url('../images/meta.svg');
     filter: contrast(0) grayscale(1) brightness(1.50);
@@ -51,7 +19,8 @@
     margin: 0 auto;
     width: 38px;
 }
+
 .admin__menu .level-0.item-facebook:hover > a:before,
 .admin__menu .level-0.item-facebook._active > a:before {
-    filter: contrast(0) grayscale(1) brightness(2) ;
+    filter: contrast(0) grayscale(1) brightness(2);
 }

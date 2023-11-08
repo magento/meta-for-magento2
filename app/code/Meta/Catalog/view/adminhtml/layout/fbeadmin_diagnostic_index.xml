@@ -5,7 +5,6 @@
         <title>
             Catalog Diagnostics
         </title>
-        <css src="Meta_BusinessExtension::css/fbe.css"/>
         <link src="Meta_Catalog::js/diagnostics.js"/>
     </head>
     <body>
