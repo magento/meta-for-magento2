@@ -25,16 +25,15 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class PersistMetaLogImmediatelyHandler
 {
-
     /**
      * @var GraphAPIAdapter
      */
-    private $graphApiAdapter;
+    private GraphAPIAdapter $graphApiAdapter;
 
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * PersistMetaLogImmediatelyHandler constructor
@@ -54,12 +53,13 @@ class PersistMetaLogImmediatelyHandler
      * Consumer handler to persist exception logs from message queue to Meta
      *
      * @param string $message
+     * @return void
      */
-    public function persistMetaLogImmediately(string $message)
+    public function persistMetaLogImmediately(string $message): void
     {
         $context = json_decode($message, true);
         $accessToken = null;
-        if ($context['store_id']) {
+        if (isset($context['store_id'])) {
             $accessToken = $this->systemConfig->getAccessToken($context['store_id']);
         }
         $this->graphApiAdapter->persistLogToMeta($context, $accessToken);
