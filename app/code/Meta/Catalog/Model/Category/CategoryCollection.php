@@ -63,7 +63,7 @@ class CategoryCollection
         CategoryRepositoryInterface $categoryRepository,
         FBEHelper                   $helper,
         SystemConfig                $systemConfig,
-        CategoryUtilities $categoryUtilities
+        CategoryUtilities           $categoryUtilities
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->fbeHelper = $helper;
@@ -84,18 +84,21 @@ class CategoryCollection
      */
     public function makeHttpRequestsAfterCategorySave(Category $category, bool $isNameChanged): void
     {
-        $storeIds = $category->getStoreIds();
-        $this->fbeHelper->log(
-            "Category real time update: store counts: " . count($storeIds)
-        );
+        if ($this->systemConfig->isAllCategoriesSyncEnabled()) {
+            // fetches all the stores for seller
+            $storeIds = $this->categoryUtilities->getAllFBEInstalledStoreIds();
+        } else {
+            $storeIds = $category->getStoreIds();
+        }
+
+        $this->fbeHelper->log("Category real time update: store counts: " . count($storeIds));
         foreach ($storeIds as $storeId) {
             try {
                 $categories = [];
                 if ($isNameChanged) {
                     $categories = $this->categoryUtilities->getAllChildrenCategories(
                         $category,
-                        $storeId,
-                        true
+                        (int)$storeId
                     );
                 } else {
                     $categories[] = $this->categoryRepository->get($category->getId(), $storeId);
@@ -113,7 +116,7 @@ class CategoryCollection
                     );
                     continue;
                 }
-                $this->pushCategoriesToFBCollections($categories, $accessToken, $storeId);
+                $this->pushCategoriesToFBCollections($categories, $accessToken, (int)$storeId);
             } catch (\Throwable $e) {
                 $extraData = [
                     'category_id' => $category->getId(),
@@ -142,7 +145,7 @@ class CategoryCollection
      * @return string|null
      * @throws \Throwable
      */
-    public function pushAllCategoriesToFbCollections($storeId): ?string
+    public function pushAllCategoriesToFbCollections(int $storeId): ?string
     {
         $accessToken = $this->systemConfig->getAccessToken($storeId);
         if (!$accessToken) {
@@ -152,7 +155,11 @@ class CategoryCollection
             return null;
         }
 
-        $categories = $this->categoryUtilities->getAllActiveCategories($storeId);
+        if ($this->systemConfig->isAllCategoriesSyncEnabled()) {
+            $categories = $this->categoryUtilities->getAllCategoriesForSeller($storeId);
+        } else {
+            $categories = $this->categoryUtilities->getAllCategoriesForStore($storeId);
+        }
         $this->fbeHelper->log(
             "Category force update: categories for store:" . $storeId . " count:" . $categories->getSize()
         );
@@ -169,27 +176,43 @@ class CategoryCollection
      * @return string|null
      *
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @throws \Throwable
      */
-    private function pushCategoriesToFBCollections($categories, $accessToken, $storeId): ?string
-    {
+    private function pushCategoriesToFBCollections(
+        $categories,
+        $accessToken,
+        int $storeId
+    ): ?string {
         $resArray = [];
         $catalogId = $this->systemConfig->getCatalogId($storeId);
         $requests = [];
         $updatedCategories = [];
         $currentBatch = 1;
+
+        $store = $this->systemConfig->getStoreManager()->getStore($storeId);
+        $storeRootCategoryId = $store->getRootCategoryId();
+        $isAllCategoriesSyncEnabled = $this->systemConfig->isAllCategoriesSyncEnabled();
+
         foreach ($categories as $category) {
             try {
-                $syncEnabled = $category->getData(SystemConfig::CATEGORY_SYNC_TO_FACEBOOK);
-                if ($syncEnabled === '0') {
-                    $this->fbeHelper->log(
-                        sprintf(
-                            "Category update: user disabled category sync, category name: %s for store id: %s",
-                            $category->getName(),
-                            $storeId
-                        )
-                    );
+                $rootCategoryId = $this->categoryUtilities->getRootCategoryIdForCategory($category);
+                $isCategoryLinkedToStore = $rootCategoryId == $storeRootCategoryId;
+
+                $isVisibleOnMeta = $this->categoryUtilities->isCategoryVisibleOnMeta(
+                    $category,
+                    $isCategoryLinkedToStore
+                );
+
+                if (!$isVisibleOnMeta && !$isAllCategoriesSyncEnabled) {
+                    $this->fbeHelper->log(sprintf(
+                        "Category sync disabled: Category %s and store %s",
+                        $category->getName(),
+                        $storeId
+                    ));
                     continue;
                 }
+
                 $setId = $category->getData(SystemConfig::META_PRODUCT_SET_ID);
                 $this->fbeHelper->log(sprintf(
                     "Category update: setId for CATEGORY %s and store %s is %s",
@@ -205,7 +228,13 @@ class CategoryCollection
                         $category->getName(),
                         $storeId
                     ));
-                    $requests[] = $this->updateCategoryWithFBRequestJson($category, $products, $setId, (int)$storeId);
+                    $requests[] = $this->updateCategoryWithFBRequestJson(
+                        $category,
+                        $products,
+                        $setId,
+                        $storeId,
+                        $isVisibleOnMeta
+                    );
                 } else {
                     if ($products->getSize() === 0) {
                         $this->fbeHelper->log(sprintf(
@@ -220,7 +249,13 @@ class CategoryCollection
                         $category->getName(),
                         $storeId
                     ));
-                    $requests[] = $this->pushCategoryWithFBRequestJson($category, $products, $catalogId, (int)$storeId);
+                    $requests[] = $this->pushCategoryWithFBRequestJson(
+                        $category,
+                        $products,
+                        $catalogId,
+                        $storeId,
+                        $isVisibleOnMeta
+                    );
                 }
                 $updatedCategories[] = $category;
                 if (count($requests) === self::BATCH_MAX) {
@@ -295,22 +330,27 @@ class CategoryCollection
      * @param ProductCollection $products
      * @param string $setId
      * @param int $storeId
+     * @param bool $isVisibleOnMeta
      * @return array
      */
     private function updateCategoryWithFBRequestJson(
         Category          $category,
         ProductCollection $products,
         string            $setId,
-        int               $storeId
+        int               $storeId,
+        bool              $isVisibleOnMeta
     ): array {
         return [
             'method' => 'POST',
             'relative_url' => $setId,
             'body' => http_build_query([
-                'name' => $this->categoryUtilities->getCategoryPathName($category, $storeId),
+                'name' => $this->categoryUtilities->getCategoryPathName($category, $storeId, $isVisibleOnMeta),
                 'filter' => $this->categoryUtilities->getCategoryProductFilter($products),
                 'metadata' => $this->categoryUtilities->getCategoryMetaData($category),
-                'retailer_id' => $category->getId()
+                'retailer_id' => $category->getId(),
+                'visibility' => $isVisibleOnMeta
+                    ? CategoryUtilities::CATEGORY_VISIBLE_FOR_META
+                    : CategoryUtilities::CATEGORY_HIDDEN_FOR_META
             ])
         ];
     }
@@ -324,22 +364,27 @@ class CategoryCollection
      * @param ProductCollection $products
      * @param string $catalogId
      * @param int $storeId
+     * @param bool $isVisibleOnMeta
      * @return array
      */
     private function pushCategoryWithFBRequestJson(
         Category          $category,
         ProductCollection $products,
         string            $catalogId,
-        int               $storeId
+        int               $storeId,
+        bool              $isVisibleOnMeta
     ): array {
         return [
             'method' => 'POST',
             'relative_url' => $catalogId . '/product_sets',
             'body' => http_build_query([
-                'name' => $this->categoryUtilities->getCategoryPathName($category, $storeId),
+                'name' => $this->categoryUtilities->getCategoryPathName($category, $storeId, $isVisibleOnMeta),
                 'filter' => $this->categoryUtilities->getCategoryProductFilter($products),
                 'metadata' => $this->categoryUtilities->getCategoryMetaData($category),
-                'retailer_id' => $category->getId()
+                'retailer_id' => $category->getId(),
+                'visibility' => $isVisibleOnMeta
+                    ? CategoryUtilities::CATEGORY_VISIBLE_FOR_META
+                    : CategoryUtilities::CATEGORY_HIDDEN_FOR_META
             ])
         ];
     }
@@ -360,7 +405,7 @@ class CategoryCollection
         array $updated_categories,
         int   $currentBatch,
         $accessToken,
-        $storeId
+        int   $storeId
     ): array {
         $this->fbeHelper->log(sprintf('Pushing batch %d with %d categories', $currentBatch, count($requests)));
         $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
@@ -379,11 +424,8 @@ class CategoryCollection
      * @return array
      * @throws \Throwable
      */
-    private function processCategoryBatchResponse(
-        array $batchResponse,
-        array $updatedCategories,
-        $storeId
-    ): array {
+    private function processCategoryBatchResponse(array $batchResponse, array $updatedCategories, int $storeId): array
+    {
         $categoryCount = count($updatedCategories);
         $responseCount = count($batchResponse);
 
@@ -449,7 +491,7 @@ class CategoryCollection
      */
     public function deleteCategoryAndSubCategoryFromFB(Category $category): void
     {
-        $storeIds = $category->getStoreIds();
+        $storeIds = $this->categoryUtilities->getAllFBEInstalledStoreIds();
         $this->fbeHelper->log("Delete Categories: store counts: " . count($storeIds));
         foreach ($storeIds as $storeId) {
             $accessToken = $this->systemConfig->getAccessToken($storeId);
@@ -536,7 +578,7 @@ class CategoryCollection
         array $requests,
         int   $currentBatch,
         $accessToken,
-        $storeId
+        int   $storeId
     ): void {
         $this->fbeHelper->log(sprintf(
             'Deleting Product set batch %d with %d categories',

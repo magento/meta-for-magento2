@@ -27,6 +27,7 @@ use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Framework\App\ResourceConnection;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -72,6 +73,14 @@ class CategoryUtilities
      * @var CategoryImageService
      */
     private CategoryImageService $imageService;
+
+    public const CATEGORY_VISIBLE_FOR_META = 'visible';
+
+    public const CATEGORY_HIDDEN_FOR_META = 'hidden';
+
+    private const CATEGORY_HIDDEN_NAME_PREFIX = '[Hidden]';
+
+    private const ROOT_CATEGORY_INDEX_IN_PATH = 1;
 
     /**
      * @var EavConfig
@@ -126,7 +135,7 @@ class CategoryUtilities
      * @param int $storeId
      * @return ProductCollection
      */
-    public function getCategoryProducts(Category $category, $storeId): ProductCollection
+    public function getCategoryProducts(Category $category, int $storeId): ProductCollection
     {
         $productCollection = $this->productCollectionFactory->create();
         $productCollection->setStoreId($storeId);
@@ -171,7 +180,7 @@ class CategoryUtilities
      * @param array $extraData
      * @return array
      */
-    public function getCategoryLoggerContext($storeId, $eventType, $extraData): array
+    public function getCategoryLoggerContext(int $storeId, string $eventType, array $extraData): array
     {
         return [
             'store_id' => $storeId,
@@ -183,19 +192,44 @@ class CategoryUtilities
     }
 
     /**
-     * Get all active categories
+     * Get all categories for store
      *
      * @param int $storeId
      * @return Collection
      * @throws \Throwable
      */
-    public function getAllActiveCategories($storeId): Collection
+    public function getAllCategoriesForStore(int $storeId): Collection
     {
         $store = $this->systemConfig->getStoreManager()->getStore($storeId);
         $rootCategoryId = $store->getRootCategoryId();
         $rootCategory = $this->categoryRepository->get($rootCategoryId, $storeId);
 
-        return $this->getAllChildrenCategories($rootCategory, $storeId, true);
+        return $this->getAllChildrenCategories($rootCategory, $storeId);
+    }
+
+    /**
+     * Get all categories
+     *
+     * @param int $storeId
+     * @return Collection
+     * @throws \Throwable
+     */
+    public function getAllCategoriesForSeller(int $storeId): Collection
+    {
+        $this->fbeHelper->log(sprintf(
+            "searching all the categories for seller, store id: %d",
+            $storeId
+        ));
+
+        return $this->categoryCollection->create()
+            ->setStoreId($storeId)
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter([
+                [
+                    "attribute" => "path",
+                    "like" => Category::TREE_ROOT_ID . "/%"
+                ]
+            ]);
     }
 
     /**
@@ -205,23 +239,15 @@ class CategoryUtilities
      *
      * @param Category $category
      * @param int $storeId
-     * @param bool $onlyActiveCategories
      * @return Collection
      * @throws \Throwable
      */
-    public function getAllChildrenCategories(
-        Category $category,
-        $storeId,
-        bool $onlyActiveCategories = false
-    ): Collection {
-        $this->fbeHelper->log(sprintf(
-            "searching%s children category for category: %s",
-            $onlyActiveCategories ? ' active' : '',
-            $category->getName()
-        ));
+    public function getAllChildrenCategories(Category $category, int $storeId): Collection
+    {
+        $this->fbeHelper->log(sprintf("searching children category for category: %s", $category->getName()));
         $categoryPath = $category->getPath();
 
-        $categories = $this->categoryCollection->create()
+        return $this->categoryCollection->create()
             ->setStoreId($storeId)
             ->addAttributeToSelect('*')
             ->addAttributeToFilter(
@@ -236,11 +262,31 @@ class CategoryUtilities
                     ]
                 ]
             );
+    }
 
-        if ($onlyActiveCategories) {
-            return $categories->addAttributeToFilter('is_active', 1);
+    /**
+     * Get root category id for given category
+     *
+     * @param Category $category
+     * @return int
+     * @throws \Throwable
+     */
+    public function getRootCategoryIdForCategory(Category $category): int
+    {
+        $this->fbeHelper->log(sprintf("searching root category for category: %s", $category->getName()));
+        $categoryPath = $category->getPath();
+
+        $categoryHierarchy = explode("/", $categoryPath);
+
+        if (count($categoryHierarchy) < 2) {
+            throw new LocalizedException(__(
+                "No root category found for Category %1 and Category path %2",
+                $category->getCategoryId(),
+                $categoryPath
+            ));
         }
-        return $categories;
+
+        return (int) $categoryHierarchy[self::ROOT_CATEGORY_INDEX_IN_PATH];
     }
 
     /**
@@ -381,13 +427,14 @@ class CategoryUtilities
      *
      * @param Category $category
      * @param int $storeId
+     * @param bool $isVisibleOnMeta
      * @return string
      */
-    public function getCategoryPathName(Category $category, $storeId): string
+    public function getCategoryPathName(Category $category, int $storeId, bool $isVisibleOnMeta): string
     {
         $categoryPath = (string)$category->getPath();
 
-        return implode(" > ", array_filter(array_map(
+        $categoryName = implode(" > ", array_filter(array_map(
             function ($innerId) use ($storeId) {
                 try {
                     $innerCategory = $this->categoryRepository->get($innerId, $storeId);
@@ -402,5 +449,43 @@ class CategoryUtilities
             },
             explode("/", $categoryPath)
         )));
+
+        if (!$isVisibleOnMeta) {
+            $categoryName = self::CATEGORY_HIDDEN_NAME_PREFIX . $categoryName;
+        }
+
+        return $categoryName;
+    }
+
+    /**
+     * Checks visibility based on sync with Meta flag,active status and linked to configured store
+     *
+     * @param Category $category
+     * @param bool $isLinkedToStore
+     * @return bool
+     */
+    public function isCategoryVisibleOnMeta(Category $category, bool $isLinkedToStore): bool
+    {
+        $syncEnabled = $category->getData(SystemConfig::CATEGORY_SYNC_TO_FACEBOOK);
+        $isActive = $category->getIsActive();
+        if ($syncEnabled === '0' || !$isActive || !$isLinkedToStore) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Return only the set of store ids which have FBE installed (working token, etc...)
+     *
+     * @return array
+     */
+    public function getAllFBEInstalledStoreIds(): array
+    {
+        return array_map(
+            function ($store) {
+                return $store->getId();
+            },
+            $this->systemConfig->getAllFBEInstalledStores()
+        );
     }
 }
