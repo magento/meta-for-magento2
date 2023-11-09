@@ -120,24 +120,33 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      */
     private function updateSetting(SettingsWebhookRequestInterface $setting): void
     {
-
         // Step 1 - Get StoreId by business_extension_id
         $externalBusinessId = $setting->getExternalBusinessId();
         $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
 
-        // Step 2 - Trigger Magento polling Graph API fbe_install,
-        $fbeResponse = $this->getMBESettings((int)$storeId);
-        // Step 3 - calling Catalog Script to update
-        $this->catalogConfigUpdateHelper
-            ->updateCatalogConfiguration(
-                (int)$storeId,
-                $fbeResponse['catalog_id'],
-                $fbeResponse['commerce_partner_integration_id'],
-                $fbeResponse['pixel_id'],
-            );
-        // Step 4 - Verify Catalog id updated correctly
-        if ($this->systemConfig->getCatalogId((int)$storeId) !== $fbeResponse['catalog_id']) {
-            $this->throwException('Catalog config update failed for external_business_id: '.$externalBusinessId);
+        try {
+            // Step 2 - Trigger Magento polling Graph API fbe_install,
+            $fbeResponse = $this->getMBESettings((int)$storeId);
+            // Step 3 - calling Catalog Script to update
+            $this->catalogConfigUpdateHelper
+                ->updateCatalogConfiguration(
+                    (int)$storeId,
+                    $fbeResponse['catalog_id'],
+                    $fbeResponse['commerce_partner_integration_id'],
+                    $fbeResponse['pixel_id'],
+                );
+            // Step 4 - Verify Catalog id updated correctly
+            if ($this->systemConfig->getCatalogId((int)$storeId) !== $fbeResponse['catalog_id']) {
+                $this->throwException('Catalog config update failed for external_business_id: '.$externalBusinessId);
+            }
+        } catch (Throwable $e) {
+            $context = [
+                'store_id' => $storeId,
+                'event' => 'update_setting',
+                'event_type' => 'settings_sync',
+            ];
+            $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
+            $this->throwException($e->getMessage());
         }
     }
 
@@ -167,25 +176,21 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      */
     private function getMBESettings(int $storeId): array
     {
-        try {
-            $accessToken = $this->systemConfig->getAccessToken($storeId);
-            $businessId = $this->systemConfig->getExternalBusinessId($storeId);
-            if (!$accessToken || !$businessId) {
-                $this->throwException('AccessToken or BusinessID not found for storeID:'.$storeId);
-            }
-            $response = $this->graphApiAdapter->getFBEInstalls($accessToken, $businessId);
-            if (!is_array($response) || empty($response)) {
-                $this->throwException('Skipping FBEInstalls save. Response format is incorrect.');
-            }
-            $data = $response['data'][0];
-            return [
-                'catalog_id' => $data['catalog_id'] ?? '',
-                'commerce_partner_integration_id' => $data['commerce_partner_integration_id'] ?? '',
-                'pixel_id' => $data['pixel_id'] ?? '',
-            ];
-        } catch (Throwable $e) {
-            $this->throwException('Failed to pull fbe response'.$e->getMessage());
+        $accessToken = $this->systemConfig->getAccessToken($storeId);
+        $businessId = $this->systemConfig->getExternalBusinessId($storeId);
+        if (!$accessToken || !$businessId) {
+            $this->throwException('AccessToken or BusinessID not found for storeID:'.$storeId);
         }
+        $response = $this->graphApiAdapter->getFBEInstalls($accessToken, $businessId);
+        if (!is_array($response) || empty($response)) {
+            $this->throwException('Skipping FBEInstalls save. Response format is incorrect.');
+        }
+        $data = $response['data'][0];
+        return [
+            'catalog_id' => $data['catalog_id'] ?? '',
+            'commerce_partner_integration_id' => $data['commerce_partner_integration_id'] ?? '',
+            'pixel_id' => $data['pixel_id'] ?? '',
+        ];
     }
 
     /**
@@ -234,26 +239,36 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      * @param string $externalBusinessId
      * @return CoreConfigInterface
      * @throws LocalizedException
-     * @throws UnauthorizedTokenException
      */
     public function getCoreConfig(string $externalBusinessId): CoreConfigInterface
     {
-        $this->authenticator->authenticateRequest();
-        $coreConfig = $this->coreConfigFactory->create();
-        $coreConfigData =  $this->getCoreConfigByExternalBusinessId($externalBusinessId);
-        return $coreConfig->addData($coreConfigData);
+        $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
+        try {
+            $this->authenticator->authenticateRequest();
+            $coreConfig = $this->coreConfigFactory->create();
+            $coreConfigData =  $this->getCoreConfigByStoreId($externalBusinessId, $storeId);
+            return $coreConfig->addData($coreConfigData);
+        } catch (Exception $e) {
+            $context = [
+                'store_id' => $storeId,
+                'event' => 'get_core_config',
+                'event_type' => 'settings_sync',
+            ];
+            $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
+            $this->throwException($e->getMessage());
+        }
     }
 
     /**
-     * Fetch core config by externalBusinessId
+     * Fetch core config by $storeId
      *
      * @param string $externalBusinessId
+     * @param string $storeId
      * @return array
      * @throws LocalizedException
      */
-    private function getCoreConfigByExternalBusinessId(string $externalBusinessId): array
+    private function getCoreConfigByStoreId(string $externalBusinessId, string $storeId): array
     {
-        $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
         return [
             'externalBusinessId' => $externalBusinessId,
             'isOrderSyncEnabled' => $this->systemConfig->isOrderSyncEnabled($storeId),
