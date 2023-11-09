@@ -5,6 +5,24 @@
  */
 ?>
 
+<script>
+    const errorEventsBeforeInit = [];
+    const onEarlyError = (event) => {
+        errorEventsBeforeInit.push(event);
+    };
+    window.addEventListener('error', onEarlyError);
+
+    require(['Meta_BusinessExtension/js/error_logging'], (errorLogging) => {
+        window.removeEventListener('error', onEarlyError);
+        
+        errorLogging.init(
+            '<?=$escaper->escapeJs($block->getReportClientErrorRoute())?>',
+            '<?=$escaper->escapeJs($block->getSelectedStoreId())?>',
+            errorEventsBeforeInit,
+        );
+    });
+</script>
+
 <?php if ($block->getSelectedStoreId() === null): ?>
     Create a Store to continue with setup.
 <?php else: ?>

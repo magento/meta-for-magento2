@@ -304,17 +304,23 @@ class FBEHelper
     {
         $errorMessage = $e->getMessage();
         $exceptionTrace = $e->getTraceAsString();
+        $exceptionCode = $e->getCode();
 
+        $this->logExceptionDetails($exceptionCode, $errorMessage, $exceptionTrace, $context);
+    }
+
+    public function logExceptionDetails($code, $message, $traceAsString, array $context = [])
+    {
         // If the log type is not set or Meta extension logging is not enabled just log the error message and trace.
         if (!isset($context['log_type']) || !$this->systemConfig->isMetaExceptionLoggingEnabled()) {
-            $this->logger->error($errorMessage);
-            $this->logger->error($exceptionTrace);
+            $this->logger->error($message);
+            $this->logger->error($traceAsString);
             return;
         }
 
-        $context['exception_message'] = $errorMessage;
-        $context['exception_code'] = $e->getCode();
-        $context['exception_trace'] = $exceptionTrace;
+        $context['exception_message'] = $message;
+        $context['exception_code'] = $code;
+        $context['exception_trace'] = $traceAsString;
         $context['seller_platform_app_version'] = $this->getMagentoVersion();
 
         $extraData = ['extension_version' => $this->systemConfig->getModuleVersion()];
@@ -330,7 +336,7 @@ class FBEHelper
             $context['extra_data'] = $extraData;
         }
 
-        $this->logger->error($errorMessage, $context);
+        $this->logger->error($message, $context);
     }
 
     /**
@@ -343,6 +349,22 @@ class FBEHelper
     {
         $context['log_type'] = self::PERSIST_META_LOG_IMMEDIATELY;
         $this->logException($e, $context);
+    }
+
+    /**
+     * Log error details and persist immediately with Meta.
+     *
+     * `logExceptionImmediatelyToMeta` should be preferred whenever a /Throwable is available.
+     *
+     * @param int $code
+     * @param string $message
+     * @param string $traceAsString
+     * @param array $context
+     */
+    public function logExceptionDetailsImmediatelyToMeta($code, $message, $traceAsString, array $context = [])
+    {
+        $context['log_type'] = self::PERSIST_META_LOG_IMMEDIATELY;
+        $this->logExceptionDetails($code, $message, $traceAsString, $context);
     }
 
     /**

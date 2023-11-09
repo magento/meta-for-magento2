@@ -268,6 +268,16 @@ class Setup extends Template
     }
 
     /**
+     * Get the ajax route to report client errors.
+     *
+     * @return mixed
+     */
+    public function getReportClientErrorRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/reportClientError');
+    }
+
+    /**
      * Get Delete Asset IDs Ajax Route
      *
      * @return mixed
