@@ -396,11 +396,9 @@ class CategoryCollection
                 $responseData = json_decode($response['body'], true);
 
                 if ($httpStatusCode == 200) {
-                    $setId = $category->getData(SystemConfig::META_PRODUCT_SET_ID);
-
-                    if ($setId === null && array_key_exists('id', $responseData)) {
+                    if (array_key_exists('id', $responseData)) {
                         $setId = $responseData['id'];
-                        $this->categoryUtilities->saveFBProductSetID($category, $setId, $storeId, $this);
+                        $this->categoryUtilities->saveFBProductSetID($category, $setId, $storeId);
                     }
                 } else {
                     $this->fbeHelper->log(sprintf(

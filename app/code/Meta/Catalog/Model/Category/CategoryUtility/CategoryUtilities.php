@@ -27,10 +27,15 @@ use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Eav\Model\Config as EavConfig;
+use Magento\Framework\App\ResourceConnection;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class CategoryUtilities
 {
     /**
@@ -69,6 +74,16 @@ class CategoryUtilities
     private CategoryImageService $imageService;
 
     /**
+     * @var EavConfig
+     */
+    private EavConfig $eavConfig;
+
+    /**
+     * @var ResourceConnection
+     */
+    private ResourceConnection $resourceConnection;
+
+    /**
      * Constructor
      * @param ProductCollectionFactory $productCollectionFactory
      * @param CategoryCollectionFactory $categoryCollection
@@ -77,6 +92,8 @@ class CategoryUtilities
      * @param SystemConfig $systemConfig
      * @param ProductIdentifier $productIdentifier
      * @param CategoryImageService $imageService
+     * @param EavConfig $eavConfig
+     * @param ResourceConnection $resourceConnection
      */
     public function __construct(
         ProductCollectionFactory    $productCollectionFactory,
@@ -85,7 +102,9 @@ class CategoryUtilities
         FBEHelper                   $fbeHelper,
         SystemConfig                $systemConfig,
         ProductIdentifier           $productIdentifier,
-        CategoryImageService        $imageService
+        CategoryImageService        $imageService,
+        EavConfig                   $eavConfig,
+        ResourceConnection          $resourceConnection
     ) {
         $this->categoryCollection = $categoryCollection;
         $this->categoryRepository = $categoryRepository;
@@ -94,6 +113,8 @@ class CategoryUtilities
         $this->systemConfig = $systemConfig;
         $this->productIdentifier = $productIdentifier;
         $this->imageService = $imageService;
+        $this->eavConfig = $eavConfig;
+        $this->resourceConnection = $resourceConnection;
     }
     /**
      * Fetch products for product category
@@ -233,36 +254,50 @@ class CategoryUtilities
     public function saveFBProductSetID(Category $category, string $setId, $storeId): void
     {
         $this->fbeHelper->log(sprintf(
-            "saving category %s ,id %s ,storeId %s and setId %s",
+            "saving product set id for category %s ,id %s ,storeId %s and setId %s",
             $category->getName(),
             $category->getId(),
             $storeId,
             $setId
         ));
-
-        $category->setData(SystemConfig::META_PRODUCT_SET_ID, $setId);
-        $this->saveCategoryForStore($category, $storeId);
-    }
-
-    /**
-     * Save category for store
-     *
-     * @param Category $category
-     * @param int $storeId
-     */
-    private function saveCategoryForStore(Category $category, $storeId): void
-    {
         try {
-            if (null !== $storeId) {
-                $currentStoreId = $this->systemConfig->getStoreManager()->getStore()->getId();
-                // needs to update it as category save function using storeId from store Manager
-                $this->systemConfig->getStoreManager()->setCurrentStore($storeId);
-                $this->categoryRepository->save($category);
-                $this->systemConfig->getStoreManager()->setCurrentStore($currentStoreId);
-                return;
-            }
+            $productSetAttribute = $this->eavConfig->getAttribute(
+                Category::ENTITY,
+                SystemConfig::META_PRODUCT_SET_ID
+            );
+            $productSetAttributeId = $productSetAttribute->getAttributeId();
 
-            $this->categoryRepository->save($category);
+            if ($productSetAttributeId) {
+                $categoryEntityVarcharTable = $this->resourceConnection->getTableName(
+                    'catalog_category_entity_varchar'
+                );
+                if ($category->getData(SystemConfig::META_PRODUCT_SET_ID) == null) {
+                    $this->resourceConnection->getConnection()->insert(
+                        $categoryEntityVarcharTable,
+                        [
+                            'attribute_id' => $productSetAttributeId,
+                            'store_id' => $storeId,
+                            'entity_id' => $category->getId(),
+                            'value' => $setId
+                        ]
+                    );
+                } else {
+                    $this->resourceConnection->getConnection()->update(
+                        $categoryEntityVarcharTable,
+                        [
+                            'attribute_id' => $productSetAttributeId,
+                            'store_id' => $storeId,
+                            'entity_id' => $category->getId(),
+                            'value' => $setId
+                        ],
+                        [
+                            'attribute_id = ?' => $productSetAttributeId,
+                            'store_id = ?' => $storeId,
+                            'entity_id = ?' => $category->getId(),
+                        ]
+                    );
+                }
+            }
         } catch (\Throwable $e) {
             $this->fbeHelper->logException($e);
         }
