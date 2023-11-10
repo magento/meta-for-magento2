@@ -20,10 +20,12 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Observer;
 
+use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Category\CategoryCollection;
 
 class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
@@ -81,6 +83,8 @@ class ProcessCategoryAfterSaveEventObserver implements ObserverInterface
             || $category->dataHasChangedFor('image')
             || $category->dataHasChangedFor('request_path')
             || $category->dataHasChangedFor('url_key')
+            || $category->dataHasChangedFor(SystemConfig::CATEGORY_SYNC_TO_FACEBOOK)
+            || $category->dataHasChangedFor(CategoryInterface::KEY_IS_ACTIVE)
         ) {
             $this->fbeHelper->log("save category: " . $category->getName());
             try {

@@ -69,7 +69,7 @@ class CategorySyncCron
             $storeId = $store->getId();
             try {
                 if ($this->systemConfig->isCatalogSyncEnabled($storeId)) {
-                    $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
+                    $this->categoryCollection->pushAllCategoriesToFbCollections((int)$storeId);
                 }
             } catch (\Throwable $e) {
                 $this->fbeHelper->logExceptionImmediatelyToMeta(

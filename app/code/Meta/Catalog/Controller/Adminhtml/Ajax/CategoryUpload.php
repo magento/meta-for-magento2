@@ -111,7 +111,7 @@ class CategoryUpload extends AbstractAjax
         }
 
         try {
-            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
+            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections((int)$storeId);
             $response['success'] = true;
             $response['feed_push_response'] = $feedPushResponse;
         } catch (\Throwable $e) {

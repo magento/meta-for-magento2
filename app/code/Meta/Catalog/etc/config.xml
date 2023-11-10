@@ -6,6 +6,7 @@
                 <enable_catalog_sync>1</enable_catalog_sync>
                 <price_incl_tax>0</price_incl_tax>
                 <out_of_stock_threshold>0</out_of_stock_threshold>
+                <enable_sync_all_categories>1</enable_sync_all_categories>
             </catalog_management>
         </facebook>
     </default>
