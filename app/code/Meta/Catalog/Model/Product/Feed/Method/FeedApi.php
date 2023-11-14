@@ -22,6 +22,7 @@ namespace Meta\Catalog\Model\Product\Feed\Method;
 
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Config\Source\FeedUploadMethod;
@@ -32,7 +33,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\File\WriteInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Use for Feed Api
@@ -72,14 +72,16 @@ class FeedApi
     private $productRetrievers;
 
     /**
-     * @var LoggerInterface
+     * @var FBEHelper
      */
-    private $logger;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var Builder
      */
     private $builder;
+
+    private const MAX_PRODUCT_ERRORS_LOGGED = 10;
 
     /**
      * @param SystemConfig $systemConfig
@@ -87,7 +89,7 @@ class FeedApi
      * @param Filesystem $filesystem
      * @param array $productRetrievers
      * @param Builder $builder
-     * @param LoggerInterface $logger
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         SystemConfig    $systemConfig,
@@ -95,7 +97,7 @@ class FeedApi
         Filesystem      $filesystem,
         array           $productRetrievers,
         Builder         $builder,
-        LoggerInterface $logger
+        FBEHelper       $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
@@ -103,7 +105,7 @@ class FeedApi
         $this->productRetrievers = $productRetrievers;
         $this->builder = $builder;
         $this->builder->setUploadMethod(FeedUploadMethod::UPLOAD_METHOD_FEED_API);
-        $this->logger = $logger;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -222,6 +224,7 @@ class FeedApi
         $fileStream->writeCsv($this->builder->getHeaderFields());
 
         $total = 0;
+        $totalErrors = 0;
         foreach ($this->productRetrievers as $productRetriever) {
             $productRetriever->setStoreId($this->storeId);
             $offset = 0;
@@ -233,14 +236,38 @@ class FeedApi
                     break;
                 }
                 foreach ($products as $product) {
-                    $entry = array_values($this->builder->buildProductEntry($product));
-                    $fileStream->writeCsv($entry);
-                    $total++;
+                    try {
+                        $entry = array_values($this->builder->buildProductEntry($product));
+                        $fileStream->writeCsv($entry);
+                        $total++;
+                    } catch (\Throwable $e) {
+                        $totalErrors++;
+                        // To prevent all the product errors logs, added cap on number of error logs.
+                        if ($totalErrors <= self::MAX_PRODUCT_ERRORS_LOGGED) {
+                            $this->fbeHelper->logExceptionImmediatelyToMeta(
+                                $e,
+                                [
+                                    'store_id' => $this->storeId,
+                                    'event' => 'feed_upload',
+                                    'event_type' => 'feed_upload_product_builder_entry_failed',
+                                    'catalog_id' => $this->systemConfig->getCatalogId($this->storeId),
+                                    'feed_id' => $this->systemConfig->getFeedId($this->storeId),
+                                    'sku' => $product->getSku(),
+                                    'product_id' => $product->getId()
+                                ]
+                            );
+                        }
+                    }
                 }
             } while (true);
         }
 
-        $this->logger->debug(sprintf('Generated feed with %d products.', $total));
+        $this->fbeHelper->log(sprintf(
+            'Generated feed: Successful Products = %d, Failed Products = %d, StoreID = %d',
+            $total,
+            $totalErrors,
+            $this->storeId
+        ));
     }
 
     /**
@@ -294,9 +321,10 @@ class FeedApi
         $this->builder->setStoreId($this->storeId);
         $accessToken = $this->systemConfig->getAccessToken($storeId);
         if ($accessToken === null) {
-            $this->logger->critical(
-                "Full Catalog Sync: can't find access token"
-            );
+            $this->fbeHelper->log(sprintf(
+                "Full Catalog Sync: can't find access token, StoreID = %d",
+                $storeId
+            ));
             return null;
         }
         $this->graphApiAdapter->setDebugMode($this->systemConfig->isDebugMode($storeId))
@@ -309,7 +337,16 @@ class FeedApi
             $feed = $this->generateProductFeed();
             return $this->graphApiAdapter->pushProductFeed($feedId, $feed);
         } catch (\Throwable $e) {
-            $this->logger->critical($e);
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
+                $e,
+                [
+                    'store_id' => $storeId,
+                    'event' => 'feed_upload',
+                    'event_type' => 'feed_upload',
+                    'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+                    'feed_id' => $this->systemConfig->getFeedId($storeId)
+                ]
+            );
             throw $e;
         }
     }
