@@ -63,7 +63,8 @@ class SyncOrders
         SystemConfig          $systemConfig,
         CommerceHelper        $commerceHelper,
         FBEHelper             $fbeHelper
-    ) {
+    )
+    {
         $this->systemConfig = $systemConfig;
         $this->commerceHelper = $commerceHelper;
         $this->storeManager = $storeManager;
