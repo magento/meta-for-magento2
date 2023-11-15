@@ -5,13 +5,13 @@
         <tab id="facebook" translate="label" sortOrder="1000">
             <label>Meta</label>
         </tab>
-        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0"
+        <section id="facebook_business_extension" translate="label" sortOrder="5" showInDefault="1" showInWebsite="0"
                  showInStore="1">
             <class>separator-top</class>
             <label>Business Extension</label>
             <tab>facebook</tab>
             <resource>Meta_BusinessExtension::system_config</resource>
-            <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1"
+            <group id="business_extension" translate="label" type="text" sortOrder="5" showInDefault="1"
                    showInWebsite="0" showInStore="1">
                 <label>Setup</label>
                 <fieldset_css>meta-section-config</fieldset_css>
@@ -57,6 +57,12 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
+                <field id="installed" type="select" sortOrder="50" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
+                    <config_path>facebook/business_extension/installed</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
+                </field>
                 <field id="module_info" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0"
                        showInStore="1">
                     <label>Module Info</label>
@@ -65,32 +71,45 @@
                     </depends>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo</frontend_model>
                 </field>
-                <field id="api_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Custom Magento + Meta Connector Token</label>
-                    <config_path>meta_extension/general/api_key</config_path>
-                    <comment>This token will be used by Meta's services to access Meta-specific information on your
-                        Magento Host
-                    </comment>
-                </field>
-            </group>
-            <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0"
-                   showInStore="1">
-                <label>Debug</label>
-                <fieldset_css>meta-section-config</fieldset_css>
-                <depends>
-                    <field id="facebook_business_extension/business_extension/active">1</field>
-                </depends>
-                <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1"
-                       showInWebsite="0" showInStore="1">
-                    <label>Enable Debug Mode</label>
-                    <config_path>facebook/debug/debug_mode</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
+
                 <field id="delete_connection" translate="label comment" type="select" sortOrder="20" showInDefault="0"
                        showInWebsite="0" showInStore="1">
                     <label>Delete Meta Connection</label>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\DeleteConnection</frontend_model>
+                </field>
+            </group>
+            <group id="business_settings" translate="label" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <fieldset_css>meta-section-config</fieldset_css>
+                <label>Business Settings</label>
+                <comment>Set your preferred business settings for Meta Commerce.
+                </comment>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                    <field id="facebook_business_extension/business_extension/onsite">1</field>
+                </depends>
+            </group>
+            <group id="manual_data_sync" translate="label" type="text" sortOrder="15" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <fieldset_css>meta-section-config</fieldset_css>
+                <label>Manual Data Sync</label>
+                <comment>By default, most Meta services run every 15-60 minutes. Use the following actions to trigger
+                    an immediate data-sync for that service.
+                </comment>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/installed">1</field>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                    <field id="facebook_business_extension/business_extension/onsite">1</field>
+                </depends>
+            </group>
+            <group id="testing" translate="label" type="text" sortOrder="200" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <label>Developer Testing Mode</label>
+                <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
+                    <label>Extension Debug Mode</label>
+                    <config_path>facebook/debug/debug_mode</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>

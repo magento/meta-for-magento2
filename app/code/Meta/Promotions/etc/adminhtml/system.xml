@@ -1,22 +1,27 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="facebook_business_extension">
-            <group id="promotions" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
-                <label>Promotions [Beta]</label>
-                <comment>Warning: This feature is in Beta. Some promotion types are not currently supported by Meta and will not sync. You can view which promotions synced by visiting Commerce Manager.</comment>
-                <fieldset_css>meta-section-config</fieldset_css>
-                <depends>
-                    <field id="facebook_business_extension/business_extension/active">1</field>
-                    <field id="facebook_business_extension/business_extension/onsite">1</field>
-                </depends>
-                <field id="enable_promotion_sync" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="business_extension" translate="label" type="text" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <field id="enable_promotion_sync" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Enable Promotions Sync</label>
                     <config_path>facebook/promotions/enable_promotions_sync</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Cart price rules will be synced to your Meta Commerce Account every 15 minutes by default (schedule can be edited in crontab.xml)</comment>
+                    <comment>Cart price rules will be synced to your Meta Commerce Account every 15 minutes by default
+                        (schedule can be edited in crontab.xml)
+                    </comment>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/debug_mode">1</field>
+                    </depends>
                 </field>
-                <field id="push_promotions" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+            </group>
+            <group id="manual_data_sync" translate="label" type="text" sortOrder="15" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <field id="push_promotions" translate="label" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
                     <label>Push Promotions</label>
                     <frontend_model>Meta\Promotions\Block\Adminhtml\System\Config\PushPromotions</frontend_model>
                 </field>
