@@ -132,7 +132,6 @@ class Setup extends Template
             }
         }
 
-
         // No default found, return the first store.
         $firstStore = array_shift($stores);
         return $firstStore['store_id'];
