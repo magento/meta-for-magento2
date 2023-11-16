@@ -58,6 +58,11 @@ class CreateRefund
     protected $orderRepository;
 
     /**
+     * @var CreateOrder
+     */
+    protected $createOrder;
+
+    /**
      * @var CreditmemoService
      */
     protected $creditMemoService;
@@ -86,6 +91,7 @@ class CreateRefund
      * RefundProcessor constructor.
      * @param CreditmemoFactory $creditMemoFactory
      * @param OrderRepositoryInterface $orderRepository
+     * @param CreateOrder $createOrder
      * @param CreditmemoService $creditMemoService
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      * @param Invoice $invoice
@@ -97,6 +103,7 @@ class CreateRefund
     public function __construct(
         CreditmemoFactory             $creditMemoFactory,
         OrderRepositoryInterface      $orderRepository,
+        CreateOrder                   $createOrder,
         CreditmemoService             $creditMemoService,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
         Invoice                       $invoice,
@@ -104,9 +111,9 @@ class CreateRefund
         TransactionFactory            $transactionFactory,
         FormatInterface               $localeFormat,
         LoggerInterface               $logger
-    )
-    {
+    ) {
         $this->creditMemoFactory = $creditMemoFactory;
+        $this->createOrder = $createOrder;
         $this->creditMemoService = $creditMemoService;
         $this->orderRepository = $orderRepository;
         $this->facebookOrderFactory = $facebookOrderFactory;
@@ -127,10 +134,7 @@ class CreateRefund
      */
     public function execute(array $facebookOrderData, array $facebookRefundData, int $storeId)
     {
-        $magentoOrder = $this->getOrder($facebookOrderData, $storeId);
-        if (!$magentoOrder) {
-            return;
-        }
+        $magentoOrder = $this->getOrCreateOrder($facebookOrderData, $storeId);
 
         $orderCreditMemos = $magentoOrder->getCreditmemosCollection();
         if ($orderCreditMemos->getSize() > 0) {
@@ -223,22 +227,15 @@ class CreateRefund
      * @throws LocalizedException
      * @throws GuzzleException
      */
-    private function getOrder(array $data, int $storeId): ?Order
+    private function getOrCreateOrder(array $data, int $storeId): Order
     {
-        // Magento's "load" function will gracefully accept an invalid ID
         $facebookOrder = $this->facebookOrderFactory->create()->load($data['id'], 'facebook_order_id');
         $magentoOrderId = $facebookOrder->getMagentoOrderId();
         if ($magentoOrderId) {
-            try {
-                // Magento's "get" function will throw an Exception for invalid IDs
-                $magentoOrder = $this->orderRepository->get($magentoOrderId);
-                return $magentoOrder;
-            } catch (\Exception $e) {
-                $this->logger->debug($e);
-            }
+            $magentoOrder = $this->orderRepository->get($magentoOrderId);
+            return $magentoOrder;
         }
-        // In the case of any failure or missing order, simply bail and return null.
-        return null;
+        return $this->createOrder->execute($data, $storeId, true);
     }
 
     /**
