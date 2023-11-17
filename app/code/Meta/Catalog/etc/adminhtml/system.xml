@@ -35,7 +35,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Enable catalog syncing with Meta</comment>
                     <depends>
-                        <field id="facebook_business_extension/business_extension/debug_mode">1</field>
+                        <field id="facebook_business_extension/testing/debug_mode">1</field>
                     </depends>
                 </field>
             </group>
