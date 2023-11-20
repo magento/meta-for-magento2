@@ -19,7 +19,8 @@
     "magento/module-indexer": "*",
     "magento/module-catalog-inventory": "*",
     "magento/module-catalog-rule": "*",
-    "meta/module-business-extension": "*"
+    "meta/module-business-extension": "*",
+    "ext-zlib": "*"
   },
   "license": "Apache-2.0",
   "autoload": {
