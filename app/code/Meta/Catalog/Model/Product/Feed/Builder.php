@@ -142,11 +142,6 @@ class Builder
     private $uploadMethod;
 
     /**
-     * @var bool
-     */
-    private $inventoryOnly = false;
-
-    /**
      * @var SystemConfig
      */
     private $systemConfig;
@@ -224,18 +219,6 @@ class Builder
     public function setUploadMethod($uploadMethod)
     {
         $this->uploadMethod = $uploadMethod;
-        return $this;
-    }
-
-    /**
-     * Set inventory only
-     *
-     * @param bool $inventoryOnly
-     * @return $this
-     */
-    public function setInventoryOnly($inventoryOnly)
-    {
-        $this->inventoryOnly = $inventoryOnly;
         return $this;
     }
 
@@ -762,14 +745,6 @@ class Builder
             $this->productIdentifier->getProductIDOtherThanRetailerId($product)
         );
 
-        if ($this->inventoryOnly) {
-            return [
-                self::ATTR_RETAILER_ID => $retailerId,
-                self::ATTR_AVAILABILITY => $inventory->getAvailability(),
-                self::ATTR_INVENTORY => $inventory->getInventory(),
-            ];
-        }
-
         $title = $product->getName();
         $productTitle = $this->trimAttribute(self::ATTR_NAME, $title);
 
@@ -980,10 +955,6 @@ class Builder
         $headerFields[] = self::ATTR_FEATURES;
         if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
             $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
-        }
-
-        if ($this->inventoryOnly) {
-            return [self::ATTR_RETAILER_ID, self::ATTR_AVAILABILITY, self::ATTR_INVENTORY];
         }
 
         return $headerFields;
