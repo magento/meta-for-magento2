@@ -65,10 +65,10 @@ class Shipper
      * @param OrderHelper $orderHelper
      */
     public function __construct(
-        SystemConfig $systemConfig,
+        SystemConfig    $systemConfig,
         GraphAPIAdapter $graphAPIAdapter,
-        ShippingHelper $shippingHelper,
-        OrderHelper $orderHelper
+        ShippingHelper  $shippingHelper,
+        OrderHelper     $orderHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
@@ -199,6 +199,7 @@ class Shipper
         $this->markOrderAsShipped(
             (int)$storeId,
             $fbOrderId,
+            $shipment->getIncrementId(),
             $itemsToShip,
             $trackingInfo,
             $fulfillmentAddress
@@ -215,17 +216,19 @@ class Shipper
      *
      * @param int $storeId
      * @param string $fbOrderId
+     * @param string $magentoShipmentId
      * @param array $items
      * @param array $trackingInfo
      * @param array $fulfillmentAddressData
      * @throws GuzzleException
      */
     private function markOrderAsShipped(
-        int $storeId,
+        int    $storeId,
         string $fbOrderId,
-        array $items,
-        array $trackingInfo,
-        array $fulfillmentAddressData = []
+        string $magentoShipmentId,
+        array  $items,
+        array  $trackingInfo,
+        array  $fulfillmentAddressData = []
     ) {
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
@@ -233,6 +236,7 @@ class Shipper
 
         $this->graphAPIAdapter->markOrderAsShipped(
             $fbOrderId,
+            $magentoShipmentId,
             $items,
             $trackingInfo,
             $fulfillmentAddressData
