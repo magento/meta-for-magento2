@@ -74,6 +74,9 @@
 
                 <field id="delete_connection" translate="label comment" type="select" sortOrder="20" showInDefault="0"
                        showInWebsite="0" showInStore="1">
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                    </depends>
                     <label>Delete Meta Connection</label>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\DeleteConnection</frontend_model>
                 </field>
@@ -105,6 +108,9 @@
             <group id="testing" translate="label" type="text" sortOrder="200" showInDefault="1"
                    showInWebsite="0" showInStore="1">
                 <label>Developer Testing Mode</label>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
                 <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="0" showInStore="1">
                     <label>Extension Debug Mode</label>
