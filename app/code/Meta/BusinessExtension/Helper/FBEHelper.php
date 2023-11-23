@@ -264,7 +264,7 @@ class FBEHelper
     public function log($info, array $context = [])
     {
         if (!isset($context['log_type']) || !$this->systemConfig->isMetaTelemetryLoggingEnabled()) {
-            $this->logger->info($info);
+            $this->logger->info($info, $context);
             return;
         }
 
