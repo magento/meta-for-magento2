@@ -25,6 +25,10 @@
                        showInWebsite="0" showInStore="1">
                     <label>Push Promotions</label>
                     <frontend_model>Meta\Promotions\Block\Adminhtml\System\Config\PushPromotions</frontend_model>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/installed">1</field>
+                        <field id="facebook/promotions/enable_promotions_sync">1</field>
+                    </depends>
                 </field>
             </group>
         </section>
