@@ -10,7 +10,8 @@
                     <label>Push Products</label>
                     <depends>
                         <field id="facebook_business_extension/business_extension/installed">1</field>
-                        <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
                 </field>
@@ -19,7 +20,8 @@
                     <label>Push Categories</label>
                     <depends>
                         <field id="facebook_business_extension/business_extension/installed">1</field>
-                        <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <comment>Upload Product Categories to Meta</comment>
                     <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed</frontend_model>
@@ -45,31 +47,19 @@
                        showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Out-of-Stock Threshold</label>
                     <depends>
-                        <field id="facebook_business_extension/business_extension/onsite">1</field>
+                        <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <config_path>facebook/catalog_management/out_of_stock_threshold</config_path>
                     <comment>Product's availability will be out of stock if inventory count is lower than the specified
                         threshold value
                     </comment>
                 </field>
-                <field id="price_incl_tax" translate="label comment" type="select" sortOrder="50" showInDefault="0"
-                       showInWebsite="0" showInStore="0">
-                    <label>Price Including Tax</label>
-                    <depends>
-                        <field id="facebook_business_extension/business_extension/onsite">1</field>
-                    </depends>
-                    <config_path>facebook/catalog_management/price_incl_tax</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>
-                        Use price including tax in feed. Should be "No" for the US and "Yes" for the UK. Note: only
-                        works if Sales -> Tax -> Price Display Settings -> Display Product Prices In Catalog is set to
-                        "Including Tax"
-                    </comment>
-                </field>
             </group>
             <group id="attribute_mapping" translate="label" type="text" sortOrder="30" showInDefault="1"
                    showInWebsite="0" showInStore="1">
                 <depends>
+                    <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <label>Catalog Configuration</label>

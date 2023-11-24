@@ -11,7 +11,8 @@
                     <frontend_model>Meta\Sales\Block\Adminhtml\System\Config\PullOrders</frontend_model>
                     <depends>
                         <field id="facebook_business_extension/business_extension/installed">1</field>
-                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                        <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
+                        <field id="facebook_business_extension/business_extension/onsite">1</field>
                     </depends>
                     <comment>Pull orders awaiting acknowledgement from your Meta Commerce Account</comment>
                 </field>
@@ -39,7 +40,7 @@
                     <config_path>facebook/orders_sync/default_fulfillment_location</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
-                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                        <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <comment>Store address is the default fulfillment location</comment>
@@ -48,7 +49,9 @@
                        showInWebsite="0" showInStore="0">
                     <label>Fulfillment Address</label>
                     <depends>
-                        <field id="facebook_business_extension/orders_sync/default_fulfillment_location">0</field>
+                        <field id="facebook_business_extension/business_extension/default_fulfillment_location">
+                            0
+                        </field>
                         <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <field id="street_line1" translate="label" type="text" sortOrder="55" showInDefault="0"
@@ -94,7 +97,8 @@
                     <config_path>facebook/orders_sync/auto_subscribe_to_newsletter</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
-                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                        <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
+                        <field id="facebook_business_extension/business_extension/onsite">1</field>
                     </depends>
                     <comment>Automatically subscribe buyers to the Adobe Commerce newsletter. Note: only works if the
                         buyer agreed to use their email for marketing purposes on Meta

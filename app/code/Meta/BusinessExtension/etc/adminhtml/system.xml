@@ -89,7 +89,6 @@
                 </comment>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
-                    <field id="facebook_business_extension/business_extension/onsite">1</field>
                 </depends>
             </group>
             <group id="manual_data_sync" translate="label" type="text" sortOrder="15" showInDefault="1"
@@ -101,7 +100,6 @@
                 </comment>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
-                    <field id="facebook_business_extension/business_extension/onsite">1</field>
                 </depends>
                 <field id="manual_data_sync_empty" translate="label" type="note" sortOrder="16" showInDefault="1"
                     showInWebsite="0" showInStore="1">
