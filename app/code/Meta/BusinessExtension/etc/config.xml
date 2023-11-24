@@ -14,7 +14,7 @@
                 <product_identifier>sku</product_identifier>
             </catalog_management>
             <debug>
-                <debug_mode>1</debug_mode>
+                <debug_mode>0</debug_mode>
             </debug>
             <!-- Internal. Overrides default graph base URL
             <internal>
