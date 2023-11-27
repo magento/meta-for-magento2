@@ -30,6 +30,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
+use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
@@ -182,7 +183,8 @@ class Config
         CacheInterface           $cache,
         ComposerInformation      $composerInformation,
         FacebookInstalledFeature $fbeInstalledFeatureResource
-    ) {
+    )
+    {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;
@@ -904,6 +906,20 @@ class Config
     public function getProductIdentifierAttr($scopeId = null, $scope = null)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER, $scopeId, $scope);
+    }
+
+    /**
+     * Set product identifier attr
+     *
+     * @param string $attr
+     * @return void
+     */
+    public function setProductIdentifierAttr(string $attr)
+    {
+        if ($attr !== IdentifierConfig::PRODUCT_IDENTIFIER_ID && $attr !== IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            throw new \InvalidArgumentException('Invalid product identifier attribute');
+        }
+        $this->saveConfig(self::XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER, $attr);
     }
 
     /**

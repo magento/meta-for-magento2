@@ -32,12 +32,17 @@ class Identifier
     /**
      * @var ProductRepository
      */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /**
      * @var string
      */
     private $identifierAttr;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param SystemConfig $systemConfig
@@ -46,6 +51,7 @@ class Identifier
     public function __construct(SystemConfig $systemConfig, ProductRepository $productRepository)
     {
         $this->identifierAttr = $systemConfig->getProductIdentifierAttr();
+        $this->systemConfig = $systemConfig;
         $this->productRepository = $productRepository;
     }
 
@@ -129,19 +135,55 @@ class Identifier
      */
     public function getProductByFacebookRetailerId($retailerId)
     {
+        // Sometimes (without realizing), seller catalogs will be set up so that the Retailer ID they pass to Meta is
+        // the entity ID of their magento product, not the SKU. There are legitimate reasons for sellers to do this,
+        // but if they don't update their extension settings, calls to fetch magento products will fail.
+        // This logic catches the product load failure, and makes an attempt to load by the inverted identifier instead
+        // (Sku -> Entity Id, Entity Id -> Sku). If the config was misset, it will gracefully flip to the correct value.
+        $product = $this->fetchProduct($retailerId, $this->identifierAttr);
+
+        if (!$product) {
+            // Switch identifier attribute
+            $newIdentifierAttr = $this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU
+                ? IdentifierConfig::PRODUCT_IDENTIFIER_ID
+                : IdentifierConfig::PRODUCT_IDENTIFIER_SKU;
+
+            $product = $this->fetchProduct($retailerId, $newIdentifierAttr);
+
+            if ($product) {
+                $this->systemConfig->setProductIdentifierAttr($newIdentifierAttr);
+                $this->identifierAttr = $newIdentifierAttr;
+            } else {
+                throw new LocalizedException(__(sprintf(
+                    'Product with %s %s does not exist in Magento catalog',
+                    strtoupper($this->identifierAttr),
+                    $retailerId
+                )));
+            }
+        }
+
+        return $product;
+    }
+
+    /**
+     * Fetch product by retailer id and identifier attribute
+     *
+     * @param string|int $retailerId
+     * @param string $identifierAttr
+     * @return ProductInterface|bool
+     */
+    private function fetchProduct($retailerId, string $identifierAttr)
+    {
         try {
-            if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            if ($identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
                 return $this->productRepository->get($retailerId);
-            } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            } elseif ($identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
                 return $this->productRepository->getById($retailerId);
             }
-            throw new LocalizedException(__('Invalid FB product identifier configuration'));
         } catch (NoSuchEntityException $e) {
-            throw new LocalizedException(__(sprintf(
-                'Product with %s %s does not exist in Magento catalog',
-                strtoupper($this->identifierAttr),
-                $retailerId
-            )));
+            // Product not found
+            return false;
         }
+        return false;
     }
 }
