@@ -3,12 +3,12 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="facebook" translate="label" sortOrder="1000">
-            <label>Meta</label>
+            <label>Facebook &amp; Instagram</label>
         </tab>
         <section id="facebook_business_extension" translate="label" sortOrder="5" showInDefault="1" showInWebsite="0"
                  showInStore="1">
             <class>separator-top</class>
-            <label>Business Extension</label>
+            <label>Extension Settings</label>
             <tab>facebook</tab>
             <resource>Meta_BusinessExtension::system_config</resource>
             <group id="business_extension" translate="label" type="text" sortOrder="5" showInDefault="1"
