@@ -585,7 +585,7 @@ class GraphAPIAdapter
             'selected_shipping_option{name, reference_id, price, calculated_tax, estimated_shipping_time}',
             'shipping_address{first_name, last_name, street1, street2, city, postal_code, state, country}',
             'payments',
-            'promotion_details{applied_amount, coupon_code, target_granularity, sponsor, campaign_name}',
+            'promotion_details{applied_amount, coupon_code, target_granularity, target_type, sponsor, campaign_name}',
             'last_updated',
         ];
         $request = [
@@ -829,7 +829,8 @@ class GraphAPIAdapter
     public function getProductInfo($fbProductId)
     {
         $requestFields = [
-            'price'
+            'price',
+            'sale_price'
         ];
 
         $request = [

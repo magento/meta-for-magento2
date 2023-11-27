@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Sales\Model\Mapper;
 
 use GuzzleHttp\Exception\GuzzleException;
+use Magento\Customer\Model\Group;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderAddressInterfaceFactory;
@@ -139,8 +140,6 @@ class OrderMapper
             ->setAccessToken($accessToken);
 
         $channel = ucfirst($data['channel']);
-        $metaShippingOptionName = $data['selected_shipping_option']['name'];
-        $magentoShippingReferenceID = $data['selected_shipping_option']['reference_id'];
         $billingAddress = $this->getOrderBillingAddress($data);
         $shippingAddress = clone $billingAddress;
         $shippingAddress
@@ -156,16 +155,42 @@ class OrderMapper
         $order = $this->orderFactory->create();
         $order
             ->setState(Order::STATE_NEW)
-            ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_NEW));
-
-        $order->setCustomerIsGuest(true)
+            ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_NEW))
+            ->setIsVirtual(false)
+            ->setCustomerIsGuest(true)
             ->setCustomerEmail($billingAddress->getEmail())
             ->setCustomerFirstname($data['shipping_address']['first_name'])
             ->setCustomerLastname($data['shipping_address']['last_name'])
+            ->setCustomerGroupId(Group::NOT_LOGGED_IN_ID)
+            ->setCustomerNoteNotify(false)
             ->setBillingAddress($billingAddress)
-            ->setShippingAddress($shippingAddress);
+            ->setShippingAddress($shippingAddress)
+            ->setStoreId($storeId)
+            ->setPayment($payment)
+            ->setCanSendNewEmailFlag(false);
 
+        $this->applyShippingToOrder($order, $data, $storeId);
+        $this->applyItemsToOrder($order, $data, $storeId);
+        $this->applyDiscountsToOrder($order, $data);
         $this->applyTotalsToOrder($order, $data, $storeId);
+
+        $order->addCommentToStatusHistory("Imported order #{$facebookOrderId} from {$channel}.");
+
+        return $order;
+    }
+
+    /**
+     * Apply shipping to magento order
+     *
+     * @param Order $order
+     * @param array $data
+     * @param int $storeId
+     * @return void
+     */
+    private function applyShippingToOrder(Order $order, array $data, int $storeId)
+    {
+        $metaShippingOptionName = $data['selected_shipping_option']['name'];
+        $magentoShippingReferenceID = $data['selected_shipping_option']['reference_id'];
 
         $shippingMethod = $this->getShippingMethod($metaShippingOptionName, $magentoShippingReferenceID, $storeId);
         $shippingDescription = $this->getShippingDescription($metaShippingOptionName, $shippingMethod, $storeId);
@@ -173,23 +198,10 @@ class OrderMapper
         // @todo strictly handle this edge case by canceling the entire Meta order if this happens.
         $fallbackShippingDescription = $metaShippingOptionName . " - {$shippingMethod}";
 
-        $order->setStoreId($storeId)
+        $order
             // @todo have to set shipping method like this
             ->setShippingMethod($shippingMethod)
-            ->setShippingDescription($shippingDescription ?? $fallbackShippingDescription)
-            ->setPayment($payment);
-
-        // @todo implement paging and tax for order items
-        $items = $this->graphAPIAdapter->getOrderItems($facebookOrderId);
-        foreach ($items['data'] as $item) {
-            $order->addItem($this->orderItemMapper->map($item, $storeId));
-        }
-
-        $this->applyDiscountsToOrder($order, $data);
-        $order->addCommentToStatusHistory("Imported order #{$facebookOrderId} from {$channel}.");
-        $order->setCanSendNewEmailFlag(false);
-
-        return $order;
+            ->setShippingDescription($shippingDescription ?? $fallbackShippingDescription);
     }
 
     /**
@@ -326,30 +338,86 @@ class OrderMapper
     {
         $promotionDetails = $data['promotion_details'] ?? null;
         $orderSubtotalAmount = $data['estimated_payment_details']['subtotal']['items']['amount'];
+        $discountAmount = 0;
+        $discountNames = [];
 
         if ($promotionDetails) {
-            $discountAmount = 0;
-            $couponCodes = [];
             foreach ($promotionDetails['data'] as $promotionDetail) {
-                $discountAmount -= $promotionDetail['applied_amount']['amount'];
-                $couponCodes[] = sprintf(
-                    '[%s] %s',
-                    ucfirst($promotionDetail['sponsor']),
-                    $promotionDetail['campaign_name']
-                );
+                $targetType = $promotionDetail['target_type'] ?? null;
+                if ($targetType === 'shipping') {
+                    // don't treat free shipping as a discount since it is
+                    // already reflected as free under shipping charges.
+                } else {
+                    $discountAmount -= $promotionDetail['applied_amount']['amount'];
+                }
+
+                $couponCode = $promotionDetail['coupon_code'] ?? null;
+                if ($couponCode) {
+                    $order->setCouponCode($couponCode);
+                    $order->setCouponRuleName($promotionDetail['campaign_name']);
+                    $discountNames[] = $couponCode;
+                } else {
+                    $discountNames[] = $promotionDetail['campaign_name'];
+                }
             }
-            $discountDescription = null;
-            if (!empty($couponCodes)) {
-                $discountDescription = implode(", ", $couponCodes);
-            }
-            $order->setDiscountAmount($discountAmount);
-            $order->setBaseDiscountAmount($discountAmount);
+
+            $discountDescription = implode(', ', $discountNames);
+
+            $order->setDiscountDescription($discountDescription);
             $order->setSubtotalWithDiscount($orderSubtotalAmount);
             $order->setBaseSubtotalWithDiscount($orderSubtotalAmount);
-            if ($discountDescription) {
-                $order->setDiscountDescription($discountDescription);
-            }
         }
+
+        $order->setDiscountAmount($discountAmount);
+        $order->setBaseDiscountAmount($discountAmount);
+
+        $order->setShippingDiscountAmount(0);
+        $order->setBaseShippingDiscountAmount(0);
+
+        $order->setDiscountTaxCompensationAmount(0);
+        $order->setBaseDiscountTaxCompensationAmount(0);
+        $order->setShippingDiscountTaxCompensationAmount(0);
+        $order->setBaseShippingDiscountTaxCompensationAmnt(0);
+
+        // Dynamic Checkout:
+        // applied_rule_ids
+    }
+
+    /**
+     * Apply items to magento order from facebook order data
+     *
+     * @param Order $order
+     * @param array $data
+     * @param int $storeId
+     * @return void
+     */
+    private function applyItemsToOrder(Order $order, array $data, int $storeId)
+    {
+        // @todo implement paging and tax for order items
+        $items = $this->graphAPIAdapter->getOrderItems($data['id']);
+        $totalQtyOrdered = 0;
+        $weight = 0;
+        $subtotal = 0;
+        $subtotalInclTax = 0;
+
+        foreach ($items['data'] as $item) {
+            $orderItem = $this->orderItemMapper->map($item, $storeId);
+
+            $order->addItem($orderItem);
+
+            $totalQtyOrdered += $orderItem->getQtyOrdered();
+            $weight += $orderItem->getRowWeight();
+            $subtotal += $orderItem->getRowTotal();
+            $subtotalInclTax += $orderItem->getRowTotalInclTax();
+        }
+
+        $order
+            ->setSubtotal($subtotal)
+            ->setBaseSubtotal($subtotal)
+            ->setSubtotalInclTax($subtotalInclTax)
+            ->setBaseSubtotalInclTax($subtotalInclTax)
+            ->setTotalQtyOrdered($totalQtyOrdered)
+            ->setWeight($weight);
     }
 
     /**
@@ -364,28 +432,38 @@ class OrderMapper
     private function applyTotalsToOrder(Order $order, array $data, int $storeId)
     {
         $currencyCode = $this->storeManager->getStore($storeId)->getCurrentCurrencyCode();
-        $orderSubtotalAmount = $data['estimated_payment_details']['subtotal']['items']['amount'];
         $orderTaxAmount = $data['estimated_payment_details']['tax']['amount'];
         $orderTotalAmount = $data['estimated_payment_details']['total_amount']['amount'];
-        // This is used to support multiple currencies for the order
-        // Since Shop Ads is only available in the US, we can set this to 1
+        $orderTotalDue = 0;
         $baseToOrderRate = 1;
+        $storeToOrderRate = 0;
+
+        $orderShippingAmount = $data['selected_shipping_option']['price']['amount'];
+        $orderShippingTaxAmount = $data['selected_shipping_option']['calculated_tax']['amount'];
+        $orderShippingInclTaxAmount = $orderShippingAmount + $orderShippingTaxAmount;
 
         $order
-            ->setOrderCurrencyCode($currencyCode)
-            ->setBaseCurrencyCode($currencyCode)
             ->setGlobalCurrencyCode($currencyCode)
             ->setStoreCurrencyCode($currencyCode)
-            ->setSubtotal($orderSubtotalAmount)
+            ->setOrderCurrencyCode($currencyCode)
+            ->setBaseCurrencyCode($currencyCode)
             ->setTaxAmount($orderTaxAmount)
-            ->setGrandTotal($orderTotalAmount)
-            ->setBaseTotalPaid($orderTotalAmount)
+            ->setBaseTaxAmount($orderTaxAmount)
+            ->setBaseToGlobalRate($baseToOrderRate)
             ->setBaseToOrderRate($baseToOrderRate)
+            ->setStoreToOrderRate($storeToOrderRate)
+            ->setStoreToBaseRate($storeToOrderRate)
             ->setTotalPaid($orderTotalAmount)
-            ->setBaseSubtotal($orderSubtotalAmount)
-            ->setBaseGrandTotal($orderTotalAmount)
-            ->setBaseShippingAmount($data['selected_shipping_option']['price']['amount'])
-            ->setShippingTaxAmount($data['selected_shipping_option']['calculated_tax']['amount'])
-            ->setShippingAmount($data['selected_shipping_option']['price']['amount']);
+            ->setBaseTotalPaid($orderTotalAmount)
+            ->setTotalDue($orderTotalDue)
+            ->setBaseTotalDue($orderTotalDue)
+            ->setShippingAmount($orderShippingAmount)
+            ->setBaseShippingAmount($orderShippingAmount)
+            ->setShippingTaxAmount($orderShippingTaxAmount)
+            ->setBaseShippingTaxAmount($orderShippingTaxAmount)
+            ->setShippingInclTax($orderShippingInclTaxAmount)
+            ->setBaseShippingInclTax($orderShippingInclTaxAmount)
+            ->setGrandTotal($orderTotalAmount)
+            ->setBaseGrandTotal($orderTotalAmount);
     }
 }
