@@ -20,9 +20,9 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Helper;
 
-use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
+use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
 
 class OrderHelper
 {
@@ -48,33 +48,44 @@ class OrderHelper
         $this->facebookOrderFactory = $facebookOrderFactory;
     }
 
+    public function loadFacebookOrderFromMagentoId($magentoOrderId)
+    {
+        /** @var \Meta\Sales\Api\Data\FacebookOrderInterface $facebookOrder */
+        $facebookOrder = $this->facebookOrderFactory->create();
+        $facebookOrder->load($magentoOrderId, 'magento_order_id');
+
+        return $facebookOrder;
+    }
+
     /**
      * Assign Meta order's extension attributes such as facebook_order_id to a Magento order
      *
      * @param OrderInterface $order
+     * @param bool $reload
      * @return void
      */
-    public function setFacebookOrderExtensionAttributes(OrderInterface $order)
+    public function setFacebookOrderExtensionAttributes(OrderInterface $order, bool $reload = false)
     {
         // if FB order ID present, do nothing
-        if ($order->getExtensionAttributes()->getFacebookOrderId()) {
+        if ($order->getExtensionAttributes()->getFacebookOrderId() && !$reload) {
             return;
         }
 
         /** @var \Meta\Sales\Api\Data\FacebookOrderInterface $facebookOrder */
-        $facebookOrder = $this->facebookOrderFactory->create();
-        $facebookOrder->load($order->getId(), 'magento_order_id');
+        $facebookOrder = $this->loadFacebookOrderFromMagentoId($order->getId());
 
         if (!$facebookOrder->getId()) {
             return;
         }
 
         $emailRemarketingOption = ($facebookOrder->getExtraData()['email_remarketing_option'] ?? false) === true;
+        $syncedShipments = $facebookOrder->getSyncedShipments();
 
         $extensionAttributes = $order->getExtensionAttributes() ?: $this->orderExtensionFactory->create();
         $extensionAttributes->setFacebookOrderId($facebookOrder->getFacebookOrderId())
             ->setChannel($facebookOrder->getChannel())
-            ->setEmailRemarketingOption($emailRemarketingOption);
+            ->setEmailRemarketingOption($emailRemarketingOption)
+            ->setSyncedShipments($syncedShipments);
         $order->setExtensionAttributes($extensionAttributes);
     }
 }

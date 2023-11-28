@@ -707,7 +707,7 @@ class GraphAPIAdapter
     }
 
     /**
-     * Mark order as shipped
+     * Mark order items as shipped
      *
      * @param mixed $fbOrderId
      * @param array $items
@@ -717,8 +717,13 @@ class GraphAPIAdapter
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
-    public function markOrderAsShipped($fbOrderId, $magentoShipmentId, $items, $trackingInfo, $fulfillmentAddressData)
-    {
+    public function markOrderItemsAsShipped(
+        $fbOrderId,
+        $magentoShipmentId,
+        $items,
+        $trackingInfo,
+        $fulfillmentAddressData
+    ) {
         $request = [
             'access_token' => $this->accessToken,
             'external_shipment_id' => $magentoShipmentId,
@@ -733,6 +738,28 @@ class GraphAPIAdapter
             $request['should_use_default_fulfillment_location'] = true;
         }
         $response = $this->callApi('POST', "{$fbOrderId}/shipments", $request);
+        return json_decode($response->getBody()->__toString(), true);
+    }
+
+    /**
+     * Update tracking info for a shipment
+     *
+     * @param mixed $fbOrderId
+     * @param string $magentoShipmentId
+     * @param array $trackingInfo
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws GuzzleException
+     */
+    public function updateShipmentTracking($fbOrderId, $magentoShipmentId, $trackingInfo)
+    {
+        $request = [
+            'access_token' => $this->accessToken,
+            'idempotency_key' => $this->getUniqId(),
+            'external_shipment_id' => $magentoShipmentId,
+            'tracking_info' => json_encode($trackingInfo),
+        ];
+
+        $response = $this->callApi('POST', "{$fbOrderId}/update_shipment", $request);
         return json_decode($response->getBody()->__toString(), true);
     }
 
