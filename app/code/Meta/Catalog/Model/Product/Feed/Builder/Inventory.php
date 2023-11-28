@@ -26,7 +26,7 @@ use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
 use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
 
-class Inventory implements InventoryInterface
+class Inventory extends InventoryRequirements implements InventoryInterface
 {
     /**
      * @var StockItemRepositoryInterface
@@ -59,9 +59,9 @@ class Inventory implements InventoryInterface
      * @param SystemConfig $systemConfig
      */
     public function __construct(
-        StockItemRepositoryInterface $stockItemRepository,
+        StockItemRepositoryInterface      $stockItemRepository,
         StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory,
-        SystemConfig $systemConfig
+        SystemConfig                      $systemConfig
     ) {
         $this->stockItemRepository = $stockItemRepository;
         $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
@@ -108,8 +108,9 @@ class Inventory implements InventoryInterface
         if ($inventory === self::UNMANAGED_STOCK_QTY) {
             return self::STATUS_IN_STOCK;
         }
+
         return $this->productStock && $this->productStock->getIsInStock()
-        && ($inventory > 0)
+        && $this->meetsInventoryRequirementsToBeInStock($this->product)
             ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 

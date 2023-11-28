@@ -27,7 +27,7 @@ use Magento\InventorySalesApi\Api\IsProductSalableInterface;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
-class MultiSourceInventory implements InventoryInterface
+class MultiSourceInventory extends InventoryRequirements implements InventoryInterface
 {
     /**
      * @var Product
@@ -77,11 +77,11 @@ class MultiSourceInventory implements InventoryInterface
      * @param GetIsManageStockForProduct $getIsManageStockForProduct
      */
     public function __construct(
-        IsProductSalableInterface $isProductSalableInterface,
-        GetProductSalableQtyInterface $getProductSalableQtyInterface,
-        SystemConfig $systemConfig,
+        IsProductSalableInterface         $isProductSalableInterface,
+        GetProductSalableQtyInterface     $getProductSalableQtyInterface,
+        SystemConfig                      $systemConfig,
         StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver,
-        GetIsManageStockForProduct $getIsManageStockForProduct
+        GetIsManageStockForProduct        $getIsManageStockForProduct
     ) {
         $this->isProductSalableInterface = $isProductSalableInterface;
         $this->getProductSalableQtyInterface = $getProductSalableQtyInterface;
@@ -151,7 +151,7 @@ class MultiSourceInventory implements InventoryInterface
      */
     public function initInventoryForProduct(Product $product): MultiSourceInventory
     {
-        $websiteId = (int) $product->getStore()->getWebsiteId();
+        $websiteId = (int)$product->getStore()->getWebsiteId();
         $stockId = $this->stockByWebsiteIdResolver->execute($websiteId)->getStockId();
         $this->product = $product;
         $this->stockStatus = $this->isInStock($product, $stockId);
@@ -170,7 +170,9 @@ class MultiSourceInventory implements InventoryInterface
         if (!$this->isStockManagedForProduct()) {
             return self::STATUS_IN_STOCK;
         }
-        return $this->getInventory() && $this->stockStatus ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
+
+        return $this->meetsInventoryRequirementsToBeInStock($this->product)
+        && $this->stockStatus ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 
     /**
@@ -183,11 +185,13 @@ class MultiSourceInventory implements InventoryInterface
         if (!$this->product) {
             return 0;
         }
+
         if (!$this->isStockManagedForProduct()) {
             return self::UNMANAGED_STOCK_QTY;
         }
+
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
-        $quantityAvailableForCatalog = (int) $this->stockQty - $outOfStockThreshold;
+        $quantityAvailableForCatalog = (int)$this->stockQty - $outOfStockThreshold;
         return $quantityAvailableForCatalog > 0 ? $quantityAvailableForCatalog : 0;
     }
 }
