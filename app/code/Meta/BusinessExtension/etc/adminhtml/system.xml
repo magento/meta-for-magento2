@@ -85,7 +85,7 @@
                    showInWebsite="0" showInStore="1">
                 <fieldset_css>meta-section-config</fieldset_css>
                 <label>Business Settings</label>
-                <comment>Set your preferred business settings for Meta Commerce.
+                <comment>Set your preferred business settings for Facebook &amp; Instagram.
                 </comment>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
