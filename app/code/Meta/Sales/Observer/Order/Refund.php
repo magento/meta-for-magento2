@@ -153,7 +153,7 @@ class Refund implements ObserverInterface
             $reasonText
         );
 
-        $payment->getOrder()->addCommentToStatusHistory('Refunded order on Meta.');
+        $payment->getOrder()->addCommentToStatusHistory('Order Refunded on Meta');
     }
 
     /**

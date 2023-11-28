@@ -139,7 +139,6 @@ class OrderMapper
             ->setDebugMode($isDebugMode)
             ->setAccessToken($accessToken);
 
-        $channel = ucfirst($data['channel']);
         $billingAddress = $this->getOrderBillingAddress($data);
         $shippingAddress = clone $billingAddress;
         $shippingAddress
@@ -174,7 +173,7 @@ class OrderMapper
         $this->applyDiscountsToOrder($order, $data);
         $this->applyTotalsToOrder($order, $data, $storeId);
 
-        $order->addCommentToStatusHistory("Imported order #{$facebookOrderId} from {$channel}.");
+        $order->addCommentToStatusHistory("Order Imported from Meta. Meta Order ID: #{$facebookOrderId}");
 
         return $order;
     }

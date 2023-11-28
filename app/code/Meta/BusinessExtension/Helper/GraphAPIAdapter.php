@@ -775,7 +775,7 @@ class GraphAPIAdapter
         // Magento doesn't support admin providing reason code or description for order cancellation
         $cancelReason = [
             'reason_code' => 'CUSTOMER_REQUESTED',
-            'reason_description' => 'Cancelled from Magento',
+            'reason_description' => 'Canceled from Magento',
         ];
         $response = $this->callApi(
             'POST',

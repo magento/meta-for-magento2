@@ -38,7 +38,7 @@ class CreateCancellation
     /**
      * Constant for the cancellation note to be added to the order
      */
-    public const CANCELLATION_NOTE = 'Cancelled from Meta Commerce Manager';
+    public const CANCELLATION_NOTE = 'Order Canceled from Meta.';
 
     /**
      * @var OrderRepositoryInterface
@@ -115,17 +115,15 @@ class CreateCancellation
             $magentoOrder->setStatus(Order::STATE_CANCELED);
         }
         if (isset($facebookCancellationData['cancel_reason'])) {
-            $concatenatedString = "";
+            $concatenatedString = '';
             if (isset($facebookCancellationData['cancel_reason']['reason_code'])) {
-                $concatenatedString .= 'Code: ' . $facebookCancellationData['cancel_reason']['reason_code'] . '. ';
+                $concatenatedString .= ' Reason: ' . $facebookCancellationData['cancel_reason']['reason_code'];
             }
             if (isset($facebookCancellationData['cancel_reason']['reason_description'])) {
-                $concatenatedString .= 'Description: ' .
+                $concatenatedString .= ' Description: ' .
                     $facebookCancellationData['cancel_reason']['reason_description'];
             }
-            if (!empty($concatenatedString)) {
-                $magentoOrder->addCommentToStatusHistory('Cancellation Details: ' . $concatenatedString);
-            }
+            $magentoOrder->addCommentToStatusHistory(self::CANCELLATION_NOTE . $concatenatedString);
         }
         $this->orderRepository->save($magentoOrder);
     }

@@ -226,9 +226,9 @@ class Shipper
         );
 
         if ($track) {
-            $comment = "Marked order as shipped on Meta with {$track->getTitle()}. Tracking #: {$track->getNumber()}.";
+            $comment = "Order Marked as Shipped on Meta for {$track->getTitle()}. Tracking #: {$track->getNumber()}";
         } else {
-            $comment = "Marked order as shipped on Meta.";
+            $comment = "Order Marked as Shipped on Meta";
         }
 
         $order->addCommentToStatusHistory($comment)->save();
@@ -318,7 +318,7 @@ class Shipper
             $trackingInfo,
         );
 
-        $comment = "Updated shipment tracking on Meta for {$track->getTitle()}. Tracking #: {$track->getNumber()}.";
+        $comment = "Order Shipment Tracking Updated on Meta for {$track->getTitle()}. Tracking #: {$track->getNumber()}";
         $order->addCommentToStatusHistory($comment)->save();
 
         $fbOrder = $this->orderHelper->loadFacebookOrderFromMagentoId($order->getId());

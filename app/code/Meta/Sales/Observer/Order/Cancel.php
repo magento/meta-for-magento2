@@ -83,11 +83,10 @@ class Cancel implements ObserverInterface
             return;
         }
 
-        $statusHistory = $order->getStatusHistoryCollection();
-        foreach ($statusHistory as $historyItem) {
-            if ($historyItem->getComment() &&
-                strpos($historyItem->getComment(), CreateCancellation::CANCELLATION_NOTE) !== false
-            ) {
+        $historyItems = $order->getStatusHistoryCollection();
+        foreach ($historyItems as $historyItem) {
+            $comment = $historyItem->getComment();
+            if ($comment && strpos($comment, CreateCancellation::CANCELLATION_NOTE) !== false) {
                 // No-op if order was originally canceled on Facebook -- avoid infinite cancel loop.
                 return;
             }
@@ -101,7 +100,7 @@ class Cancel implements ObserverInterface
 
         $this->cancelOrder((int)$storeId, $facebookOrderId);
 
-        $order->addCommentToStatusHistory("Canceled order on Meta.");
+        $order->addCommentToStatusHistory('Order Canceled on Meta');
     }
 
     /**
