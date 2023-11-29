@@ -162,7 +162,7 @@ class Config
      *
      * @var string|null
      */
-    private ?string $version = '1.2.4-rc';
+    private ?string $version = '1.2.4';
 
     /**
      * @method __construct
