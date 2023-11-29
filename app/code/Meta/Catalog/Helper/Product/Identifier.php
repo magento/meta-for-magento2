@@ -56,12 +56,27 @@ class Identifier
     }
 
     /**
-     * Get product's identifier (SKU or ID, depending on configuration)
+     * Get product's identifier col name(SKU or entity ID, depending on configuration)
+     *
+     * @return string
+     */
+    public function getProductIdentifierColName(): string
+    {
+        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            return 'sku';
+        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            return 'entity_id';
+        }
+        return '';
+    }
+
+    /**
+     * Get product Retailer ID for Commerce (SKU or ID, depending on configuration)
      *
      * @param ProductInterface $product
-     * @return bool|int|string
+     * @return int|string|bool
      */
-    private function getProductIdentifier(ProductInterface $product)
+    public function getMagentoProductRetailerId(ProductInterface $product)
     {
         if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
             return $product->getSku();
@@ -69,17 +84,6 @@ class Identifier
             return $product->getId();
         }
         return false;
-    }
-
-    /**
-     * Get product Retailer ID for Commerce
-     *
-     * @param ProductInterface $product
-     * @return int|string|bool
-     */
-    public function getMagentoProductRetailerId(ProductInterface $product)
-    {
-        return $this->getProductIdentifier($product);
     }
 
     /**
