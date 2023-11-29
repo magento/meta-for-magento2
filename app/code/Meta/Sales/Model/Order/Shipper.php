@@ -22,14 +22,12 @@ namespace Meta\Sales\Model\Order;
 
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Sales\Model\Order\Item as OrderItem;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\Shipment\Item;
 use Magento\Sales\Model\Order\Shipment\Track;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
 use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Helper\ShippingHelper;
 use Meta\Sales\Model\FacebookOrder;
@@ -79,7 +77,7 @@ class Shipper
         GraphAPIAdapter $graphAPIAdapter,
         ShippingHelper  $shippingHelper,
         OrderHelper     $orderHelper,
-        FBEHelper       $fbeHelper,
+        FBEHelper       $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
@@ -97,24 +95,6 @@ class Shipper
     public function getOrderShipEvent($storeId = null)
     {
         return $this->systemConfig->getOrderShipEvent($storeId);
-    }
-
-    /**
-     * Get retailer id
-     *
-     * @param OrderItem $orderItem
-     * @return string|int|bool
-     */
-    private function getRetailerId(OrderItem $orderItem)
-    {
-        $storeId = $orderItem->getStoreId();
-        $productIdentifierAttr = $this->systemConfig->getProductIdentifierAttr($storeId);
-        if ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            return $orderItem->getSku();
-        } elseif ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            return $orderItem->getProductId();
-        }
-        return false;
     }
 
     /**
@@ -199,12 +179,17 @@ class Shipper
 
         $storeId = $order->getStoreId();
 
-        $itemsToShip = [];
+        $itemsToShipBySku = [];
+        $itemsToShipById = [];
         /** @var Item $shipmentItem */
         foreach ($shipment->getAllItems() as $shipmentItem) {
             $orderItem = $shipmentItem->getOrderItem();
-            $itemsToShip[] = [
-                'retailer_id' => $this->getRetailerId($orderItem),
+            $itemsToShipBySku[] = [
+                'retailer_id' => $orderItem->getSku(),
+                'quantity' => (int)$shipmentItem->getQty()
+            ];
+            $itemsToShipById[] = [
+                'retailer_id' => $orderItem->getId(),
                 'quantity' => (int)$shipmentItem->getQty()
             ];
         }
@@ -216,14 +201,27 @@ class Shipper
             $fulfillmentAddress['state'] = $this->shippingHelper->getRegionName($fulfillmentAddress['state']);
         }
 
-        $this->markOrderItemsAsShipped(
-            (int)$storeId,
-            $fbOrderId,
-            $magentoShipmentId,
-            $itemsToShip,
-            $trackingInfo,
-            $fulfillmentAddress
-        );
+        try {
+            $this->markOrderAsShipped(
+                (int)$storeId,
+                $fbOrderId,
+                $shipment->getIncrementId(),
+                $itemsToShipBySku,
+                $trackingInfo,
+                $fulfillmentAddress
+            );
+        } catch (\Exception $e) {
+            // Validated the Meta API will throw if retailer ids provided are invalid
+            // https://fburl.com/code/p523l7gm
+            $this->markOrderAsShipped(
+                (int)$storeId,
+                $fbOrderId,
+                $shipment->getIncrementId(),
+                $itemsToShipById,
+                $trackingInfo,
+                $fulfillmentAddress
+            );
+        }
 
         if ($track) {
             $comment = "Order Marked as Shipped on Meta for {$track->getTitle()}. Tracking #: {$track->getNumber()}";
@@ -292,7 +290,9 @@ class Shipper
 
         if (count($tracks) == 0) {
             // For now, we don't support removing tracking entirely
-            $this->fbeHelper->log("[updateShipmentTracking] Shipment: {$shipment->getIncrementId()} - Skipping, no tracks");
+            $this->fbeHelper->log(
+                "[updateShipmentTracking] Shipment: {$shipment->getIncrementId()} - Skipping, no tracks"
+            );
             return;
         }
 
@@ -307,7 +307,9 @@ class Shipper
 
         $magentoShipmentId = $shipment->getIncrementId();
         if (!FacebookOrder::isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo)) {
-            $this->fbeHelper->log("[updateShipmentTracking] Shipment: {$shipment->getIncrementId()} - Skipping, in sync");
+            $this->fbeHelper->log(
+                "[updateShipmentTracking] Shipment: {$shipment->getIncrementId()} - Skipping, in sync"
+            );
             return;
         }
 
@@ -318,7 +320,7 @@ class Shipper
             $trackingInfo,
         );
 
-        $comment = "Order Shipment Tracking Updated on Meta for {$track->getTitle()}. Tracking #: {$track->getNumber()}";
+        $comment = "Order Shipment Tracking Updated on Meta for {$track->getTitle()}. Tracking #{$track->getNumber()}";
         $order->addCommentToStatusHistory($comment)->save();
 
         $fbOrder = $this->orderHelper->loadFacebookOrderFromMagentoId($order->getId());
@@ -338,7 +340,7 @@ class Shipper
         int    $storeId,
         string $fbOrderId,
         string $magentoShipmentId,
-        array  $trackingInfo,
+        array  $trackingInfo
     ) {
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))

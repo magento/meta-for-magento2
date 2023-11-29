@@ -56,21 +56,6 @@ class Identifier
     }
 
     /**
-     * Get product's identifier col name(SKU or entity ID, depending on configuration)
-     *
-     * @return string
-     */
-    public function getProductIdentifierColName(): string
-    {
-        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            return 'sku';
-        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            return 'entity_id';
-        }
-        return '';
-    }
-
-    /**
      * Get product's identifier (SKU or ID, depending on configuration)
      *
      * @param ProductInterface $product
@@ -82,24 +67,6 @@ class Identifier
             return $product->getSku();
         } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
             return $product->getId();
-        }
-        return false;
-    }
-
-    /**
-     * Get product's other identifier for passing to Meta for product identifications
-     *
-     * @param ProductInterface $product
-     * @return bool|int|string
-     */
-    private function getOtherProductIdentifier(ProductInterface $product)
-    {
-        // If identifier is set to sku then we pass magento id, otherwise in case of magento id, we pass sku
-        // This is done to pass both different type of IDs to meta for product deduplication
-        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            return $product->getId();
-        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            return $product->getSku();
         }
         return false;
     }
@@ -123,67 +90,27 @@ class Identifier
      */
     public function getProductIDOtherThanRetailerId(ProductInterface $product)
     {
-        return $this->getOtherProductIdentifier($product);
-    }
-
-    /**
-     * Get product by Facebook retailer id
-     *
-     * @param string|int $retailerId
-     * @return ProductInterface|bool
-     * @throws LocalizedException
-     */
-    public function getProductByFacebookRetailerId($retailerId)
-    {
-        // Sometimes (without realizing), seller catalogs will be set up so that the Retailer ID they pass to Meta is
-        // the entity ID of their magento product, not the SKU. There are legitimate reasons for sellers to do this,
-        // but if they don't update their extension settings, calls to fetch magento products will fail.
-        // This logic catches the product load failure, and makes an attempt to load by the inverted identifier instead
-        // (Sku -> Entity Id, Entity Id -> Sku). If the config was misset, it will gracefully flip to the correct value.
-        $product = $this->fetchProduct($retailerId, $this->identifierAttr);
-
-        if (!$product) {
-            // Switch identifier attribute
-            $newIdentifierAttr = $this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU
-                ? IdentifierConfig::PRODUCT_IDENTIFIER_ID
-                : IdentifierConfig::PRODUCT_IDENTIFIER_SKU;
-
-            $product = $this->fetchProduct($retailerId, $newIdentifierAttr);
-
-            if ($product) {
-                $this->systemConfig->setProductIdentifierAttr($newIdentifierAttr);
-                $this->identifierAttr = $newIdentifierAttr;
-            } else {
-                throw new LocalizedException(__(sprintf(
-                    'Product with %s %s does not exist in Magento catalog',
-                    strtoupper($this->identifierAttr),
-                    $retailerId
-                )));
-            }
+        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            return $product->getId();
+        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            return $product->getSku();
         }
-
-        return $product;
+        return false;
     }
 
     /**
      * Fetch product by retailer id and identifier attribute
      *
      * @param string|int $retailerId
-     * @param string $identifierAttr
      * @return ProductInterface|bool
      */
-    private function fetchProduct($retailerId, string $identifierAttr)
+    public function getProductByFacebookRetailerId($retailerId)
     {
         try {
-            if ($identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-                return $this->productRepository->get($retailerId);
-            } elseif ($identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-                return $this->productRepository->getById($retailerId);
-            }
+            return $this->productRepository->get($retailerId);
         } catch (NoSuchEntityException $e) {
             // Product not found
-            return false;
+            return $this->productRepository->getById($retailerId);
         }
-        return false;
     }
 }

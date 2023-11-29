@@ -190,16 +190,14 @@ class Diagnostics extends Template
         $collection->addAttributeToSelect('*')
             ->addStoreFilter($storeId)
             ->setStoreId($storeId);
-
-        $productIdentifierAttr = $this->systemConfig->getProductIdentifierAttr($storeId);
-        if ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            $collection->addAttributeToFilter('sku', ['in' => $retailerIds]);
-        } elseif ($productIdentifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            $collection->addIdFilter($retailerIds);
-        } else {
-            return [];
-        }
-
+        // Because it is not guaranteed whether the seller uses SKU or entity_id as their
+        // default, we must always query by both types.
+        $collection->addAttributeToFilter(
+            [
+                ['attribute' => 'sku', 'in' => $retailerIds],
+                ['attribute' => 'entity_id', 'in' => $retailerIds]
+            ]
+        );
         return $collection->getItems();
     }
 

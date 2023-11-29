@@ -123,8 +123,13 @@ class Diagnostics extends Text
         }
 
         try {
-            $retailerId = $this->productIdentifier->getMagentoProductRetailerId($this->product);
-            $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $retailerId);
+            $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $this->product->getSku());
+        } catch (\Exception $e) {
+            $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $this->product->getId());
+        }
+
+        try {
+            
             $fbProductId = $product['data'][0]['id'] ?? false;
             if ($fbProductId) {
                 $productErrors = $this->graphApiAdapter->getProductErrors($fbProductId)['errors'] ?? [];
