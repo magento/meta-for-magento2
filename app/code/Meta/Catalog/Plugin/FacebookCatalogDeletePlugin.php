@@ -80,9 +80,15 @@ class FacebookCatalogDeletePlugin
      */
     public function afterDelete(Product $subject, $result, $object)
     {
+        $identifier = $this->identifier->getMagentoProductRetailerId($object);
+        if ($identifier === false) {
+            $this->fbeHelper->log('Deleted Product does not have meta identifier.');
+            return $result;
+        }
+
         $catalogDelete = $this->catalogUpdateFactory->create()
             ->setProductId($object->getId())
-            ->setSku($object->getSku())
+            ->setSku($identifier)
             ->setMethod('delete');
         try {
             $this->catalogUpdateResourceModel->deleteUpdateProductEntries($identifier);
