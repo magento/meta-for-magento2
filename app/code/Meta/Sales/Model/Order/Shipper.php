@@ -202,7 +202,7 @@ class Shipper
         }
 
         try {
-            $this->markOrderAsShipped(
+            $this->markOrderItemsAsShipped(
                 (int)$storeId,
                 $fbOrderId,
                 $shipment->getIncrementId(),
@@ -213,7 +213,7 @@ class Shipper
         } catch (\Exception $e) {
             // Validated the Meta API will throw if retailer ids provided are invalid
             // https://fburl.com/code/p523l7gm
-            $this->markOrderAsShipped(
+            $this->markOrderItemsAsShipped(
                 (int)$storeId,
                 $fbOrderId,
                 $shipment->getIncrementId(),
