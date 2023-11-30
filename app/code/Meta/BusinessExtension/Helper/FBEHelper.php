@@ -263,7 +263,7 @@ class FBEHelper
      */
     public function log($info, array $context = [])
     {
-        if (!isset($context['log_type']) || !$this->systemConfig->isMetaTelemetryLoggingEnabled()) {
+        if (!isset($context['log_type'])) {
             $this->logger->info($info);
             return;
         }
@@ -311,8 +311,8 @@ class FBEHelper
 
     public function logExceptionDetails($code, $message, $traceAsString, array $context = [])
     {
-        // If the log type is not set or Meta extension logging is not enabled just log the error message and trace.
-        if (!isset($context['log_type']) || !$this->systemConfig->isMetaExceptionLoggingEnabled()) {
+        // If the log type is not set just log the error message and trace.
+        if (!isset($context['log_type'])) {
             $this->logger->error($message);
             $this->logger->error($traceAsString);
             return;
