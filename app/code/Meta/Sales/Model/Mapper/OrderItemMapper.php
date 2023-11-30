@@ -121,18 +121,30 @@ class OrderItemMapper
         // sale price if available, otherwise list price
         $price = $productInfo['sale_price'] ?? $originalPrice;
 
-        // actual price, including applied discounts
+        // actual price, including applied item-level discounts
         $discountPrice = $item['price_per_unit']['amount'];
+
+        $discountAmountItems = $price - $discountPrice;
+        $discountPercent = round(($discountAmountItems / $price) * 100, 2);
+
+        $discountAmountOrder = 0;
+        $promotionDetails = $item['promotion_details']['data'] ?? null;
+        if ($promotionDetails) {
+            foreach ($promotionDetails as $promotionDetail) {
+                if ($promotionDetail['target_granularity'] === 'order_level') {
+                    $discountAmountOrder += $promotionDetail['applied_amount']['amount'];
+                }
+            }
+        }
 
         $rowTotal = $price * $quantity;
         $rowWeight = $product->getWeight() * $quantity;
         $rowTaxAmount = $item['tax_details']['estimated_tax']['amount'];
-        $rowDiscountAmount = ($price - $discountPrice) * $quantity;
+        $rowDiscountAmount = round(($discountAmountItems * $quantity) + $discountAmountOrder, 2);
+        $rowDiscountPrice = $discountPrice * $quantity - $discountAmountOrder;
 
-        $discountAmount = $price - $discountPrice;
-        $discountPercent = round(($discountAmount / $price) * 100, 2);
-
-        $taxPercent = round($rowTaxAmount / ($discountPrice * $quantity) * 100, 2);
+        // discount price can be $0 for free BXGY items
+        $taxPercent = $rowDiscountPrice > 0 ? round(($rowTaxAmount / $rowDiscountPrice) * 100, 2) : 0;
         $priceInclTax = round(($price * (100 + $taxPercent) / 100), 2);
         $rowTotalInclTax = round(($priceInclTax * $quantity), 2);
 

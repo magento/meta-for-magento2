@@ -170,7 +170,6 @@ class OrderMapper
 
         $this->applyShippingToOrder($order, $data, $storeId);
         $this->applyItemsToOrder($order, $data, $storeId);
-        $this->applyDiscountsToOrder($order, $data);
         $this->applyTotalsToOrder($order, $data, $storeId);
 
         $order->addCommentToStatusHistory("Order Imported from Meta. Meta Order ID: #{$facebookOrderId}");
@@ -315,7 +314,7 @@ class OrderMapper
             'street' => $street,
             'city' => $data['shipping_address']['city'],
             'email' => $data['buyer_details']['email'],
-            'telephone' => '0', // is required by magento
+            'telephone' => 'N/A', // is required by magento
             'country_id' => $data['shipping_address']['country'] // maps 1:1
         ];
 
@@ -331,25 +330,29 @@ class OrderMapper
      *
      * @param Order $order
      * @param array $data
+     * @param array $items
      * @return void
      */
-    private function applyDiscountsToOrder(Order $order, array $data)
+    private function applyDiscountsToOrder(Order $order, array $data, array $items)
     {
-        $promotionDetails = $data['promotion_details'] ?? null;
-        $orderSubtotalAmount = $data['estimated_payment_details']['subtotal']['items']['amount'];
         $discountAmount = 0;
         $discountNames = [];
 
-        if ($promotionDetails) {
-            foreach ($promotionDetails['data'] as $promotionDetail) {
-                $targetType = $promotionDetail['target_type'] ?? null;
-                if ($targetType === 'shipping') {
-                    // don't treat free shipping as a discount since it is
-                    // already reflected as free under shipping charges.
-                } else {
+        // calculate discounts using items to exclude order-level shipping discounts
+        foreach ($items['data'] as $item) {
+            $itemPromotionDetails = $item['promotion_details']['data'] ?? null;
+            if ($itemPromotionDetails) {
+                foreach ($itemPromotionDetails as $promotionDetail) {
                     $discountAmount -= $promotionDetail['applied_amount']['amount'];
                 }
+            }
+        }
 
+        $orderPromotionDetails = $data['promotion_details'] ?? null;
+        $orderSubtotalAmount = $data['estimated_payment_details']['subtotal']['items']['amount'];
+
+        if ($orderPromotionDetails) {
+            foreach ($orderPromotionDetails['data'] as $promotionDetail) {
                 $couponCode = $promotionDetail['coupon_code'] ?? null;
                 if ($couponCode) {
                     $order->setCouponCode($couponCode);
@@ -417,6 +420,8 @@ class OrderMapper
             ->setBaseSubtotalInclTax($subtotalInclTax)
             ->setTotalQtyOrdered($totalQtyOrdered)
             ->setWeight($weight);
+
+        $this->applyDiscountsToOrder($order, $data, $items);
     }
 
     /**
