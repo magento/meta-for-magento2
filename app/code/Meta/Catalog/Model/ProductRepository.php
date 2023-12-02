@@ -115,11 +115,11 @@ class ProductRepository
         }
 
         if (empty($childProduct->getImage())) {
-            $childProduct->setImage($product->getImage());
+            $childProduct->setData('image', $product->getImage());
         }
 
         if (empty($childProduct->getMediaGalleryImages())) {
-            $childProduct->setMediaGalleryImages($product->getMediaGalleryImages());
+            $childProduct->setData('media_gallery_images', $product->getMediaGalleryImages());
         }
 
         return $childProduct;
