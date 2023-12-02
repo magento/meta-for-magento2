@@ -22,7 +22,7 @@ namespace Meta\Catalog\Cron;
 
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Model\Feed\CategoryCollection;
+use Meta\Catalog\Model\Category\CategoryCollection;
 
 class CategorySyncCron
 {
@@ -50,8 +50,8 @@ class CategorySyncCron
      */
     public function __construct(
         CategoryCollection $categoryCollection,
-        SystemConfig $systemConfig,
-        FBEHelper $fbeHelper
+        SystemConfig       $systemConfig,
+        FBEHelper          $fbeHelper
     ) {
         $this->categoryCollection = $categoryCollection;
         $this->systemConfig = $systemConfig;
@@ -65,11 +65,11 @@ class CategorySyncCron
      */
     public function execute()
     {
-        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+        foreach ($this->systemConfig->getAllFBEInstalledStores() as $store) {
             $storeId = $store->getId();
             try {
                 if ($this->systemConfig->isCatalogSyncEnabled($storeId)) {
-                    $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
+                    $this->categoryCollection->pushAllCategoriesToFbCollections((int)$storeId);
                 }
             } catch (\Throwable $e) {
                 $this->fbeHelper->logExceptionImmediatelyToMeta(

@@ -23,6 +23,7 @@ namespace Meta\BusinessExtension\Model;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
+use Meta\BusinessExtension\Helper\CatalogConfigUpdateHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
@@ -51,23 +52,31 @@ class SaveFBEInstallsResponse
     private $installedFeatureResource;
 
     /**
+     * @var CatalogConfigUpdateHelper
+     */
+    private CatalogConfigUpdateHelper $catalogConfigUpdateHelper;
+
+    /**
      * Construct
      *
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphApiAdapter
      * @param FacebookInstalledFeature $installedFeatureResource
+     * @param CatalogConfigUpdateHelper $catalogConfigUpdateHelper
      */
     public function __construct(
         FBEHelper $fbeHelper,
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter,
-        FacebookInstalledFeature $installedFeatureResource
+        FacebookInstalledFeature $installedFeatureResource,
+        CatalogConfigUpdateHelper $catalogConfigUpdateHelper
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->installedFeatureResource = $installedFeatureResource;
+        $this->catalogConfigUpdateHelper = $catalogConfigUpdateHelper;
     }
 
     /**
@@ -86,15 +95,24 @@ class SaveFBEInstallsResponse
             return false;
         }
         $data = $response[0];
+        $catalogId = $data['catalog_id'] ?? '';
+        $pixelId = $data['pixel_id'] ?? '';
+        $commercePartnerIntegrationId = $data['commerce_partner_integration_id'] ?? '';
 
-        $this->savePixelId($data['pixel_id'] ?? '', $storeId);
+        // we will update catalog config if catalog has been updated in Meta
+        $this->catalogConfigUpdateHelper->updateCatalogConfiguration(
+            (int) $storeId,
+            $catalogId,
+            $commercePartnerIntegrationId,
+            $pixelId,
+            false
+        );
+
+        $this->savePixelId($pixelId, $storeId);
         $this->saveProfiles($data['profiles'] ?? '', $storeId);
         $this->savePages($data['pages'] ?? '', $storeId);
-        $this->saveCatalogId($data['catalog_id'] ?? '', $storeId);
-        $this->saveCommercePartnerIntegrationId(
-            $data['commerce_partner_integration_id'] ?? '',
-            $storeId
-        );
+        $this->saveCatalogId($catalogId, $storeId);
+        $this->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId);
         $this->saveMerchantSettingsId($data['commerce_merchant_settings_id'] ?? '', $storeId);
         $this->saveInstalledFeatures($data['installed_features'] ?? '', $storeId);
         $this->systemConfig->cleanCache();

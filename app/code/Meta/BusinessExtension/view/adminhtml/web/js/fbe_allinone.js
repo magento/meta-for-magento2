@@ -9,152 +9,11 @@
  */
 'use strict';
 
-var React = require('./react');
+const React = require('./react');
+const ReactDOM = require('./react-dom');
+const FBUtils = require('./utils');
 
-var IEOverlay = function () {
-    var Overlay = React.createClass({
-        displayName: 'Overlay',
-
-        render: function render() {
-            var overLayStyles = {
-                width: '600px',
-                height: '150px',
-                position: 'relative',
-                top: '50%',
-                left: '50%',
-                marginTop: '-75px',
-                marginLeft: '-300px',
-                backgroundColor: 'white',
-                textAlign: 'center',
-                fontFamily: 'helvetica, arial, sans-serif',
-                zIndex: '11'
-            };
-
-            var h1Styles = {
-                fontSize: '24px',
-                lineHeight: '28px',
-                color: '#141823',
-                fontWeight: 'normal',
-                paddingTop: '44px'
-            };
-
-            var h2Styles = {
-                fontSize: '14px',
-                lineHeight: '20px',
-                color: '#9197a3',
-                fontWeight: 'normal'
-            };
-
-            return React.createElement(
-                'div',
-                { style: overLayStyles, id: 'ieOverlay' },
-                React.createElement(
-                    'h1',
-                    { style: h1Styles },
-                    'Internet Explorer Is Not Supported'
-                ),
-                React.createElement(
-                    'h2',
-                    { style: h2Styles },
-                    'Please use a modern browser such as Google Chrome or Mozilla Firefox'
-                )
-            );
-        }
-    });
-
-    return {
-        render: function render() {
-            var containerId = 'page:main-container';
-            var containerEl = document.getElementById(containerId);
-            containerEl.style.position = 'relative';
-
-            var ieContainer = document.createElement('div');
-            ieContainer.id = 'ie-container';
-
-            ieContainer.style.width = '100%';
-            ieContainer.style.height = '100%';
-            ieContainer.style.position = 'absolute';
-            ieContainer.style.top = '0';
-            ieContainer.style.left = '0';
-            ieContainer.style.backgroundColor = 'rgba(0,0,0,0.3)';
-
-            containerEl.appendChild(ieContainer);
-            ReactDOM.render(React.createElement(Overlay, null), ieContainer);
-        }
-    };
-}();
-
-module.exports = IEOverlay;
-
-},{"./react":5}],2:[function(require,module,exports){
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the code directory.
- */
-'use strict';
-
-var React = require('./react');
-
-var FBModal = React.createClass({
-    displayName: 'Modal',
-
-    render: function render() {
-        return React.createElement(
-            'div',
-            { className: 'modal-container' },
-            React.createElement(
-                'div',
-                { className: 'modal' },
-                React.createElement(
-                    'div',
-                    { className: 'modal-header' },
-                    this.props.title
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'modal-content' },
-                    this.props.message
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'modal-close' },
-                    React.createElement(
-                        'button',
-                        { onClick: this.props.onClose, className: 'medium blue' },
-                        'OK'
-                    )
-                )
-            )
-        );
-    }
-});
-
-module.exports = FBModal;
-
-},{"./react":5}],3:[function(require,module,exports){
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the code directory.
- */
-'use strict';
-
-var React = require('./react');
-var ReactDOM = require('./react-dom');
-var IEOverlay = require('./IEOverlay');
-var FBModal = require('./Modal');
-var FBUtils = require('./utils');
-
-const accessTokenScope = ['manage_business_extension', 'business_management', 'ads_management', 'pages_read_engagement', 'catalog_management'];
-
-var jQuery = (function (jQuery) {
+const jQuery = (function (jQuery) {
   if (jQuery && typeof jQuery === 'function') {
     return jQuery;
   } else {
@@ -168,108 +27,99 @@ var jQuery = (function (jQuery) {
   }
 })(window.jQuery);
 
-var ajaxify = function (url) {
+const ajaxify = function (url) {
   return url + '?isAjax=true&storeId=' + window.facebookBusinessExtensionConfig.storeId;
 };
 
-var getAndEncodeExternalClientMetadata = function () {
+const getAndEncodeExternalClientMetadata = function () {
     const metaData = {
         customer_token: window.facebookBusinessExtensionConfig.customApiKey
     };
     return encodeURIComponent(JSON.stringify(metaData));
 }
 
-var ajaxParam = function (params) {
+const ajaxParam = function (params) {
   if (window.FORM_KEY) {
     params.form_key = window.FORM_KEY;
   }
   return params;
 };
 
-jQuery('#store').on('change', function() {
-  if (jQuery(this).val() === 'select-store') {
-    jQuery('#fbe-iframe').empty();
-    return false;
-  }
-  window.facebookBusinessExtensionConfig.storeId = jQuery(this).val();
-  window.facebookBusinessExtensionConfig.installed = jQuery(this).find(':selected').data('installed');
-  window.facebookBusinessExtensionConfig.pixelId = jQuery(this).find(':selected').data('pixel-id');
-  window.facebookBusinessExtensionConfig.systemUserName = jQuery(this).find(':selected').data('system-user-name') + '_system_user';
-  window.facebookBusinessExtensionConfig.externalBusinessId = jQuery(this).find(':selected').data('external-business-id');
-
-  var FBEFlowContainer = React.createClass({
+jQuery(document).ready(function() {
+  const FBEFlowContainer = React.createClass({
 
     getDefaultProps: function() {
-        console.log("init props installed "+window.facebookBusinessExtensionConfig.installed);
         return {
             installed: window.facebookBusinessExtensionConfig.installed
         };
     },
     getInitialState: function() {
-        console.log("change state");
         return {installed: this.props.installed};
     },
 
     bindMessageEvents: function bindMessageEvents() {
-      var _this = this;
-      if (FBUtils.isIE() && window.MessageChannel) {
-        // do nothing, wait for our messaging utils to be ready
-      } else {
-        window.addEventListener('message', function (event) {
-          var origin = event.origin || event.originalEvent.origin;
-          if (FBUtils.urlFromSameDomain(origin, window.facebookBusinessExtensionConfig.popupOrigin)) {
-            // Make ajax calls to store data from fblogin and fb installs
-            _this.consoleLog("Message from fblogin ");
-            _this.saveFBLoginData(event.data);
-          }
-        }, false);
-      }
-    },
-    saveFBLoginData: function saveFBLoginData(data) {
       const _this = this;
-      if (data) {
-        let responseObj = JSON.parse(data);
-        _this.consoleLog("Response from fb login:");
-        _this.consoleLog(responseObj);
-        let businessManagerId = responseObj.business_manager_id;
-        let accessToken = responseObj.access_token;
-        let success = responseObj.success;
-        let pixelId = responseObj.pixel_id;
-        let profiles = responseObj.profiles;
-        let catalogId = responseObj.catalog_id;
-        let commercePartnerIntegrationId = responseObj.commerce_partner_integration_id;
-        let pageId = responseObj.page_id;
-        let installedFeatures = responseObj.installed_features;
 
-        if(success) {
-          let action = responseObj.action;
-          if(action != null && action === 'delete') {
-            // Delete asset ids stored in db instance.
-            _this.consoleLog("Successfully uninstalled FBE");
-            _this.deleteFBAssets();
-          }else if(action != null && action === 'create') {
-            _this.savePixelId(pixelId);
-            _this.exchangeAccessToken(accessToken, businessManagerId);
-            _this.saveProfilesData(profiles);
-            _this.saveAAMSettings(pixelId);
-            _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
-            _this.saveInstalledFeatures(installedFeatures);
-            _this.cleanConfigCache();
-            _this.postFBEOnboardingSync();
-
-            if (window.facebookBusinessExtensionConfig.isCommerceEmbeddedExtensionEnabled) {
-              window.location.reload();
-            } else {
-              _this.setState({installed: 'true'});
-            }
+      window.addEventListener('message', function (event) {
+        const origin = event.origin || event.originalEvent.origin;
+        if (FBUtils.urlFromSameDomain(origin, window.facebookBusinessExtensionConfig.popupOrigin)) {
+          const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+          if (!message) {
+            return;
           }
-        }else {
-          _this.consoleLog("No response received after setup");
+
+          _this.handleMessage(message);
         }
+      }, false);
+    },
+    handleMessage: function handleMessage(message) {
+      const _this = this;
+
+      // "FBE Iframe" uses the 'action' field in its messages.
+      // "Commerce Extension" uses the 'type' field in its messages.
+      const action = message.action;
+      const messageEvent = message.event;
+
+      if (action === 'delete' || messageEvent === 'CommerceExtension::UNINSTALL') {
+        // Delete asset ids stored in db instance.
+        _this.deleteFBAssets();
+      }
+
+      if (action === 'create' || messageEvent === 'CommerceExtension::INSTALL') {
+        const success = message.success;
+        if (success) {
+          const accessToken = message.access_token;
+          const pixelId = message.pixel_id;
+          const profiles = message.profiles;
+          const catalogId = message.catalog_id;
+          const commercePartnerIntegrationId = message.commerce_partner_integration_id;
+          const pageId = message.page_id;
+          const installedFeatures = message.installed_features;
+
+          _this.savePixelId(pixelId);
+          _this.saveAccessToken(accessToken);
+          _this.saveProfilesData(profiles);
+          _this.saveAAMSettings(pixelId);
+          _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
+          _this.saveInstalledFeatures(installedFeatures);
+          _this.cleanConfigCache();
+          _this.postFBEOnboardingSync();
+
+          if (window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled) {
+            window.location.reload();
+          } else {
+            _this.setState({installed: 'true'});
+          }
+        }
+      }
+
+      if (messageEvent === 'CommerceExtension::RESIZE') {
+        const {height} = message;
+        document.getElementById('fbe-iframe').height = height;
       }
     },
     savePixelId: function savePixelId(pixelId) {
-      var _this = this;
+      const _this = this;
       if (!pixelId) {
         console.error('Meta Business Extension Error: got no pixel_id');
         return;
@@ -283,10 +133,9 @@ jQuery('#store').on('change', function() {
           storeId: window.facebookBusinessExtensionConfig.storeId,
         }),
         success: function onSuccess(data, _textStatus, _jqXHR) {
-          var response = data;
+          const response = data;
           let msg = '';
           if (response.success) {
-            _this.setState({pixelId: response.pixelId});
             msg = "The Meta Pixel with ID: " + response.pixelId + " is now installed on your website.";
           } else {
             msg = "There was a problem saving the pixel. Please try again";
@@ -299,7 +148,7 @@ jQuery('#store').on('change', function() {
       });
     },
     saveAccessToken: function saveAccessToken(accessToken) {
-      var _this = this;
+      const _this = this;
       if (!accessToken) {
         console.error('Meta Business Extension Error: got no access token');
         return;
@@ -307,7 +156,7 @@ jQuery('#store').on('change', function() {
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.setAccessToken),
-        async : false,
+        async: false,
         data: ajaxParam({
           accessToken: accessToken,
         }),
@@ -319,34 +168,8 @@ jQuery('#store').on('change', function() {
         }
       });
     },
-    exchangeAccessToken: function exchangeAccessToken(access_token, business_manager_id) {
-      const _this = this;
-      const fbeAccessTokenUrl = window.facebookBusinessExtensionConfig.fbeAccessTokenUrl;
-      if (!fbeAccessTokenUrl) {
-        console.error('Could not exchange access token. Token url not found.');
-        return;
-      }
-      let requestData = {
-          'access_token': access_token,
-          'app_id': window.facebookBusinessExtensionConfig.appId,
-          'fbe_external_business_id': window.facebookBusinessExtensionConfig.externalBusinessId,
-          'scope': accessTokenScope.join()
-      };
-      jQuery.ajax({
-        type: 'post',
-        url: fbeAccessTokenUrl.replace("business_manager_id", business_manager_id),
-        async : false,
-        data: requestData,
-        success: function onSuccess(data, _textStatus, _jqXHR) {
-            _this.saveAccessToken(data.access_token);
-        },
-        error: function () {
-          console.error('There was an error getting access_token');
-        }
-      });
-    },
     saveProfilesData: function saveProfilesData(profiles) {
-      var _this = this;
+      const _this = this;
       if (!profiles) {
         console.error('Meta Business Extension Error: got no profiles data');
         return;
@@ -367,8 +190,8 @@ jQuery('#store').on('change', function() {
       });
     },
     saveAAMSettings: function saveAAMSettings(pixelId){
-      var _this = this;
-        jQuery.ajax({
+      const _this = this;
+      jQuery.ajax({
         'type': 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.setAAMSettings),
         async : false,
@@ -389,7 +212,7 @@ jQuery('#store').on('change', function() {
       });
     },
     saveInstalledFeatures: function saveInstalledFeatures(installedFeatures) {
-      var _this = this;
+      const _this = this;
       if (!installedFeatures) {
         console.error('Meta Business Extension Error: got no installed_features data');
         return;
@@ -414,7 +237,7 @@ jQuery('#store').on('change', function() {
       });
     },
     cleanConfigCache : function cleanConfigCache() {
-      var _this = this;
+      const _this = this;
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.cleanConfigCacheUrl),
@@ -431,7 +254,7 @@ jQuery('#store').on('change', function() {
       });
     },
     saveConfig: function saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId) {
-      var _this = this;
+      const _this = this;
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.saveConfig),
@@ -455,7 +278,7 @@ jQuery('#store').on('change', function() {
       });
     },
     postFBEOnboardingSync: function postFBEOnboardingSync() {
-      var _this = this;
+      const _this = this;
       jQuery.ajax({
         type: 'post',
         url: ajaxify(window.facebookBusinessExtensionConfig.postFBEOnboardingSync),
@@ -474,8 +297,8 @@ jQuery('#store').on('change', function() {
       });
     },
     deleteFBAssets: function deleteFBAssets() {
-      var _this = this;
-        jQuery.ajax({
+      const _this = this;
+      jQuery.ajax({
         type: 'delete',
         url: ajaxify(window.facebookBusinessExtensionConfig.deleteConfigKeys),
         data: ajaxParam({
@@ -510,7 +333,6 @@ jQuery('#store').on('change', function() {
              '&timezone='+window.facebookBusinessExtensionConfig.timeZone+
              '&external_business_id='+window.facebookBusinessExtensionConfig.externalBusinessId+
              '&installed='+this.state.installed+
-             '&system_user_name='+window.facebookBusinessExtensionConfig.systemUserName+
              '&business_vertical='+window.facebookBusinessExtensionConfig.businessVertical+
              '&channel='+window.facebookBusinessExtensionConfig.channel+
              '&currency='+ window.facebookBusinessExtensionConfig.currency +
@@ -519,14 +341,23 @@ jQuery('#store').on('change', function() {
 
     },
     render: function render() {
-      var _this = this;
+      const _this = this;
+      const isNewSplashPage = window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled;
       try {
-        _this.consoleLog("query params --"+_this.queryParams());
         return React.createElement(
           'iframe',
           {
-            src:window.facebookBusinessExtensionConfig.fbeLoginUrl + _this.queryParams(),
-            style: {border:'none',width:'1100px',height:'700px'}
+            id: 'fbe-iframe',
+            src: window.facebookBusinessExtensionConfig.fbeLoginUrl + _this.queryParams(),
+            style: {
+              border: 'none',
+              width: isNewSplashPage ? '100%' : '1100px',
+              height: isNewSplashPage ? undefined : '700px',
+              minHeight: isNewSplashPage ? '700px' : undefined,
+            },
+            scrolling: window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled
+              ? 'no'
+              : undefined,
           }
         );
       } catch (err) {
@@ -538,60 +369,10 @@ jQuery('#store').on('change', function() {
   // Render
   ReactDOM.render(
     React.createElement(FBEFlowContainer, null),
-    document.getElementById('fbe-iframe')
+    document.getElementById('fbe-iframe-container')
   );
 });
-// Code to display the above container.
-var displayFBModal = function displayFBModal() {
-  if (FBUtils.isIE()) {
-    IEOverlay().render();
-  }
-  var QueryString = function () {
-    // This function is anonymous, is executed immediately and
-    // the return value is assigned to QueryString!
-    var query_string = {};
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      // If first entry with this name
-      if (typeof query_string[pair[0]] === "undefined") {
-        query_string[pair[0]] = decodeURIComponent(pair[1]);
-        // If second entry with this name
-      } else if (typeof query_string[pair[0]] === "string") {
-        var arr = [query_string[pair[0]], decodeURIComponent(pair[1])];
-        query_string[pair[0]] = arr;
-        // If third or later entry with this name
-      } else {
-        query_string[pair[0]].push(decodeURIComponent(pair[1]));
-      }
-    }
-    return query_string;
-  }();
-  if (QueryString.p) {
-    window.facebookBusinessExtensionConfig.popupOrigin = QueryString.p;
-  }
-};
-
-(function main() {
-  // Logic for when to display the container.
-  if (document.readyState === 'interactive') {
-    // in case the document is already rendered
-    displayFBModal();
-  } else if (document.addEventListener) {
-    // modern browsers
-    document.addEventListener('DOMContentLoaded', displayFBModal);
-  } else {
-    document.attachEvent('onreadystatechange', function () {
-      // IE <= 8
-      if (document.readyState === 'complete') {
-        displayFBModal();
-      }
-    });
-  }
-})();
-
-},{"./IEOverlay":1,"./Modal":2,"./react":5,"./react-dom":4,"./utils":6}],4:[function(require,module,exports){
+},{"./react":3,"./react-dom":2,"./utils":4}],2:[function(require,module,exports){
 (function (global){(function (){
 /**
  * ReactDOM v0.14.3
@@ -636,7 +417,7 @@ var displayFBModal = function displayFBModal() {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"react":5}],5:[function(require,module,exports){
+},{"react":3}],3:[function(require,module,exports){
 (function (global){(function (){
 /**
  * React v0.14.3
@@ -19816,7 +19597,7 @@ var displayFBModal = function displayFBModal() {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
@@ -19830,14 +19611,8 @@ var displayFBModal = function displayFBModal() {
 
 var FBUtils = (function(){
     return {
-        isIE : function isIE() {
-            return (
-                /MSIE |Trident\/|Edge\//.test(window.navigator.userAgent)
-            );
-        },
-
-        parseURL : function parseURL(url) {
-            var parser = document.createElement('a');
+        parseURL: function parseURL(url) {
+            const parser = document.createElement('a');
             parser.href = url;
             return parser;
         },
@@ -19848,19 +19623,10 @@ var FBUtils = (function(){
             var u1host = u1.host.replace('web.', 'www.');
             var u2host = u2.host.replace('web.', 'www.');
             return u1.protocol === u2.protocol && u1host === u2host;
-        },
-
-        togglePopupOriginWeb : function togglePopupOriginWeb(fae_origin) {
-            var current_origin = window.facebookAdsExtensionConfig.popupOrigin;
-            if (fae_origin.includes('web.') && !current_origin.includes('web.')) {
-                window.facebookAdsExtensionConfig.popupOrigin = current_origin.replace('www.', 'web.');
-            } else if (!fae_origin.includes('web.') && current_origin.includes('web.')) {
-                window.facebookAdsExtensionConfig.popupOrigin = current_origin.replace('web.', 'www.');
-            }
         }
     }
 }());
 
 module.exports = FBUtils;
 
-},{}]},{},[3]);
+},{}]},{},[1]);

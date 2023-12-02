@@ -16,7 +16,6 @@ class CustomApiKeyTest extends TestCase
      */
     private ScopeConfigInterface $scopeConfig;
 
-
     /** @var Http */
     private Http $httpRequest;
 
@@ -68,6 +67,5 @@ class CustomApiKeyTest extends TestCase
             $this->httpRequest
         );
         $authenticator->authenticateRequest();
-
     }
 }

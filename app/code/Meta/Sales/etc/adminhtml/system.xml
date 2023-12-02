@@ -1,98 +1,132 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="facebook_business_extension">
-            <group id="orders_sync" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
-                <label>Orders Sync</label>
-                <fieldset_css>meta-section-config</fieldset_css>
-                <depends>
-                    <field id="facebook_business_extension/business_extension/active">1</field>
-                    <field id="facebook_business_extension/business_extension/onsite">1</field>
-                </depends>
-                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Enable Orders Sync</label>
-                    <config_path>facebook/orders_sync/active</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Orders are pulled from Meta Commerce Account every 15 minutes by default (schedule can be edited in crontab.xml), order updates are sent from Adobe Commerce to Meta in real time</comment>
-                </field>
-                <field id="pull_orders" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="manual_data_sync" translate="label" type="text" sortOrder="15" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <field id="pull_orders" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0"
+                       showInStore="1">
                     <label>Pull Orders</label>
                     <frontend_model>Meta\Sales\Block\Adminhtml\System\Config\PullOrders</frontend_model>
                     <depends>
-                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                        <field id="facebook_business_extension/business_extension/installed">1</field>
+                        <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
+                        <field id="facebook_business_extension/business_extension/onsite">1</field>
                     </depends>
                     <comment>Pull orders awaiting acknowledgement from your Meta Commerce Account</comment>
                 </field>
-                <field id="auto_subscribe_to_newsletter" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Subscribe to Newsletter</label>
-                    <config_path>facebook/orders_sync/auto_subscribe_to_newsletter</config_path>
+            </group>
+            <group id="business_extension" translate="label" type="text" showInDefault="1"
+                   showInWebsite="0"
+                   showInStore="1">
+                <field id="orders_sync_active" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1"
+                       showInWebsite="0" showInStore="1">
+                    <label>Enable Orders Sync</label>
+                    <config_path>facebook/orders_sync/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Orders are pulled from Meta Commerce Account every 15 minutes by default (schedule can be
+                        edited in crontab.xml), order updates are sent from Adobe Commerce to Meta in real time
+                    </comment>
                     <depends>
-                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                        <field id="facebook_business_extension/testing/debug_mode">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
-                    <comment>Automatically subscribe buyers to the Adobe Commerce newsletter. Note: only works if the buyer agreed to use their email for marketing purposes on Meta</comment>
                 </field>
-                <field id="default_fulfillment_location" translate="label comment" type="select" sortOrder="50" showInDefault="0" showInWebsite="0" showInStore="0">
+                <field id="default_fulfillment_location" translate="label comment" type="select" sortOrder="50"
+                       showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Use Default Fulfillment Location</label>
                     <config_path>facebook/orders_sync/default_fulfillment_location</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
-                        <field id="facebook_business_extension/orders_sync/active">1</field>
+                        <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <comment>Store address is the default fulfillment location</comment>
                 </field>
-                <group id="fulfillment_information" translate="label" type="text" sortOrder="100" showInDefault="0" showInWebsite="0" showInStore="0">
+                <group id="fulfillment_information" translate="label" type="text" sortOrder="100" showInDefault="0"
+                       showInWebsite="0" showInStore="0">
                     <label>Fulfillment Address</label>
                     <depends>
-                        <field id="facebook_business_extension/orders_sync/default_fulfillment_location">0</field>
+                        <field id="facebook_business_extension/business_extension/default_fulfillment_location">
+                            0
+                        </field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
-                    <field id="street_line1" translate="label" type="text" sortOrder="55" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <field id="street_line1" translate="label" type="text" sortOrder="55" showInDefault="0"
+                           showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/street_line1</config_path>
                         <label>Street Address</label>
                     </field>
-                    <field id="street_line2" translate="label" type="text" sortOrder="55" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <field id="street_line2" translate="label" type="text" sortOrder="55" showInDefault="0"
+                           showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/street_line2</config_path>
                         <label>Street Address 2</label>
                     </field>
-                    <field id="country_id" translate="label" type="select" sortOrder="25" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <field id="country_id" translate="label" type="select" sortOrder="25" showInDefault="0"
+                           showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/country_id</config_path>
                         <label>Country</label>
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                         <frontend_class>countries</frontend_class>
                         <can_be_empty>1</can_be_empty>
                     </field>
-                    <field id="region_id" translate="label" type="text" sortOrder="27" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <field id="region_id" translate="label" type="text" sortOrder="27" showInDefault="0"
+                           showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/region_id</config_path>
                         <label>Region/State</label>
                     </field>
-                    <field id="city" translate="label" type="text" sortOrder="45" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <field id="city" translate="label" type="text" sortOrder="45" showInDefault="0" showInWebsite="0"
+                           showInStore="0">
                         <config_path>facebook/orders_sync/city</config_path>
                         <label>City</label>
                     </field>
-                    <field id="postcode" translate="label" type="text" sortOrder="30" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <field id="postcode" translate="label" type="text" sortOrder="30" showInDefault="0"
+                           showInWebsite="0" showInStore="0">
                         <config_path>facebook/orders_sync/postcode</config_path>
                         <label>ZIP/Postal Code</label>
                     </field>
                 </group>
             </group>
-            <group id="shipping_methods" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="1">
-                <label>Shipping Methods Mapping</label>
+            <group id="business_settings" translate="label" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <field id="auto_subscribe_to_newsletter" translate="label comment" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Subscribe to Newsletter</label>
+                    <config_path>facebook/orders_sync/auto_subscribe_to_newsletter</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
+                        <field id="facebook_business_extension/business_extension/onsite">1</field>
+                    </depends>
+                    <comment>Automatically subscribe buyers to the Adobe Commerce newsletter. Note: only works if the
+                        buyer agreed to use their email for marketing purposes on Meta
+                    </comment>
+                </field>
+            </group>
+            <group id="shipping_methods" translate="label" type="text" sortOrder="50" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <label>Shipping Configuration</label>
                 <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                     <field id="facebook_business_extension/business_extension/onsite">1</field>
                 </depends>
-                <field id="standard" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="standard" translate="label comment" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
                     <label>Standard</label>
                     <config_path>facebook/shipping_methods/standard</config_path>
                     <source_model>Meta\Sales\Model\Config\Source\ActiveShippingMethods</source_model>
                 </field>
-                <field id="expedited" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="expedited" translate="label comment" type="select" sortOrder="20" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
                     <label>Expedited</label>
                     <config_path>facebook/shipping_methods/expedited</config_path>
                     <source_model>Meta\Sales\Model\Config\Source\ActiveShippingMethods</source_model>
                 </field>
-                <field id="rush" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
+                <field id="rush" translate="label comment" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
                     <label>Rush</label>
                     <config_path>facebook/shipping_methods/rush</config_path>
                     <source_model>Meta\Sales\Model\Config\Source\ActiveShippingMethods</source_model>

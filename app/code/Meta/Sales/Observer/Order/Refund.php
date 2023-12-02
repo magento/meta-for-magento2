@@ -27,13 +27,12 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\CreditmemoInterface;
-use Magento\Sales\Api\Data\CreditmemoItemInterface as CreditmemoItem;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Model\Order\Payment;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Model\Config\Source\Product\Identifier as IdentifierConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
+use Psr\Log\LoggerInterface;
 
 class Refund implements ObserverInterface
 {
@@ -68,22 +67,6 @@ class Refund implements ObserverInterface
     }
 
     /**
-     * Get retailer id
-     *
-     * @param CreditmemoItem $creditmemoItem
-     * @return string|int|bool
-     */
-    private function getRetailerId(CreditmemoItem $creditmemoItem)
-    {
-        if ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            return $creditmemoItem->getSku();
-        } elseif ($this->systemConfig->getProductIdentifierAttr() === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            return $creditmemoItem->getProductId();
-        }
-        return false;
-    }
-
-    /**
      * Refund facebook order from observer event
      *
      * @param Observer $observer
@@ -109,8 +92,7 @@ class Refund implements ObserverInterface
 
         $storeId = $payment->getOrder()->getStoreId();
 
-        if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->isActiveOrderSync($storeId)
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
             return;
         }
@@ -127,13 +109,11 @@ class Refund implements ObserverInterface
 
         $deductionAmount = $creditmemo->getAdjustment();
         if ($deductionAmount > 0) {
-            throw new Exception('Cannot refund order on Facebook. Adjustment Refunds are not yet supported.');
+            throw new Exception('Cannot refund order on Meta. Adjustment Refunds are not yet supported.');
         } elseif ($deductionAmount < 0) {
             // Magento allows Adjustment Fees to be negative, but the Graph API deductions must always be positive
             $deductionAmount = abs($deductionAmount);
         }
-
-        $refundItems = $this->getRefundItems($creditmemo, $payment);
 
         $shippingRefundAmount = $creditmemo->getBaseShippingAmount();
         $reasonText = $creditmemo->getCustomerNote();
@@ -144,17 +124,31 @@ class Refund implements ObserverInterface
             $shippingRefundAmount += $creditmemo->getShippingTaxAmount();
         }
 
-        $this->refundOrder(
-            (int)$storeId,
-            $facebookOrder->getFacebookOrderId(),
-            $refundItems,
-            $shippingRefundAmount,
-            $deductionAmount,
-            $currencyCode,
-            $reasonText
-        );
+        try {
+            $refundItemsBySku = $this->getRefundItems($creditmemo, $payment, false);
+            $this->refundOrder(
+                (int)$storeId,
+                $facebookOrder->getFacebookOrderId(),
+                $refundItemsBySku,
+                $shippingRefundAmount,
+                $deductionAmount,
+                $currencyCode,
+                $reasonText
+            );
+        } catch (LocalizedException $e) {
+            $refundItemsByID = $this->getRefundItems($creditmemo, $payment, true);
+            $this->refundOrder(
+                (int)$storeId,
+                $facebookOrder->getFacebookOrderId(),
+                $refundItemsByID,
+                $shippingRefundAmount,
+                $deductionAmount,
+                $currencyCode,
+                $reasonText
+            );
+        }
 
-        $payment->getOrder()->addCommentToStatusHistory('Refunded order on Facebook');
+        $payment->getOrder()->addCommentToStatusHistory('Order Refunded on Meta');
     }
 
     /**
@@ -208,26 +202,29 @@ class Refund implements ObserverInterface
      *
      * @param CreditmemoInterface $creditmemo
      * @param OrderPaymentInterface $payment
+     * @param bool $useNumericID
      * @return array
      */
     private function getRefundItems(
         CreditmemoInterface   $creditmemo,
-        OrderPaymentInterface $payment
+        OrderPaymentInterface $payment,
+        bool $useNumericID
     ): array {
         $refundItems = [];
 
         foreach ($creditmemo->getItems() as $item) {
             if ($item->getQty() > 0) {
+                $item_id = $useNumericID ? $item->getProductId() : $item->getSku();
                 if ($item->getDiscountAmount() == 0) {
                     $refundItems[] = [
-                        'retailer_id' => $this->getRetailerId($item),
+                        'retailer_id' => $item_id,
                         'item_refund_quantity' => $item->getQty(),
                     ];
                 } else {
                     // @todo refunds by qty for items with discount is unavailable atm;
                     //     once it is available the else statement should be removed
                     $refundItems[] = [
-                        'retailer_id' => $this->getRetailerId($item),
+                        'retailer_id' => $item_id,
                         'item_refund_amount' => [
                             'amount' => $item->getRowTotal() - $item->getDiscountAmount(),
                             'currency' => $payment->getOrder()->getOrderCurrencyCode()

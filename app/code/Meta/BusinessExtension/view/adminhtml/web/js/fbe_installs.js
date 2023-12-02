@@ -92,24 +92,9 @@ define(['jquery'], function(jQuery) {
                 }
             },
             error: function () {
-              console.error('There was an error retreiving FBE installs config');
+              console.error('There was an error retrieving FBE installs config');
             }
           });
-        },
-        attachStoreEventHandler: function () {
-            const _this = this;
-            jQuery('#store').on('change', function() {
-              if (jQuery(this).val() === 'select-store') {
-                jQuery('#fbe-iframe').empty();
-                return false;
-              }
-                window.facebookBusinessExtensionConfig.storeId = jQuery(this).val();
-                window.facebookBusinessExtensionConfig.installed = jQuery(this).find(':selected').data('installed');
-                window.facebookBusinessExtensionConfig.pixelId = jQuery(this).find(':selected').data('pixel-id');
-                window.facebookBusinessExtensionConfig.systemUserName = jQuery(this).find(':selected').data('system-user-name') + '_system_user';
-                window.facebookBusinessExtensionConfig.externalBusinessId = jQuery(this).find(':selected').data('external-business-id');
-                _this.startFBEInstallsProcess();
-            });
-        } 
+        }
     }
 });

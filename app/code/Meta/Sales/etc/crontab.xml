@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="facebook_automation">
         <job name="facebook_automation_sync_orders" instance="Meta\Sales\Cron\SyncOrders" method="execute">
-            <schedule>*/15 * * * *</schedule>
+            <schedule>*/5 * * * *</schedule>
         </job>
         <job name="facebook_automation_sync_refunds_and_cancellations"
              instance="Meta\Sales\Cron\SyncRefundsAndCancellations" method="execute">

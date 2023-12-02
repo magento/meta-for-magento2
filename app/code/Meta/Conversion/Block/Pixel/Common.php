@@ -131,7 +131,7 @@ class Common extends \Magento\Framework\View\Element\Template
     /**
      * Get Magento version
      *
-     * @return mixed
+     * @return string
      */
     public function getMagentoVersion()
     {
@@ -141,7 +141,7 @@ class Common extends \Magento\Framework\View\Element\Template
     /**
      * Get plugin version
      *
-     * @return mixed
+     * @return string
      */
     public function getPluginVersion()
     {
@@ -171,7 +171,7 @@ class Common extends \Magento\Framework\View\Element\Template
     /**
      * Get currency
      *
-     * @return mixed
+     * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getCurrency()

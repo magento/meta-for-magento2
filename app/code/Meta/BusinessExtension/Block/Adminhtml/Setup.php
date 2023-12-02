@@ -22,12 +22,13 @@ namespace Meta\BusinessExtension\Block\Adminhtml;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
@@ -44,11 +45,6 @@ class Setup extends Template
      * @var FBEHelper
      */
     private $fbeHelper;
-
-    /**
-     * @var GraphAPIAdapter
-     */
-    private $graphAPIAdapter;
 
     /**
      * @var RequestInterface
@@ -71,13 +67,18 @@ class Setup extends Template
     private $websiteCollectionFactory;
 
     /**
+     * @var CommerceExtensionHelper
+     */
+    private $commerceExtensionHelper;
+
+    /**
      * @param Context $context
      * @param RequestInterface $request
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
      * @param StoreRepositoryInterface $storeRepo
      * @param WebsiteCollectionFactory $websiteCollectionFactory
+     * @param CommerceExtensionHelper $commerceExtensionHelper
      * @param ApiKeyService $apiKeyService
      * @param array $data
      */
@@ -86,9 +87,9 @@ class Setup extends Template
         RequestInterface         $request,
         FBEHelper                $fbeHelper,
         SystemConfig             $systemConfig,
-        GraphAPIAdapter          $graphAPIAdapter,
         StoreRepositoryInterface $storeRepo,
         WebsiteCollectionFactory $websiteCollectionFactory,
+        CommerceExtensionHelper $commerceExtensionHelper,
         ApiKeyService            $apiKeyService,
         array                    $data = []
     ) {
@@ -96,9 +97,9 @@ class Setup extends Template
         parent::__construct($context, $data);
         $this->request = $request;
         $this->systemConfig = $systemConfig;
-        $this->graphAPIAdapter = $graphAPIAdapter;
         $this->storeRepo = $storeRepo;
         $this->websiteCollectionFactory = $websiteCollectionFactory;
+        $this->commerceExtensionHelper = $commerceExtensionHelper;
         $this->apiKeyService = $apiKeyService;
     }
 
@@ -132,7 +133,7 @@ class Setup extends Template
         }
 
         // No default found, return the first store.
-        $firstStore = array_slice($stores, 0, 1)[0];
+        $firstStore = array_shift($stores);
         return $firstStore['store_id'];
     }
 
@@ -188,13 +189,34 @@ class Setup extends Template
     }
 
     /**
-     * Whether or not to enable the new Commerce Extension UI
+     * Whether to enable the new Commerce Extension UI
      *
      * @return bool
      */
     public function isCommerceExtensionEnabled()
     {
-        return $this->systemConfig->isCommerceExtensionEnabled();
+        $storeId = $this->getSelectedStoreId();
+        return $this->commerceExtensionHelper->isCommerceExtensionEnabled($storeId);
+    }
+
+    /**
+     * The expected origin for the Messages received from the FBE iframe/popup.
+     *
+     * @return string
+     */
+    public function getPopupOrigin()
+    {
+        return $this->commerceExtensionHelper->getPopupOrigin();
+    }
+
+    /**
+     * The URL to load the FBE iframe splash page for non-onboarded stores.
+     *
+     * @return string
+     */
+    public function getSplashPageURL()
+    {
+        return $this->commerceExtensionHelper->getSplashPageURL();
     }
 
     /**
@@ -245,6 +267,16 @@ class Setup extends Template
     }
 
     /**
+     * Get the ajax route to report client errors.
+     *
+     * @return mixed
+     */
+    public function getReportClientErrorRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/reportClientError');
+    }
+
+    /**
      * Get Delete Asset IDs Ajax Route
      *
      * @return mixed
@@ -284,10 +316,18 @@ class Setup extends Template
      */
     public function getCommerceExtensionIFrameURL($storeId)
     {
-        return $this->graphAPIAdapter->getCommerceExtensionIFrameURL(
-            $this->systemConfig->getExternalBusinessId($storeId),
-            $this->systemConfig->getAccessToken($storeId),
-        );
+        return $this->commerceExtensionHelper->getCommerceExtensionIFrameURL($storeId);
+    }
+
+    /**
+     * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
+     *
+     * @param int $storeId
+     * @return string
+     */
+    public function hasCommerceExtensionIFramePermissionError($storeId)
+    {
+        return $this->commerceExtensionHelper->hasCommerceExtensionPermissionError($storeId);
     }
 
     /**
@@ -329,16 +369,6 @@ class Setup extends Template
         $collection->getSelect()->order('website_id ASC')->limit(1);
 
         return $collection->getFirstItem()->getWebsiteId();
-    }
-
-    /**
-     * Get fbe access token url endpoint
-     *
-     * @return string
-     */
-    public function getFbeAccessTokenUrl()
-    {
-        return $this->fbeHelper->getFbeAccessTokenUrl();
     }
 
     /**

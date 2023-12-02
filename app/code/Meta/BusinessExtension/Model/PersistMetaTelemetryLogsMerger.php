@@ -37,7 +37,6 @@ class PersistMetaTelemetryLogsMerger implements MergerInterface
             $telemetryLogs = array_map(function ($message) {
                 $decodedMessage = json_decode($message, true);
                 unset($decodedMessage['log_type']);
-                unset($decodedMessage['store_id']);
                 return $decodedMessage;
             }, $messages['persist.meta.telemetry.logs']);
             $mergedLogs = json_encode($telemetryLogs);

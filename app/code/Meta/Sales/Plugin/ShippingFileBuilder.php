@@ -78,7 +78,8 @@ class ShippingFileBuilder
             ShippingData::ATTR_HANDLING_FEE,
             ShippingData::ATTR_HANDLING_FEE_TYPE,
             ShippingData::ATTR_SHIPPING_FEE_TYPE,
-            ShippingData::ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT
+            ShippingData::ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT,
+            ShippingData::EXTERNAL_REFERENCE_ID
         ];
     }
 }
