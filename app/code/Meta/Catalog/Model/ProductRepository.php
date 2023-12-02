@@ -109,6 +109,15 @@ class ProductRepository
         if ($pattern && !$pattern->getSource()->getOptionText($childProduct->getData('pattern'))) {
             $childProduct->setData('pattern', $product->getData('pattern'));
         }
+
+        if (empty($childProduct->getImage())) {
+            $childProduct->setImage($product->getImage());
+        }
+
+        if (empty($childProduct->getMediaGalleryImages())) {
+            $childProduct->setMediaGalleryImages($product->getMediaGalleryImages());
+        }
+
         return $childProduct;
     }
 
