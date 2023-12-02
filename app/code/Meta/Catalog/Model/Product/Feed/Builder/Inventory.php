@@ -26,7 +26,7 @@ use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
 use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
 
-class Inventory implements InventoryInterface
+class Inventory extends InventoryRequirements implements InventoryInterface
 {
     /**
      * @var StockItemRepositoryInterface
@@ -59,9 +59,9 @@ class Inventory implements InventoryInterface
      * @param SystemConfig $systemConfig
      */
     public function __construct(
-        StockItemRepositoryInterface $stockItemRepository,
+        StockItemRepositoryInterface      $stockItemRepository,
         StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory,
-        SystemConfig $systemConfig
+        SystemConfig                      $systemConfig
     ) {
         $this->stockItemRepository = $stockItemRepository;
         $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
@@ -102,8 +102,15 @@ class Inventory implements InventoryInterface
      */
     public function getAvailability(): string
     {
+        $inventory = $this->getInventory();
+
+        // unmanaged stock is always available
+        if ($inventory === self::UNMANAGED_STOCK_QTY) {
+            return self::STATUS_IN_STOCK;
+        }
+
         return $this->productStock && $this->productStock->getIsInStock()
-        && ($this->getInventory() > 0)
+        && $this->meetsInventoryRequirementsToBeInStock($this->product)
             ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 
@@ -119,7 +126,7 @@ class Inventory implements InventoryInterface
         }
 
         if (!$this->productStock->getManageStock()) {
-            return self::UNMANAGED_STOCK_QTY; // fake quantity to make product available if Manage Stock is off
+            return self::UNMANAGED_STOCK_QTY;
         }
 
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());

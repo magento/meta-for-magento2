@@ -76,7 +76,7 @@ class Facebook extends Template implements TabInterface
      */
     public function canShowTab()
     {
-        return $this->systemConfig->isOnsiteCheckoutEnabled();
+        return $this->getFacebookOrderId() !== null;
     }
 
     /**
@@ -92,7 +92,7 @@ class Facebook extends Template implements TabInterface
      */
     public function getTabLabel()
     {
-        return __('Meta');
+        return __('Facebook & Instagram');
     }
 
     /**
@@ -100,7 +100,7 @@ class Facebook extends Template implements TabInterface
      */
     public function getTabTitle()
     {
-        return __('Meta');
+        return __('Facebook & Instagram');
     }
 
     /**
@@ -111,16 +111,6 @@ class Facebook extends Template implements TabInterface
     public function getFacebookOrderId()
     {
         return $this->getOrder()->getExtensionAttributes()->getFacebookOrderId();
-    }
-
-    /**
-     * Check if order is Facebook order
-     *
-     * @return bool
-     */
-    public function isFacebookOrder()
-    {
-        return $this->getFacebookOrderId() !== null;
     }
 
     /**

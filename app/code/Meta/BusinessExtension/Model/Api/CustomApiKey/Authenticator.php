@@ -50,8 +50,8 @@ class Authenticator
      * Authenticate a given token against the stored API key
      *
      * @param string $token
-     * @throws UnauthorizedTokenException
      * @return void
+     * @throws UnauthorizedTokenException
      */
     public function authenticate(string $token): void
     {
@@ -61,9 +61,9 @@ class Authenticator
         }
     }
 
-
     /**
      * Authenticate a given token against the stored API key
+     *
      * @return void
      * @throws UnauthorizedTokenException
      */

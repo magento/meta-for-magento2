@@ -38,7 +38,7 @@ class MetaCatalogAttributes
             'send_to_facebook' => [
                 'group' => 'General',
                 'type' => 'int',
-                'label' => 'Send to Facebook',
+                'label' => 'Sync to Meta',
                 'default' => 1,
                 'source' => Boolean::class,
                 'input' => 'select',
@@ -65,7 +65,7 @@ class MetaCatalogAttributes
         return [
             SystemConfig::CATEGORY_SYNC_TO_FACEBOOK => [
                 'type' => 'int',
-                'label' => 'Sync to Facebook Catalog',
+                'label' => 'Sync to Meta',
                 'input' => 'boolean',
                 'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
                 'visible' => true,

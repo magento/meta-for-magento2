@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Magento\Framework\App\ActionInterface">
+        <plugin name="action_impression_error_logging" type="Meta\BusinessExtension\Plugin\LoggingActionPlugin"/>
+    </type>
+
+    <type name="Magento\Framework\View\Element\Template">
+        <plugin name="template_error_logging" type="Meta\BusinessExtension\Plugin\LoggingTemplatePlugin"/>
+    </type>
+
     <type name="Magento\Framework\Notification\MessageList">
         <arguments>
             <argument name="messages" xsi:type="array">
@@ -9,8 +18,7 @@
             </argument>
         </arguments>
     </type>
-    <preference for="Magento\Framework\App\Config\Storage\WriterInterface"
-                type="Magento\Framework\App\Config\Storage\Writer"/>
+
     <type name="Meta\BusinessExtension\Controller\Adminhtml\ApiKey\Index">
         <arguments>
             <argument name="configWriter" xsi:type="object">Magento\Framework\App\Config\Storage\WriterInterface

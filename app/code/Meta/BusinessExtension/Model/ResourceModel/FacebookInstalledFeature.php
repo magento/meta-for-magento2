@@ -104,7 +104,7 @@ class FacebookInstalledFeature extends AbstractDb
         if (!is_array($feature[$key])) {
             return $feature[$key];
         }
-        if (array_is_list($feature[$key]) && !empty($feature[$key])) { //If the value is a list save the first item
+        if (isset($feature[$key][0])) {
             return json_encode($feature[$key][0]);
         }
         return json_encode($feature[$key]);

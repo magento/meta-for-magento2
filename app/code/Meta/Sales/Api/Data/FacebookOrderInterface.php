@@ -68,6 +68,22 @@ interface FacebookOrderInterface
     public function setChannel($channel);
 
     /**
+     * Get synced shipment metadata
+     *
+     * @return array
+     */
+    public function getSyncedShipments();
+
+    /**
+     * Update synced shipment metadata
+     *
+     * @param mixed $magentoShipmentId
+     * @param array $trackingInfo
+     * @return $this
+     */
+    public function updateSyncedShipment($magentoShipmentId, $trackingInfo);
+
+    /**
      * Get extra data
      *
      * @return mixed

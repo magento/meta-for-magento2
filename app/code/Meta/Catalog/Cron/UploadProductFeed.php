@@ -50,8 +50,8 @@ class UploadProductFeed
      */
     public function __construct(
         SystemConfig $systemConfig,
-        Uploader $uploader,
-        FBEHelper $fbeHelper
+        Uploader     $uploader,
+        FBEHelper    $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->uploader = $uploader;
@@ -92,7 +92,7 @@ class UploadProductFeed
      */
     public function execute()
     {
-        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+        foreach ($this->systemConfig->getAllFBEInstalledStores() as $store) {
             try {
                 $this->uploadForStore($store->getId());
             } catch (Exception $e) {

@@ -24,8 +24,11 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class UnauthorizedTokenException extends \Exception implements GuzzleException
 {
-    public function __construct($message = "Unauthorized Token", $code = 401)
+    /**
+     * Construct
+     */
+    public function __construct()
     {
-        parent::__construct($message, $code);
+        parent::__construct("Unauthorized Token", 401);
     }
 }

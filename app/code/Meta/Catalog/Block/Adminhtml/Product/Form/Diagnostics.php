@@ -123,8 +123,13 @@ class Diagnostics extends Text
         }
 
         try {
-            $retailerId = $this->productIdentifier->getMagentoProductRetailerId($this->product);
-            $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $retailerId);
+            $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $this->product->getSku());
+        } catch (\Exception $e) {
+            $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $this->product->getId());
+        }
+
+        try {
+            
             $fbProductId = $product['data'][0]['id'] ?? false;
             if ($fbProductId) {
                 $productErrors = $this->graphApiAdapter->getProductErrors($fbProductId)['errors'] ?? [];
@@ -150,7 +155,7 @@ class Diagnostics extends Text
             return '';
         }
 
-        $diagnosticsHtml = '<p style="font-weight: bold;">Facebook diagnostic report:</p><ul>';
+        $diagnosticsHtml = '<p style="font-weight: bold;">Meta diagnostic report:</p><ul>';
         foreach ($diagnosticsReport as $errorItem) {
             $diagnosticsHtml .= '<li class="message message-warning list-item" style="list-style-type: none;">' .
                 $this->_escaper->escapeHtml($errorItem['title']) . ': ' .

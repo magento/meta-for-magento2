@@ -92,9 +92,13 @@ class ProductRepository
         $childProduct->setName($product->getName());
         $childProduct->setConfigurableSettings($configurableSettings);
         $childProduct->setParentProductUrl($product->getProductUrl());
+        $childProduct->setVisibility($product->getVisibility());
         //todo put all these attributes to a list
         if (!$childProduct->getDescription()) {
             $childProduct->setDescription($product->getDescription());
+        }
+        if (!$childProduct->getShortDescription()) {
+            $childProduct->setShortDescription($product->getShortDescription());
         }
         if (!$childProduct->getWeight()) {
             $childProduct->setWeight($product->getWeight());
@@ -136,7 +140,7 @@ class ProductRepository
             ->addStoreFilter($storeId)
             ->setStoreId($storeId)
             ->getSelect();
-        
+
         return $collection->getItems();
     }
 
@@ -185,7 +189,7 @@ class ProductRepository
                 'p.entity_id'
             )
             ->where('product_id IN (?)', $productIds);
-        
+
         return $connection->fetchPairs($select);
     }
 }

@@ -553,4 +553,7 @@
         <plugin name="facebookSalesOrderGrid"
                 type="Meta\Sales\Plugin\FacebookSalesOrderGridPlugin"/>
     </type>
+    <type name="Taxjar\SalesTax\Model\Transaction">
+        <plugin name="meta_taxjar" type="Meta\Sales\Plugin\TransactionUpdatePlugin"/>
+    </type>
 </config>

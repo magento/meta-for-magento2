@@ -6,28 +6,34 @@
 ?>
 <div>
     <p>Version: <?= $escaper->escapeHtml($block->getModuleVersion()) ?></p>
-    <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
-    <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>
-    <p>Catalog ID: <?= $escaper->escapeHtml($block->getCatalogId()) ?></p>
-    <?php if ($block->getCommerceAccountId()):  ?>
-        <p><a target="_blank"
-               href="<?= $escaper->escapeUrl($block->getCommerceManagerUrl()) ?> ">
-                <?= $escaper->escapeHtml(__('Commerce Manager')) ?>
-            </a>
-        </p>
+    <?php if ($block->getIsDebugMode()): ?>
+        <p><b>DEBUG MODE</b></p>
     <?php endif; ?>
-    <?php if ($block->getCatalogId()): ?>
-        <p><a target="_blank"
-              href="<?= $escaper->escapeUrl($block->getCatalogManagerUrl()) ?> ">
-                <?= $escaper->escapeHtml(__('Catalog Items')) ?>
-            </a>
-        </p>
-    <?php endif; ?>
-    <?php if ($block->getCommerceAccountId()): ?>
-        <p><a target="_blank"
-              href="<?= $escaper->escapeUrl($block->getSupportUrl()) ?> ">
-                <?= $escaper->escapeHtml(__('Contact Support')) ?>
-            </a>
-        </p>
+    <?php if ($block->getIsFBEInstalled()): ?>
+        <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
+        <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>
+        <p>Catalog ID: <?= $escaper->escapeHtml($block->getCatalogId()) ?></p>
+        <?php if ($block->getCommerceAccountId()): ?>
+            <p>Meta Connector Token: <?= $escaper->escapeHtml($block->getAPIToken()) ?></p>
+            <p><a target="_blank"
+                  href="<?= $escaper->escapeUrl($block->getCommerceManagerUrl()) ?> ">
+                    <?= $escaper->escapeHtml(__('Commerce Manager')) ?>
+                </a>
+            </p>
+        <?php endif; ?>
+        <?php if ($block->getCatalogId()): ?>
+            <p><a target="_blank"
+                  href="<?= $escaper->escapeUrl($block->getCatalogManagerUrl()) ?> ">
+                    <?= $escaper->escapeHtml(__('Catalog Items')) ?>
+                </a>
+            </p>
+        <?php endif; ?>
+        <?php if ($block->getCommerceAccountId()): ?>
+            <p><a target="_blank"
+                  href="<?= $escaper->escapeUrl($block->getSupportUrl()) ?> ">
+                    <?= $escaper->escapeHtml(__('Contact Support')) ?>
+                </a>
+            </p>
+        <?php endif; ?>
     <?php endif; ?>
 </div>

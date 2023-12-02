@@ -18,6 +18,7 @@
             <module name="Meta_BusinessExtension"/>
             <module name="Meta_Catalog"/>
             <module name="Magento_OfflineShipping"/>
+            <module name="Taxjar_SalesTax"/>
         </sequence>
     </module>
 </config>

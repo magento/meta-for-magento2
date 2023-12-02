@@ -25,7 +25,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\AbstractAjax;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Model\Feed\CategoryCollection;
+use Meta\Catalog\Model\Category\CategoryCollection;
 
 class CategoryUpload extends AbstractAjax
 {
@@ -111,7 +111,7 @@ class CategoryUpload extends AbstractAjax
         }
 
         try {
-            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
+            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections((int)$storeId);
             $response['success'] = true;
             $response['feed_push_response'] = $feedPushResponse;
         } catch (\Throwable $e) {

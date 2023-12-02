@@ -5,7 +5,7 @@
         <column name="facebook_order_id">
             <settings>
                 <filter>text</filter>
-                <label translate="true">FB/IG Order ID</label>
+                <label translate="true">Meta Order ID</label>
             </settings>
         </column>
     </columns>

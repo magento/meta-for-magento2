@@ -32,12 +32,17 @@ class Identifier
     /**
      * @var ProductRepository
      */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /**
      * @var string
      */
     private $identifierAttr;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
 
     /**
      * @param SystemConfig $systemConfig
@@ -46,52 +51,39 @@ class Identifier
     public function __construct(SystemConfig $systemConfig, ProductRepository $productRepository)
     {
         $this->identifierAttr = $systemConfig->getProductIdentifierAttr();
+        $this->systemConfig = $systemConfig;
         $this->productRepository = $productRepository;
     }
 
     /**
-     * Get product's identifier (SKU or ID, depending on configuration)
+     * Get product's identifier col name(SKU or entity ID, depending on configuration)
      *
-     * @param ProductInterface $product
-     * @return bool|int|string
+     * @return string
      */
-    private function getProductIdentifier(ProductInterface $product)
+    public function getProductIdentifierColName(): string
     {
         if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            return $product->getSku();
+            return 'sku';
         } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            return $product->getId();
+            return 'entity_id';
         }
-        return false;
+        return '';
     }
 
     /**
-     * Get product's other identifier for passing to Meta for product identifications
-     *
-     * @param ProductInterface $product
-     * @return bool|int|string
-     */
-    private function getOtherProductIdentifier(ProductInterface $product)
-    {
-        // If identifier is set to sku then we pass magento id, otherwise in case of magento id, we pass sku
-        // This is done to pass both different type of IDs to meta for product deduplication
-        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-            return $product->getId();
-        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-            return $product->getSku();
-        }
-        return false;
-    }
-
-    /**
-     * Get product Retailer ID for Commerce
+     * Get product Retailer ID for Commerce (SKU or ID, depending on configuration)
      *
      * @param ProductInterface $product
      * @return int|string|bool
      */
     public function getMagentoProductRetailerId(ProductInterface $product)
     {
-        return $this->getProductIdentifier($product);
+        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            return $product->getSku();
+        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            return $product->getId();
+        }
+        return false;
     }
 
     /**
@@ -102,31 +94,27 @@ class Identifier
      */
     public function getProductIDOtherThanRetailerId(ProductInterface $product)
     {
-        return $this->getOtherProductIdentifier($product);
+        if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
+            return $product->getId();
+        } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
+            return $product->getSku();
+        }
+        return false;
     }
 
     /**
-     * Get product by Facebook retailer id
+     * Fetch product by retailer id and identifier attribute
      *
      * @param string|int $retailerId
      * @return ProductInterface|bool
-     * @throws LocalizedException
      */
     public function getProductByFacebookRetailerId($retailerId)
     {
         try {
-            if ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_SKU) {
-                return $this->productRepository->get($retailerId);
-            } elseif ($this->identifierAttr === IdentifierConfig::PRODUCT_IDENTIFIER_ID) {
-                return $this->productRepository->getById($retailerId);
-            }
-            throw new LocalizedException(__('Invalid FB product identifier configuration'));
+            return $this->productRepository->get($retailerId);
         } catch (NoSuchEntityException $e) {
-            throw new LocalizedException(__(sprintf(
-                'Product with %s %s does not exist in Magento catalog',
-                strtoupper($this->identifierAttr),
-                $retailerId
-            )));
+            // Product not found
+            return $this->productRepository->getById($retailerId);
         }
     }
 }

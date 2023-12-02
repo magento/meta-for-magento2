@@ -114,6 +114,7 @@ class ProductFeedUpload extends AbstractAjax
                     'event' => 'catalog_sync',
                     'event_type' => 'force_feed_upload',
                     'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+                    'feed_id' => $this->systemConfig->getFeedId($storeId)
                 ]
             );
         }

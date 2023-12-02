@@ -65,11 +65,11 @@ class UpdateMBESettings
      * @param CollectionFactory $collectionFactory
      */
     public function __construct(
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
-        GraphAPIAdapter $graphAPIAdapter,
+        FBEHelper               $fbeHelper,
+        SystemConfig            $systemConfig,
+        GraphAPIAdapter         $graphAPIAdapter,
         SaveFBEInstallsResponse $saveFBEInstallsResponse,
-        CollectionFactory $collectionFactory
+        CollectionFactory       $collectionFactory
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
@@ -86,21 +86,6 @@ class UpdateMBESettings
         $installedConfigs = $this->getMBEInstalledConfigs();
         foreach ($installedConfigs as $config) {
             $this->updateMBESettings($config->getScopeId());
-        }
-    }
-
-    /**
-     * Trigger polling to update MBE Settings by webhook
-     *
-     * @param int $storeId
-     * @return void
-     */
-    public function updateMBESettingsByStoreId(int $storeId)
-    {
-        try {
-            $this->updateMBESettings($storeId);
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
         }
     }
 

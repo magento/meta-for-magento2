@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Model;
 
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class PersistMetaTelemetryLogsHandler
 {
@@ -31,14 +32,22 @@ class PersistMetaTelemetryLogsHandler
     private $graphApiAdapter;
 
     /**
+     * @var SystemConfig
+     */
+    private SystemConfig $systemConfig;
+
+    /**
      * PersistMetaTelemetryLogsHandler constructor
      *
      * @param GraphAPIAdapter $graphAPIAdapter
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        GraphAPIAdapter $graphAPIAdapter
+        GraphAPIAdapter $graphAPIAdapter,
+        SystemConfig $systemConfig
     ) {
         $this->graphApiAdapter = $graphAPIAdapter;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -48,8 +57,20 @@ class PersistMetaTelemetryLogsHandler
      */
     public function persistMetaTelemetryLogs(string $messages)
     {
+        $logs = json_decode($messages, true);
+        $accessToken = null;
+        foreach ($logs as $log) {
+            if (isset($log['store_id'])) {
+                $accessToken = $this->systemConfig->getAccessToken($log['store_id']);
+                if ($accessToken) {
+                    break;
+                }
+            }
+        }
+        $telemetryContext = [];
         $telemetryContext['event'] = 'persist_meta_telemetry_logs';
+        $telemetryContext['extra_data'] = [];
         $telemetryContext['extra_data']['telemetry_logs'] = $messages;
-        $this->graphApiAdapter->persistLogToMeta($telemetryContext);
+        $this->graphApiAdapter->persistLogToMeta($telemetryContext, $accessToken);
     }
 }

@@ -188,7 +188,7 @@ class FacebookCatalogUpdate extends AbstractDb
      * Get reserved products from batch ID
      *
      * @param string $batchId
-     * @returns Collection
+     * @return Collection
      */
     public function getReservedProducts(string $batchId): Collection
     {
@@ -216,7 +216,7 @@ class FacebookCatalogUpdate extends AbstractDb
     /**
      * Delete all the product update entries
      *
-     * @param $productId
+     * @param $sku
      * @return void
      */
     public function deleteUpdateProductEntries($sku): void
