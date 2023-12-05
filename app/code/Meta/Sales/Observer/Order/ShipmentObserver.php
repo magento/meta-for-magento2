@@ -63,7 +63,7 @@ class ShipmentObserver implements ObserverInterface
         SystemConfig    $systemConfig,
         LoggerInterface $logger,
         Shipper         $shipper,
-        OrderHelper     $orderHelper,
+        OrderHelper     $orderHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
