@@ -952,8 +952,12 @@ class Builder
             $headerFields[] = $customAttribute;
         }
 
-        $headerFields[] = self::ATTR_FEATURES;
-        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
+        if (!in_array(self::ATTR_FEATURES, $headerFields)) {
+            $headerFields[] = self::ATTR_FEATURES;
+        }
+
+        if (!$this->systemConfig->isUnsupportedProductsDisabled()
+            && !in_array(self::ATTR_UNSUPPORTED_PRODUCT_DATA, $headerFields)) {
             $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
         }
 
