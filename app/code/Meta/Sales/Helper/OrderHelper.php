@@ -22,6 +22,7 @@ namespace Meta\Sales\Helper;
 
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
+use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
 
 class OrderHelper
@@ -42,15 +43,21 @@ class OrderHelper
      */
     public function __construct(
         OrderExtensionFactory         $orderExtensionFactory,
-        FacebookOrderInterfaceFactory $facebookOrderFactory,
+        FacebookOrderInterfaceFactory $facebookOrderFactory
     ) {
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->facebookOrderFactory = $facebookOrderFactory;
     }
 
-    public function loadFacebookOrderFromMagentoId($magentoOrderId)
+    /**
+     * Assign Meta order's extension attributes such as facebook_order_id to a Magento order
+     *
+     * @param mixed $magentoOrderId
+     * @return FacebookOrderInterface
+     */
+    public function loadFacebookOrderFromMagentoId($magentoOrderId): FacebookOrderInterface
     {
-        /** @var \Meta\Sales\Api\Data\FacebookOrderInterface $facebookOrder */
+        /** @var FacebookOrderInterface $facebookOrder */
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($magentoOrderId, 'magento_order_id');
 
@@ -71,7 +78,6 @@ class OrderHelper
             return;
         }
 
-        /** @var \Meta\Sales\Api\Data\FacebookOrderInterface $facebookOrder */
         $facebookOrder = $this->loadFacebookOrderFromMagentoId($order->getId());
 
         if (!$facebookOrder->getId()) {

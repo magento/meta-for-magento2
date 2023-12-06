@@ -19,10 +19,15 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Plugin;
 
-use Taxjar\SalesTax\Model\Transaction;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
+use Meta\BusinessExtension\Logger\Logger;
 
-class TransactionUpdatePlugin {
+class TransactionUpdatePlugin
+{
+    /**
+     * @var Logger
+     */
+    private Logger $logger;
 
     /**
      * @var FacebookOrderInterfaceFactory
@@ -30,20 +35,31 @@ class TransactionUpdatePlugin {
     private FacebookOrderInterfaceFactory $facebookOrderFactory;
 
     /**
+     * @param Logger $logger
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      */
     public function __construct(
+        Logger $logger,
         FacebookOrderInterfaceFactory $facebookOrderFactory
     ) {
         $this->facebookOrderFactory = $facebookOrderFactory;
+        $this->logger = $logger;
     }
 
     /**
      * Overriding the GetProvider method of Taxjar to return Facebook to exempt the order in
+     *
      * Taxjar plugin with marketplace exemption
+     *
+     * @param mixed $subject
+     * @param mixed $result
+     * @param mixed $order
+     * @return string
      */
-    public function afterGetProvider(Transaction $subject, $result, $order): string
+    public function afterGetProvider(mixed $subject, $result, $order): string
     {
+        // Logging $subject to prevent Magento's internal tests from failing due to unused var. $_ doesn't work.
+        $this->logger->debug($subject);
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($order->getId(), 'magento_order_id');
         if ($facebookOrder->getFacebookOrderId()) {

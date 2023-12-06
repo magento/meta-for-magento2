@@ -81,8 +81,7 @@ class CreateCancellation
         TransactionFactory            $transactionFactory,
         FBEHelper                     $fbeHelper,
         LoggerInterface               $logger
-    )
-    {
+    ) {
         $this->orderRepository = $orderRepository;
         $this->facebookOrderFactory = $facebookOrderFactory;
         $this->transactionFactory = $transactionFactory;
@@ -95,12 +94,11 @@ class CreateCancellation
      *
      * @param array $facebookOrderData
      * @param array $facebookCancellationData
-     * @param int $storeId
      * @throws LocalizedException
      */
-    public function execute(array $facebookOrderData, array $facebookCancellationData, int $storeId): void
+    public function execute(array $facebookOrderData, array $facebookCancellationData): void
     {
-        $magentoOrder = $this->getOrder($facebookOrderData, $storeId);
+        $magentoOrder = $this->getOrder($facebookOrderData);
         if (!$magentoOrder) {
             return;
         }
@@ -148,12 +146,11 @@ class CreateCancellation
      * Retrieve or create a Magento order based on the Facebook Order ID
      *
      * @param array $data
-     * @param int $storeId
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
      */
-    private function getOrder(array $data, int $storeId): ?Order
+    private function getOrder(array $data): ?Order
     {
         // Magento's "load" function will gracefully accept an invalid ID
         $facebookOrder = $this->facebookOrderFactory->create()->load($data['id'], 'facebook_order_id');

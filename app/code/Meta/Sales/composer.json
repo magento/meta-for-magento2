@@ -11,6 +11,7 @@
     "magento/module-config": "*",
     "magento/module-catalog": "*",
     "magento/module-configurable-product": "*",
+    "magento/module-customer": "*",
     "magento/module-store": "*",
     "magento/module-directory": "*",
     "magento/module-offline-shipping": "*",

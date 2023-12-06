@@ -34,6 +34,9 @@ use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Throwable;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
 {
     /**
@@ -243,11 +246,11 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     public function getCoreConfig(string $externalBusinessId): CoreConfigInterface
     {
         $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
+        $coreConfig = $this->coreConfigFactory->create();
         try {
             $this->authenticator->authenticateRequest();
-            $coreConfig = $this->coreConfigFactory->create();
             $coreConfigData =  $this->getCoreConfigByStoreId($externalBusinessId, $storeId);
-            return $coreConfig->addData($coreConfigData);
+            $coreConfig->addData($coreConfigData);
         } catch (Exception $e) {
             $context = [
                 'store_id' => $storeId,
@@ -257,6 +260,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
             $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
             $this->throwException($e->getMessage());
         }
+        return $coreConfig;
     }
 
     /**
