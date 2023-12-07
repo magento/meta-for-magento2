@@ -40,6 +40,7 @@ class FBEHelper
     private const URL_TYPE_WEB = 'web';
 
     public const PERSIST_META_LOG_IMMEDIATELY = 'persist_meta_log_immediately';
+    public const PERSIST_META_TELEMETRY_LOGS = 'persist_meta_telemetry_logs';
 
     /**
      * @var GraphAPIConfig
@@ -309,6 +310,14 @@ class FBEHelper
         $this->logExceptionDetails($exceptionCode, $errorMessage, $exceptionTrace, $context);
     }
 
+    /**
+     * Log exception details
+     *
+     * @param int $code
+     * @param string $message
+     * @param string $traceAsString
+     * @param array $context
+     */
     public function logExceptionDetails($code, $message, $traceAsString, array $context = [])
     {
         // If the log type is not set just log the error message and trace.
@@ -365,6 +374,18 @@ class FBEHelper
     {
         $context['log_type'] = self::PERSIST_META_LOG_IMMEDIATELY;
         $this->logExceptionDetails($code, $message, $traceAsString, $context);
+    }
+
+    /**
+     * Log telemetry and persist with Meta
+     *
+     * @param string $message
+     * @param array $context
+     */
+    public function logTelemetryToMeta(string $message, array $context = [])
+    {
+        $context['log_type'] = self::PERSIST_META_TELEMETRY_LOGS;
+        $this->log($message, $context);
     }
 
     /**
@@ -474,4 +495,23 @@ class FBEHelper
         }
     }
 
+    /**
+     * Return unique trace id for telemetry flows
+     *
+     * @return string
+     */
+    public function genUniqueTraceID(): string
+    {
+        return uniqid("magento_");
+    }
+
+    /**
+     * Return current time in milliseconds
+     *
+     * @return int
+     */
+    public function getCurrentTimeInMS(): int
+    {
+        return (int)(microtime(true) * 1000);
+    }
 }

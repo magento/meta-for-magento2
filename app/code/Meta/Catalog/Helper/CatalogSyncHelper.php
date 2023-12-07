@@ -72,13 +72,15 @@ class CatalogSyncHelper
      * Syncs all products and categories to Meta Catalog
      *
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return void
      */
-    public function syncFullCatalog(int $storeId)
+    public function syncFullCatalog(int $storeId, string $flowName, string $traceId)
     {
         try {
             if ($this->systemConfig->isCatalogSyncEnabled($storeId)) {
-                $this->uploader->uploadFullCatalog($storeId);
+                $this->uploader->uploadFullCatalog($storeId, $flowName, $traceId);
                 $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
             }
         } catch (\Throwable $e) {

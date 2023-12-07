@@ -63,9 +63,11 @@ class SyncFullCatalog implements ObserverInterface
     public function execute(Observer $observer): void
     {
         $storeId = $observer->getEvent()->getStoreId();
+        $flowName = $observer->getEvent()->getName();
+        $traceId = $this->fbeHelper->genUniqueTraceID();
 
         try {
-            $this->catalogSyncHelper->syncFullCatalog($storeId);
+            $this->catalogSyncHelper->syncFullCatalog($storeId, $flowName, $traceId);
         } catch (Throwable $e) {
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,

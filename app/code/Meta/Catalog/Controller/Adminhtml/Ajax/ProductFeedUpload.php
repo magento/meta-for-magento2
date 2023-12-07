@@ -27,7 +27,6 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Product\Feed\Uploader;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Exception\NoSuchEntityException;
 
 class ProductFeedUpload extends AbstractAjax
 {
@@ -72,7 +71,7 @@ class ProductFeedUpload extends AbstractAjax
      * Execute for json
      *
      * @return array
-     * @throws NoSuchEntityException
+     * @throws \Throwable
      */
     public function executeForJson()
     {
@@ -100,8 +99,11 @@ class ProductFeedUpload extends AbstractAjax
             return $response;
         }
 
+        $traceId = $this->fbeHelper->genUniqueTraceID();
+        $flowName = 'force_product_feed_upload';
+
         try {
-            $feedPushResponse = $this->uploader->uploadFullCatalog($storeId);
+            $feedPushResponse = $this->uploader->uploadFullCatalog($storeId, $flowName, $traceId);
             $response['success'] = true;
             $response['feed_push_response'] = $feedPushResponse;
         } catch (Exception $e) {

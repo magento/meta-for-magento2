@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Model;
 
+use GuzzleHttp\Exception\GuzzleException;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
@@ -54,6 +56,7 @@ class PersistMetaTelemetryLogsHandler
      * Consumer handler to persist telemetry logs from message queue to Meta
      *
      * @param string $messages
+     * @throws GuzzleException
      */
     public function persistMetaTelemetryLogs(string $messages)
     {
@@ -68,7 +71,7 @@ class PersistMetaTelemetryLogsHandler
             }
         }
         $telemetryContext = [];
-        $telemetryContext['event'] = 'persist_meta_telemetry_logs';
+        $telemetryContext['event'] = FBEHelper::PERSIST_META_TELEMETRY_LOGS;
         $telemetryContext['extra_data'] = [];
         $telemetryContext['extra_data']['telemetry_logs'] = $messages;
         $this->graphApiAdapter->persistLogToMeta($telemetryContext, $accessToken);

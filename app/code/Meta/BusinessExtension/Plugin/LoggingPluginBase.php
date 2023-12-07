@@ -194,7 +194,7 @@ abstract class LoggingPluginBase
         $storeId = $this->getMaybeStoreID();
         return [
             'flow_name' => $log_prefix . ': ' . $this->getClassnameForLogging($subject),
-            'log_type' => 'persist_meta_telemetry_logs',
+            'log_type' => FBEHelper::PERSIST_META_TELEMETRY_LOGS,
             'store_id' => $storeId,
             'flow_step' => $step,
         ];
