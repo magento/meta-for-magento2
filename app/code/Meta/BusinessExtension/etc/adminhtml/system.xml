@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="facebook" translate="label" sortOrder="1000">
-            <label>Facebook &amp; Instagram</label>
+            <label>Facebook and Instagram</label>
         </tab>
         <section id="facebook_business_extension" translate="label" sortOrder="5" showInDefault="1" showInWebsite="0"
                  showInStore="1">
@@ -73,7 +73,7 @@
                    showInWebsite="0" showInStore="1">
                 <fieldset_css>meta-section-config</fieldset_css>
                 <label>Business Settings</label>
-                <comment>Set your preferred business settings for Facebook &amp; Instagram.
+                <comment>Set your preferred business settings for Facebook and Instagram.
                 </comment>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
