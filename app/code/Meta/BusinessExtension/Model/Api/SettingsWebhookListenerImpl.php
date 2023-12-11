@@ -240,7 +240,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      * Process webhook GET request to pull core config from Magento to Meta
      *
      * @param string $externalBusinessId
-     * @return CoreConfigInterface
+     * @return \Meta\BusinessExtension\Api\CoreConfigInterface
      * @throws LocalizedException
      */
     public function getCoreConfig(string $externalBusinessId): CoreConfigInterface
