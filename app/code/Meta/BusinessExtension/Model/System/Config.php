@@ -152,7 +152,7 @@ class Config
      *
      * @var string|null
      */
-    private ?string $version = '1.2.5-dev';
+    private ?string $version = '1.2.5-rc';
 
     /**
      * @method __construct
