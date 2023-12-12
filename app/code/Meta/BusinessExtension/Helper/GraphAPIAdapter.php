@@ -710,8 +710,8 @@ class GraphAPIAdapter
      * Mark order items as shipped
      *
      * @param mixed $fbOrderId
-     * @param array $items
      * @param string $magentoShipmentId
+     * @param array $items
      * @param array $trackingInfo
      * @param array $fulfillmentAddressData
      * @return mixed|\Psr\Http\Message\ResponseInterface

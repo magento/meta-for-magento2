@@ -44,7 +44,7 @@ class ReportClientError extends AbstractAjax
     public function __construct(
         Context      $context,
         JsonFactory  $resultJsonFactory,
-        FBEHelper    $fbeHelper,
+        FBEHelper    $fbeHelper
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->fbeHelper = $fbeHelper;
@@ -80,5 +80,6 @@ class ReportClientError extends AbstractAjax
             $stackTrace,
             $loggingContext,
         );
+        return [];
     }
 }

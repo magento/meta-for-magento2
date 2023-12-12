@@ -38,6 +38,8 @@ class OrderHelper
     private $facebookOrderFactory;
 
     /**
+     * Constructor
+     *
      * @param OrderExtensionFactory $orderExtensionFactory
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      */

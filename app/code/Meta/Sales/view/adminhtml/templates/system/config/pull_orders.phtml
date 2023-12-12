@@ -40,7 +40,11 @@
           jQuery('#fb_pull_orders_result_text').text(resultText);
           let jsonObject = JSON.parse(response.responseText);
           let prettyJsonString = JSON.stringify(jsonObject, null, 2);
-          jQuery('#fb_pull_orders_result_response').html('<pre style="white-space: pre-wrap;">' + prettyJsonString + '</pre>');
+          jQuery('#fb_pull_orders_result_response').html(
+            '<pre style="white-space: pre-wrap;">'
+            + prettyJsonString +
+            '</pre>'
+          );
           responseToggle.show();
         }
       });

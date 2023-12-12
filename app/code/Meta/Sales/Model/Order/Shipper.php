@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Model\Order;
 
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Shipment;
@@ -66,24 +67,32 @@ class Shipper
     private FBEHelper $fbeHelper;
 
     /**
+     * @var FacebookOrder
+     */
+    private FacebookOrder $facebookOrder;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param ShippingHelper $shippingHelper
      * @param OrderHelper $orderHelper
      * @param FBEHelper $fbeHelper
+     * @param FacebookOrder $facebookOrder
      */
     public function __construct(
         SystemConfig    $systemConfig,
         GraphAPIAdapter $graphAPIAdapter,
         ShippingHelper  $shippingHelper,
         OrderHelper     $orderHelper,
-        FBEHelper       $fbeHelper
+        FBEHelper       $fbeHelper,
+        FacebookOrder   $facebookOrder
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->shippingHelper = $shippingHelper;
         $this->orderHelper = $orderHelper;
         $this->fbeHelper = $fbeHelper;
+        $this->facebookOrder = $facebookOrder;
     }
 
     /**
@@ -95,44 +104,6 @@ class Shipper
     public function getOrderShipEvent($storeId = null)
     {
         return $this->systemConfig->getOrderShipEvent($storeId);
-    }
-
-    /**
-     * Get carrier code for facebook
-     *
-     * @param Track $track
-     * @return string
-     */
-    public function getCarrierCodeForFacebook(Track $track): string
-    {
-        return $this->shippingHelper->getCarrierCodeForFacebook($track);
-    }
-
-    /**
-     * Validate fulfillment address
-     *
-     * @param array $address
-     * @return void
-     * @throws LocalizedException
-     */
-    private function validateFulfillmentAddress(array $address)
-    {
-        $requiredFields = [
-            'street_1' => __('Street Address 1'),
-            'country' => __('Country'),
-            'state' => __('Region/State'),
-            'city' => __('City'),
-            'postal_code' => __('Zip/Postal Code')
-        ];
-        $missingFields = array_filter($requiredFields, function ($field) use ($address) {
-            return empty($address[$field]);
-        }, ARRAY_FILTER_USE_KEY);
-        if (!empty($missingFields)) {
-            throw new LocalizedException(__(
-                'Please provide the required fields: %1 in the Fulfillment Address section.',
-                implode(', ', array_values($missingFields))
-            ));
-        }
     }
 
     /**
@@ -172,7 +143,7 @@ class Shipper
         }
 
         $magentoShipmentId = $shipment->getIncrementId();
-        if (!FacebookOrder::isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo)) {
+        if (!$this->facebookOrder->isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo)) {
             $this->fbeHelper->log("[markAsShipped] Shipment: {$shipment->getIncrementId()} - Skipping, in sync");
             return;
         }
@@ -210,7 +181,7 @@ class Shipper
                 $trackingInfo,
                 $fulfillmentAddress
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Validated the Meta API will throw if retailer ids provided are invalid
             // https://fburl.com/code/p523l7gm
             $this->markOrderItemsAsShipped(
@@ -235,6 +206,44 @@ class Shipper
         $fbOrder->updateSyncedShipment($magentoShipmentId, $trackingInfo)->save();
 
         // @todo Update order totals
+    }
+
+    /**
+     * Get carrier code for facebook
+     *
+     * @param Track $track
+     * @return string
+     */
+    public function getCarrierCodeForFacebook(Track $track): string
+    {
+        return $this->shippingHelper->getCarrierCodeForFacebook($track);
+    }
+
+    /**
+     * Validate fulfillment address
+     *
+     * @param array $address
+     * @return void
+     * @throws LocalizedException
+     */
+    private function validateFulfillmentAddress(array $address)
+    {
+        $requiredFields = [
+            'street_1' => __('Street Address 1'),
+            'country' => __('Country'),
+            'state' => __('Region/State'),
+            'city' => __('City'),
+            'postal_code' => __('Zip/Postal Code')
+        ];
+        $missingFields = array_filter($requiredFields, function ($field) use ($address) {
+            return empty($address[$field]);
+        }, ARRAY_FILTER_USE_KEY);
+        if (!empty($missingFields)) {
+            throw new LocalizedException(__(
+                'Please provide the required fields: %1 in the Fulfillment Address section.',
+                implode(', ', array_values($missingFields))
+            ));
+        }
     }
 
     /**
@@ -306,7 +315,7 @@ class Shipper
         ];
 
         $magentoShipmentId = $shipment->getIncrementId();
-        if (!FacebookOrder::isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo)) {
+        if (!$this->facebookOrder->isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo)) {
             $this->fbeHelper->log(
                 "[updateShipmentTracking] Shipment: {$shipment->getIncrementId()} - Skipping, in sync"
             );

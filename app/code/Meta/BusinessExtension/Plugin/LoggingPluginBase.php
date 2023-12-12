@@ -53,7 +53,7 @@ abstract class LoggingPluginBase
     public function __construct(
         FBEHelper                $fbeHelper,
         RequestInterface         $request,
-        StoreRepositoryInterface $storeRepository,
+        StoreRepositoryInterface $storeRepository
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->request = $request;
@@ -74,7 +74,7 @@ abstract class LoggingPluginBase
         string   $log_prefix,
         $subject,
         callable $progress,
-        ...$args,
+        ...$args
     ) {
         return $this->wrapCallableWithLogging(
             true, // $should_log_errors
@@ -100,7 +100,7 @@ abstract class LoggingPluginBase
         string   $log_prefix,
         $subject,
         callable $progress,
-        ...$args,
+        ...$args
     ) {
         return $this->wrapCallableWithLogging(
             true, // $should_log_errors
@@ -130,7 +130,7 @@ abstract class LoggingPluginBase
         string   $log_prefix,
         $subject,
         callable $progress,
-        ...$args,
+        ...$args
     ) {
         $classname = $this->getClassnameForLogging($subject);
         if (!str_starts_with($classname, "Meta\\")) {
