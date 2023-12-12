@@ -165,8 +165,8 @@ class OrderMapper
             ->setBillingAddress($billingAddress)
             ->setShippingAddress($shippingAddress)
             ->setStoreId($storeId)
-            ->setPayment($payment)
-            ->setCanSendNewEmailFlag(false);
+            ->setCanSendNewEmailFlag(false)
+            ->setPayment($payment);
 
         $this->applyShippingToOrder($order, $data, $storeId);
         $this->applyItemsToOrder($order, $data, $storeId);
