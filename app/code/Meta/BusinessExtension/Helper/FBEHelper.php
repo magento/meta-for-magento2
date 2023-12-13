@@ -337,6 +337,11 @@ class FBEHelper
         if (isset($context['store_id'])) {
             $extraData['store_id'] = $context['store_id'];
             $context['commerce_merchant_settings_id'] = $this->systemConfig->getCommerceAccountId($context['store_id']);
+            $context['external_business_id'] = $this->systemConfig->getExternalBusinessId($context['store_id']);
+            $context['commerce_partner_integration_id'] =
+                $this->systemConfig->getCommercePartnerIntegrationId($context['store_id']);
+            $context['page_id'] = $this->systemConfig->getPageId($context['store_id']);
+            $context['pixel_id'] = $this->systemConfig->getPixelId($context['store_id']);
         }
 
         if (isset($context['extra_data'])) {
