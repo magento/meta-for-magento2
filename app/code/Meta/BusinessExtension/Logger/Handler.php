@@ -46,7 +46,7 @@ class Handler extends Base
    *
    * @var string
    */
-    protected $fileName = '/var/log/facebook-business-extension.log';
+    protected $fileName = '/var/log/meta/meta-business-extension.log';
 
   /**
    * Sets the publisher that the handler will use to add logs to message queue
@@ -70,7 +70,6 @@ class Handler extends Base
             $this->publisher->publish('persist.meta.log.immediately', json_encode($record['context']));
         } elseif ($logTypeIsSet && $record['context']['log_type'] === FBEHelper::PERSIST_META_TELEMETRY_LOGS) {
             $this->publisher->publish('persist.meta.telemetry.logs', json_encode($record['context']));
-            return;
         }
         parent::write($record);
     }

@@ -138,7 +138,7 @@ abstract class LoggingPluginBase
         }
 
         if ($should_log_impressions) {
-            $this->fbeHelper->log(
+            $this->fbeHelper->logTelemetryToMeta(
                 $log_prefix . ': ' . $classname,
                 $this->getTelemetryLogData($log_prefix, $subject, 'Start'),
             );
@@ -157,7 +157,7 @@ abstract class LoggingPluginBase
             throw $ex;
         } finally {
             if ($should_log_impressions) {
-                $this->fbeHelper->log(
+                $this->fbeHelper->logTelemetryToMeta(
                     $log_prefix . ': ' . $classname,
                     $this->getTelemetryLogData($log_prefix, $subject, 'End'),
                 );
@@ -194,7 +194,6 @@ abstract class LoggingPluginBase
         $storeId = $this->getMaybeStoreID();
         return [
             'flow_name' => $log_prefix . ': ' . $this->getClassnameForLogging($subject),
-            'log_type' => FBEHelper::PERSIST_META_TELEMETRY_LOGS,
             'store_id' => $storeId,
             'flow_step' => $step,
         ];
