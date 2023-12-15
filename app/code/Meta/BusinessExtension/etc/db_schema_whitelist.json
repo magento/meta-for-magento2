@@ -16,5 +16,17 @@
         "index": {
             "FACEBOOK_INSTALLED_FEATURES_STORE_ID": true
         }
+    },
+    "meta_issue_notifications": {
+        "column": {
+            "row_id": true,
+            "notification_id": true,
+            "message": true,
+            "severity": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "META_ISSUE_NOTIFICATIONS_NOTIFICATION_ID": true
+        }
     }
 }

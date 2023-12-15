@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Model\Api;
 
 use Magento\Framework\DataObject;
+use Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface;
 use Meta\BusinessExtension\Api\SettingsWebhookRequestInterface;
 
 class SettingsWebhookRequestImpl extends DataObject implements SettingsWebhookRequestInterface
@@ -44,5 +45,26 @@ class SettingsWebhookRequestImpl extends DataObject implements SettingsWebhookRe
     public function setExternalBusinessId(string $externalBusinessId): void
     {
         $this->setData(self::DATA_EXTERNAL_BUSINESS_ID, $externalBusinessId);
+    }
+
+    /**
+     * Notification Getter
+     *
+     * @return ?\Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface
+     */
+    public function getNotification(): ?MetaIssueNotificationInterface
+    {
+        return $this->_getData('notification');
+    }
+
+    /**
+     * Notification Setter
+     *
+     * @param \Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface $notification
+     * @return void
+     */
+    public function setNotification(MetaIssueNotificationInterface $notification): void
+    {
+        $this->setData('notification', $notification);
     }
 }

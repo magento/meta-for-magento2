@@ -13,6 +13,9 @@
     <type name="Magento\Framework\Notification\MessageList">
         <arguments>
             <argument name="messages" xsi:type="array">
+                <item name="version_upgrade_notification" xsi:type="string">
+                    Meta\BusinessExtension\Model\System\Message\VersionUpgradeNotification
+                </item>
                 <item name="notification" xsi:type="string">Meta\BusinessExtension\Model\System\Message\Notification
                 </item>
             </argument>

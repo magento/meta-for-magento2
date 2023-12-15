@@ -25,6 +25,7 @@ use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Api\CoreConfigInterface;
 use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
+use Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface;
 use Meta\BusinessExtension\Api\SettingsWebhookListenerInterface;
 use Meta\BusinessExtension\Api\SettingsWebhookRequestInterface;
 use Meta\BusinessExtension\Helper\CatalogConfigUpdateHelper;
@@ -32,6 +33,8 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Model\ResourceModel\MetaIssueNotification;
+
 use Throwable;
 
 /**
@@ -73,6 +76,11 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     private CoreConfigFactory $coreConfigFactory;
 
     /**
+     * @var MetaIssueNotification
+     */
+    private $issueNotification;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param FBEHelper $fbeHelper
      * @param CollectionFactory $collectionFactory
@@ -80,15 +88,17 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      * @param CatalogConfigUpdateHelper $catalogConfigUpdateHelper
      * @param GraphAPIAdapter $graphApiAdapter
      * @param CoreConfigFactory $coreConfigFactory
+     * @param MetaIssueNotification $issueNotification
      */
     public function __construct(
-        SystemConfig              $systemConfig,
+        SystemConfig               $systemConfig,
         FBEHelper                 $fbeHelper,
         CollectionFactory         $collectionFactory,
         Authenticator             $authenticator,
-        CatalogConfigUpdateHelper $catalogConfigUpdateHelper,
+        CatalogConfigUpdateHelper  $catalogConfigUpdateHelper,
         GraphAPIAdapter           $graphApiAdapter,
-        CoreConfigFactory $coreConfigFactory
+        CoreConfigFactory          $coreConfigFactory,
+        MetaIssueNotification      $issueNotification
     ) {
         $this->systemConfig = $systemConfig;
         $this->fbeHelper = $fbeHelper;
@@ -97,6 +107,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         $this->catalogConfigUpdateHelper = $catalogConfigUpdateHelper;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->coreConfigFactory = $coreConfigFactory;
+        $this->issueNotification = $issueNotification;
     }
 
     /**
@@ -114,6 +125,19 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
             $this->updateSetting($setting);
         }
     }
+    /**
+     * Update notification in magento Admin page
+     *
+     * @param MetaIssueNotificationInterface $notification
+     */
+    private function processNotification(MetaIssueNotificationInterface $notification): void
+    {
+        $this->issueNotification->deleteByNotificationId(MetaIssueNotification::VERSION_NOTIFICATION_ID);
+        if (empty($notification->getMessage())) {
+            return;
+        }
+        $this->issueNotification->saveVersionNotification($notification);
+    }
 
     /**
      * Process webhook POST request
@@ -123,6 +147,13 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      */
     private function updateSetting(SettingsWebhookRequestInterface $setting): void
     {
+        // Step 0 - If it has notification, process and end.
+        $notification = $setting->getNotification();
+        if ($notification !== null) {
+            $this->processNotification($notification);
+            return;
+        }
+
         // Step 1 - Get StoreId by business_extension_id
         $externalBusinessId = $setting->getExternalBusinessId();
         $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
@@ -269,7 +300,6 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      * @param string $externalBusinessId
      * @param string $storeId
      * @return array
-     * @throws LocalizedException
      */
     private function getCoreConfigByStoreId(string $externalBusinessId, string $storeId): array
     {
