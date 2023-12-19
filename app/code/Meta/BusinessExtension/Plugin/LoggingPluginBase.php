@@ -133,7 +133,7 @@ abstract class LoggingPluginBase
         ...$args
     ) {
         $classname = $this->getClassnameForLogging($subject);
-        if (!str_starts_with($classname, "Meta\\")) {
+        if (!preg_match('/^Meta\\\\/', $classname)) {
             return $progress(...$args);
         }
 
