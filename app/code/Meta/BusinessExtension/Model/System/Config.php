@@ -56,6 +56,9 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID = 'facebook/business_extension/page_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID = 'facebook/business_extension/catalog_id';
 
+    public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_GRAPH_API_VERSION =
+        'facebook/business_extension/graph_api_version';
+
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_PARTNER_INTEGRATION_ID =
         'facebook/business_extension/commerce_partner_integration_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID =
@@ -691,6 +694,18 @@ class Config
     public function getCatalogId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID, $scopeId, $scope);
+    }
+
+    /**
+     * Get graph API version
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return mixed
+     */
+    public function getGraphAPIVersion($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_GRAPH_API_VERSION, $scopeId, $scope);
     }
 
     /**

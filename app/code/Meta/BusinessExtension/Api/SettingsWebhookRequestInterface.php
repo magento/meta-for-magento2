@@ -39,4 +39,19 @@ interface SettingsWebhookRequestInterface
      * @return void
      */
     public function setNotification(MetaIssueNotificationInterface $notification): void;
+
+    /**
+     * GraphApiVersion Getter
+     *
+     * @return null|string
+     */
+    public function getGraphApiVersion(): ?string;
+
+    /**
+     * GraphApiVersion Setter
+     *
+     * @param null|string $graphApiVersion
+     * @return void
+     */
+    public function setGraphApiVersion(?string $graphApiVersion): void;
 }

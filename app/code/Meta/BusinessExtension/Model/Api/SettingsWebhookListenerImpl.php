@@ -147,7 +147,13 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      */
     private function updateSetting(SettingsWebhookRequestInterface $setting): void
     {
-        // Step 0 - If it has notification, process and end.
+        // Step 0.1 - Maybe update Graph API
+        $graphApiVersion = $setting->getGraphAPIVersion();
+        if ($graphApiVersion !== null) {
+            $this->updateGraphAPIVersion($graphApiVersion);
+        }
+
+        // Step 0.2 - If it has notification, process and end.
         $notification = $setting->getNotification();
         if ($notification !== null) {
             $this->processNotification($notification);
@@ -317,5 +323,20 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
             'graphApiVersion' => $this->graphApiAdapter->getGraphApiVersion(),
             'magentoVersion' => $this->fbeHelper->getMagentoVersion(),
         ];
+    }
+
+    /**
+     * Update Graph API version
+     *
+     * @param string $graphApiVersion
+     * @return void
+     */
+    private function updateGraphAPIVersion(string $graphApiVersion) : void
+    {
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_GRAPH_API_VERSION,
+            $graphApiVersion,
+        );
+        $this->systemConfig->cleanCache();
     }
 }

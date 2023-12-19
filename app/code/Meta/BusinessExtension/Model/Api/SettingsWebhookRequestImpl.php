@@ -67,4 +67,25 @@ class SettingsWebhookRequestImpl extends DataObject implements SettingsWebhookRe
     {
         $this->setData('notification', $notification);
     }
+
+    /**
+     * GraphApiVersion Setter
+     *
+     * @param null|string $graphApiVersion
+     * @return void
+     */
+    public function setGraphAPIVersion(?string $graphApiVersion): void
+    {
+        $this->setData('graphApiVersion', $graphApiVersion);
+    }
+
+    /**
+     * GraphApiVersion Getter
+     *
+     * @return null|string
+     */
+    public function getGraphAPIVersion(): ?string
+    {
+        return $this->_getData('graphApiVersion');
+    }
 }

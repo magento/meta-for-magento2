@@ -55,7 +55,7 @@ class GraphAPIAdapter
     /**
      * @var string
      */
-    private $graphAPIVersion = '18.0';
+    private $graphAPIVersion = 'v18.0';
 
     /**
      * @var Client
@@ -93,6 +93,11 @@ class GraphAPIAdapter
     private $scopeConfig;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * GraphAPIAdapter constructor.
      *
      * @param SystemConfig $systemConfig
@@ -110,12 +115,13 @@ class GraphAPIAdapter
         GraphAPIConfig       $graphAPIConfig,
         ScopeConfigInterface $scopeConfig
     ) {
+        $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->accessToken = $systemConfig->getAccessToken();
         $this->clientAccessToken = $systemConfig->getClientAccessToken();
         $this->client = new Client(
             [
-                'base_uri' => "{$graphAPIConfig->getGraphBaseURL()}v{$this->graphAPIVersion}/",
+                'base_uri' => "{$graphAPIConfig->getGraphBaseURL()}{$this->getGraphApiVersion()}/",
                 'timeout' => 60,
             ]
         );
@@ -238,7 +244,7 @@ class GraphAPIAdapter
     private function callApiForFileTransfer($endpoint, $params, $filePath)
     {
         try {
-            $endpoint = "{$this->graphAPIConfig->getGraphBaseURL()}v{$this->graphAPIVersion}/" . $endpoint;
+            $endpoint = "{$this->graphAPIConfig->getGraphBaseURL()}{$this->getGraphApiVersion()}/" . $endpoint;
             $curl = $this->curlFactory->create();
             $fileBaseName = $this->fileFactory->create(['filename' => $filePath, 'module' => ''])->getName();
 
@@ -1013,8 +1019,9 @@ class GraphAPIAdapter
      *
      * @return string
      */
-    public function getGraphApiVersion()
+    public function getGraphApiVersion(): string
     {
-        return 'v' . $this->graphAPIVersion;
+        $latestGraphApiVersion = $this->systemConfig->getGraphAPIVersion();
+        return $latestGraphApiVersion ?? $this->graphAPIVersion;
     }
 }
