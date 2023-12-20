@@ -69,6 +69,9 @@ class CategoryUpload extends AbstractAjax
      */
     public function executeForJson()
     {
+        $traceId = $this->fbeHelper->genUniqueTraceID();
+        $flowName = 'categories_force_update';
+
         $response = [];
 
         // get default store info
@@ -111,7 +114,11 @@ class CategoryUpload extends AbstractAjax
         }
 
         try {
-            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections((int)$storeId);
+            $feedPushResponse = $this->categoryCollection->pushAllCategoriesToFbCollections(
+                (int)$storeId,
+                $flowName,
+                $traceId
+            );
             $response['success'] = true;
             $response['feed_push_response'] = $feedPushResponse;
         } catch (\Throwable $e) {
@@ -123,7 +130,12 @@ class CategoryUpload extends AbstractAjax
                     'store_id' => $storeId,
                     'event' => 'category_sync',
                     'event_type' => 'all_categories_force_sync',
+                    'flow_name' => $flowName,
+                    'flow_step' => 'categories_force_update_error',
                     'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+                    [
+                        'external_trace_id' => $traceId
+                    ]
                 ]
             );
         }

@@ -65,11 +65,14 @@ class CategorySyncCron
      */
     public function execute()
     {
+        $traceId = $this->fbeHelper->genUniqueTraceID();
+        $flowName = 'daily_categories_sync';
+
         foreach ($this->systemConfig->getAllFBEInstalledStores() as $store) {
             $storeId = $store->getId();
             try {
                 if ($this->systemConfig->isCatalogSyncEnabled($storeId)) {
-                    $this->categoryCollection->pushAllCategoriesToFbCollections((int)$storeId);
+                    $this->categoryCollection->pushAllCategoriesToFbCollections((int)$storeId, $flowName, $traceId);
                 }
             } catch (\Throwable $e) {
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
@@ -78,7 +81,12 @@ class CategorySyncCron
                         'store_id' => $storeId,
                         'event' => 'category_sync',
                         'event_type' => 'category_sync_cron',
-                        'catalog_id' => $this->systemConfig->getCatalogId($storeId)
+                        'flow_name' => $flowName,
+                        'flow_step' => 'daily_categories_sync_error',
+                        'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+                        [
+                            'external_trace_id' => $traceId
+                        ]
                     ]
                 );
             }
