@@ -201,6 +201,19 @@ class GraphAPIAdapter
             $option = $method === 'POST' ? 'form_params' : 'query';
             $response = $this->client->request($method, $endpoint, [$option => $request]);
             if ($this->debugMode) {
+
+                $logResponse = (string)$response->getBody();
+                $logResponse = preg_replace(
+                    '/access_token=([a-z0-9A-Z]+)(?=[a-zA-Z0-9]{4,})/',
+                    'access_token=XXXXXXX',
+                    $logResponse
+                );
+                $logResponse = preg_replace(
+                    '/access_token\":\"([a-z0-9A-Z]+)(?=[a-zA-Z0-9]{4,})/',
+                    'access_token":"XXXXXXX',
+                    $logResponse
+                );
+
                 $this->logger->debug(
                     json_encode(
                         [
@@ -215,7 +228,7 @@ class GraphAPIAdapter
                                         $response->getHeaders()
                                     )
                                 ),
-                                'body' => (string)$response->getBody(),
+                                'body' => $logResponse,
                             ]
                         ],
                         JSON_PRETTY_PRINT
