@@ -24,12 +24,11 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Order\CreateCancellation;
+use Meta\Sales\Helper\CommerceHelper;
 
 class Cancel implements ObserverInterface
 {
@@ -39,30 +38,30 @@ class Cancel implements ObserverInterface
     private SystemConfig $systemConfig;
 
     /**
-     * @var GraphAPIAdapter
-     */
-    private GraphAPIAdapter $graphAPIAdapter;
-
-    /**
      * @var OrderHelper
      */
     private OrderHelper $orderHelper;
 
     /**
+     * @var CommerceHelper
+     */
+    private CommerceHelper $commerceHelper;
+
+    /**
      * Constructor
      *
      * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
      * @param OrderHelper $orderHelper
+     * @param CommerceHelper $commerceHelper
      */
     public function __construct(
         SystemConfig    $systemConfig,
-        GraphAPIAdapter $graphAPIAdapter,
-        OrderHelper     $orderHelper
+        OrderHelper     $orderHelper,
+        CommerceHelper  $commerceHelper
     ) {
         $this->systemConfig = $systemConfig;
-        $this->graphAPIAdapter = $graphAPIAdapter;
         $this->orderHelper = $orderHelper;
+        $this->commerceHelper = $commerceHelper;
     }
 
     /**
@@ -98,35 +97,8 @@ class Cancel implements ObserverInterface
             return;
         }
 
-        $this->cancelOrder((int)$storeId, $facebookOrderId);
+        $this->commerceHelper->cancelOrder((int)$storeId, $facebookOrderId);
 
         $order->addCommentToStatusHistory('Order Canceled on Meta');
-    }
-
-    /**
-     * Perform cancel of a facebook order via api
-     *
-     * @param int $storeId
-     * @param string $fbOrderId
-     * @return void
-     * @throws GuzzleException
-     * @throws Exception
-     */
-    private function cancelOrder(int $storeId, string $fbOrderId)
-    {
-        $this->graphAPIAdapter
-            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
-            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
-        try {
-            $this->graphAPIAdapter->cancelOrder($fbOrderId);
-        } catch (GuzzleException $e) {
-            $response = $e->getResponse();
-            $body = json_decode((string)$response->getBody());
-            throw new LocalizedException(__(
-                'Error code: "%1"; Error message: "%2"',
-                (string)$body->error->code,
-                (string)($body->error->error_user_msg ?? $body->error->message)
-            ));
-        }
     }
 }

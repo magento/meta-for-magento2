@@ -786,14 +786,15 @@ class GraphAPIAdapter
      * Cancel order
      *
      * @param mixed $fbOrderId
+     * @param bool $isOutOfStockCancellation
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
-    public function cancelOrder($fbOrderId)
+    public function cancelOrder($fbOrderId, $isOutOfStockCancellation = false)
     {
         // Magento doesn't support admin providing reason code or description for order cancellation
         $cancelReason = [
-            'reason_code' => 'CUSTOMER_REQUESTED',
+            'reason_code' => $isOutOfStockCancellation ? 'OUT_OF_STOCK' : 'CUSTOMER_REQUESTED',
             'reason_description' => 'Canceled from Magento',
         ];
         $response = $this->callApi(
