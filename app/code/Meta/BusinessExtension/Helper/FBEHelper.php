@@ -269,7 +269,11 @@ class FBEHelper
             return;
         }
 
-        $extraData = ['timestamp' => time()];
+        $extraData = [
+            'timestamp' => time(),
+            'seller_platform_app_version' => $this->getMagentoVersion(),
+            'extension_version' => $this->systemConfig->getModuleVersion()
+        ];
 
         if (isset($context['store_id'])) {
             $extraData['store_id'] = $context['store_id'];
