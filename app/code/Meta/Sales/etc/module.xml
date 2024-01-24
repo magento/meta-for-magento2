@@ -13,8 +13,10 @@
             <module name="Magento_Eav"/>
             <module name="Magento_Directory"/>
             <module name="Magento_Payment"/>
+            <module name="Magento_Quote"/>
             <module name="Magento_SalesSequence"/>
             <module name="Magento_Shipping"/>
+            <module name="Magento_Webapi"/>
             <module name="Meta_BusinessExtension"/>
             <module name="Meta_Catalog"/>
             <module name="Magento_OfflineShipping"/>

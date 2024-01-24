@@ -2,6 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Meta\Sales\Api\Data\FacebookOrderInterface" type="Meta\Sales\Model\FacebookOrder"/>
+    <preference for="Meta\Sales\Api\CreateCartApiInterface" type="Meta\Sales\Model\Api\CreateCartApi"/>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>

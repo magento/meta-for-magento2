@@ -16,6 +16,7 @@
     "magento/module-directory": "*",
     "magento/module-offline-shipping": "*",
     "magento/module-payment": "*",
+    "magento/module-quote": "*",
     "magento/module-shipping": "*",
     "magento/module-newsletter": "*",
     "meta/module-business-extension": "*",
