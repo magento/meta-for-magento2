@@ -6,6 +6,7 @@
             <resource id="Magento_Backend::admin">
                 <resource id="Meta_Sales::rest_api" title="Meta - Orders API" sortOrder="52">
                     <resource id="Meta_Sales::create_cart" title="Create Cart" sortOrder="100"/>
+                    <resource id="Meta_Sales::add_cart_items" title="Add Cart Items" sortOrder="101"/>
                 </resource>
             </resource>
         </resources>

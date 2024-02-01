@@ -7,4 +7,10 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/:externalBusinessId/addCartItems" method="POST">
+        <service class="Meta\Sales\Api\AddCartItemsApiInterface" method="addCartItems"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
