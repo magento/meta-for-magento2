@@ -32,10 +32,13 @@ use Magento\Sales\Model\Order\Payment;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
-use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\Sales\Observer\MetaObserverTrait;
 
 class Refund implements ObserverInterface
 {
+    use MetaObserverTrait;
+
     /**
      * @var SystemConfig
      */
@@ -52,18 +55,57 @@ class Refund implements ObserverInterface
     private FacebookOrderInterfaceFactory $facebookOrderFactory;
 
     /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         SystemConfig                  $systemConfig,
         GraphAPIAdapter               $graphAPIAdapter,
-        FacebookOrderInterfaceFactory $facebookOrderFactory
+        FacebookOrderInterfaceFactory $facebookOrderFactory,
+        FBEHelper                     $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->facebookOrderFactory = $facebookOrderFactory;
+        $this->fbeHelper = $fbeHelper;
+    }
+
+    /**
+     * Get Exception Event
+     *
+     * @return string
+     */
+    protected function getExceptionEvent()
+    {
+        return 'refund_observer_exception';
+    }
+
+    /**
+     * Get Store ID
+     *
+     * @param Observer $observer
+     * @return string
+     */
+    protected function getStoreId(Observer $observer)
+    {
+        return $observer->getEvent()->getPayment()->getOrder()->getStoreId();
+    }
+
+    /**
+     * Get Facebook Event Helper
+     *
+     * @return FBEHelper
+     */
+    protected function getFBEHelper(): FBEHelper
+    {
+        return $this->fbeHelper;
     }
 
     /**
@@ -72,8 +114,10 @@ class Refund implements ObserverInterface
      * @param Observer $observer
      * @return void
      * @throws GuzzleException|Exception
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function execute(Observer $observer)
+    protected function executeImpl(Observer $observer)
     {
         /** @var Payment $payment */
         $payment = $observer->getEvent()->getPayment();
@@ -97,7 +141,7 @@ class Refund implements ObserverInterface
             return;
         }
 
-        // @todo fix magento bug with incorrectly loading order in credit memo resulting in missing extension attributes
+        // @todo fix magento bug with incorrectly loading order in credit memo causing missing extension attributes
         // https://github.com/magento/magento2/issues/23345
 
         $facebookOrder = $this->facebookOrderFactory->create();
@@ -109,6 +153,7 @@ class Refund implements ObserverInterface
 
         $deductionAmount = $creditmemo->getAdjustment();
         if ($deductionAmount > 0) {
+            // TODO: Add Telemetry rather than counting exceptions.
             throw new Exception('Cannot refund order on Meta. Adjustment Refunds are not yet supported.');
         } elseif ($deductionAmount < 0) {
             // Magento allows Adjustment Fees to be negative, but the Graph API deductions must always be positive
@@ -123,7 +168,6 @@ class Refund implements ObserverInterface
         if ($currencyCode === 'GBP') {
             $shippingRefundAmount += $creditmemo->getShippingTaxAmount();
         }
-
         try {
             $refundItemsBySku = $this->getRefundItems($creditmemo, $payment, false);
             $this->refundOrder(
@@ -147,7 +191,6 @@ class Refund implements ObserverInterface
                 $reasonText
             );
         }
-
         $payment->getOrder()->addCommentToStatusHistory('Order Refunded on Meta');
     }
 

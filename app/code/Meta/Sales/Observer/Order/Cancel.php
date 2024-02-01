@@ -20,18 +20,22 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Observer\Order;
 
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Order\CreateCancellation;
 use Meta\Sales\Helper\CommerceHelper;
 
+use Meta\Sales\Observer\MetaObserverTrait;
+
 class Cancel implements ObserverInterface
 {
+    use MetaObserverTrait;
+
     /**
      * @var SystemConfig
      */
@@ -48,20 +52,59 @@ class Cancel implements ObserverInterface
     private CommerceHelper $commerceHelper;
 
     /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
      * Constructor
      *
      * @param SystemConfig $systemConfig
      * @param OrderHelper $orderHelper
      * @param CommerceHelper $commerceHelper
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         SystemConfig    $systemConfig,
         OrderHelper     $orderHelper,
-        CommerceHelper  $commerceHelper
+        CommerceHelper  $commerceHelper,
+        FBEHelper       $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->orderHelper = $orderHelper;
         $this->commerceHelper = $commerceHelper;
+        $this->fbeHelper = $fbeHelper;
+    }
+
+    /**
+     * Get Exception Event
+     *
+     * @return string
+     */
+    protected function getExceptionEvent()
+    {
+        return 'refund_observer_exception';
+    }
+
+    /**
+     * Get Store ID
+     *
+     * @param Observer $observer
+     * @return string
+     */
+    protected function getStoreId(Observer $observer)
+    {
+        return $observer->getEvent()->getOrder()->getStoreId();
+    }
+
+    /**
+     * Get Facebook Event Helper
+     *
+     * @return FBEHelper
+     */
+    protected function getFBEHelper()
+    {
+        return $this->fbeHelper;
     }
 
     /**
@@ -71,11 +114,11 @@ class Cancel implements ObserverInterface
      * @return void
      * @throws GuzzleException
      */
-    public function execute(Observer $observer)
+    protected function executeImpl(Observer $observer)
     {
         /** @var Order $order */
         $order = $observer->getEvent()->getOrder();
-        $storeId = $order->getStoreId();
+        $storeId = $this->getStoreId($observer);
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {

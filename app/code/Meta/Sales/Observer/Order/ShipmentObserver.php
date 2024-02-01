@@ -27,12 +27,17 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Shipment;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Order\Shipper;
 use Psr\Log\LoggerInterface;
 
+use Meta\Sales\Observer\MetaObserverTrait;
+
 class ShipmentObserver implements ObserverInterface
 {
+    use MetaObserverTrait;
+    
     /**
      * @var SystemConfig
      */
@@ -54,32 +59,69 @@ class ShipmentObserver implements ObserverInterface
     private $orderHelper;
 
     /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
      * @param SystemConfig $systemConfig
      * @param LoggerInterface $logger
      * @param Shipper $shipper
      * @param OrderHelper $orderHelper
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         SystemConfig    $systemConfig,
         LoggerInterface $logger,
         Shipper         $shipper,
-        OrderHelper     $orderHelper
+        OrderHelper     $orderHelper,
+        FBEHelper       $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
         $this->shipper = $shipper;
         $this->orderHelper = $orderHelper;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
-     * Constructor
+     * Get Exception Event
+     *
+     * @return string
+     */
+    protected function getExceptionEvent()
+    {
+        return 'shipment_observer_exception';
+    }
+
+    /**
+     * Get Facebook Event Helper
+     *
+     * @return FBEHelper
+     */
+    protected function getFBEHelper()
+    {
+        return $this->fbeHelper;
+    }
+
+    /**
+     * Get Store ID
      *
      * @param Observer $observer
-     * @throws LocalizedException
-     * @throws GuzzleException
-     * @throws Exception
+     * @return string
      */
-    public function execute(Observer $observer)
+    protected function getStoreId(Observer $observer)
+    {
+        return (string)$this->getShipment($observer)->getOrder()->getStoreId();
+    }
+
+    /**
+     * Get Shipment from Observer
+     *
+     * @param Observer $observer
+     * @return Shipment|null
+     */
+    protected function getShipment(Observer $observer)
     {
         $event = $observer->getEvent()->getName();
 
@@ -88,8 +130,24 @@ class ShipmentObserver implements ObserverInterface
             $shipment = $observer->getEvent()->getShipment();
         } elseif ($event == Shipper::MAGENTO_EVENT_TRACKING_SAVE_AFTER) {
             $shipment = $observer->getEvent()->getTrack()->getShipment();
+        } else {
+            $shipment = null;
         }
 
+        return $shipment;
+    }
+
+    /**
+     * Executor Implementation
+     *
+     * @param Observer $observer
+     * @throws LocalizedException
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    protected function executeImpl(Observer $observer)
+    {
+        $shipment = $this->getShipment($observer);
         $storeId = $shipment->getOrder()->getStoreId();
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
             && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
@@ -97,7 +155,7 @@ class ShipmentObserver implements ObserverInterface
         }
 
         $orderShipmentEvent = $this->shipper->getOrderShipEvent($storeId);
-        if ($event === $orderShipmentEvent) {
+        if ($observer->getEvent()->getName() === $orderShipmentEvent) {
             $this->executeMarkAsShipped($shipment);
         } elseif (Shipper::MAGENTO_EVENT_SHIPMENT_AUTO === $orderShipmentEvent) {
             $this->executeAutoSync($shipment);
