@@ -13,4 +13,10 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/cartShippingOptions" method="POST">
+        <service class="Meta\Sales\Api\CartShippingOptionsApiInterface" method="cartShippingOptions"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>

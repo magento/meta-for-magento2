@@ -5,6 +5,7 @@
     <preference for="Meta\Sales\Api\CreateCartApiInterface" type="Meta\Sales\Model\Api\CreateCartApi"/>
     <preference for="Meta\Sales\Api\AddCartItemsApiInterface" type="Meta\Sales\Model\Api\AddCartItemsApi"/>
     <preference for="Meta\Sales\Api\AddCartItemsApiResponseInterface" type="Meta\Sales\Model\Api\AddCartItemsApiResponse"/>
+    <preference for="Meta\Sales\Api\CartShippingOptionsApiInterface" type="Meta\Sales\Model\Api\CartShippingOptionsApi"/>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>
