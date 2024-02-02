@@ -25,4 +25,10 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/:itemId/deleteCartItem" method="DELETE">
+        <service class="Meta\Sales\Api\DeleteCartItemApiInterface" method="deleteCartItem"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
