@@ -7,7 +7,8 @@
                 <resource id="Meta_Sales::rest_api" title="Meta - Orders API" sortOrder="52">
                     <resource id="Meta_Sales::create_cart" title="Create Cart" sortOrder="100"/>
                     <resource id="Meta_Sales::add_cart_items" title="Add Cart Items" sortOrder="101"/>
-                    <resource id="Meta_Sales::cart_shipping_opttions" title="Cart Shipping Options" sortOrder="102"/>
+                    <resource id="Meta_Sales::cart_shipping_options" title="Cart Shipping Options" sortOrder="102"/>
+                    <resource id="Meta_Sales::cart_totals" title="Cart Totals" sortOrder="103"/>
                 </resource>
             </resource>
         </resources>

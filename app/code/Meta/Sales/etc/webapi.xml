@@ -19,4 +19,10 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/cartTotals" method="GET">
+        <service class="Meta\Sales\Api\CartTotalsApiInterface" method="getCartTotals"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
