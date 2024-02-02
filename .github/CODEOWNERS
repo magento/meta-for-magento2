@@ -5,7 +5,7 @@
 # the repo. Unless a later match takes precedence,
 # @global-owner1 and @global-owner2 will be requested for
 # review when someone opens a pull request.
-*       @zlik @dabramovici @sol-loup @camcuz97 @agmurari @yang17 @nrostrow-meta @dalongi @palak-ana @n-nayak @singhramanpreett @luizmramosmeta @cristiannancumeta @singhalavi @jczhuoMeta @swinard-meta @strygo @fabik-meta @hsimsandhu
+*       @zlik @dabramovici @sol-loup @camcuz97 @agmurari @yang17 @nrostrow-meta @dalongi @palak-ana @n-nayak @singhramanpreett @luizmramosmeta @cristiannancumeta @singhalavi @jczhuoMeta @swinard-meta @strygo @fabik-meta @hsimsandhu @vijayatl @asavale1 @angeloou-meta
 
 # These owners will be owning Catalog Directory, one would require to have
 # approval for making catalog related changes
