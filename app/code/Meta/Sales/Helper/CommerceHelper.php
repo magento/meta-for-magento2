@@ -187,7 +187,8 @@ class CommerceHelper
                 }
                 $orderIds[$magentoOrder->getIncrementId()] = $facebookOrderId;
             } catch (Exception $e) {
-                if ($e->getMessage() === 'The requested qty is not available') {
+                if ($e->getMessage() === 'The requested qty is not available'
+                    || $e->getMessage() === 'There are no source items with the in stock status') {
                     $this->cancelMetaOutOfStockOrder($storeId, $facebookOrderId);
                 } else {
                     $this->exceptions[] = $e->getMessage();
