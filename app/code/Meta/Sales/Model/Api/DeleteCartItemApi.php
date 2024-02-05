@@ -82,6 +82,7 @@ class DeleteCartItemApi implements DeleteCartItemApiInterface
      */
     public function deleteCartItem(string $externalBusinessId, string $cartId, string $itemId): bool
     {
+        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {

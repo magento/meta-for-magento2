@@ -75,12 +75,13 @@ class CartTotalsApi implements CartTotalsApiInterface
      * @param string $externalBusinessId
      * @param string $cartId
      * @return \Magento\Quote\Api\Data\TotalsInterface
-     * @throws UnauthorizedTokenException
+     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCartTotals(string $externalBusinessId, string $cartId): TotalsInterface
     {
+        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {

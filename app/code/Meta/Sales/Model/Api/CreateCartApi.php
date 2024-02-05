@@ -101,11 +101,12 @@ class CreateCartApi implements CreateCartApiInterface
      *
      * @param string $externalBusinessId
      * @return string
-     * @throws UnauthorizedTokenException
-     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function createCart(string $externalBusinessId): string
     {
+        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
 

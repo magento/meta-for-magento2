@@ -33,8 +33,8 @@ interface AddCartItemsApiInterface
      * @param string $externalBusinessId
      * @param \Magento\Quote\Api\Data\CartItemInterface[] $items
      * @return \Meta\Sales\Api\AddCartItemsApiResponseInterface
-     * @throws UnauthorizedTokenException
-     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function addCartItems(string $externalBusinessId, array $items): AddCartItemsApiResponseInterface;
 }

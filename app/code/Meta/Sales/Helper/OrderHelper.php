@@ -46,20 +46,28 @@ class OrderHelper
     private CollectionFactory $collectionFactory;
 
     /**
+     * @var SystemConfig
+     */
+    private SystemConfig $systemConfig;
+
+    /**
      * Constructor
      *
      * @param OrderExtensionFactory $orderExtensionFactory
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      * @param CollectionFactory $collectionFactory
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         OrderExtensionFactory         $orderExtensionFactory,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
-        CollectionFactory             $collectionFactory
+        CollectionFactory             $collectionFactory,
+        SystemConfig                  $systemConfig
     ) {
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->facebookOrderFactory = $facebookOrderFactory;
         $this->collectionFactory = $collectionFactory;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -147,6 +155,20 @@ class OrderHelper
             return $collection->getItems();
         } catch (\Exception $e) {
             return [];
+        }
+    }
+
+    /**
+     * Throws an exception if dynamic checkout apis are not enabled
+     *
+     * @return void
+     */
+    public function checkDynamicCheckoutConfig(): void
+    {
+        if (!$this->systemConfig->areDynamicCheckoutApisEnabled()) {
+            throw new LocalizedException(__(
+                "Dynamic Checkout APIs are not enabled"
+            ));
         }
     }
 }

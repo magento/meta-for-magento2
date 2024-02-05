@@ -85,6 +85,7 @@ class SetCartShippingOptionApi implements SetCartShippingOptionApiInterface
         string $cartId,
         ShippingInformationInterface $addressInformation
     ): PaymentDetailsInterface {
+        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
