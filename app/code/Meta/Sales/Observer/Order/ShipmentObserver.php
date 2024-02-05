@@ -26,18 +26,17 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Shipment;
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Order\Shipper;
-use Psr\Log\LoggerInterface;
-
 use Meta\Sales\Observer\MetaObserverTrait;
+use Psr\Log\LoggerInterface;
 
 class ShipmentObserver implements ObserverInterface
 {
     use MetaObserverTrait;
-    
+
     /**
      * @var SystemConfig
      */
@@ -154,12 +153,7 @@ class ShipmentObserver implements ObserverInterface
             return;
         }
 
-        $orderShipmentEvent = $this->shipper->getOrderShipEvent($storeId);
-        if ($observer->getEvent()->getName() === $orderShipmentEvent) {
-            $this->executeMarkAsShipped($shipment);
-        } elseif (Shipper::MAGENTO_EVENT_SHIPMENT_AUTO === $orderShipmentEvent) {
-            $this->executeAutoSync($shipment);
-        }
+        $this->executeAutoSync($shipment);
     }
 
     /**

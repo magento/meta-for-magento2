@@ -8,16 +8,6 @@
                 <default_order_status>pending</default_order_status>
                 <auto_subscribe_to_newsletter>1</auto_subscribe_to_newsletter>
                 <default_fulfillment_location>1</default_fulfillment_location>
-                <!--
-                    The event on which to trigger shipment sync, based on particular fulfillment flow.
-                    Alternatively, use 'auto' to allow Meta to determine the best strategy.
-
-                    Supported values:
-                        auto
-                        sales_order_shipment_save_after
-                        sales_order_shipment_track_save_after
-                -->
-                <order_ship_event>auto</order_ship_event>
             </orders_sync>
         </facebook>
         <payment>

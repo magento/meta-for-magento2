@@ -96,17 +96,6 @@ class Shipper
     }
 
     /**
-     * Get order ship event
-     *
-     * @param int|null $storeId
-     * @return null|string
-     */
-    public function getOrderShipEvent($storeId = null)
-    {
-        return $this->systemConfig->getOrderShipEvent($storeId);
-    }
-
-    /**
      * Mark order items as shipped
      *
      * @param Shipment $shipment
