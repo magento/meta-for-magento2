@@ -26,8 +26,10 @@ require_once __DIR__ . "/../../../../../../../BusinessExtension/Model/System/Con
 
 
 use Magento\Catalog\Model\Product;
+use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
+use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
 use Magento\InventoryApi\Api\Data\StockInterface;
-use Magento\InventorySalesAdminUi\Model\GetIsManageStockForProduct;
+use Magento\InventoryConfigurationApi\Api\GetStockItemConfigurationInterface;
 use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
 use Magento\InventorySalesApi\Api\IsProductSalableInterface;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
@@ -76,7 +78,9 @@ class MultiSourceInventoryTest extends TestCase
         $this->stockByWebsiteIdResolver = $this->createStub(StockByWebsiteIdResolverInterface::class);
         $this->getProductSalableQtyInterface = $this->createStub(GetProductSalableQtyInterface::class);
 
-        $getIsManageStockForProduct = $this->createStub(GetIsManageStockForProduct::class);
+        $getStockItemConfiguration = $this->createStub(GetStockItemConfigurationInterface::class);
+        $stockItemRepository = $this->createStub(StockItemRepositoryInterface::class);
+        $stockItemCriteriaInterfaceFactory = $this->createStub(StockItemCriteriaInterfaceFactory::class);
 
         $this->inventory = $this->getMockBuilder(MultiSourceInventory::class)
             ->enableOriginalConstructor()
@@ -84,7 +88,9 @@ class MultiSourceInventoryTest extends TestCase
                 $this->getProductSalableQtyInterface,
                 $this->systemConfig,
                 $this->stockByWebsiteIdResolver,
-                $getIsManageStockForProduct])
+                $getStockItemConfiguration,
+                $stockItemRepository,
+                $stockItemCriteriaInterfaceFactory])
             ->onlyMethods(['isInStock', 'getStockQty', 'isStockManagedForProduct'])
             ->getMock();
     }
