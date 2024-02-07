@@ -9,6 +9,7 @@
                     <resource id="Meta_Sales::add_cart_items" title="Add Cart Items" sortOrder="101"/>
                     <resource id="Meta_Sales::cart_shipping_options" title="Cart Shipping Options" sortOrder="102"/>
                     <resource id="Meta_Sales::cart_totals" title="Cart Totals" sortOrder="103"/>
+                    <resource id="Meta_Sales::add_cart_coupon" title="Add Cart Coupon" sortOrder="105"/>
                     <resource id="Meta_Sales::delete_cart_coupon" title="Delete Cart Coupon" sortOrder="106"/>
                     <resource id="Meta_Sales::set_cart_shipping_option" title="Set Cart Shipping Option" sortOrder="107"/>
                     <resource id="Meta_Sales::delete_cart_item" title="Delete Cart Item" sortOrder="108"/>

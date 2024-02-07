@@ -25,6 +25,12 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/:couponCode/addCartCoupon" method="PUT">
+        <service class="Meta\Sales\Api\AddCartCouponApiInterface" method="addCartCoupon"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
     <route url="/V1/meta/:externalBusinessId/:cartId/deleteCartCoupon" method="DELETE">
         <service class="Meta\Sales\Api\DeleteCartCouponApiInterface" method="deleteCartCoupon"/>
         <resources>
