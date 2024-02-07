@@ -7,6 +7,7 @@
     <preference for="Meta\Sales\Api\AddCartItemsApiResponseInterface" type="Meta\Sales\Model\Api\AddCartItemsApiResponse"/>
     <preference for="Meta\Sales\Api\CartShippingOptionsApiInterface" type="Meta\Sales\Model\Api\CartShippingOptionsApi"/>
     <preference for="Meta\Sales\Api\CartTotalsApiInterface" type="Meta\Sales\Model\Api\CartTotalsApi"/>
+    <preference for="Meta\Sales\Api\DeleteCartCouponApiInterface" type="Meta\Sales\Model\Api\DeleteCartCouponApi"/>
     <preference for="Meta\Sales\Api\SetCartShippingOptionApiInterface" type="Meta\Sales\Model\Api\SetCartShippingOptionApi"/>
     <preference for="Meta\Sales\Api\DeleteCartItemApiInterface" type="Meta\Sales\Model\Api\DeleteCartItemApi"/>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
