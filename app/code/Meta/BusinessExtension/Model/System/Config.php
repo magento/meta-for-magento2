@@ -41,6 +41,7 @@ class Config
     private const VERSION_CACHE_KEY = 'meta-business-extension-version';
     private const EXTENSION_PACKAGE_NAME = 'meta/meta-for-magento2';
 
+    private const XML_PATH_AUCTANE_API_ACTIVE = 'carriers/shipstation/active';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE = 'facebook/business_extension/active';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED = 'facebook/business_extension/installed';
 
@@ -478,6 +479,23 @@ class Config
         );
 
         return $address;
+    }
+
+    /**
+     * Check if Auctane API is installed
+     *
+     * @return bool
+     */
+    public function isAuctaneApiInstalled(): bool
+    {
+        try {
+            // In the "Single Store" case, getting the config of a non-existent path can throw.
+            // This corresponds to "missing Shipstation Extension"
+            $value = $this->getConfig(self::XML_PATH_AUCTANE_API_ACTIVE);
+        } catch (\Exception $e) {
+            return false;
+        }
+        return $value === '1';
     }
 
     /**
