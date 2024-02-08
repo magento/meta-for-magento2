@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/meta/createOrder" method="PUT">
+        <service class="Meta\Sales\Api\CreateOrderApiInterface" method="createOrder"/>
+        <resources>
+            <resource ref="Meta_Sales::create_order"/>
+        </resources>
+    </route>
     <route url="/V1/meta/:externalBusinessId/createCart" method="POST">
         <service class="Meta\Sales\Api\CreateCartApiInterface" method="createCart"/>
         <resources>
