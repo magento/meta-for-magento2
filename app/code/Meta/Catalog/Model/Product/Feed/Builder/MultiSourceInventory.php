@@ -28,6 +28,7 @@ use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
 use Magento\InventorySalesApi\Api\IsProductSalableInterface;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 class MultiSourceInventory extends InventoryRequirements implements InventoryInterface
 {
@@ -82,6 +83,11 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
     private $stockItemCriteriaInterfaceFactory;
 
     /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
      * @param IsProductSalableInterface $isProductSalableInterface
      * @param GetProductSalableQtyInterface $getProductSalableQtyInterface
      * @param SystemConfig $systemConfig
@@ -89,6 +95,7 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
      * @param GetStockItemConfigurationInterface $getStockItemConfiguration
      * @param StockItemRepositoryInterface $stockItemRepository
      * @param StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         IsProductSalableInterface          $isProductSalableInterface,
@@ -97,7 +104,8 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
         StockByWebsiteIdResolverInterface  $stockByWebsiteIdResolver,
         GetStockItemConfigurationInterface $getStockItemConfiguration,
         StockItemRepositoryInterface       $stockItemRepository,
-        StockItemCriteriaInterfaceFactory  $stockItemCriteriaInterfaceFactory
+        StockItemCriteriaInterfaceFactory  $stockItemCriteriaInterfaceFactory,
+        FBEHelper                          $fbeHelper
     ) {
         $this->isProductSalableInterface = $isProductSalableInterface;
         $this->getProductSalableQtyInterface = $getProductSalableQtyInterface;
@@ -106,6 +114,7 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
         $this->getStockItemConfiguration = $getStockItemConfiguration;
         $this->stockItemRepository = $stockItemRepository;
         $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -159,7 +168,16 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
             $stockItemConfiguration = $this->getStockItemConfiguration->execute($this->product->getSku(), $stockId);
             return $stockItemConfiguration->isManageStock();
         } catch (\Throwable $e) {
+            $this->fbeHelper->logExceptionImmediatelytoMeta(
+                $e,
+                [
+                    'store_id' => $this->product->getStoreId(),
+                    'event' => 'catalog_sync',
+                    'event_type' => 'multi_source_inventory_sync_error'
+                ]
+            );
             try {
+
                 // fallback to single inventory mechanism in case of error
                 $criteria = $this->stockItemCriteriaInterfaceFactory->create();
                 $criteria->setProductsFilter($this->product->getId());
