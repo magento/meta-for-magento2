@@ -11,6 +11,7 @@
     <?php endif; ?>
     <?php if ($block->getIsFBEInstalled()): ?>
         <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
+        <p>Commerce Partner Integration ID: <?= $escaper->escapeHtml($block->getCommercePartnerIntegrationId()) ?></p>
         <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>
         <p>Catalog ID: <?= $escaper->escapeHtml($block->getCatalogId()) ?></p>
         <?php if ($block->getCommerceAccountId()): ?>

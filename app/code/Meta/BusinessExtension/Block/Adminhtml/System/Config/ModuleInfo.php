@@ -192,4 +192,14 @@ class ModuleInfo extends Field
     {
         return $this->systemConfig->isDebugMode();
     }
+
+    /**
+     * Retrieve the Commerce Partner Integration ID
+     *
+     * @return string
+     */
+    public function getCommercePartnerIntegrationId()
+    {
+        return $this->systemConfig->getCommercePartnerIntegrationId($this->getStoreId());
+    }
 }
