@@ -10,6 +10,7 @@
     <preference for="Meta\Sales\Api\CartShippingOptionsApiInterface"
                 type="Meta\Sales\Model\Api\CartShippingOptionsApi"/>
     <preference for="Meta\Sales\Api\CartTotalsApiInterface" type="Meta\Sales\Model\Api\CartTotalsApi"/>
+    <preference for="Meta\Sales\Api\UpdateCartItemApiInterface" type="Meta\Sales\Model\Api\UpdateCartItemApi"/>
     <preference for="Meta\Sales\Api\AddCartCouponApiInterface" type="Meta\Sales\Model\Api\AddCartCouponApi"/>
     <preference for="Meta\Sales\Api\AddCartCouponApiResponseInterface" type="Meta\Sales\Model\Api\AddCartCouponApiResponse"/>
     <preference for="Meta\Sales\Api\DeleteCartCouponApiInterface" type="Meta\Sales\Model\Api\DeleteCartCouponApi"/>
