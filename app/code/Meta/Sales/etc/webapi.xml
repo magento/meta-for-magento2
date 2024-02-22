@@ -61,4 +61,10 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/:externalBusinessId/healthCheck" method="GET">
+        <service class="Meta\Sales\Api\HealthCheckApiInterface" method="healthCheck"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>

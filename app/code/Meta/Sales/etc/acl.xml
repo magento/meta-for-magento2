@@ -13,8 +13,10 @@
                     <resource id="Meta_Sales::update_cart_item" title="Update Cart Item" sortOrder="104"/>
                     <resource id="Meta_Sales::add_cart_coupon" title="Add Cart Coupon" sortOrder="105"/>
                     <resource id="Meta_Sales::delete_cart_coupon" title="Delete Cart Coupon" sortOrder="106"/>
-                    <resource id="Meta_Sales::set_cart_shipping_option" title="Set Cart Shipping Option" sortOrder="107"/>
+                    <resource id="Meta_Sales::set_cart_shipping_option" title="Set Cart Shipping Option"
+                              sortOrder="107"/>
                     <resource id="Meta_Sales::delete_cart_item" title="Delete Cart Item" sortOrder="108"/>
+                    <resource id="Meta_Sales::health_check" title="Health Check" sortOrder="109"/>
                 </resource>
             </resource>
         </resources>
