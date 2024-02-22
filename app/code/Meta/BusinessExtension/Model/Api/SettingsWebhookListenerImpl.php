@@ -24,7 +24,6 @@ use Exception;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Api\CoreConfigInterface;
-use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
 use Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface;
 use Meta\BusinessExtension\Api\SettingsWebhookListenerInterface;
 use Meta\BusinessExtension\Api\SettingsWebhookRequestInterface;
@@ -115,7 +114,6 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      *
      * @param SettingsWebhookRequestInterface[] $settingsWebhookRequest
      * @return void
-     * @throws UnauthorizedTokenException
      * @throws LocalizedException
      */
     public function processSettingsWebhookRequest(array $settingsWebhookRequest): void

@@ -36,7 +36,6 @@ use Magento\Sales\Api\Data\InvoiceInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\InvoiceManagementInterface;
 use Magento\Sales\Model\Order;
-use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -351,7 +350,6 @@ class CreateOrderApi implements CreateOrderApiInterface
      * @return OrderInterface
      * @throws LocalizedException
      * @throws NoSuchEntityException
-     * @throws UnauthorizedTokenException
      * @throws Throwable
      */
     public function createOrder(
@@ -378,6 +376,7 @@ class CreateOrderApi implements CreateOrderApiInterface
 
         $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
+        $this->authenticator->validateSignature();
 
         /** @var Quote $quote */
         $quoteId = (int)$cartId;

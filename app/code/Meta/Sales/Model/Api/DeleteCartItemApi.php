@@ -75,7 +75,6 @@ class DeleteCartItemApi implements DeleteCartItemApiInterface
      * @param string $cartId
      * @param string $itemId
      * @return bool
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -84,6 +83,7 @@ class DeleteCartItemApi implements DeleteCartItemApiInterface
     {
         $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
+        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestCartItemRepository->deleteById($cartId, $itemId);

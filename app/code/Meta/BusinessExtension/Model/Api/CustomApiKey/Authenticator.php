@@ -22,7 +22,8 @@ namespace Meta\BusinessExtension\Model\Api\CustomApiKey;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
-use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
+use Magento\Framework\Exception\LocalizedException;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Authenticator
 {
@@ -31,19 +32,31 @@ class Authenticator
      */
     protected $scopeConfig;
 
-    /** @var Http */
+    /**
+     * @var Http
+     */
     private Http $httpRequest;
+
+    /**
+     * @var SystemConfig
+     */
+    private SystemConfig $systemConfig;
 
     /**
      * Authenticator constructor
      *
-     * @param ScopeConfigInterface $scopeConfig
-     * @param Http $httpRequest
+     * @param ScopeConfigInterface  $scopeConfig
+     * @param Http                  $httpRequest
+     * @param SystemConfig          $systemConfig
      */
-    public function __construct(ScopeConfigInterface $scopeConfig, Http $httpRequest)
-    {
+    public function __construct(
+        ScopeConfigInterface    $scopeConfig,
+        Http                    $httpRequest,
+        SystemConfig            $systemConfig
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->httpRequest = $httpRequest;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -51,13 +64,13 @@ class Authenticator
      *
      * @param string $token
      * @return void
-     * @throws UnauthorizedTokenException
+     * @throws LocalizedException
      */
     public function authenticate(string $token): void
     {
         $storedToken = $this->scopeConfig->getValue('meta_extension/general/api_key');
         if ($storedToken === null || $storedToken !== $token) {
-            throw new UnauthorizedTokenException();
+            throw new LocalizedException(__('Unauthorized Token'));
         }
     }
 
@@ -65,7 +78,7 @@ class Authenticator
      * Authenticate a given token against the stored API key
      *
      * @return void
-     * @throws UnauthorizedTokenException
+     * @throws LocalizedException
      */
     public function authenticateRequest(): void
     {
@@ -73,7 +86,44 @@ class Authenticator
         if ($receivedToken) {
             $this->authenticate($receivedToken);
         } else {
-            throw new UnauthorizedTokenException();
+            throw new LocalizedException(__('Missing Meta Extension Token'));
+        }
+    }
+
+    /**
+     * Validate RSA Signature for API Request
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    public function validateSignature(): void
+    {
+        if (!$this->systemConfig->isRsaSignatureValidationEnabled()) {
+            return;
+        }
+
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $publicKey = file_get_contents(__DIR__ . '/PublicKey.pem');
+        $publicKeyResource = openssl_get_publickey($publicKey);
+        if ($publicKeyResource == false) {
+            throw new LocalizedException(__('Invalid Public Key'));
+        }
+
+        $signature = $this->httpRequest->getHeader('Rsa-Signature');
+        if ($signature == false) {
+            throw new LocalizedException(__('Missing RSA Signature'));
+        }
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $decodedSignature = base64_decode($signature);
+
+        $requestUri = $this->httpRequest->getRequestUri();
+        $requestBody = $this->httpRequest->getContent();
+        $originalMessage = $requestUri . $requestBody;
+
+        $verification = openssl_verify($originalMessage, $decodedSignature, $publicKeyResource, OPENSSL_ALGO_SHA256);
+
+        if (!$verification) {
+            throw new LocalizedException(__('RSA Signature Validation Failed'));
         }
     }
 }

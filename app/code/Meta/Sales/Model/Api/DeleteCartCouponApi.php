@@ -74,7 +74,6 @@ class DeleteCartCouponApi implements DeleteCartCouponApiInterface
      * @param string $externalBusinessId
      * @param string $cartId
      * @return bool
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotDeleteException
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -83,6 +82,7 @@ class DeleteCartCouponApi implements DeleteCartCouponApiInterface
     {
         $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
+        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestCouponManagement->remove($cartId);

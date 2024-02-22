@@ -32,7 +32,6 @@ interface DeleteCartItemApiInterface
      * @param string $cartId
      * @param string $itemId
      * @return bool
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      * @throws \Magento\Framework\Exception\LocalizedException

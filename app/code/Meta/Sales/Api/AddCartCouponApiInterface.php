@@ -34,7 +34,6 @@ interface AddCartCouponApiInterface
      * @param string $cartId
      * @param string $couponCode
      * @return \Meta\Sales\Api\AddCartCouponApiResponseInterface
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      * @throws \Magento\Framework\Exception\LocalizedException

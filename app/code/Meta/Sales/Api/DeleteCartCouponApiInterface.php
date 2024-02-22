@@ -31,7 +31,6 @@ interface DeleteCartCouponApiInterface
      * @param string $externalBusinessId
      * @param string $cartId
      * @return bool
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotDeleteException
      * @throws \Magento\Framework\Exception\LocalizedException

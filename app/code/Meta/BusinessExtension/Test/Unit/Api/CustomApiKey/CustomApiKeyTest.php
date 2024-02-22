@@ -4,8 +4,9 @@ namespace Meta\BusinessExtension\Test\Unit\Api\CustomApiKey;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
-use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
+use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -16,8 +17,15 @@ class CustomApiKeyTest extends TestCase
      */
     private ScopeConfigInterface $scopeConfig;
 
-    /** @var Http */
+    /**
+     * @var Http
+     */
     private Http $httpRequest;
+
+    /**
+     * @var MockObject
+     */
+    private SystemConfig $systemConfig;
 
     protected function setUp(): void
     {
@@ -28,11 +36,14 @@ class CustomApiKeyTest extends TestCase
         $this->httpRequest = $this->getMockBuilder(Http::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->systemConfig = $this->getMockBuilder(SystemConfig::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     public function testAuthenticateApiKeyFailed()
     {
-        $this->expectException(UnauthorizedTokenException::class);
+        $this->expectException(LocalizedException::class);
 
         $apiKey = 'generated-api-key';
         $wrongApiKey = 'wrong-api-key';
@@ -46,7 +57,8 @@ class CustomApiKeyTest extends TestCase
             ->willReturn($wrongApiKey); // Return this value when the above is called.
         $authenticator = new Authenticator(
             $this->scopeConfig,
-            $this->httpRequest
+            $this->httpRequest,
+            $this->systemConfig
         );
         $authenticator->authenticateRequest();
     }
@@ -64,7 +76,8 @@ class CustomApiKeyTest extends TestCase
             ->willReturn($apiKey); // Return this value when the above is called.
         $authenticator = new Authenticator(
             $this->scopeConfig,
-            $this->httpRequest
+            $this->httpRequest,
+            $this->systemConfig
         );
         $authenticator->authenticateRequest();
     }

@@ -35,7 +35,6 @@ interface SetCartShippingOptionApiInterface
      * @param string $cartId
      * @param \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
      * @return \Magento\Checkout\Api\Data\PaymentDetailsInterface
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setCartShippingOption(

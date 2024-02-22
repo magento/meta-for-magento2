@@ -77,7 +77,6 @@ class SetCartShippingOptionApi implements SetCartShippingOptionApiInterface
      * @param string $cartId
      * @param \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
      * @return \Magento\Checkout\Api\Data\PaymentDetailsInterface
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setCartShippingOption(
@@ -87,6 +86,7 @@ class SetCartShippingOptionApi implements SetCartShippingOptionApiInterface
     ): PaymentDetailsInterface {
         $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
+        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestShippingInformationManagement->saveAddressInformation($cartId, $addressInformation);

@@ -77,7 +77,6 @@ class CartShippingOptionsApi implements CartShippingOptionsApiInterface
      * @param string $cartId
      * @param \Magento\Quote\Api\Data\AddressInterface $address
      * @return \Magento\Quote\Api\Data\ShippingMethodInterface[]
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -85,6 +84,7 @@ class CartShippingOptionsApi implements CartShippingOptionsApiInterface
     {
         $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
+        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestShippingMethodManagement->estimateByExtendedAddress($cartId, $address);

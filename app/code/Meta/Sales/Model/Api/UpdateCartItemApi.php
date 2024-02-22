@@ -80,7 +80,9 @@ class UpdateCartItemApi implements UpdateCartItemApiInterface
      */
     public function updateCartItem(string $externalBusinessId, CartItemInterface $cartItem): CartItemInterface
     {
+        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
+        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestCartItemRepository->save($cartItem);

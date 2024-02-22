@@ -34,7 +34,6 @@ interface CartShippingOptionsApiInterface
      * @param string $cartId
      * @param \Magento\Quote\Api\Data\AddressInterface $address
      * @return \Magento\Quote\Api\Data\ShippingMethodInterface[]
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\LocalizedException
      */

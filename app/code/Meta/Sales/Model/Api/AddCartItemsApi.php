@@ -74,13 +74,13 @@ class AddCartItemsApi implements AddCartItemsApiInterface
      * @param string $externalBusinessId
      * @param \Magento\Quote\Api\Data\CartItemInterface[] $items
      * @return \Meta\Sales\Api\AddCartItemsApiResponseInterface
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function addCartItems(string $externalBusinessId, array $items): AddCartItemsApiResponseInterface
     {
         $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
+        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         $itemsAdded = [];
         $exceptions = [];
