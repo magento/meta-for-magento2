@@ -33,6 +33,11 @@ use Magento\Framework\Locale\FormatInterface;
 use Magento\Sales\Model\Order\Invoice;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Create refund from facebook api data
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ */
 class CreateRefund
 {
     public const CREDIT_MEMO_NOTE = "Refunded from Meta Commerce Manager";
@@ -235,7 +240,7 @@ class CreateRefund
             $magentoOrder = $this->orderRepository->get($magentoOrderId);
             return $magentoOrder;
         }
-        return $this->createOrder->execute($data, $storeId, true);
+        return $this->createOrder->execute($data, $storeId);
     }
 
     /**

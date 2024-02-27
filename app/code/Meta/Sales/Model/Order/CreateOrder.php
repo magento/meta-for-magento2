@@ -39,6 +39,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Create order from facebook api data
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class CreateOrder
 {
@@ -149,12 +150,11 @@ class CreateOrder
      *
      * @param array $data
      * @param int $storeId
-     * @param bool $shouldCreateInvoice
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
      */
-    public function execute(array $data, int $storeId, bool $shouldCreateInvoice = false): Order
+    public function execute(array $data, int $storeId): Order
     {
         $facebookOrderId = $data['id'];
 
@@ -166,19 +166,9 @@ class CreateOrder
         $channel = ucfirst($data['channel']);
 
         $this->orderManagement->place($order);
-
-        $defaultStatus = $this->systemConfig->getDefaultOrderStatus($storeId);
-        if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING || $shouldCreateInvoice) {
-            $order->setState(Order::STATE_PROCESSING)
-                ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
-
-            // create invoice
-            $invoice = $this->invoiceManagement->prepareInvoice($order);
-            $invoice->register();
-            $order = $invoice->getOrder();
-            $transactionSave = $this->transactionFactory->create();
-            $transactionSave->addObject($invoice)->addObject($order)->save();
-        }
+        $payment = $order->getPayment();
+        $payment->setMethod('facebook');
+        $payment->setParentTransactionId($facebookOrderId);
 
         $extraData = [
             'email_remarketing_option' => $data['buyer_details']['email_remarketing_option'],

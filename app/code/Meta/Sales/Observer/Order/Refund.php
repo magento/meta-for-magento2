@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Sales\Observer\Order;
 
 use Exception;
+use Meta\Sales\Helper\CommerceHelper;
 use Meta\Sales\Model\Order\CreateRefund;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
@@ -55,6 +56,11 @@ class Refund implements ObserverInterface
     private FacebookOrderInterfaceFactory $facebookOrderFactory;
 
     /**
+     * @var CommerceHelper
+     */
+    private CommerceHelper $commerceHelper;
+
+    /**
      * @var FBEHelper
      */
     private FBEHelper $fbeHelper;
@@ -63,17 +69,20 @@ class Refund implements ObserverInterface
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
+     * @param CommerceHelper $commerceHelper
      * @param FBEHelper $fbeHelper
      */
     public function __construct(
         SystemConfig                  $systemConfig,
         GraphAPIAdapter               $graphAPIAdapter,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
+        CommerceHelper                $commerceHelper,
         FBEHelper                     $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->facebookOrderFactory = $facebookOrderFactory;
+        $this->commerceHelper = $commerceHelper;
         $this->fbeHelper = $fbeHelper;
     }
 
@@ -168,30 +177,38 @@ class Refund implements ObserverInterface
         if ($currencyCode === 'GBP') {
             $shippingRefundAmount += $creditmemo->getShippingTaxAmount();
         }
-        try {
-            $refundItemsBySku = $this->getRefundItems($creditmemo, $payment, false);
-            $this->refundOrder(
-                (int)$storeId,
-                $facebookOrder->getFacebookOrderId(),
-                $refundItemsBySku,
-                $shippingRefundAmount,
-                $deductionAmount,
-                $currencyCode,
-                $reasonText
-            );
-        } catch (LocalizedException $e) {
-            $refundItemsByID = $this->getRefundItems($creditmemo, $payment, true);
-            $this->refundOrder(
-                (int)$storeId,
-                $facebookOrder->getFacebookOrderId(),
-                $refundItemsByID,
-                $shippingRefundAmount,
-                $deductionAmount,
-                $currencyCode,
-                $reasonText
-            );
+
+        if ($payment->getOrder()->hasShipments()) {
+            try {
+                $refundItemsBySku = $this->getRefundItems($creditmemo, $payment, false);
+                $this->refundOrder(
+                    (int)$storeId,
+                    $facebookOrder->getFacebookOrderId(),
+                    $refundItemsBySku,
+                    $shippingRefundAmount,
+                    $deductionAmount,
+                    $currencyCode,
+                    $reasonText
+                );
+            } catch (LocalizedException $e) {
+                $refundItemsByID = $this->getRefundItems($creditmemo, $payment, true);
+                $this->refundOrder(
+                    (int)$storeId,
+                    $facebookOrder->getFacebookOrderId(),
+                    $refundItemsByID,
+                    $shippingRefundAmount,
+                    $deductionAmount,
+                    $currencyCode,
+                    $reasonText
+                );
+            }
+            $payment->getOrder()->addCommentToStatusHistory('Order Refunded on Meta');
+        } else {
+            $canceledItemsByID = $this->getCanceledItems($creditmemo, false);
+            $this->commerceHelper->cancelOrder((int)$storeId, $facebookOrder->getFacebookOrderId(), $canceledItemsByID);
+
+            $payment->getOrder()->addCommentToStatusHistory('Order Canceled on Meta');
         }
-        $payment->getOrder()->addCommentToStatusHistory('Order Refunded on Meta');
     }
 
     /**
@@ -251,7 +268,7 @@ class Refund implements ObserverInterface
     private function getRefundItems(
         CreditmemoInterface   $creditmemo,
         OrderPaymentInterface $payment,
-        bool $useNumericID
+        bool                  $useNumericID
     ): array {
         $refundItems = [];
 
@@ -278,5 +295,31 @@ class Refund implements ObserverInterface
         }
 
         return $refundItems;
+    }
+
+    /**
+     * Private helper function that returns array of items that should be canceled
+     *
+     * @param CreditmemoInterface $creditmemo
+     * @param bool $useNumericID
+     * @return array
+     */
+    private function getCanceledItems(
+        CreditmemoInterface $creditmemo,
+        bool                $useNumericID
+    ): array {
+        $canceledItems = [];
+
+        foreach ($creditmemo->getItems() as $item) {
+            if ($item->getQty() > 0) {
+                $item_id = $useNumericID ? $item->getProductId() : $item->getSku();
+                $canceledItems[] = [
+                    'retailer_id' => $item_id,
+                    'quantity' => $item->getQty(),
+                ];
+            }
+        }
+
+        return $canceledItems;
     }
 }

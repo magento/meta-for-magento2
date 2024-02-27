@@ -255,18 +255,23 @@ class CommerceHelper
      *
      * @param int $storeId
      * @param string $fbOrderId
+     * @param array|null $items
      * @param bool $isOutOfStockCancellation
      * @return void
      * @throws GuzzleException
      * @throws Exception
      */
-    public function cancelOrder(int $storeId, string $fbOrderId, bool $isOutOfStockCancellation = false)
-    {
+    public function cancelOrder(
+        int    $storeId,
+        string $fbOrderId,
+        array  $items = null,
+        bool   $isOutOfStockCancellation = false
+    ) {
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
         try {
-            $this->graphAPIAdapter->cancelOrder($fbOrderId, $isOutOfStockCancellation);
+            $this->graphAPIAdapter->cancelOrder($fbOrderId, $items, $isOutOfStockCancellation);
         } catch (GuzzleException $e) {
             $response = $e->getResponse();
             $body = json_decode((string)$response->getBody());

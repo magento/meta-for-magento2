@@ -201,7 +201,6 @@ class GraphAPIAdapter
             $option = $method === 'POST' ? 'form_params' : 'query';
             $response = $this->client->request($method, $endpoint, [$option => $request]);
             if ($this->debugMode) {
-
                 $logResponse = (string)$response->getBody();
                 $logResponse = preg_replace(
                     '/access_token=([a-z0-9A-Z]+)(?=[a-zA-Z0-9]{4,})/',
@@ -786,11 +785,12 @@ class GraphAPIAdapter
      * Cancel order
      *
      * @param mixed $fbOrderId
+     * @param array|null $items
      * @param bool $isOutOfStockCancellation
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws GuzzleException
      */
-    public function cancelOrder($fbOrderId, $isOutOfStockCancellation = false)
+    public function cancelOrder($fbOrderId, $items = null, $isOutOfStockCancellation = false)
     {
         // Magento doesn't support admin providing reason code or description for order cancellation
         $cancelReason = [
@@ -805,6 +805,7 @@ class GraphAPIAdapter
                 'idempotency_key' => $this->getUniqId(),
                 'cancel_reason' => $cancelReason,
                 'restock_items' => true,
+                'items' => json_encode($items),
             ]
         );
         $response = json_decode($response->getBody()->__toString(), true);

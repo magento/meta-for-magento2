@@ -5,7 +5,7 @@
         <facebook>
             <orders_sync>
                 <active>1</active>
-                <default_order_status>pending</default_order_status>
+                <default_order_status>processing</default_order_status>
                 <auto_subscribe_to_newsletter>1</auto_subscribe_to_newsletter>
                 <default_fulfillment_location>1</default_fulfillment_location>
             </orders_sync>
@@ -17,8 +17,8 @@
                 <order_status>processing</order_status>
                 <title>Paid on Facebook/Instagram</title>
                 <allowspecific>0</allowspecific>
-                <group>offline</group>
                 <email_customer>0</email_customer>
+                <payment_action>authorize_capture</payment_action>
             </facebook>
         </payment>
     </default>
