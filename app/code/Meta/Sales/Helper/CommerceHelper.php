@@ -343,34 +343,45 @@ class CommerceHelper
 
         // Pull orders with cancellations
         $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
-        $ordersWithCancellations = $this->graphAPIAdapter->getOrders(
-            $ordersRootId,
-            false,
-            GraphAPIAdapter::ORDER_FILTER_CANCELLATIONS
-        );
         $cancelledOrdersDetails = [];
 
-        foreach ($ordersWithCancellations['data'] as $orderData) {
-            try {
-                $facebookOrderId = $orderData['id'];
-                // Get cancellation details for each order (assuming a method exists in GraphAPIAdapter)
-                $cancellationDetails = $this->graphAPIAdapter->getCancellations($facebookOrderId)[0];
-                // Process cancellations (you would need to create a method to handle this)
-                $this->createCancellation->execute($orderData, $cancellationDetails, $storeId);
-                $cancelledOrdersDetails[$facebookOrderId] = $cancellationDetails;
-            } catch (Exception $e) {
-                $this->exceptions[] = $e->getMessage();
-                $this->fbeHelper->logExceptionImmediatelyToMeta(
-                    $e,
-                    [
-                        'store_id' => $storeId,
-                        'event' => 'order_sync',
-                        'event_type' => 'process_cancellations',
-                        'order_id' => $facebookOrderId
-                    ]
-                );
+        $cursor = false;
+        while ($cursor !== null) {
+            $ordersWithCancellations = $this->graphAPIAdapter->getOrders(
+                $ordersRootId,
+                $cursor,
+                GraphAPIAdapter::ORDER_FILTER_CANCELLATIONS
+            );
+
+            foreach ($ordersWithCancellations['data'] as $orderData) {
+                try {
+                    $facebookOrderId = $orderData['id'];
+                    // Get cancellation details for each order (assuming a method exists in GraphAPIAdapter)
+                    $cancellationDetails = $this->graphAPIAdapter->getCancellations($facebookOrderId)[0];
+                    // Process cancellations (you would need to create a method to handle this)
+                    $this->createCancellation->execute($orderData, $cancellationDetails, $storeId);
+                    $cancelledOrdersDetails[$facebookOrderId] = $cancellationDetails;
+                } catch (Exception $e) {
+                    $this->exceptions[] = $e->getMessage();
+                    $this->fbeHelper->logExceptionImmediatelyToMeta(
+                        $e,
+                        [
+                            'store_id' => $storeId,
+                            'event' => 'order_sync',
+                            'event_type' => 'process_cancellations',
+                            'order_id' => $facebookOrderId
+                        ]
+                    );
+                }
+            }
+
+            if (isset($ordersWithCancellations['paging']['next'])) {
+                $cursor = $ordersWithCancellations['paging']['cursors']['after'];
+            } else {
+                $cursor = null;
             }
         }
+
         return $cancelledOrdersDetails;
     }
 
