@@ -161,7 +161,7 @@ class Builder
             self::ATTR_USE_AUTO_GENERATION => $useAutoGeneration,
             self::ATTR_USES_PER_COUPON => $rule->getUsesPerCoupon(),
             self::ATTR_PRIMARY_COUPON => $rule->getCouponCode(),
-            self::ATTR_COUPONS => $this->getAllCouponsSerialized($rule),
+            self::ATTR_COUPONS => $this->getFirst10CouponsSerialized($rule),
             self::ATTR_SIMPLE_FREE_SHIPPING => $this->getSimpleFreeShippingAsString($rule),
             self::ATTR_STORE_LABELS => json_encode($rule->getStoreLabels()),
             self::ATTR_WEBSITE_IDS => json_encode($rule->getWebsiteIds()),
@@ -240,15 +240,16 @@ class Builder
     }
 
     /**
-     * Get all coupons
+     * Get first 10 coupons
      *
      * @param Rule $rule
      * @return string
      */
-    private function getAllCouponsSerialized(Rule $rule): string
+    private function getFirst10CouponsSerialized(Rule $rule): string
     {
         $coupons = $rule->getCoupons();
         array_unshift($coupons, $rule->getPrimaryCoupon());
+        $coupons = array_slice($coupons, 0, 10);
 
         $coupons = array_map(
             function (Coupon $coupon): array {
