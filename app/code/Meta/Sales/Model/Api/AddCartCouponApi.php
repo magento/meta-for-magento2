@@ -108,7 +108,6 @@ class AddCartCouponApi implements AddCartCouponApiInterface
         string $cartId,
         string $couponCode
     ): AddCartCouponApiResponseInterface {
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);

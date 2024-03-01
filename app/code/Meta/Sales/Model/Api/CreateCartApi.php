@@ -105,7 +105,6 @@ class CreateCartApi implements CreateCartApiInterface
      */
     public function createCart(string $externalBusinessId): string
     {
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);

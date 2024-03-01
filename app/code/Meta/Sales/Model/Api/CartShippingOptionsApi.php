@@ -82,7 +82,6 @@ class CartShippingOptionsApi implements CartShippingOptionsApiInterface
      */
     public function cartShippingOptions(string $externalBusinessId, string $cartId, AddressInterface $address): array
     {
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);

@@ -80,7 +80,6 @@ class CartTotalsApi implements CartTotalsApiInterface
      */
     public function getCartTotals(string $externalBusinessId, string $cartId): TotalsInterface
     {
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);

@@ -80,7 +80,6 @@ class DeleteCartCouponApi implements DeleteCartCouponApiInterface
      */
     public function deleteCartCoupon(string $externalBusinessId, string $cartId): bool
     {
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);

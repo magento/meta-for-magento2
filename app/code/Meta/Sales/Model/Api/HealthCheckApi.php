@@ -57,7 +57,6 @@ class HealthCheckApi implements HealthCheckApiInterface
      */
     public function healthCheck(string $externalBusinessId): bool
     {
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
         $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);

@@ -374,7 +374,6 @@ class CreateOrderApi implements CreateOrderApiInterface
             'createInvoice' => $createInvoice
         ];
 
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
 

@@ -118,9 +118,6 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL =
         'facebook/internal/extension_base_url';
 
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_DYNAMIC_CHECKOUT_APIS =
-        'facebook/business_extension/dynamic_checkout_apis_enabled';
-
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_RSA_SIGNATURE_VALIDATION =
         'facebook/business_extension/rsa_signature_validation_enabled';
 
@@ -887,22 +884,6 @@ class Config
                 // A slight nuance. You can be installed, but not "onsite" -- unless you have valid commerce account.
                 $this->getCommerceAccountId($scopeId);
         });
-    }
-
-    /**
-     * Check if dynamic checkout apis are enabled
-     *
-     * @param int|null $scopeId
-     * @param string|null $scope
-     * @return string|null
-     */
-    public function areDynamicCheckoutApisEnabled(int $scopeId = null, string $scope = null): ?string
-    {
-        return $this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_DYNAMIC_CHECKOUT_APIS,
-            $scopeId,
-            $scope
-        );
     }
 
     /**

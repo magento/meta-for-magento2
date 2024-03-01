@@ -78,7 +78,6 @@ class AddCartItemsApi implements AddCartItemsApiInterface
      */
     public function addCartItems(string $externalBusinessId, array $items): AddCartItemsApiResponseInterface
     {
-        $this->orderHelper->checkDynamicCheckoutConfig();
         $this->authenticator->authenticateRequest();
         $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
