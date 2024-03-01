@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <facebook>
             <catalog_management>
@@ -7,6 +8,7 @@
                 <price_incl_tax>0</price_incl_tax>
                 <out_of_stock_threshold>0</out_of_stock_threshold>
                 <enable_sync_all_categories>1</enable_sync_all_categories>
+                <disable_unsupported_products>0</disable_unsupported_products>
             </catalog_management>
         </facebook>
     </default>

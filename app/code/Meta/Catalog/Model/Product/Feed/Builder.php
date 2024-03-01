@@ -776,25 +776,27 @@ class Builder
             self::ATTR_MATERIAL => $this->getMaterial($product),
             self::ATTR_PATTERN => $this->getPattern($product),
             self::ATTR_SHIPPING_WEIGHT => $this->getWeight($product),
-            self::ATTR_METADATA => json_encode($this->additionalAttributes->getAdditionalMetadata($product)),
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $entry[self::ATTR_UNIT_PRICE] = $this->getUnitPrice($product);
         }
 
-        $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
-        foreach ($customAttributes as $customAttribute) {
-            if (in_array($customAttribute, array_keys($entry))) {
-                continue;
-            }
-            $entry[$customAttribute] = $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
-        }
-
-        $features = $this->unsupportedProducts->getFeatures($product);
-        $entry[self::ATTR_FEATURES] = count($features) > 0 ? json_encode($features) : null;
-
         if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
+            $entry[self::ATTR_METADATA] = json_encode($this->additionalAttributes->getAdditionalMetadata($product));
+
+            $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
+            foreach ($customAttributes as $customAttribute) {
+                if (in_array($customAttribute, array_keys($entry))) {
+                    continue;
+                }
+                $entry[$customAttribute] =
+                    $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
+            }
+
+            $features = $this->unsupportedProducts->getFeatures($product);
+            $entry[self::ATTR_FEATURES] = count($features) > 0 ? json_encode($features) : null;
+
             $entry[self::ATTR_UNSUPPORTED_PRODUCT_DATA] = json_encode([
                 'type_hint' => $product->getTypeId(),
                 'customizable_options' => $this->unsupportedProducts->getCustomizableOptions($product),
@@ -937,28 +939,29 @@ class Builder
             self::ATTR_MATERIAL,
             self::ATTR_PATTERN,
             self::ATTR_SHIPPING_WEIGHT,
-            self::ATTR_METADATA,
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $headerFields[] = self::ATTR_UNIT_PRICE;
         }
 
-        $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
-        foreach ($customAttributes as $customAttribute) {
-            if (in_array($customAttribute, $headerFields)) {
-                continue;
+        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
+            $headerFields[] = self::ATTR_METADATA;
+
+            $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
+            foreach ($customAttributes as $customAttribute) {
+                if (in_array($customAttribute, $headerFields)) {
+                    continue;
+                }
+                $headerFields[] = $customAttribute;
             }
-            $headerFields[] = $customAttribute;
-        }
 
-        if (!in_array(self::ATTR_FEATURES, $headerFields)) {
-            $headerFields[] = self::ATTR_FEATURES;
-        }
-
-        if (!$this->systemConfig->isUnsupportedProductsDisabled()
-            && !in_array(self::ATTR_UNSUPPORTED_PRODUCT_DATA, $headerFields)) {
-            $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
+            if (!in_array(self::ATTR_FEATURES, $headerFields)) {
+                $headerFields[] = self::ATTR_FEATURES;
+            }
+            if (!in_array(self::ATTR_UNSUPPORTED_PRODUCT_DATA, $headerFields)) {
+                $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
+            }
         }
 
         return $headerFields;

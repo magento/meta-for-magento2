@@ -113,7 +113,7 @@ class Config
         'facebook/business_extension/onsite';
 
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS =
-        'facebook/business_extension/disable_unsupported_products';
+        'facebook/catalog_management/disable_unsupported_products';
 
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL =
         'facebook/internal/extension_base_url';
