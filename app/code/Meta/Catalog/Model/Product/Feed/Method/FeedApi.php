@@ -252,6 +252,8 @@ class FeedApi
                         $entry = array_values($this->builder->buildProductEntry($product));
                         $this->fileHandler->filePutcsv($resource, $entry);
                         $total++;
+                        $product = null;
+                        $entry = null;
                     } catch (\Throwable $e) {
                         $totalErrors++;
                         // To prevent all the product errors logs, added cap on number of error logs.
@@ -276,6 +278,7 @@ class FeedApi
                         }
                     }
                 }
+                $products = null;
             } while (true);
         }
 

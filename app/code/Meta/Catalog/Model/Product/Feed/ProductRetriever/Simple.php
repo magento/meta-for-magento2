@@ -23,6 +23,7 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
@@ -57,21 +58,29 @@ class Simple implements ProductRetrieverInterface
     private $productCollectionFactory;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * @param FBEHelper $fbeHelper
      * @param CollectionFactory $productCollectionFactory
      * @param ProductRepositoryInterface $productRepo
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         FBEHelper $fbeHelper,
         CollectionFactory $productCollectionFactory,
         ProductRepositoryInterface $productRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        SystemConfig    $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productRepo = $productRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
@@ -117,12 +126,18 @@ class Simple implements ProductRetrieverInterface
             ->order(new \Zend_Db_Expr('e.updated_at desc'))
             ->limit($limit, $offset);
 
-        $search = $this
-            ->searchCriteriaBuilder
-            ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
-            ->create();
+        if ($this->systemConfig->isUnsupportedProductsDisabled()) {
+            $products = $collection->getItems();
+        } else {
+            // in case of unsupported product we need complete data for products which is return by product repo api.
+            $search = $this
+                ->searchCriteriaBuilder
+                ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
+                ->create();
 
-        return $this->productRepo->getList($search)->getItems();
+            $products = $this->productRepo->getList($search)->getItems();
+        }
+        return $products;
     }
 
     /**
