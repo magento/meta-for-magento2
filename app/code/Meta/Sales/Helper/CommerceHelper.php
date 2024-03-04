@@ -298,33 +298,44 @@ class CommerceHelper
 
         // Pull orders with refunds
         $ordersRootId = $this->systemConfig->getCommerceAccountId($storeId) ?: $this->systemConfig->getPageId($storeId);
-        $ordersWithRefunds = $this->graphAPIAdapter->getOrders(
-            $ordersRootId,
-            false,
-            GraphAPIAdapter::ORDER_FILTER_REFUNDS
-        );
         $refundOrdersDetails = [];
 
-        foreach ($ordersWithRefunds['data'] as $orderData) {
-            try {
-                $facebookOrderId = $orderData['id'];
-                // Get refund details for each order
-                $refundDetails = $this->graphAPIAdapter->getRefunds($facebookOrderId)[0];
-                $this->createRefund->execute($orderData, $refundDetails, $storeId);
-                $refundOrdersDetails[$facebookOrderId] = $refundDetails;
-            } catch (Exception $e) {
-                $this->exceptions[] = $e->getMessage();
-                $this->fbeHelper->logExceptionImmediatelyToMeta(
-                    $e,
-                    [
-                        'store_id' => $storeId,
-                        'event' => 'order_sync',
-                        'event_type' => 'create_magento_orders',
-                        'order_id' => $facebookOrderId
-                    ]
-                );
+        $cursor = false;
+        while ($cursor !== null) {
+            $ordersWithRefunds = $this->graphAPIAdapter->getOrders(
+                $ordersRootId,
+                $cursor,
+                GraphAPIAdapter::ORDER_FILTER_REFUNDS
+            );
+
+            foreach ($ordersWithRefunds['data'] as $orderData) {
+                try {
+                    $facebookOrderId = $orderData['id'];
+                    // Get refund details for each order
+                    $refundDetails = $this->graphAPIAdapter->getRefunds($facebookOrderId)[0];
+                    $this->createRefund->execute($orderData, $refundDetails, $storeId);
+                    $refundOrdersDetails[$facebookOrderId] = $refundDetails;
+                } catch (Exception $e) {
+                    $this->exceptions[] = $e->getMessage();
+                    $this->fbeHelper->logExceptionImmediatelyToMeta(
+                        $e,
+                        [
+                            'store_id' => $storeId,
+                            'event' => 'order_sync',
+                            'event_type' => 'create_magento_orders',
+                            'order_id' => $facebookOrderId
+                        ]
+                    );
+                }
+            }
+
+            if (isset($ordersWithRefunds['paging']['next'])) {
+                $cursor = $ordersWithRefunds['paging']['cursors']['after'];
+            } else {
+                $cursor = null;
             }
         }
+
         return $refundOrdersDetails;
     }
 
