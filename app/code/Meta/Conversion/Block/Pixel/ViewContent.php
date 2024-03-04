@@ -23,6 +23,8 @@ namespace Meta\Conversion\Block\Pixel;
 use Exception;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -89,16 +91,51 @@ class ViewContent extends Common
     /**
      * Return content ids
      *
-     * @return string
+     * @return array
      */
-    public function getContentIDs()
+    public function getContentIDs(): array
     {
         $contentIds = [];
-        $product = $this->getCurrentProduct();
-        if ($product && $product->getId()) {
+        foreach ($this->getProducts() as $product) {
             $contentIds[] = $this->getContentId($product);
         }
-        return $this->arrayToCommaSeparatedStringValues($contentIds);
+
+        return $contentIds;
+    }
+
+    private function getProducts()
+    {
+        $products = [];
+        $product = $this->getCurrentProduct();
+        if ($product && $product->getId()) {
+            $products[] = $product;
+        }
+
+        if ($product->getTypeId() == Grouped::TYPE_CODE) {
+            foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
+                /** @var Product $childProduct */
+                $products[] = $childProduct;
+            }
+        }
+
+        if ($product->getTypeId() == Configurable::TYPE_CODE) {
+            foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
+                /** @var Product $childProduct */
+                $products[] = $childProduct;
+            }
+        }
+
+        return $products;
+    }
+
+    public function getContents()
+    {
+        $contents = [];
+        foreach ($this->getProducts() as $product) {
+            $contents[] = ['id' => $this->getContentId($product), 'quantity' => 1];
+        }
+
+        return $contents;
     }
 
     /**
