@@ -32,6 +32,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Driver\File;
+use ReflectionClass;
 
 /**
  * Class Use for Feed Api
@@ -233,6 +234,14 @@ class FeedApi
         string $flowName,
         string $traceId
     ) {
+        $context = $this->getFeedUploadLoggerContext(
+            $storeId,
+            $flowName,
+            'feed_upload_product_progress',
+            [
+                'external_trace_id' => $traceId,
+            ]
+        );
         $this->fileHandler->filePutcsv($resource, $this->builder->getHeaderFields());
 
         $total = 0;
@@ -242,6 +251,22 @@ class FeedApi
             $offset = 0;
             $limit = $productRetriever->getLimit();
             do {
+                if ($this->systemConfig->isMemoryProfilingEnabled()) {
+                    $memory_limit = ini_get('memory_limit');
+                    $retriever_class = (new ReflectionClass($productRetriever))->getShortName();
+                    $this->fbeHelper->logTelemetryToMeta(
+                        sprintf(
+                            'Feed Upload Progress: Retriever = %s, Offset = %d, Current MemUsed = %d,' .
+                            ' PeakMemory = %d, MemoryLimit = %s',
+                            $retriever_class,
+                            $offset,
+                            memory_get_usage(),
+                            memory_get_peak_usage(),
+                            $memory_limit
+                        ),
+                        $context
+                    );
+                }
                 $products = $productRetriever->retrieve($offset);
                 $offset += $limit;
                 if (empty($products)) {
@@ -279,6 +304,9 @@ class FeedApi
                     }
                 }
                 $products = null;
+                if ($this->systemConfig->isMemoryProfilingEnabled()) {
+                    gc_collect_cycles();
+                }
             } while (true);
         }
 

@@ -67,6 +67,9 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID = 'facebook/business_extension/feed_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OFFERS_FEED_ID = 'facebook/business_extension/offers_feed_id';
     public const XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC = 'facebook/catalog_management/enable_catalog_sync';
+
+    public const XML_PATH_FACEBOOK_PRODUCTS_FETCH_BATCH_SIZE = 'facebook/catalog_management/products_fetch_batch_size';
+
     private const XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER = 'facebook/catalog_management/product_identifier';
     private const XML_PATH_FACEBOOK_PRICE_INCL_TAX = 'facebook/catalog_management/price_incl_tax';
     private const XML_PATH_FACEBOOK_ENABLE_SYNC_ALL_CATEGORIES =
@@ -111,6 +114,9 @@ class Config
 
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG =
         'facebook/business_extension/onsite';
+
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_MEMORY_PROFILING =
+        'facebook/business_extension/enable_memory_profiling';
 
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS =
         'facebook/catalog_management/disable_unsupported_products';
@@ -1017,6 +1023,42 @@ class Config
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS,
+            $scopeId,
+            $scope
+        );
+    }
+
+    /**
+     * Get Products Fetch Batch Size
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return int
+     */
+    public function getProductsFetchBatchSize(int $default = 200, int $scopeId = null, string $scope = null): int
+    {
+        $batch_size = (int)$this->getConfig(
+            self::XML_PATH_FACEBOOK_PRODUCTS_FETCH_BATCH_SIZE,
+            $scopeId,
+            $scope
+        );
+        if ($batch_size == null || $batch_size == 0) {
+            return $default;
+        }
+        return $batch_size;
+    }
+
+    /**
+     * Check if Memory Profiling is enabled
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return bool
+     */
+    public function isMemoryProfilingEnabled(int $scopeId = null, string $scope = null): bool
+    {
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_MEMORY_PROFILING,
             $scopeId,
             $scope
         );
