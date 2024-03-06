@@ -9,6 +9,8 @@
                 type="Meta\BusinessExtension\Model\Api\CoreConfig"/>
     <preference for="Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface"
                 type="Meta\BusinessExtension\Model\MetaIssueNotification"/>
+    <preference for="Meta\BusinessExtension\Api\AdobeCloudConfigInterface"
+                type="Meta\BusinessExtension\Model\Api\AdobeCloudConfig"/>
     <virtualType name="Meta\BusinessExtension\Model\Logger\ApiDebugger" type="Magento\Framework\Logger\Handler\Base">
         <arguments>
             <argument name="fileName" xsi:type="string">/var/log/meta/api.log</argument>
@@ -34,7 +36,9 @@
     <type name="Magento\Framework\MessageQueue\MergerFactory">
         <arguments>
             <argument name="mergers" xsi:type="array">
-                <item name="persist.meta.telemetry.logs.consumer" xsi:type="string">Meta\BusinessExtension\Model\PersistMetaTelemetryLogsMerger</item>
+                <item name="persist.meta.telemetry.logs.consumer" xsi:type="string">
+                    Meta\BusinessExtension\Model\PersistMetaTelemetryLogsMerger
+                </item>
             </argument>
         </arguments>
     </type>

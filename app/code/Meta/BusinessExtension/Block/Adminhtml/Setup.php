@@ -31,9 +31,11 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 
 /**
  * @api
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class Setup extends Template
 {
@@ -72,6 +74,11 @@ class Setup extends Template
     private $commerceExtensionHelper;
 
     /**
+     * @var AdobeCloudConfigInterface
+     */
+    private AdobeCloudConfigInterface $adobeConfig;
+
+    /**
      * @param Context $context
      * @param RequestInterface $request
      * @param FBEHelper $fbeHelper
@@ -80,18 +87,20 @@ class Setup extends Template
      * @param WebsiteCollectionFactory $websiteCollectionFactory
      * @param CommerceExtensionHelper $commerceExtensionHelper
      * @param ApiKeyService $apiKeyService
+     * @param AdobeCloudConfigInterface $adobeConfig
      * @param array $data
      */
     public function __construct(
-        Context                  $context,
-        RequestInterface         $request,
-        FBEHelper                $fbeHelper,
-        SystemConfig             $systemConfig,
-        StoreRepositoryInterface $storeRepo,
-        WebsiteCollectionFactory $websiteCollectionFactory,
-        CommerceExtensionHelper $commerceExtensionHelper,
-        ApiKeyService            $apiKeyService,
-        array                    $data = []
+        Context                   $context,
+        RequestInterface          $request,
+        FBEHelper                 $fbeHelper,
+        SystemConfig              $systemConfig,
+        StoreRepositoryInterface  $storeRepo,
+        WebsiteCollectionFactory  $websiteCollectionFactory,
+        CommerceExtensionHelper   $commerceExtensionHelper,
+        ApiKeyService             $apiKeyService,
+        AdobeCloudConfigInterface $adobeConfig,
+        array                     $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
@@ -101,6 +110,7 @@ class Setup extends Template
         $this->websiteCollectionFactory = $websiteCollectionFactory;
         $this->commerceExtensionHelper = $commerceExtensionHelper;
         $this->apiKeyService = $apiKeyService;
+        $this->adobeConfig = $adobeConfig;
     }
 
     /**
@@ -439,6 +449,17 @@ class Setup extends Template
     public function upsertApiKey()
     {
         return $this->apiKeyService->upsertApiKey();
+    }
+
+    /**
+     * Call this method to get a string indicator on seller types (hosted by Adobe).
+     *
+     * @return string
+     */
+    public function getCommercePartnerSellerPlatformType(): string
+    {
+        return $this->adobeConfig->isSellerOnAdobeCloud() ?
+            AdobeCloudConfigInterface::ADOBE_COMMERCE_CLOUD : AdobeCloudConfigInterface::MAGENTO_OPEN_SOURCE;
     }
 
     /**
