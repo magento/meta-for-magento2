@@ -60,48 +60,55 @@ class Authenticator
     }
 
     /**
-     * Authenticate a given token against the stored API key
-     *
-     * @param string $token
-     * @return void
-     * @throws LocalizedException
-     */
-    public function authenticate(string $token): void
-    {
-        $storedToken = $this->scopeConfig->getValue('meta_extension/general/api_key');
-        if ($storedToken === null || $storedToken !== $token) {
-            throw new LocalizedException(__('Unauthorized Token'));
-        }
-    }
-
-    /**
-     * Authenticate a given token against the stored API key
+     * Authenticate an API request (validate the token and RSA signature)
      *
      * @return void
      * @throws LocalizedException
      */
     public function authenticateRequest(): void
     {
+        $this->authenticateToken();
+        $this->authenticateSignature();
+    }
+
+    /**
+     * Authenticate an API request (validate the token only)
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    public function authenticateRequestDangerouslySkipSignatureValidation(): void
+    {
+        $this->authenticateToken();
+    }
+
+    /**
+     * Authenticate token against the stored API key
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    private function authenticateToken(): void
+    {
         $receivedToken = $this->httpRequest->getHeader('Meta-extension-token');
         if ($receivedToken) {
-            $this->authenticate($receivedToken);
+            $storedToken = $this->scopeConfig->getValue('meta_extension/general/api_key');
+            if ($storedToken === null || $storedToken !== $receivedToken) {
+                throw new LocalizedException(__('Unauthorized Token'));
+            }
         } else {
             throw new LocalizedException(__('Missing Meta Extension Token'));
         }
     }
 
     /**
-     * Validate RSA Signature for API Request
+     * Authenticate RSA Signature for API Request
      *
      * @return void
      * @throws LocalizedException
      */
-    public function validateSignature(): void
+    private function authenticateSignature(): void
     {
-        if (!$this->systemConfig->isRsaSignatureValidationEnabled()) {
-            return;
-        }
-
         // phpcs:ignore Magento2.Functions.DiscouragedFunction
         $publicKey = file_get_contents(__DIR__ . '/PublicKey.pem');
         $publicKeyResource = openssl_get_publickey($publicKey);

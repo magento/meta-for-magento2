@@ -83,7 +83,6 @@ class CartShippingOptionsApi implements CartShippingOptionsApiInterface
     public function cartShippingOptions(string $externalBusinessId, string $cartId, AddressInterface $address): array
     {
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestShippingMethodManagement->estimateByExtendedAddress($cartId, $address);

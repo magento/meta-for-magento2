@@ -6,7 +6,6 @@
             <business_extension>
                 <active>1</active>
                 <onsite>0</onsite>
-                <rsa_signature_validation_enabled>0</rsa_signature_validation_enabled>
                 <client_access_token>195311308289826|52dcd04d6c7ed113121b5eb4be23b4a7</client_access_token>
                 <enable_memory_profiling>0</enable_memory_profiling>
             </business_extension>

@@ -81,7 +81,6 @@ class CartTotalsApi implements CartTotalsApiInterface
     public function getCartTotals(string $externalBusinessId, string $cartId): TotalsInterface
     {
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestCartTotalRepository->get($cartId);

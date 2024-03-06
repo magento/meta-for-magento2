@@ -124,9 +124,6 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL =
         'facebook/internal/extension_base_url';
 
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_RSA_SIGNATURE_VALIDATION =
-        'facebook/business_extension/rsa_signature_validation_enabled';
-
     /**
      * @var StoreManagerInterface
      */
@@ -893,22 +890,6 @@ class Config
     }
 
     /**
-     * Check if rsa signature validation is enabled
-     *
-     * @param int|null $scopeId
-     * @param string|null $scope
-     * @return string|null
-     */
-    public function isRsaSignatureValidationEnabled(int $scopeId = null, string $scope = null): ?string
-    {
-        return $this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_RSA_SIGNATURE_VALIDATION,
-            $scopeId,
-            $scope
-        );
-    }
-
-    /**
      * Get feed id
      *
      * @param int $scopeId
@@ -1031,6 +1012,7 @@ class Config
     /**
      * Get Products Fetch Batch Size
      *
+     * @param int $default
      * @param int|null $scopeId
      * @param string|null $scope
      * @return int

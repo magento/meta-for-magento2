@@ -85,7 +85,6 @@ class SetCartShippingOptionApi implements SetCartShippingOptionApiInterface
         ShippingInformationInterface $addressInformation
     ): PaymentDetailsInterface {
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             return $this->guestShippingInformationManagement->saveAddressInformation($cartId, $addressInformation);

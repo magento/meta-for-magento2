@@ -109,7 +109,6 @@ class AddCartCouponApi implements AddCartCouponApiInterface
         string $couponCode
     ): AddCartCouponApiResponseInterface {
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             $response = new AddCartCouponApiResponse();

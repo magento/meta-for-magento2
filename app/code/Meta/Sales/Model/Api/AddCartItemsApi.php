@@ -79,7 +79,6 @@ class AddCartItemsApi implements AddCartItemsApiInterface
     public function addCartItems(string $externalBusinessId, array $items): AddCartItemsApiResponseInterface
     {
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         $itemsAdded = [];
         $exceptions = [];

@@ -106,7 +106,6 @@ class CreateCartApi implements CreateCartApiInterface
     public function createCart(string $externalBusinessId): string
     {
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
 
         /** @var $quoteIdMask \Magento\Quote\Model\QuoteIdMask */

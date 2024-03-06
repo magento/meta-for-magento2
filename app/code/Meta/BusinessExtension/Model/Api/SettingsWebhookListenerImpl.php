@@ -118,7 +118,8 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      */
     public function processSettingsWebhookRequest(array $settingsWebhookRequest): void
     {
-        $this->authenticator->authenticateRequest();
+        // Meta currently doesn't sign requests to settings sync APIS
+        $this->authenticator->authenticateRequestDangerouslySkipSignatureValidation();
         foreach ($settingsWebhookRequest as $setting) {
             $this->updateSetting($setting);
         }
@@ -283,7 +284,8 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         $storeId = $this->getStoreIdByExternalBusinessId($externalBusinessId);
         $coreConfig = $this->coreConfigFactory->create();
         try {
-            $this->authenticator->authenticateRequest();
+            // Meta currently doesn't sign requests to settings sync APIS
+            $this->authenticator->authenticateRequestDangerouslySkipSignatureValidation();
             $coreConfigData =  $this->getCoreConfigByStoreId($externalBusinessId, $storeId);
             $coreConfig->addData($coreConfigData);
         } catch (Exception $e) {

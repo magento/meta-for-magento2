@@ -58,7 +58,6 @@ class HealthCheckApi implements HealthCheckApiInterface
     public function healthCheck(string $externalBusinessId): bool
     {
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
         $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
 
         return true;

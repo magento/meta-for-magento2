@@ -60,7 +60,7 @@ class CustomApiKeyTest extends TestCase
             $this->httpRequest,
             $this->systemConfig
         );
-        $authenticator->authenticateRequest();
+        $authenticator->authenticateRequestDangerouslySkipSignatureValidation();
     }
 
     public function testAuthenticateApiKeySuccess()
@@ -79,6 +79,6 @@ class CustomApiKeyTest extends TestCase
             $this->httpRequest,
             $this->systemConfig
         );
-        $authenticator->authenticateRequest();
+        $authenticator->authenticateRequestDangerouslySkipSignatureValidation();
     }
 }

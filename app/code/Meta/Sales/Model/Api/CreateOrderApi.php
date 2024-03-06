@@ -375,7 +375,6 @@ class CreateOrderApi implements CreateOrderApiInterface
         ];
 
         $this->authenticator->authenticateRequest();
-        $this->authenticator->validateSignature();
 
         /** @var Quote $quote */
         $quoteId = (int)$cartId;
