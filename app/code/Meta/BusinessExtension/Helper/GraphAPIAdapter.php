@@ -582,6 +582,27 @@ class GraphAPIAdapter
     }
 
     /**
+     * Get the order details given an order id
+     *
+     * @param string $orderId
+     * @return mixed
+     * @throws GuzzleException
+     */
+    public function getOrderDetails(string $orderId)
+    {
+        $requestFields = [
+            'order_status',
+            'estimated_payment_details'
+        ];
+        $request = [
+            'access_token' => $this->accessToken,
+            'fields' => implode(',', $requestFields),
+        ];
+        $response = $this->callApi('GET', "/{$orderId}", $request);
+        return json_decode($response->getBody()->__toString(), true);
+    }
+
+    /**
      * Get orders
      *
      * @param mixed $ordersRootId Commerce Account ID or Page ID

@@ -45,6 +45,7 @@ use Meta\Sales\Api\Data\CreateOrderApiProductItemInterface;
 use Meta\Sales\Api\Data\CreateOrderApiShipmentDetailsInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
+use Meta\Sales\Helper\CommerceHelper;
 use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Config\Source\DefaultOrderStatus;
 use Meta\Sales\Model\FacebookOrder;
@@ -127,6 +128,11 @@ class CreateOrderApi implements CreateOrderApiInterface
     private FBEHelper $fbeHelper;
 
     /**
+     * @var CommerceHelper
+     */
+    private CommerceHelper $commerceHelper;
+
+    /**
      * Constructor
      *
      * @param EventManagerInterface $eventManager
@@ -140,6 +146,7 @@ class CreateOrderApi implements CreateOrderApiInterface
      * @param OrderHelper $orderHelper
      * @param Authenticator $authenticator
      * @param FBEHelper $fbeHelper
+     * @param CommerceHelper $commerceHelper
      * @param RequestInterface|null $request
      * @param RemoteAddress|null $remoteAddress
      */
@@ -155,6 +162,7 @@ class CreateOrderApi implements CreateOrderApiInterface
         OrderHelper                   $orderHelper,
         Authenticator                 $authenticator,
         FBEHelper                     $fbeHelper,
+        CommerceHelper                $commerceHelper,
         RequestInterface              $request = null,
         RemoteAddress                 $remoteAddress = null
     ) {
@@ -169,6 +177,7 @@ class CreateOrderApi implements CreateOrderApiInterface
         $this->orderHelper = $orderHelper;
         $this->authenticator = $authenticator;
         $this->fbeHelper = $fbeHelper;
+        $this->commerceHelper = $commerceHelper;
         $this->request = $request ?: ObjectManager::getInstance()
             ->get(RequestInterface::class);
         $this->remoteAddress = $remoteAddress ?: ObjectManager::getInstance()
@@ -435,6 +444,9 @@ class CreateOrderApi implements CreateOrderApiInterface
             $quote->setPaymentMethod(MetaPaymentMethod::METHOD_CODE);
             $quote->getPayment()->importData(['method' => MetaPaymentMethod::METHOD_CODE]);
 
+            // Validate that order is in the correct state and totals match
+            $this->validateStateAndTotals($storeId, $orderId, $quote);
+
             // Populate basic customer details
             $this->populateCustomerInformation($quote, $email, $firstName, $lastName);
             $this->quoteRepository->save($quote);
@@ -494,6 +506,78 @@ class CreateOrderApi implements CreateOrderApiInterface
                 $this->buildMetaLogContext($storeId, "error_creating_order", $extraDataForLogs)
             );
             throw $e;
+        }
+    }
+
+    /**
+     * Validate that the meta order is in the correct state and
+     * that the totals in the magento order match the totals in meta
+     *
+     * @param int $storeId
+     * @param string $metaOrderId
+     * @param Quote $quote
+     * @return void
+     * @throws GuzzleException
+     * @throws LocalizedException
+     */
+    private function validateStateAndTotals(
+        int    $storeId,
+        string $metaOrderId,
+        Quote  $quote
+    ) {
+        $magentoTotals = [];
+        foreach ($quote->getTotals() as $total) {
+            $magentoTotals[$total->getCode()] = $total['value'];
+        }
+
+        $metaOrderDetails = $this->commerceHelper->getOrderDetails($storeId, $metaOrderId);
+
+        // Validate order state
+        if (strcasecmp("FB_PROCESSING", $metaOrderDetails['order_status']['state']) != 0) {
+            $le = new LocalizedException(__('Meta order is not in the FB_PROCESSING state'));
+
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
+                $le,
+                $this->buildMetaLogContext(
+                    $storeId,
+                    "mismatched_totals",
+                    [
+                        'metaOrderId' => $metaOrderId,
+                        'metaOrderState' => $metaOrderDetails['order_status']['state']
+                    ]
+                )
+            );
+
+            throw $le;
+        }
+
+        // Validate order totals
+        $metaTotals = [
+            'subtotal' => $metaOrderDetails['estimated_payment_details']['subtotal']['items']['amount'],
+            'shipping' => $metaOrderDetails['estimated_payment_details']['subtotal']['shipping']['amount'],
+            'tax' => $metaOrderDetails['estimated_payment_details']['tax']['amount'],
+            'grand_total' => $metaOrderDetails['estimated_payment_details']['total_amount']['amount']
+        ];
+
+
+        foreach (['subtotal', 'shipping', 'tax', 'grand_total'] as $code) {
+            if ($metaTotals[$code] != $magentoTotals[$code]) {
+                $le = new LocalizedException(__(
+                    $code . ' of ' . $metaTotals[$code] . ' in the Meta order does not match ' .
+                    $code . ' of ' . $magentoTotals[$code] . ' in the Magento order'
+                ));
+
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $le,
+                    $this->buildMetaLogContext(
+                        $storeId,
+                        "mismatched_totals",
+                        ['magentoTotals' => $magentoTotals, 'metaTotals' => $metaTotals]
+                    )
+                );
+
+                throw $le;
+            }
         }
     }
 }

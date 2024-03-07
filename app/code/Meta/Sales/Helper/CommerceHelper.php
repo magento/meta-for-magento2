@@ -419,4 +419,21 @@ class CommerceHelper
             'exceptions' => $this->exceptions
         ];
     }
+
+    /**
+     * Get order details from Meta for a given meta order id
+     *
+     * @param int $storeId
+     * @param string $metaOrderId
+     * @return mixed
+     * @throws GuzzleException
+     */
+    public function getOrderDetails(int $storeId, string $metaOrderId)
+    {
+        $this->graphAPIAdapter
+            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+
+        return $this->graphAPIAdapter->getOrderDetails($metaOrderId);
+    }
 }
