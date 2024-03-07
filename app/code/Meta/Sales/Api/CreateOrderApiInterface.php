@@ -21,9 +21,13 @@ declare(strict_types=1);
 namespace Meta\Sales\Api;
 
 use Magento\Sales\Api\Data\OrderInterface;
+use Meta\Sales\Api\Data\CreateOrderApiProductItemInterface;
+use Meta\Sales\Api\Data\CreateOrderApiShipmentDetailsInterface;
 
 /**
  * Create Magento order
+ *
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 interface CreateOrderApiInterface
 {
@@ -32,22 +36,30 @@ interface CreateOrderApiInterface
      *
      * @param string $cartId
      * @param string $orderId
+     * @param float $orderTotal
+     * @param float $taxTotal
      * @param string $email
      * @param string $firstName
      * @param string $lastName
+     * @param CreateOrderApiProductItemInterface[] $productItems
+     * @param CreateOrderApiShipmentDetailsInterface $shipmentDetails
      * @param string|null $channel
-     * @param bool $buyerOptin
+     * @param bool $buyerRemarketingOptIn
      * @param bool $createInvoice
      * @return OrderInterface
      */
     public function createOrder(
-        string  $cartId,
-        string  $orderId,
-        string  $email,
-        string  $firstName,
-        string  $lastName,
-        ?string $channel,
-        bool    $buyerOptin = false,
-        bool    $createInvoice = false
+        string                                 $cartId,
+        string                                 $orderId,
+        float                                  $orderTotal,
+        float                                  $taxTotal,
+        string                                 $email,
+        string                                 $firstName,
+        string                                 $lastName,
+        array                                  $productItems,
+        CreateOrderApiShipmentDetailsInterface $shipmentDetails,
+        string                                 $channel,
+        bool                                   $buyerRemarketingOptIn = false,
+        bool                                   $createInvoice = true
     ): OrderInterface;
 }

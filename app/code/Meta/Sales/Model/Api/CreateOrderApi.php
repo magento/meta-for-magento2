@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Model\Api;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\RequestInterface;
@@ -40,6 +41,8 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\CreateOrderApiInterface;
+use Meta\Sales\Api\Data\CreateOrderApiProductItemInterface;
+use Meta\Sales\Api\Data\CreateOrderApiShipmentDetailsInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
 use Meta\Sales\Helper\OrderHelper;
@@ -185,6 +188,32 @@ class CreateOrderApi implements CreateOrderApiInterface
         $facebookOrder->load($facebookOrderId, 'facebook_order_id');
 
         return $facebookOrder;
+    }
+
+    /**
+     * Adds tax details to each item
+     *
+     * @param CreateOrderApiProductItemInterface[] $productItems
+     * @param Quote $quote
+     * @return void
+     */
+    private function addMetaTaxToItem(array $productItems, Quote $quote): void
+    {
+        $tax_map = [];
+        foreach ($productItems as $item) {
+            $tax_map[$item->getSku()] = ["meta_tax" => $item->getTax(), "meta_tax_rate" => $item->getTaxRate()];
+        }
+
+        // Set the tax per item
+        $items = [];
+        /** @var Quote\Item $quoteItem */
+        foreach ($quote->getAllItems() as $quoteItem) {
+            $quoteItem->setData("meta_tax", $tax_map[$quoteItem->getSku()]["meta_tax"]);
+            $quoteItem->setData("meta_tax_rate", $tax_map[$quoteItem->getSku()]["meta_tax_rate"]);
+            $items[] = $quoteItem;
+        }
+
+        $quote->setItems($items);
     }
 
     /**
@@ -341,36 +370,49 @@ class CreateOrderApi implements CreateOrderApiInterface
      *
      * @param string $cartId
      * @param string $orderId
+     * @param float $orderTotal
+     * @param float $taxTotal
      * @param string $email
      * @param string $firstName
      * @param string $lastName
-     * @param ?string $channel
-     * @param bool $buyerOptin
+     * @param CreateOrderApiProductItemInterface[] $productItems
+     * @param CreateOrderApiShipmentDetailsInterface $shipmentDetails
+     * @param string $channel
+     * @param bool $buyerRemarketingOptIn
      * @param bool $createInvoice
      * @return OrderInterface
+     * @throws GuzzleException
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws Throwable
+     * @throws UnauthorizedTokenException
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function createOrder(
-        string  $cartId,
-        string  $orderId,
-        string  $email,
-        string  $firstName,
-        string  $lastName,
-        ?string $channel,
-        bool    $buyerOptin = false,
-        bool    $createInvoice = false
+        string                                 $cartId,
+        string                                 $orderId,
+        float                                  $orderTotal,
+        float                                  $taxTotal,
+        string                                 $email,
+        string                                 $firstName,
+        string                                 $lastName,
+        array                                  $productItems,
+        CreateOrderApiShipmentDetailsInterface $shipmentDetails,
+        string                                 $channel,
+        bool                                   $buyerRemarketingOptIn = false,
+        bool                                   $createInvoice = true
     ): OrderInterface {
 
         $extraDataForLogs = [
-            'cart_id' => $cartId,
-            'order_id' => $orderId,
+            'cartId' => $cartId,
+            'orderId' => $orderId,
+            'orderTotal' => $orderTotal,
+            'taxTotal' => $taxTotal,
             'email' => $email,
             'firstName' => $firstName,
             'lastName' => $lastName,
             'channel' => $channel,
-            'buyerOptin' => $buyerOptin,
+            'buyerRemarketingOptIn' => $buyerRemarketingOptIn,
             'createInvoice' => $createInvoice
         ];
 
@@ -383,9 +425,16 @@ class CreateOrderApi implements CreateOrderApiInterface
 
         try {
             $this->validateQuote($quoteId, $orderId, $quote);
+
+            // Add Meta calculated tax to item data to be used by custom tax calculation
+            $this->addMetaTaxToItem($productItems, $quote);
+            $quote->getShippingAddress()->setData("meta_tax", $shipmentDetails->getTax());
+            $quote->getShippingAddress()->setData("meta_tax_rate", $shipmentDetails->getTaxRate());
+
             // Set Meta's payment method ("Paid on Facebook/Instagram")
             $quote->setPaymentMethod(MetaPaymentMethod::METHOD_CODE);
             $quote->getPayment()->importData(['method' => MetaPaymentMethod::METHOD_CODE]);
+
             // Populate basic customer details
             $this->populateCustomerInformation($quote, $email, $firstName, $lastName);
             $this->quoteRepository->save($quote);
@@ -414,7 +463,7 @@ class CreateOrderApi implements CreateOrderApiInterface
             $transactionSave->addObject($magentoOrder)->save();
 
             // Create Meta order record in Magento
-            $facebookOrder = $this->createMetaOrderRecord($orderId, $magentoOrder, $channel, $buyerOptin);
+            $facebookOrder = $this->createMetaOrderRecord($orderId, $magentoOrder, $channel, $buyerRemarketingOptIn);
 
             $this->populateCheckoutSessionDetails($quote, $magentoOrder);
 

@@ -21,6 +21,7 @@
     "magento/module-sales-rule": "*",
     "magento/module-shipping": "*",
     "magento/module-newsletter": "*",
+    "magento/module-tax": "*",
     "meta/module-business-extension": "*",
     "meta/module-catalog": "*"
   },

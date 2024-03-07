@@ -3,6 +3,12 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Meta\Sales\Api\Data\FacebookOrderInterface" type="Meta\Sales\Model\FacebookOrder"/>
     <preference for="Meta\Sales\Api\CreateOrderApiInterface" type="Meta\Sales\Model\Api\CreateOrderApi"/>
+    <preference for="Meta\Sales\Api\Data\CreateOrderApiProductItemInterface"
+                type="Meta\Sales\Model\Api\Data\CreateOrderApiProductItem"/>
+    <preference for="Meta\Sales\Api\Data\CreateOrderApiShipmentDetailsInterface"
+                type="Meta\Sales\Model\Api\Data\CreateOrderApiShipmentDetails"/>
+    <preference for="Meta\Sales\Api\Data\CreateOrderApiDiscountInterface"
+                type="Meta\Sales\Model\Api\Data\CreateOrderApiDiscount"/>
     <preference for="Meta\Sales\Api\CreateCartApiInterface" type="Meta\Sales\Model\Api\CreateCartApi"/>
     <preference for="Meta\Sales\Api\AddCartItemsApiInterface" type="Meta\Sales\Model\Api\AddCartItemsApi"/>
     <preference for="Meta\Sales\Api\AddCartItemsApiResponseInterface"
@@ -19,6 +25,12 @@
                 type="Meta\Sales\Model\Api\SetCartShippingOptionApi"/>
     <preference for="Meta\Sales\Api\DeleteCartItemApiInterface" type="Meta\Sales\Model\Api\DeleteCartItemApi"/>
     <preference for="Meta\Sales\Api\HealthCheckApiInterface" type="Meta\Sales\Model\Api\HealthCheckApi"/>
+    <type name="Magento\Tax\Model\TaxCalculation">
+        <plugin name="meta_tax_calculation" type="Meta\Sales\Plugin\MetaTaxCalculation"/>
+    </type>
+    <type name="Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector">
+        <plugin name="meta_tax_collector" type="Meta\Sales\Plugin\MetaTaxCollector"/>
+    </type>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="facebook_order_extension" type="Meta\Sales\Plugin\OrderGet"/>
     </type>
