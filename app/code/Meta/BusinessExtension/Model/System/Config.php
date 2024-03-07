@@ -1105,4 +1105,21 @@ class Config
     {
         return $this->isFeatureInstalled('fb_shop', $storeId);
     }
+
+
+    /**
+     * Save the External Business ID
+     *
+     * @param string $externalBusinessId
+     * @param int $storeId
+     */
+    public function saveExternalBusinessIdForStore(string $externalBusinessId, int $storeId): void
+    {
+        $this->saveConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID,
+            $externalBusinessId,
+            $storeId
+        );
+        $this->cleanCache();
+    }
 }

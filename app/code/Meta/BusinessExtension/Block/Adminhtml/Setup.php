@@ -31,6 +31,7 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Psr\Log\LoggerInterface;
 use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 
 /**
@@ -74,6 +75,11 @@ class Setup extends Template
     private $commerceExtensionHelper;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var AdobeCloudConfigInterface
      */
     private AdobeCloudConfigInterface $adobeConfig;
@@ -87,20 +93,21 @@ class Setup extends Template
      * @param WebsiteCollectionFactory $websiteCollectionFactory
      * @param CommerceExtensionHelper $commerceExtensionHelper
      * @param ApiKeyService $apiKeyService
-     * @param AdobeCloudConfigInterface $adobeConfig
      * @param array $data
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        Context                   $context,
-        RequestInterface          $request,
-        FBEHelper                 $fbeHelper,
-        SystemConfig              $systemConfig,
-        StoreRepositoryInterface  $storeRepo,
-        WebsiteCollectionFactory  $websiteCollectionFactory,
-        CommerceExtensionHelper   $commerceExtensionHelper,
-        ApiKeyService             $apiKeyService,
+        Context                  $context,
+        RequestInterface         $request,
+        FBEHelper                $fbeHelper,
+        SystemConfig             $systemConfig,
+        StoreRepositoryInterface $storeRepo,
+        WebsiteCollectionFactory $websiteCollectionFactory,
+        CommerceExtensionHelper  $commerceExtensionHelper,
+        ApiKeyService            $apiKeyService,
+        LoggerInterface          $logger,
         AdobeCloudConfigInterface $adobeConfig,
-        array                     $data = []
+        array                    $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
@@ -109,6 +116,7 @@ class Setup extends Template
         $this->storeRepo = $storeRepo;
         $this->websiteCollectionFactory = $websiteCollectionFactory;
         $this->commerceExtensionHelper = $commerceExtensionHelper;
+        $this->logger = $logger;
         $this->apiKeyService = $apiKeyService;
         $this->adobeConfig = $adobeConfig;
     }
@@ -241,9 +249,14 @@ class Setup extends Template
         if ($storedExternalId) {
             return $storedExternalId;
         }
-        $storeId = $this->fbeHelper->getStore()->getId();
+        if ($storeId === null) {
+            $storeId = $this->getSelectedStoreId();
+        }
+
         $this->fbeHelper->log("Store id---" . $storeId);
-        return uniqid('fbe_magento_' . $storeId . '_');
+        $generatedExternalId = uniqid('fbe_magento_' . $storeId . '_');
+        $this->systemConfig->saveExternalBusinessIdForStore($generatedExternalId, (int)$storeId);
+        return $generatedExternalId;
     }
 
     /**
