@@ -819,6 +819,7 @@ class GraphAPIAdapter
      * @param array $items
      * @param float|null $shippingRefundAmount
      * @param float|null $deductionAmount
+     * @param float|null $adjustmentAmount
      * @param string $currency Order's currency code. Examples: "USD", "GBP"
      * @param null|string $reasonText
      * @return mixed|\Psr\Http\Message\ResponseInterface
@@ -829,6 +830,7 @@ class GraphAPIAdapter
         $items,
         $shippingRefundAmount,
         $deductionAmount,
+        $adjustmentAmount,
         $currency,
         $reasonText = null
     ) {
@@ -860,6 +862,12 @@ class GraphAPIAdapter
                     ]
                 ]
             ]);
+        }
+        if ($adjustmentAmount > 0) {
+            $request['adjustment_amount'] = [
+                'amount' => $adjustmentAmount,
+                'currency' => $currency
+            ];
         }
 
         $response = $this->callApi('POST', "{$fbOrderId}/refunds", $request);

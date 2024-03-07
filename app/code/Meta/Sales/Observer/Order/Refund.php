@@ -160,14 +160,8 @@ class Refund implements ObserverInterface
             return;
         }
 
-        $deductionAmount = $creditmemo->getAdjustment();
-        if ($deductionAmount > 0) {
-            // TODO: Add Telemetry rather than counting exceptions.
-            throw new Exception('Cannot refund order on Meta. Adjustment Refunds are not yet supported.');
-        } elseif ($deductionAmount < 0) {
-            // Magento allows Adjustment Fees to be negative, but the Graph API deductions must always be positive
-            $deductionAmount = abs($deductionAmount);
-        }
+        $deductionAmount = abs($creditmemo->getAdjustmentNegative());
+        $adjustmentAmount = $creditmemo->getAdjustmentPositive();
 
         $shippingRefundAmount = $creditmemo->getBaseShippingAmount();
         $reasonText = $creditmemo->getCustomerNote();
@@ -187,6 +181,7 @@ class Refund implements ObserverInterface
                     $refundItemsBySku,
                     $shippingRefundAmount,
                     $deductionAmount,
+                    $adjustmentAmount,
                     $currencyCode,
                     $reasonText
                 );
@@ -198,6 +193,7 @@ class Refund implements ObserverInterface
                     $refundItemsByID,
                     $shippingRefundAmount,
                     $deductionAmount,
+                    $adjustmentAmount,
                     $currencyCode,
                     $reasonText
                 );
@@ -219,6 +215,7 @@ class Refund implements ObserverInterface
      * @param array $items
      * @param float|null $shippingRefundAmount
      * @param float|null $deductionAmount
+     * @param float|null $adjustmentAmount
      * @param string|null $currencyCode
      * @param string|null $reasonText
      * @throws GuzzleException
@@ -230,6 +227,7 @@ class Refund implements ObserverInterface
         array   $items,
         ?float  $shippingRefundAmount,
         ?float  $deductionAmount,
+        ?float $adjustmentAmount,
         ?string $currencyCode,
         ?string $reasonText = null
     ) {
@@ -243,6 +241,7 @@ class Refund implements ObserverInterface
                 $items,
                 $shippingRefundAmount,
                 $deductionAmount,
+                $adjustmentAmount,
                 $currencyCode,
                 $reasonText
             );
