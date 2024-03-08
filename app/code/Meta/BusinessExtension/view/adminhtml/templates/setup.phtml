@@ -39,6 +39,7 @@
             customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>',
             debug: true,
             deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>',
+            updateInstalledMBEConfig: '<?= $escaper->escapeHtml($block->getUpdateMBEConfigAjaxRoute()) ?>',
             externalBusinessId: '<?=
                 $escaper->escapeHtml($block->getExternalBusinessId($block->getSelectedStoreId()))
             ?>',

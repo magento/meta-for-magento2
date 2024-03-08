@@ -28,8 +28,9 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Psr\Log\LoggerInterface;
 
-class SaveFBEInstallsResponse
+class MBEInstalls
 {
     /**
      * @var FBEHelper
@@ -70,7 +71,7 @@ class SaveFBEInstallsResponse
         SystemConfig $systemConfig,
         GraphAPIAdapter $graphApiAdapter,
         FacebookInstalledFeature $installedFeatureResource,
-        CatalogConfigUpdateHelper $catalogConfigUpdateHelper
+        CatalogConfigUpdateHelper $catalogConfigUpdateHelper,
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
@@ -268,5 +269,25 @@ class SaveFBEInstallsResponse
         }
         $this->installedFeatureResource->saveResponseData($data, $storeId);
         $this->fbeHelper->log("Saved fbe_installs 'installed_features' for storeId: {$storeId}");
+    }
+
+
+    /**
+     * Update MBE settings through the 'fbe_installs' API
+     *
+     * @param int $storeId
+     * @return void
+     */
+    public function updateMBESettings($storeId)
+    {
+        $accessToken = $this->systemConfig->getAccessToken($storeId);
+        $businessId = $this->systemConfig->getExternalBusinessId($storeId);
+        if (!$accessToken || !$businessId) {
+            $this->fbeHelper->log("AccessToken or BusinessID not found for storeID: {$storeId}");
+            return;
+        }
+        $response = $this->graphApiAdapter->getFBEInstalls($accessToken, $businessId);
+        $this->save($response['data'], $storeId);
+        $this->fbeHelper->log("Updated MBE Settings for storeId: {$storeId}");
     }
 }

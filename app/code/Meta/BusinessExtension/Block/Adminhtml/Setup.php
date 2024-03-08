@@ -31,7 +31,6 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Psr\Log\LoggerInterface;
 use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 
 /**
@@ -75,11 +74,6 @@ class Setup extends Template
     private $commerceExtensionHelper;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var AdobeCloudConfigInterface
      */
     private AdobeCloudConfigInterface $adobeConfig;
@@ -93,8 +87,8 @@ class Setup extends Template
      * @param WebsiteCollectionFactory $websiteCollectionFactory
      * @param CommerceExtensionHelper $commerceExtensionHelper
      * @param ApiKeyService $apiKeyService
+     * @param AdobeCloudConfigInterface $adobeConfig
      * @param array $data
-     * @param LoggerInterface $logger
      */
     public function __construct(
         Context                  $context,
@@ -105,7 +99,6 @@ class Setup extends Template
         WebsiteCollectionFactory $websiteCollectionFactory,
         CommerceExtensionHelper  $commerceExtensionHelper,
         ApiKeyService            $apiKeyService,
-        LoggerInterface          $logger,
         AdobeCloudConfigInterface $adobeConfig,
         array                    $data = []
     ) {
@@ -116,7 +109,6 @@ class Setup extends Template
         $this->storeRepo = $storeRepo;
         $this->websiteCollectionFactory = $websiteCollectionFactory;
         $this->commerceExtensionHelper = $commerceExtensionHelper;
-        $this->logger = $logger;
         $this->apiKeyService = $apiKeyService;
         $this->adobeConfig = $adobeConfig;
     }

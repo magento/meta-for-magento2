@@ -26,7 +26,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Model\SaveFBEInstallsResponse;
+use Meta\BusinessExtension\Model\MBEInstalls;
 
 class FbeInstallsSave implements HttpPostActionInterface
 {
@@ -36,7 +36,7 @@ class FbeInstallsSave implements HttpPostActionInterface
     private $request;
 
     /**
-     * @var SaveFBEInstallsResponse
+     * @var MBEInstalls
      */
     private $saveFbeInstallsResponse;
 
@@ -56,13 +56,13 @@ class FbeInstallsSave implements HttpPostActionInterface
      * @param RequestInterface $request
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
-     * @param SaveFBEInstallsResponse $saveFBEInstallsResponse
+     * @param MBEInstalls $saveFBEInstallsResponse
      */
     public function __construct(
         RequestInterface $request,
         JsonFactory $resultJsonFactory,
         FBEHelper $fbeHelper,
-        SaveFBEInstallsResponse $saveFBEInstallsResponse
+        MBEInstalls $saveFBEInstallsResponse
     ) {
         $this->request = $request;
         $this->jsonFactory = $resultJsonFactory;
