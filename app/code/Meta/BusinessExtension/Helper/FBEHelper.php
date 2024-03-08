@@ -285,6 +285,7 @@ class FBEHelper
         } else {
             $context['extra_data'] = $extraData;
         }
+
         $this->logger->info($info, $context);
     }
 

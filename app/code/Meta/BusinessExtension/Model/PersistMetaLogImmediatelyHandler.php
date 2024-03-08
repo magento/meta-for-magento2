@@ -62,6 +62,10 @@ class PersistMetaLogImmediatelyHandler
         if (isset($context['store_id'])) {
             $accessToken = $this->systemConfig->getAccessToken($context['store_id']);
         }
+        // Meta expects extra_data field to be dict<string, string>
+        $context['extra_data'] = array_map(function ($value) {
+            return is_string($value) ? $value : json_encode($value);
+        }, $context['extra_data']);
         $this->graphApiAdapter->persistLogToMeta($context, $accessToken);
     }
 }

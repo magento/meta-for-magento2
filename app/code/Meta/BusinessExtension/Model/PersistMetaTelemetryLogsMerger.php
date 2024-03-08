@@ -37,6 +37,10 @@ class PersistMetaTelemetryLogsMerger implements MergerInterface
             $telemetryLogs = array_map(function ($message) {
                 $decodedMessage = json_decode($message, true);
                 unset($decodedMessage['log_type']);
+                // Meta expects extra_data field to be dict<string, string>
+                $decodedMessage['extra_data'] = array_map(function ($value) {
+                    return is_string($value) ? $value : json_encode($value);
+                }, $decodedMessage['extra_data']);
                 return $decodedMessage;
             }, $messages['persist.meta.telemetry.logs']);
             $mergedLogs = json_encode($telemetryLogs);
