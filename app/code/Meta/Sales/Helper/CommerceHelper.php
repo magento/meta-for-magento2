@@ -25,6 +25,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderRepository;
+use Magento\Quote\Model\Cart\AddProductsToCartError;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
@@ -83,6 +84,11 @@ class CommerceHelper
     private CreateCancellation $createCancellation;
 
     /**
+     * @var AddProductsToCartError
+     */
+    private AddProductsToCartError $addProductsToCartError;
+
+    /**
      * @var int
      */
     private int $ordersPulledTotal = 0;
@@ -116,6 +122,7 @@ class CommerceHelper
      * @param CreateRefund $createRefund
      * @param CreateCancellation $createCancellation
      * @param FBEHelper $fbeHelper
+     * @param AddProductsToCartError $addProductsToCartError
      */
     public function __construct(
         GraphAPIAdapter               $graphAPIAdapter,
@@ -125,7 +132,8 @@ class CommerceHelper
         CreateOrder                   $createOrder,
         CreateRefund                  $createRefund,
         CreateCancellation            $createCancellation,
-        FBEHelper                     $fbeHelper
+        FBEHelper                     $fbeHelper,
+        AddProductsToCartError        $addProductsToCartError
     ) {
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->systemConfig = $systemConfig;
@@ -135,6 +143,7 @@ class CommerceHelper
         $this->createRefund = $createRefund;
         $this->fbeHelper = $fbeHelper;
         $this->createCancellation = $createCancellation;
+        $this->addProductsToCartError = $addProductsToCartError;
     }
 
     /**
@@ -187,9 +196,8 @@ class CommerceHelper
                 }
                 $orderIds[$magentoOrder->getIncrementId()] = $facebookOrderId;
             } catch (Exception $e) {
-                if ($e->getMessage() === 'The requested qty is not available'
-                    || $e->getMessage() === 'There are no source items with the in stock status') {
-                    $this->cancelMetaOutOfStockOrder($storeId, $facebookOrderId);
+                if ($this->isProductError($e->getMessage())) {
+                    $this->cancelMetaOrderWithProductError($storeId, $facebookOrderId, $e);
                 } else {
                     $this->exceptions[] = $e->getMessage();
                     $this->fbeHelper->logExceptionImmediatelyToMeta(
@@ -213,28 +221,32 @@ class CommerceHelper
     }
 
     /**
-     * Cancel Meta order that failed to be created due to item(s) being out of stock
+     * Cancel Meta order that failed to be created due to product error
      *
      * @param int $storeId
      * @param string $facebookOrderId
+     * @param Exception $exception
      * @return void
      * @throws GuzzleException
      */
-    public function cancelMetaOutOfStockOrder(int $storeId, string $facebookOrderId)
+    public function cancelMetaOrderWithProductError(int $storeId, string $facebookOrderId, Exception $exception)
     {
         try {
-            $this->cancelOrder($storeId, $facebookOrderId, true);
+            $this->cancelOrder($storeId, $facebookOrderId, [], true);
             $this->metaOrdersCanceled[] = $facebookOrderId;
             $this->fbeHelper->logTelemetryToMeta(
                 sprintf(
-                    'Meta order %d cancelled due to item(s) in order being out of stock',
+                    'Meta order %d cancelled due to error with product in order',
                     $facebookOrderId
                 ),
                 [
                     'store_id' => $storeId,
                     'flow_name' => 'order_sync',
-                    'flow_step' => 'cancel_meta_out_of_stock_order',
-                    'order_id' => $facebookOrderId
+                    'flow_step' => 'cancel_meta_order_with_product_error',
+                    'order_id' => $facebookOrderId,
+                    'extra_data' => [
+                        'exception_message' => $exception->getMessage()
+                    ]
                 ]
             );
         } catch (Exception $e) {
@@ -243,7 +255,7 @@ class CommerceHelper
                 [
                     'store_id' => $storeId,
                     'event' => 'order_sync',
-                    'event_type' => 'cancel_meta_out_of_stock_order',
+                    'event_type' => 'cancel_meta_order_with_product_error',
                     'order_id' => $facebookOrderId
                 ]
             );
@@ -435,5 +447,17 @@ class CommerceHelper
             ->setAccessToken($this->systemConfig->getAccessToken($storeId));
 
         return $this->graphAPIAdapter->getOrderDetails($metaOrderId);
+    }
+
+    /**
+     * Return whether or not exception message is representative of product error we should cancel order for
+     *
+     * @param string $message
+     * @return bool
+     */
+    private function isProductError(string $message)
+    {
+        $error = $this->addProductsToCartError->create($message);
+        return $error->getCode() !== 'UNDEFINED';
     }
 }
