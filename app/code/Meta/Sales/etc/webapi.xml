@@ -4,7 +4,7 @@
     <route url="/V1/meta/createOrder" method="PUT">
         <service class="Meta\Sales\Api\CreateOrderApiInterface" method="createOrder"/>
         <resources>
-            <resource ref="Meta_Sales::create_order"/>
+            <resource ref="anonymous"/>
         </resources>
     </route>
     <route url="/V1/meta/:externalBusinessId/createCart" method="POST">
