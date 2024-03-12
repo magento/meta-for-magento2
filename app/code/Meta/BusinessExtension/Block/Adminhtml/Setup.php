@@ -476,4 +476,14 @@ class Setup extends Template
     {
         return $this->apiKeyService->getCustomApiKey();
     }
+
+    /**
+     * Get MBE Update Installed Config ajax route
+     *
+     * @return string
+     */
+    public function getUpdateMBEConfigAjaxRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/MBEUpdateInstalledConfig');
+    }
 }
