@@ -121,6 +121,9 @@ class Config
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS =
         'facebook/catalog_management/disable_unsupported_products';
 
+    private const XML_PATH_FACEBOOK_DISABLE_ADDITIONAL_ATTRIBUTES_SYNC =
+        'facebook/catalog_management/disable_additional_attributes_sync';
+
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL =
         'facebook/internal/extension_base_url';
 
@@ -991,6 +994,22 @@ class Config
     public function getWeightUnit(int $scopeId = null, string $scope = null)
     {
         return $this->getConfig('general/locale/weight_unit', $scopeId, $scope);
+    }
+
+    /**
+     * Check if additional attributes sync is disabled
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return bool
+     */
+    public function isAdditionalAttributesSyncDisabled(int $scopeId = null, string $scope = null): bool
+    {
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_DISABLE_ADDITIONAL_ATTRIBUTES_SYNC,
+            $scopeId,
+            $scope
+        );
     }
 
     /**

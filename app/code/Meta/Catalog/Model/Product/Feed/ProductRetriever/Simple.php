@@ -136,7 +136,7 @@ class Simple implements ProductRetrieverInterface
             ->order(new \Zend_Db_Expr('e.updated_at desc'))
             ->limit($limit, $offset);
 
-        if ($this->systemConfig->isUnsupportedProductsDisabled()) {
+        if ($this->systemConfig->isAdditionalAttributesSyncDisabled()) {
             $products = $collection->getItems();
         } else {
             // in case of unsupported product we need complete data for products which is return by product repo api.

@@ -82,12 +82,12 @@ class Configurable implements ProductRetrieverInterface
      * @param SystemConfig $systemConfig
      */
     public function __construct(
-        FBEHelper $fbeHelper,
-        CollectionFactory $productCollectionFactory,
-        ProductRepository $metaProductRepo,
+        FBEHelper                  $fbeHelper,
+        CollectionFactory          $productCollectionFactory,
+        ProductRepository          $metaProductRepo,
         ProductRepositoryInterface $productRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        SystemConfig    $systemConfig
+        SearchCriteriaBuilder      $searchCriteriaBuilder,
+        SystemConfig               $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->productCollectionFactory = $productCollectionFactory;
@@ -137,7 +137,7 @@ class Configurable implements ProductRetrieverInterface
 
         $configurableCollection->getSelect()->limit($limit, $offset);
 
-        if ($this->systemConfig->isUnsupportedProductsDisabled()) {
+        if ($this->systemConfig->isAdditionalAttributesSyncDisabled()) {
             $products = $configurableCollection->getItems();
         } else {
             // in case of unsupported product we need complete data for products which is return by product repo api.

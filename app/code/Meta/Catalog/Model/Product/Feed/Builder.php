@@ -782,7 +782,12 @@ class Builder
             $entry[self::ATTR_UNIT_PRICE] = $this->getUnitPrice($product);
         }
 
-        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
+        // Features is needed for customizable & unsupported products both
+        $features = $this->unsupportedProducts->getFeatures($product);
+        $entry[self::ATTR_FEATURES] = count($features) > 0 ? json_encode($features) : null;
+
+        // Add Additional metadata fields if not disabled
+        if (!$this->systemConfig->isAdditionalAttributesSyncDisabled()) {
             $entry[self::ATTR_METADATA] = json_encode($this->additionalAttributes->getAdditionalMetadata($product));
 
             $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
@@ -793,10 +798,10 @@ class Builder
                 $entry[$customAttribute] =
                     $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
             }
+        }
 
-            $features = $this->unsupportedProducts->getFeatures($product);
-            $entry[self::ATTR_FEATURES] = count($features) > 0 ? json_encode($features) : null;
-
+        // Add Unsupported product data if not disabled
+        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
             $entry[self::ATTR_UNSUPPORTED_PRODUCT_DATA] = json_encode([
                 'type_hint' => $product->getTypeId(),
                 'customizable_options' => $this->unsupportedProducts->getCustomizableOptions($product),
@@ -945,7 +950,9 @@ class Builder
             $headerFields[] = self::ATTR_UNIT_PRICE;
         }
 
-        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
+        $headerFields[] = self::ATTR_FEATURES;
+
+        if (!$this->systemConfig->isAdditionalAttributesSyncDisabled()) {
             $headerFields[] = self::ATTR_METADATA;
 
             $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
@@ -955,10 +962,9 @@ class Builder
                 }
                 $headerFields[] = $customAttribute;
             }
+        }
 
-            if (!in_array(self::ATTR_FEATURES, $headerFields)) {
-                $headerFields[] = self::ATTR_FEATURES;
-            }
+        if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
             if (!in_array(self::ATTR_UNSUPPORTED_PRODUCT_DATA, $headerFields)) {
                 $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
             }
