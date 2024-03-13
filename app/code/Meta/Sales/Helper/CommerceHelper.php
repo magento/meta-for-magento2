@@ -25,7 +25,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderRepository;
-use Magento\Quote\Model\Cart\AddProductsToCartError;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
@@ -84,11 +83,6 @@ class CommerceHelper
     private CreateCancellation $createCancellation;
 
     /**
-     * @var AddProductsToCartError
-     */
-    private AddProductsToCartError $addProductsToCartError;
-
-    /**
      * @var int
      */
     private int $ordersPulledTotal = 0;
@@ -122,7 +116,6 @@ class CommerceHelper
      * @param CreateRefund $createRefund
      * @param CreateCancellation $createCancellation
      * @param FBEHelper $fbeHelper
-     * @param AddProductsToCartError $addProductsToCartError
      */
     public function __construct(
         GraphAPIAdapter               $graphAPIAdapter,
@@ -132,8 +125,7 @@ class CommerceHelper
         CreateOrder                   $createOrder,
         CreateRefund                  $createRefund,
         CreateCancellation            $createCancellation,
-        FBEHelper                     $fbeHelper,
-        AddProductsToCartError        $addProductsToCartError
+        FBEHelper                     $fbeHelper
     ) {
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->systemConfig = $systemConfig;
@@ -143,7 +135,6 @@ class CommerceHelper
         $this->createRefund = $createRefund;
         $this->fbeHelper = $fbeHelper;
         $this->createCancellation = $createCancellation;
-        $this->addProductsToCartError = $addProductsToCartError;
     }
 
     /**
@@ -451,13 +442,29 @@ class CommerceHelper
 
     /**
      * Return whether or not exception message is representative of product error we should cancel order for
+     * Logic here is copied from AddProductsToCart/AddProductsToCartError in Magento codebase
      *
      * @param string $message
      * @return bool
      */
     private function isProductError(string $message)
     {
-        $error = $this->addProductsToCartError->create($message);
-        return $error->getCode() !== 'UNDEFINED';
+        $productErrors = [
+            'Could not find a product with SKU',
+            'The required options you selected are not available',
+            'Product that you are trying to add is not available.',
+            'This product is out of stock',
+            'There are no source items',
+            'The fewest you may purchase is',
+            'The most you may purchase is',
+            'The requested qty is not available'
+        ];
+
+        foreach ($productErrors as $productError) {
+            if (false !== stripos($message, $productError)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
