@@ -50,6 +50,7 @@ use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Config\Source\DefaultOrderStatus;
 use Meta\Sales\Model\FacebookOrder;
 use Meta\Sales\Model\PaymentMethod as MetaPaymentMethod;
+use Magento\Quote\Model\QuoteIdMaskFactory;
 use Throwable;
 
 /**
@@ -133,6 +134,11 @@ class CreateOrderApi implements CreateOrderApiInterface
     private CommerceHelper $commerceHelper;
 
     /**
+     * @var QuoteIdMaskFactory
+     */
+    private QuoteIdMaskFactory $quoteIdMaskFactory;
+
+    /**
      * Constructor
      *
      * @param EventManagerInterface $eventManager
@@ -147,6 +153,7 @@ class CreateOrderApi implements CreateOrderApiInterface
      * @param Authenticator $authenticator
      * @param FBEHelper $fbeHelper
      * @param CommerceHelper $commerceHelper
+     * @param QuoteIdMaskFactory $quoteIdMaskFactory
      * @param RequestInterface|null $request
      * @param RemoteAddress|null $remoteAddress
      */
@@ -163,6 +170,7 @@ class CreateOrderApi implements CreateOrderApiInterface
         Authenticator                 $authenticator,
         FBEHelper                     $fbeHelper,
         CommerceHelper                $commerceHelper,
+        QuoteIdMaskFactory            $quoteIdMaskFactory,
         RequestInterface              $request = null,
         RemoteAddress                 $remoteAddress = null
     ) {
@@ -178,6 +186,7 @@ class CreateOrderApi implements CreateOrderApiInterface
         $this->authenticator = $authenticator;
         $this->fbeHelper = $fbeHelper;
         $this->commerceHelper = $commerceHelper;
+        $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->request = $request ?: ObjectManager::getInstance()
             ->get(RequestInterface::class);
         $this->remoteAddress = $remoteAddress ?: ObjectManager::getInstance()
@@ -427,8 +436,9 @@ class CreateOrderApi implements CreateOrderApiInterface
 
         $this->authenticator->authenticateRequest();
 
+        $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
+        $quoteId = (int)$quoteIdMask->getQuoteId();
         /** @var Quote $quote */
-        $quoteId = (int)$cartId;
         $quote = $this->quoteRepository->get($quoteId);
         $storeId = $quote->getStoreId();
 
