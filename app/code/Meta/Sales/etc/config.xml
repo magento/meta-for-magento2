@@ -4,6 +4,10 @@
     <default>
         <facebook>
             <orders_sync>
+                <!-- No longer has a UI toggle. To update post-install,
+                 run the following sql command and then refresh cache using `bin/magento cache:clean`
+                 `update core_config_data set value=1 where path like 'facebook/orders_sync/active';`
+                 -->
                 <active>1</active>
                 <default_order_status>processing</default_order_status>
                 <auto_subscribe_to_newsletter>1</auto_subscribe_to_newsletter>

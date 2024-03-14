@@ -4,6 +4,10 @@
     <default>
         <facebook>
             <catalog_management>
+                <!-- No longer has a UI toggle. To update post-install,
+                 run the following sql command and then refresh cache using `bin/magento cache:clean`
+                 `update core_config_data set value=1 where path like 'facebook/catalog_management/enable_catalog_sync';`
+                 -->
                 <enable_catalog_sync>1</enable_catalog_sync>
                 <price_incl_tax>0</price_incl_tax>
                 <out_of_stock_threshold>0</out_of_stock_threshold>

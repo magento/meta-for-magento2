@@ -29,8 +29,8 @@
             </group>
             <group id="business_extension" translate="label" type="text" showInDefault="0"
                    showInWebsite="0" showInStore="0">
-                <field id="enable_catalog_sync" translate="label comment" type="select" sortOrder="10" showInDefault="1"
-                       showInWebsite="0" showInStore="1">
+                <field id="enable_catalog_sync" translate="label comment" type="select" sortOrder="10" showInDefault="0"
+                       showInWebsite="0" showInStore="0">
                     <label>Enable Catalog Sync</label>
                     <config_path>facebook/catalog_management/enable_catalog_sync</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
