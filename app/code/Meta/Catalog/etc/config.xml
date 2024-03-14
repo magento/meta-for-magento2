@@ -10,7 +10,7 @@
                 <enable_sync_all_categories>1</enable_sync_all_categories>
                 <disable_unsupported_products>0</disable_unsupported_products>
                 <disable_additional_attributes_sync>0</disable_additional_attributes_sync>
-                <products_fetch_batch_size>2000</products_fetch_batch_size>
+                <products_fetch_batch_size>200</products_fetch_batch_size>
             </catalog_management>
         </facebook>
     </default>

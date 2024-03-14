@@ -31,7 +31,7 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 
 class Simple implements ProductRetrieverInterface
 {
-    private const LIMIT_DEFAULT = 2000;
+    private const LIMIT_DEFAULT = 200;
 
     /**
      * @var int
