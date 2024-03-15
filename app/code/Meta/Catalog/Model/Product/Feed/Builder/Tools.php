@@ -191,7 +191,7 @@ class Tools
     public function getProductPrice(Product $product)
     {
         $price = $this->systemConfig->isPriceInclTax()
-            ? $this->catalogHelper->getTaxPrice($product, $product->getPrice(), true)
+            ? $this->catalogHelper->getTaxPrice($product, $product->getPriceInfo()->getPrice('regular_price')->getAmount()->getValue(), true)
             : $product->getPrice();
         return $this->formatPrice($price, $product->getStoreId());
     }
@@ -204,10 +204,11 @@ class Tools
      */
     public function getProductSalePrice(Product $product)
     {
-        if ($product->getFinalPrice() > 0 && $product->getPrice() > $product->getFinalPrice()) {
+        $finalPrice = $product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue();
+        if ($finalPrice > 0 && $product->getPriceInfo()->getPrice('regular_price')->getAmount()->getValue() > $finalPrice) {
             $price = $this->systemConfig->isPriceInclTax()
-                ? $this->catalogHelper->getTaxPrice($product, $product->getFinalPrice(), true)
-                : $product->getFinalPrice();
+                ? $this->catalogHelper->getTaxPrice($product, $finalPrice, true)
+                : $finalPrice;
             return $this->formatPrice($price, $product->getStoreId());
         }
         return '';
