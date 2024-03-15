@@ -261,9 +261,7 @@ class Builder
             ? $product->getData($this->attrMap[self::ATTR_URL])
             : null;
         if ($link == '' || $link == null) {
-            $parentUrl = $product->getParentProductUrl();
-            // use parent product URL if a simple product has a parent and is not visible individually
-            $url = (!$product->isVisibleInSiteVisibility() && $parentUrl) ? $parentUrl : $product->getProductUrl();
+            $url = $product->getParentProductUrl() ?: $product->getProductUrl();
             return $this->builderTools->replaceLocalUrlWithDummyUrl($url);
         } else {
             return $this->trimAttribute(self::ATTR_URL, $link);
