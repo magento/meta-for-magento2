@@ -31,6 +31,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Api\Data\AddressInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Api\Data\InvoiceInterface;
@@ -264,19 +265,63 @@ class CreateOrderApi implements CreateOrderApiInterface
     }
 
     /**
+     * Populate any missing address information
+     *
+     * @param AddressInterface $address
+     * @param AddressInterface $metaAddressInfo
+     * @return void
+     */
+    private function populateAddress(
+        AddressInterface $address,
+        AddressInterface $metaAddressInfo
+    ): void {
+        if (!$address->getRegionCode()) {
+            $address->setRegionCode($metaAddressInfo->getRegionCode());
+        }
+
+        if (!$address->getCountryId()) {
+            $address->setCountryId($metaAddressInfo->getCountryId());
+        }
+
+        if (!$address->getStreetLine(1)) {
+            $address->setStreet($metaAddressInfo->getStreet());
+        }
+
+        if (!$address->getPostcode()) {
+            $address->setPostcode($metaAddressInfo->getPostcode());
+        }
+
+        if (!$address->getCity()) {
+            $address->setCity($metaAddressInfo->getCity());
+        }
+
+        if (!$address->getFirstname()) {
+            $address->setFirstname($metaAddressInfo->getFirstname());
+        }
+
+        if (!$address->getLastname()) {
+            $address->setLastname($metaAddressInfo->getLastname());
+        }
+    }
+
+    /**
      * Populate customer information in quote
      *
      * @param Quote $quote
      * @param string $email
      * @param string $firstName
      * @param string $lastName
+     * @param AddressInterface $shippingAddress
+     * @param AddressInterface $billingAddress
      * @return void
      */
     private function populateCustomerInformation(
-        Quote  $quote,
-        string $email,
-        string $firstName,
-        string $lastName
+        Quote            $quote,
+        string           $email,
+        string           $firstName,
+        string           $lastName,
+        AddressInterface $shippingAddress,
+        AddressInterface $billingAddress
     ): void {
         // Populate customer information
         if (!$quote->getCustomerEmail()) {
@@ -288,6 +333,9 @@ class CreateOrderApi implements CreateOrderApiInterface
             $quote->setCustomerFirstname($firstName);
             $quote->setCustomerLastname($lastName);
         }
+
+        $this->populateAddress($quote->getShippingAddress(), $shippingAddress);
+        $this->populateAddress($quote->getBillingAddress(), $billingAddress);
 
         $remoteAddress = $this->remoteAddress->getRemoteAddress();
         if ($remoteAddress !== false) {
@@ -395,15 +443,14 @@ class CreateOrderApi implements CreateOrderApiInterface
      * @param string $lastName
      * @param CreateOrderApiProductItemInterface[] $productItems
      * @param CreateOrderApiShipmentDetailsInterface $shipmentDetails
+     * @param AddressInterface $billingAddress
      * @param string $channel
      * @param bool $buyerRemarketingOptIn
      * @param bool $createInvoice
      * @return OrderInterface
-     * @throws GuzzleException
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws Throwable
-     * @throws UnauthorizedTokenException
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function createOrder(
@@ -416,6 +463,7 @@ class CreateOrderApi implements CreateOrderApiInterface
         string                                 $lastName,
         array                                  $productItems,
         CreateOrderApiShipmentDetailsInterface $shipmentDetails,
+        AddressInterface                       $billingAddress,
         string                                 $channel,
         bool                                   $buyerRemarketingOptIn = false,
         bool                                   $createInvoice = true
@@ -458,7 +506,14 @@ class CreateOrderApi implements CreateOrderApiInterface
             $this->validateStateAndTotals($storeId, $orderId, $quote);
 
             // Populate basic customer details
-            $this->populateCustomerInformation($quote, $email, $firstName, $lastName);
+            $this->populateCustomerInformation(
+                $quote,
+                $email,
+                $firstName,
+                $lastName,
+                $shipmentDetails->getShippingAddress(),
+                $billingAddress
+            );
             $this->quoteRepository->save($quote);
 
             // Create an order
@@ -520,8 +575,9 @@ class CreateOrderApi implements CreateOrderApiInterface
     }
 
     /**
-     * Validate that the meta order is in the correct state and
-     * that the totals in the magento order match the totals in meta
+     * Validate that the meta order is in the correct state
+     *
+     * Confirms that the totals in the magento order match the totals in meta
      *
      * @param int $storeId
      * @param string $metaOrderId
@@ -545,7 +601,6 @@ class CreateOrderApi implements CreateOrderApiInterface
         // Validate order state
         if (strcasecmp("FB_PROCESSING", $metaOrderDetails['order_status']['state']) != 0) {
             $le = new LocalizedException(__('Meta order is not in the FB_PROCESSING state'));
-
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $le,
                 $this->buildMetaLogContext(
@@ -557,7 +612,6 @@ class CreateOrderApi implements CreateOrderApiInterface
                     ]
                 )
             );
-
             throw $le;
         }
 
@@ -568,7 +622,6 @@ class CreateOrderApi implements CreateOrderApiInterface
             'tax' => $metaOrderDetails['estimated_payment_details']['tax']['amount'],
             'grand_total' => $metaOrderDetails['estimated_payment_details']['total_amount']['amount']
         ];
-
 
         foreach (['subtotal', 'shipping', 'tax', 'grand_total'] as $code) {
             if ($metaTotals[$code] != $magentoTotals[$code]) {

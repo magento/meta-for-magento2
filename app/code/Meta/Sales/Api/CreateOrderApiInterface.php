@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Api;
 
+use Magento\Quote\Api\Data\AddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Meta\Sales\Api\Data\CreateOrderApiProductItemInterface;
 use Meta\Sales\Api\Data\CreateOrderApiShipmentDetailsInterface;
@@ -43,6 +44,7 @@ interface CreateOrderApiInterface
      * @param string $lastName
      * @param CreateOrderApiProductItemInterface[] $productItems
      * @param CreateOrderApiShipmentDetailsInterface $shipmentDetails
+     * @param AddressInterface $billingAddress
      * @param string|null $channel
      * @param bool $buyerRemarketingOptIn
      * @param bool $createInvoice
@@ -58,6 +60,7 @@ interface CreateOrderApiInterface
         string                                 $lastName,
         array                                  $productItems,
         CreateOrderApiShipmentDetailsInterface $shipmentDetails,
+        AddressInterface                       $billingAddress,
         string                                 $channel,
         bool                                   $buyerRemarketingOptIn = false,
         bool                                   $createInvoice = true
