@@ -478,6 +478,16 @@ class Setup extends Template
     }
 
     /**
+     * Get repair CPI ajax route
+     *
+     * @return mixed
+     */
+    public function getRepairRepairCommercePartnerIntegrationAjaxRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/RepairCommercePartnerIntegration');
+    }
+
+    /**
      * Get MBE Update Installed Config ajax route
      *
      * @return string

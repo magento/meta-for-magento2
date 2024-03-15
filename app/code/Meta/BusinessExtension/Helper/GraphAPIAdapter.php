@@ -1068,4 +1068,25 @@ class GraphAPIAdapter
         $latestGraphApiVersion = $this->systemConfig->getGraphAPIVersion();
         return $latestGraphApiVersion ?? $this->graphAPIVersion;
     }
+
+    /**
+     * Call Meta's Repair Commerce Partner Integration endpoint
+     *
+     * @param string $externalBusinessId
+     * @param string $shopDomain
+     * @param string $customToken
+     * @param string $accessToken
+     * @throws GuzzleException
+     */
+    public function repairCommercePartnerIntegration($externalBusinessId, $shopDomain, $customToken, $accessToken)
+    {
+        $request = [
+            'access_token' => $accessToken,
+            'fbe_external_business_id' => $externalBusinessId,
+            'custom_token' => $customToken,
+            'shop_domain' => $shopDomain
+        ];
+        $response = $this->callApi('POST', "commerce_partner_integrations_repair", $request);
+        return json_decode($response->getBody()->__toString(), true);
+    }
 }

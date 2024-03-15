@@ -46,6 +46,7 @@ class UpdateMBESettings
      * Construct
      *
      * @param FBEHelper $fbeHelper
+     * @param MBEInstalls $mbeInstalls
      * @param CollectionFactory $collectionFactory
      */
     public function __construct(
@@ -72,9 +73,21 @@ class UpdateMBESettings
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
                     [
-                    'store_id' => $storeId,
-                    'event' => 'update_mbe_settings_cron',
-                    'event_type' => 'update_mbe_settings'
+                        'store_id' => $storeId,
+                        'event' => 'update_mbe_settings_cron',
+                        'event_type' => 'update_mbe_settings'
+                    ]
+                );
+            }
+            try {
+                $this->mbeInstalls->repairCommercePartnerIntegration($storeId);
+            } catch (\Exception $e) {
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'update_mbe_settings_cron_repair_cpi',
+                        'event_type' => 'update_mbe_settings'
                     ]
                 );
             }

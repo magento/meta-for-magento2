@@ -143,9 +143,25 @@ require(['jquery'], function (jQuery) {
         }
     }
 
+    function repairCommercePartnerIntegration() {
+        jQuery.ajax({
+            type: 'post',
+            url: ajaxify(window.facebookBusinessExtensionConfig.repairRepairCommercePartnerIntegrationUrl),
+            data: ajaxParam({
+                storeId: window.facebookBusinessExtensionConfig.storeId,
+            }),
+            success: function onSuccess(_data) {
+            },
+            error: function () {
+                console.error('There was error repairing the Meta Commerce Partner Integration');
+            }
+        });
+    }
+
     const commerceIframe = document.getElementById("commerce-extension-iframe");
     if (commerceIframe != null) {
         window.addEventListener('message', listenForCommerceExtensionMessage);
+        repairCommercePartnerIntegration();
     }
 
     const resetLink = document.getElementById('commerce-extension-reset-link');

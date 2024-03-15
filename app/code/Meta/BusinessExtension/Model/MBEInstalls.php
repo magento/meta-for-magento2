@@ -23,9 +23,11 @@ namespace Meta\BusinessExtension\Model;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\CatalogConfigUpdateHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Psr\Log\LoggerInterface;
@@ -56,6 +58,18 @@ class MBEInstalls
      * @var CatalogConfigUpdateHelper
      */
     private CatalogConfigUpdateHelper $catalogConfigUpdateHelper;
+    /**
+     * @var ApiKeyService
+     */
+    private ApiKeyService $apiKeyService;
+    /**
+     * @var StoreManagerInterface
+     */
+    private StoreManagerInterface $storeManager;
+    /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
 
     /**
      * Construct
@@ -65,6 +79,9 @@ class MBEInstalls
      * @param GraphAPIAdapter $graphApiAdapter
      * @param FacebookInstalledFeature $installedFeatureResource
      * @param CatalogConfigUpdateHelper $catalogConfigUpdateHelper
+     * @param ApiKeyService $apiKeyService
+     * @param StoreManagerInterface $storeManager
+     * @param LoggerInterface $logger
      */
     public function __construct(
         FBEHelper $fbeHelper,
@@ -72,12 +89,18 @@ class MBEInstalls
         GraphAPIAdapter $graphApiAdapter,
         FacebookInstalledFeature $installedFeatureResource,
         CatalogConfigUpdateHelper $catalogConfigUpdateHelper,
+        ApiKeyService             $apiKeyService,
+        StoreManagerInterface     $storeManager,
+        LoggerInterface           $logger
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->graphApiAdapter = $graphApiAdapter;
         $this->installedFeatureResource = $installedFeatureResource;
         $this->catalogConfigUpdateHelper = $catalogConfigUpdateHelper;
+        $this->apiKeyService = $apiKeyService;
+        $this->storeManager = $storeManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -230,7 +253,7 @@ class MBEInstalls
                 $storeId
             );
             $this->fbeHelper->log("Saved fbe_installs commerce_partner_integration_id ---" .
-             "{$commercePartnerIntegrationId} for storeID: {$storeId}");
+                "{$commercePartnerIntegrationId} for storeID: {$storeId}");
         }
         return $this;
     }
@@ -271,7 +294,6 @@ class MBEInstalls
         $this->fbeHelper->log("Saved fbe_installs 'installed_features' for storeId: {$storeId}");
     }
 
-
     /**
      * Update MBE settings through the 'fbe_installs' API
      *
@@ -289,5 +311,59 @@ class MBEInstalls
         $response = $this->graphApiAdapter->getFBEInstalls($accessToken, $businessId);
         $this->save($response['data'], $storeId);
         $this->fbeHelper->log("Updated MBE Settings for storeId: {$storeId}");
+    }
+
+    /**
+     * Call Repair CommercePartnerIntegration endpoint
+     *
+     * Keep Meta side CommercePartnerIntegration updated with latest info from Magento
+     *
+     * @param int $storeId
+     * @return bool
+     * @throws \Exception
+     */
+    public function repairCommercePartnerIntegration($storeId): bool
+    {
+        try {
+            $accessToken = $this->systemConfig->getAccessToken($storeId);
+            $externalBusinessId = $this->systemConfig->getExternalBusinessId($storeId);
+            $customToken = $this->apiKeyService->getCustomApiKey();
+            $domain = $this->storeManager->getStore($storeId)->getBaseUrl();
+
+            $response = $this->graphApiAdapter->repairCommercePartnerIntegration(
+                $externalBusinessId,
+                $domain,
+                $customToken,
+                $accessToken
+            );
+            if ($response['success'] === true) {
+                $integrationId = $response['id'];
+                $existingIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId($storeId);
+                if ($existingIntegrationId !== null && $existingIntegrationId === $integrationId) {
+                    return true;
+                }
+
+                // For some legacy sellers the Integration ID was obtained from CMS.
+                // The method should be the ground truth.
+                // Updating the ID and notify Meta.
+                if ($existingIntegrationId !== $integrationId) {
+                    $context = [
+                        'store_id' => $storeId,
+                        'event' => 'inconsistent_cpi',
+                    ];
+                    $e = new \Exception("Commerce Partner Integration ID inconsistent between Meta and Magento. 
+                    Existing ID: $existingIntegrationId and New ID: $integrationId");
+                    $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
+                }
+                $this->saveCommercePartnerIntegrationId($integrationId, $storeId);
+                $this->systemConfig->cleanCache();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $ex) {
+            $this->logger->error("Error trying to repair Meta Commerce Partner Integration");
+            throw $ex;
+        }
     }
 }
