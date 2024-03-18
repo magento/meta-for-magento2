@@ -95,7 +95,7 @@ class FBEHelper
         SystemConfig             $systemConfig,
         ProductMetadataInterface $productMetadata,
         GraphAPIConfig           $graphAPIConfig,
-        GraphAPIAdapter          $graphAPIAdapter,
+        GraphAPIAdapter          $graphAPIAdapter
     ) {
         $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;

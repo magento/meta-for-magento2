@@ -60,7 +60,7 @@ class RepairCommercePartnerIntegration implements HttpPostActionInterface
         JsonFactory      $resultJsonFactory,
         FBEHelper        $fbeHelper,
         MBEInstalls      $mbeInstalls,
-        RequestInterface $request,
+        RequestInterface $request
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->fbeHelper = $fbeHelper;
@@ -109,7 +109,7 @@ class RepairCommercePartnerIntegration implements HttpPostActionInterface
                 'success' => false,
             ];
         }
-            $this->mbeInstalls->repairCommercePartnerIntegration($storeId);
+        $this->mbeInstalls->repairCommercePartnerIntegration($storeId);
         return [
             'success' => true,
         ];
