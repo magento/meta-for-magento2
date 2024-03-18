@@ -92,7 +92,7 @@
             <group id="business_settings" translate="label" type="text" sortOrder="10" showInDefault="1"
                    showInWebsite="0" showInStore="1">
                 <field id="auto_subscribe_to_newsletter" translate="label comment" type="select" sortOrder="40"
-                       showInDefault="1" showInWebsite="0" showInStore="1">
+                       showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Subscribe to Newsletter</label>
                     <config_path>facebook/orders_sync/auto_subscribe_to_newsletter</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
