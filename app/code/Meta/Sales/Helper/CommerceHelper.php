@@ -373,8 +373,10 @@ class CommerceHelper
                     // Get cancellation details for each order (assuming a method exists in GraphAPIAdapter)
                     $cancellationDetails = $this->graphAPIAdapter->getCancellations($facebookOrderId)[0];
                     // Process cancellations (you would need to create a method to handle this)
-                    $this->createCancellation->execute($orderData, $cancellationDetails, $storeId);
-                    $cancelledOrdersDetails[$facebookOrderId] = $cancellationDetails;
+                    $wasOrderCancelled = $this->createCancellation->execute($orderData, $cancellationDetails, $storeId);
+                    if ($wasOrderCancelled) {
+                        $cancelledOrdersDetails[$facebookOrderId] = $cancellationDetails;
+                    }
                 } catch (Exception $e) {
                     $this->exceptions[] = $e->getMessage();
                     $this->fbeHelper->logExceptionImmediatelyToMeta(

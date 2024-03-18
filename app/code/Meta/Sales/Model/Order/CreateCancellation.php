@@ -94,16 +94,17 @@ class CreateCancellation
      *
      * @param array $facebookOrderData
      * @param array $facebookCancellationData
+     * @return bool
      * @throws LocalizedException
      */
-    public function execute(array $facebookOrderData, array $facebookCancellationData): void
+    public function execute(array $facebookOrderData, array $facebookCancellationData): bool
     {
         $magentoOrder = $this->getOrder($facebookOrderData);
         if (!$magentoOrder) {
-            return;
+            return false;
         }
         if ($this->isOrderPartiallyCanceled($magentoOrder)) {
-            return;
+            return false;
         }
         $cancelItems = $facebookCancellationData['items']['data'] ?? [];
         $shouldCancelOrder = $this->shouldCancelEntireOrder($magentoOrder, $cancelItems);
@@ -124,6 +125,7 @@ class CreateCancellation
             $magentoOrder->addCommentToStatusHistory(self::CANCELLATION_NOTE . $concatenatedString);
         }
         $this->orderRepository->save($magentoOrder);
+        return true;
     }
 
     /**
