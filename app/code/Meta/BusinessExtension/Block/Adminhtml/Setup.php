@@ -91,16 +91,16 @@ class Setup extends Template
      * @param array $data
      */
     public function __construct(
-        Context                  $context,
-        RequestInterface         $request,
-        FBEHelper                $fbeHelper,
-        SystemConfig             $systemConfig,
-        StoreRepositoryInterface $storeRepo,
-        WebsiteCollectionFactory $websiteCollectionFactory,
-        CommerceExtensionHelper  $commerceExtensionHelper,
-        ApiKeyService            $apiKeyService,
+        Context                   $context,
+        RequestInterface          $request,
+        FBEHelper                 $fbeHelper,
+        SystemConfig              $systemConfig,
+        StoreRepositoryInterface  $storeRepo,
+        WebsiteCollectionFactory  $websiteCollectionFactory,
+        CommerceExtensionHelper   $commerceExtensionHelper,
+        ApiKeyService             $apiKeyService,
         AdobeCloudConfigInterface $adobeConfig,
-        array                    $data = []
+        array                     $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
@@ -463,8 +463,7 @@ class Setup extends Template
      */
     public function getCommercePartnerSellerPlatformType(): string
     {
-        return $this->adobeConfig->isSellerOnAdobeCloud() ?
-            AdobeCloudConfigInterface::ADOBE_COMMERCE_CLOUD : AdobeCloudConfigInterface::MAGENTO_OPEN_SOURCE;
+        return $this->adobeConfig->getCommercePartnerSellerPlatformType();
     }
 
     /**

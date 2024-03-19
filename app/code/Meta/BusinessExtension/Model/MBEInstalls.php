@@ -31,7 +31,11 @@ use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Psr\Log\LoggerInterface;
+use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class MBEInstalls
 {
     /**
@@ -72,6 +76,11 @@ class MBEInstalls
     private LoggerInterface $logger;
 
     /**
+     * @var AdobeCloudConfigInterface
+     */
+    private AdobeCloudConfigInterface $adobeConfig;
+
+    /**
      * Construct
      *
      * @param FBEHelper $fbeHelper
@@ -82,16 +91,18 @@ class MBEInstalls
      * @param ApiKeyService $apiKeyService
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
+     * @param AdobeCloudConfigInterface $adobeConfig
      */
     public function __construct(
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
-        GraphAPIAdapter $graphApiAdapter,
-        FacebookInstalledFeature $installedFeatureResource,
+        FBEHelper                 $fbeHelper,
+        SystemConfig              $systemConfig,
+        GraphAPIAdapter           $graphApiAdapter,
+        FacebookInstalledFeature  $installedFeatureResource,
         CatalogConfigUpdateHelper $catalogConfigUpdateHelper,
         ApiKeyService             $apiKeyService,
         StoreManagerInterface     $storeManager,
-        LoggerInterface           $logger
+        LoggerInterface           $logger,
+        AdobeCloudConfigInterface $adobeConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
@@ -101,6 +112,7 @@ class MBEInstalls
         $this->apiKeyService = $apiKeyService;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
+        $this->adobeConfig = $adobeConfig;
     }
 
     /**
@@ -125,7 +137,7 @@ class MBEInstalls
 
         // we will update catalog config if catalog has been updated in Meta
         $this->catalogConfigUpdateHelper->updateCatalogConfiguration(
-            (int) $storeId,
+            (int)$storeId,
             $catalogId,
             $commercePartnerIntegrationId,
             $pixelId,
@@ -329,12 +341,14 @@ class MBEInstalls
             $externalBusinessId = $this->systemConfig->getExternalBusinessId($storeId);
             $customToken = $this->apiKeyService->getCustomApiKey();
             $domain = $this->storeManager->getStore($storeId)->getBaseUrl();
+            $seller_platform_type = $this->adobeConfig->getCommercePartnerSellerPlatformType();
 
             $response = $this->graphApiAdapter->repairCommercePartnerIntegration(
                 $externalBusinessId,
                 $domain,
                 $customToken,
-                $accessToken
+                $accessToken,
+                $seller_platform_type
             );
             if ($response['success'] === true) {
                 $integrationId = $response['id'];

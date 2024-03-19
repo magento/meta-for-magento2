@@ -35,4 +35,15 @@ class AdobeCloudConfig implements AdobeCloudConfigInterface
         // phpcs:ignore
         return isset($_ENV['MAGENTO_CLOUD_ENVIRONMENT']);
     }
+
+    /**
+     * Call this method to get a string indicator on seller types (hosted by Adobe).
+     *
+     * @return string
+     */
+    public function getCommercePartnerSellerPlatformType(): string
+    {
+        return $this->isSellerOnAdobeCloud() ?
+            AdobeCloudConfigInterface::ADOBE_COMMERCE_CLOUD : AdobeCloudConfigInterface::MAGENTO_OPEN_SOURCE;
+    }
 }

@@ -43,4 +43,11 @@ interface AdobeCloudConfigInterface
      * @return bool
      */
     public function isSellerOnAdobeCloud(): bool;
+
+    /**
+     * Call this method to get a string indicator on seller types (hosted by Adobe).
+     *
+     * @return string
+     */
+    public function getCommercePartnerSellerPlatformType(): string;
 }
