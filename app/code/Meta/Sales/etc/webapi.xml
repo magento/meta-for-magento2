@@ -67,4 +67,30 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+
+    <route url="/V1/meta/:externalBusinessId/createDiscountRule" method="POST">
+        <service class="Meta\Sales\Api\DiscountRuleApiInterface" method="createRule"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/deleteDiscount" method="POST">
+        <service class="Meta\Sales\Api\DiscountDeleteApiInterface" method="deleteDiscount"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/checkSubscriptionStatus" method="GET">
+        <service class="Meta\Sales\Api\NewsletterSubscriptionDiscountStatusApiInterface" method="checkSubscriptionStatus"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/addNewsletterSubscriber" method="POST">
+        <service class="Meta\Sales\Api\NewsletterSubscriptionDiscountApiInterface" method="subscribeForCoupon"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
 </routes>
