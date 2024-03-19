@@ -444,6 +444,7 @@ class CommerceHelper
 
     /**
      * Return whether or not exception message is representative of product error we should cancel order for
+     *
      * Logic here is copied from AddProductsToCart/AddProductsToCartError in Magento codebase
      *
      * @param string $message

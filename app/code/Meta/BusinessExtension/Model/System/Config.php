@@ -1089,7 +1089,6 @@ class Config
         return $this->isFeatureInstalled('fb_shop', $storeId);
     }
 
-
     /**
      * Save the External Business ID
      *

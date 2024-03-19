@@ -61,8 +61,10 @@ class MbeUpdateInstalledConfig extends AbstractAjax implements HttpPostActionInt
      * @param JsonFactory $resultJsonFactory
      * @param FBEHelper $fbeHelper
      * @param MBEInstalls $mbeInstalls
-     * @param EventManager $eventManager
      * @param LoggerInterface $logger
+     * @param RequestInterface $request
+     * @param EventManager $eventManager
+     *
      */
     public function __construct(
         Context          $context,
