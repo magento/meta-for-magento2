@@ -146,7 +146,7 @@ class Refund implements ObserverInterface
         $storeId = $payment->getOrder()->getStoreId();
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))) {
             return;
         }
 
@@ -227,7 +227,7 @@ class Refund implements ObserverInterface
         array   $items,
         ?float  $shippingRefundAmount,
         ?float  $deductionAmount,
-        ?float $adjustmentAmount,
+        ?float  $adjustmentAmount,
         ?string $currencyCode,
         ?string $reasonText = null
     ) {

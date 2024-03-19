@@ -26,7 +26,7 @@
                     <label>Push Promotions</label>
                     <frontend_model>Meta\Promotions\Block\Adminhtml\System\Config\PushPromotions</frontend_model>
                     <depends>
-                        <field id="facebook_business_extension/business_extension/onsite">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                         <field id="facebook_business_extension/business_extension/installed">1</field>
                         <field id="facebook_business_extension/business_extension/enable_promotion_sync">1</field>
                     </depends>

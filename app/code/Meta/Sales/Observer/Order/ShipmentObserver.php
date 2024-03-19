@@ -149,7 +149,7 @@ class ShipmentObserver implements ObserverInterface
         $shipment = $this->getShipment($observer);
         $storeId = $shipment->getOrder()->getStoreId();
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))) {
             return;
         }
 

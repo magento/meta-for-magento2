@@ -89,27 +89,6 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     }
 
     /**
-     * IsOnsiteCheckoutEnabled Getter
-     *
-     * @return bool
-     */
-    public function isOnsiteCheckoutEnabled(): bool
-    {
-        return $this->_getData('isOnsiteCheckoutEnabled');
-    }
-
-    /**
-     * IsOnsiteCheckoutEnabled Setter
-     *
-     * @param bool $val
-     * @return void
-     */
-    public function setIsOnsiteCheckoutEnabled(bool $val): void
-    {
-        $this->setData('isOnsiteCheckoutEnabled', $val);
-    }
-
-    /**
      * IsPromotionsSyncEnabled Getter
      *
      * @return bool
@@ -173,32 +152,11 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     }
 
     /**
-     * IsCommerceExtensionEnabled Getter
-     *
-     * @return bool
-     */
-    public function isCommerceExtensionEnabled(): bool
-    {
-        return $this->_getData('isCommerceExtensionEnabled');
-    }
-
-    /**
-     * IsOnsiteCheckoutEnabled Setter
-     *
-     * @param bool $val
-     * @return void
-     */
-    public function setIsCommerceExtensionEnabled(bool $val): void
-    {
-        $this->setData('isCommerceExtensionEnabled', $val);
-    }
-
-    /**
      * FeedId Getter
      *
      * @return ?string
      */
-    public function getFeedId():?string
+    public function getFeedId(): ?string
     {
         return $this->_getData('feedId');
     }

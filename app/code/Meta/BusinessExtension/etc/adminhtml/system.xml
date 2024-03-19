@@ -22,11 +22,6 @@
                     <config_path>facebook/business_extension/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="onsite" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <config_path>facebook/business_extension/onsite</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
-                </field>
                 <field id="commerce_extension" type="select" sortOrder="20" showInDefault="1" showInWebsite="0"
                        showInStore="1">
                     <config_path>facebook/business_extension/commerce_extension</config_path>
@@ -90,7 +85,7 @@
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="manual_data_sync_empty" translate="label" type="note" sortOrder="16" showInDefault="1"
-                    showInWebsite="0" showInStore="1">
+                       showInWebsite="0" showInStore="1">
                     <depends>
                         <field id="facebook_business_extension/business_extension/installed">0</field>
                     </depends>

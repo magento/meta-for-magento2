@@ -61,7 +61,7 @@ class CommerceExtensionHelper
      */
     public function getSplashPageURL()
     {
-        if (!$this->systemConfig->isCommerceExtensionEnabled()) {
+        if (!$this->systemConfig->isActiveExtension()) {
             return 'https://business.facebook.com/fbe-iframe-get-started/?';
         }
 
@@ -76,7 +76,7 @@ class CommerceExtensionHelper
      */
     public function getPopupOrigin()
     {
-        if (!$this->systemConfig->isCommerceExtensionEnabled()) {
+        if (!$this->systemConfig->isActiveExtension()) {
             return 'https://business.facebook.com';
         }
 
@@ -92,7 +92,7 @@ class CommerceExtensionHelper
     public function isCommerceExtensionEnabled($storeId)
     {
         $storeHasCommercePartnerIntegration = !!$this->systemConfig->getCommercePartnerIntegrationId($storeId);
-        return $storeHasCommercePartnerIntegration || $this->systemConfig->isCommerceExtensionEnabled();
+        return $storeHasCommercePartnerIntegration || $this->systemConfig->isActiveExtension($storeId);
     }
 
     /**

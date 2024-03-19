@@ -111,10 +111,6 @@ class Config
         'facebook/conversion_management/enable_server_test';
     private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE =
         'facebook/conversion_management/server_test_code';
-
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG =
-        'facebook/business_extension/onsite';
-
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_MEMORY_PROFILING =
         'facebook/business_extension/enable_memory_profiling';
 
@@ -320,22 +316,6 @@ class Config
     }
 
     /**
-     * Is commerce extension UI update enabled
-     *
-     * @param int|null $scopeId
-     * @param string $scope
-     * @return bool
-     */
-    public function isCommerceExtensionEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
-    {
-        return (bool)$this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG,
-            $scopeId,
-            $scope
-        );
-    }
-
-    /**
      * The base URL for rendering the Commerce Extension Splash page.
      *
      * @param int|null $scopeId
@@ -349,22 +329,6 @@ class Config
             $scopeId,
             $scope
         ) ?? 'https://www.commercepartnerhub.com/';
-    }
-
-    /**
-     * Is onsite checkout enabled
-     *
-     * @param int|null $scopeId
-     * @param string $scope
-     * @return bool
-     */
-    public function isOnsiteCheckoutEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
-    {
-        return (bool)$this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG,
-            $scopeId,
-            $scope
-        );
     }
 
     /**
@@ -886,7 +850,7 @@ class Config
         return array_filter($stores, function ($store) {
             $scopeId = $store->getId();
             return $this->isPostOnboardingState($scopeId) &&
-                $this->isOnsiteCheckoutEnabled($scopeId) &&
+                $this->isActiveExtension($scopeId) &&
                 // A slight nuance. You can be installed, but not "onsite" -- unless you have valid commerce account.
                 $this->getCommerceAccountId($scopeId);
         });

@@ -90,14 +90,14 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      * @param MetaIssueNotification $issueNotification
      */
     public function __construct(
-        SystemConfig               $systemConfig,
+        SystemConfig              $systemConfig,
         FBEHelper                 $fbeHelper,
         CollectionFactory         $collectionFactory,
         Authenticator             $authenticator,
-        CatalogConfigUpdateHelper  $catalogConfigUpdateHelper,
+        CatalogConfigUpdateHelper $catalogConfigUpdateHelper,
         GraphAPIAdapter           $graphApiAdapter,
-        CoreConfigFactory          $coreConfigFactory,
-        MetaIssueNotification      $issueNotification
+        CoreConfigFactory         $coreConfigFactory,
+        MetaIssueNotification     $issueNotification
     ) {
         $this->systemConfig = $systemConfig;
         $this->fbeHelper = $fbeHelper;
@@ -124,6 +124,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
             $this->updateSetting($setting);
         }
     }
+
     /**
      * Update notification in magento Admin page
      *
@@ -176,7 +177,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
                 );
             // Step 4 - Verify Catalog id updated correctly
             if ($this->systemConfig->getCatalogId((int)$storeId) !== $fbeResponse['catalog_id']) {
-                $this->throwException('Catalog config update failed for external_business_id: '.$externalBusinessId);
+                $this->throwException('Catalog config update failed for external_business_id: ' . $externalBusinessId);
             }
         } catch (Throwable $e) {
             $context = [
@@ -192,7 +193,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Get storeId
      *
-     * @param  string $externalBusinessId
+     * @param string $externalBusinessId
      * @return string
      * @throws LocalizedException
      */
@@ -200,7 +201,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     {
         $installedConfigs = $this->getMBEInstalledConfigsByExternalBusinessId($externalBusinessId);
         if (empty($installedConfigs)) {
-            $this->throwException('No store id is found for found for external_business_id: '.$externalBusinessId);
+            $this->throwException('No store id is found for found for external_business_id: ' . $externalBusinessId);
         }
         // StoreId and externalBusinessId is 1:1 mapping, hence get $storeIds[0] as $storeId in below.
         return $installedConfigs[0]->getScopeId();
@@ -218,7 +219,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         $accessToken = $this->systemConfig->getAccessToken($storeId);
         $businessId = $this->systemConfig->getExternalBusinessId($storeId);
         if (!$accessToken || !$businessId) {
-            $this->throwException('AccessToken or BusinessID not found for storeID:'.$storeId);
+            $this->throwException('AccessToken or BusinessID not found for storeID:' . $storeId);
         }
         $response = $this->graphApiAdapter->getFBEInstalls($accessToken, $businessId);
         if (!is_array($response) || empty($response)) {
@@ -286,7 +287,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
         try {
             // Meta currently doesn't sign requests to settings sync APIS
             $this->authenticator->authenticateRequestDangerouslySkipSignatureValidation();
-            $coreConfigData =  $this->getCoreConfigByStoreId($externalBusinessId, $storeId);
+            $coreConfigData = $this->getCoreConfigByStoreId($externalBusinessId, $storeId);
             $coreConfig->addData($coreConfigData);
         } catch (Exception $e) {
             $context = [
@@ -314,10 +315,9 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
             'isOrderSyncEnabled' => $this->systemConfig->isOrderSyncEnabled($storeId),
             'isCatalogSyncEnabled' => $this->systemConfig->isCatalogSyncEnabled($storeId),
             'isPromotionsSyncEnabled' => $this->systemConfig->isPromotionsSyncEnabled($storeId),
-            'isOnsiteCheckoutEnabled' =>  $this->systemConfig->isOnsiteCheckoutEnabled($storeId),
+            'isActiveExtension' => $this->systemConfig->isActiveExtension($storeId),
             'productIdentifierAttr' => $this->systemConfig->getProductIdentifierAttr($storeId),
             'outOfStockThreshold' => $this->systemConfig->getOutOfStockThreshold($storeId),
-            'isCommerceExtensionEnabled' => $this->systemConfig->isCommerceExtensionEnabled($storeId),
             'feedId' => $this->systemConfig->getFeedId($storeId),
             'installedMetaExtensionVersion' => $this->systemConfig->getModuleVersion(),
             'graphApiVersion' => $this->graphApiAdapter->getGraphApiVersion(),
@@ -331,7 +331,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      * @param string $graphApiVersion
      * @return void
      */
-    private function updateGraphAPIVersion(string $graphApiVersion) : void
+    private function updateGraphAPIVersion(string $graphApiVersion): void
     {
         $this->systemConfig->saveConfig(
             SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_GRAPH_API_VERSION,

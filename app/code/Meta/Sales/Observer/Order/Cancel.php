@@ -65,10 +65,10 @@ class Cancel implements ObserverInterface
      * @param FBEHelper $fbeHelper
      */
     public function __construct(
-        SystemConfig    $systemConfig,
-        OrderHelper     $orderHelper,
-        CommerceHelper  $commerceHelper,
-        FBEHelper       $fbeHelper
+        SystemConfig   $systemConfig,
+        OrderHelper    $orderHelper,
+        CommerceHelper $commerceHelper,
+        FBEHelper      $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->orderHelper = $orderHelper;
@@ -121,7 +121,7 @@ class Cancel implements ObserverInterface
         $storeId = $this->getStoreId($observer);
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))) {
             return;
         }
 
