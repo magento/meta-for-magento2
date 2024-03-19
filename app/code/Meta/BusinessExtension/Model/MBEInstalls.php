@@ -342,13 +342,15 @@ class MBEInstalls
             $customToken = $this->apiKeyService->getCustomApiKey();
             $domain = $this->storeManager->getStore($storeId)->getBaseUrl();
             $seller_platform_type = $this->adobeConfig->getCommercePartnerSellerPlatformType();
+            $extensionVersion = $this->systemConfig->getModuleVersion();
 
             $response = $this->graphApiAdapter->repairCommercePartnerIntegration(
                 $externalBusinessId,
                 $domain,
                 $customToken,
                 $accessToken,
-                $seller_platform_type
+                $seller_platform_type,
+                $extensionVersion
             );
             if ($response['success'] === true) {
                 $integrationId = $response['id'];

@@ -1077,6 +1077,7 @@ class GraphAPIAdapter
      * @param string $customToken
      * @param string $accessToken
      * @param string $seller_platform_type
+     * @param string $extensionVersion
      * @throws GuzzleException
      */
     public function repairCommercePartnerIntegration(
@@ -1084,14 +1085,16 @@ class GraphAPIAdapter
         $shopDomain,
         $customToken,
         $accessToken,
-        $seller_platform_type
+        $seller_platform_type,
+        $extensionVersion
     ) {
         $request = [
             'access_token' => $accessToken,
             'fbe_external_business_id' => $externalBusinessId,
             'custom_token' => $customToken,
             'shop_domain' => $shopDomain,
-            'commerce_partner_seller_platform_type' => $seller_platform_type
+            'commerce_partner_seller_platform_type' => $seller_platform_type,
+            'extension_version' => $extensionVersion
         ];
         $response = $this->callApi('POST', "commerce_partner_integrations_repair", $request);
         return json_decode($response->getBody()->__toString(), true);
