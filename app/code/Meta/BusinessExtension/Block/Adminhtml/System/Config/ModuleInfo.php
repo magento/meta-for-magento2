@@ -202,4 +202,14 @@ class ModuleInfo extends Field
     {
         return $this->systemConfig->getCommercePartnerIntegrationId($this->getStoreId());
     }
+
+    /**
+     * Retrieve the Commerce Partner External Business ID
+     *
+     * @return string
+     */
+    public function getExternalBusinessID()
+    {
+        return $this->systemConfig->getExternalBusinessId($this->getStoreId());
+    }
 }

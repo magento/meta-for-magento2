@@ -10,6 +10,7 @@
         <p><b>DEBUG MODE</b></p>
     <?php endif; ?>
     <?php if ($block->getIsFBEInstalled()): ?>
+        <p>External Business ID: <?= $escaper->escapeHtml($block->getExternalBusinessID()) ?></p>
         <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
         <p>Commerce Partner Integration ID: <?= $escaper->escapeHtml($block->getCommercePartnerIntegrationId()) ?></p>
         <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>
