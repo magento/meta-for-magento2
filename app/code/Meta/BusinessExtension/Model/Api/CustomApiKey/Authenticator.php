@@ -45,14 +45,14 @@ class Authenticator
     /**
      * Authenticator constructor
      *
-     * @param ScopeConfigInterface  $scopeConfig
-     * @param Http                  $httpRequest
-     * @param SystemConfig          $systemConfig
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Http $httpRequest
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        ScopeConfigInterface    $scopeConfig,
-        Http                    $httpRequest,
-        SystemConfig            $systemConfig
+        ScopeConfigInterface $scopeConfig,
+        Http                 $httpRequest,
+        SystemConfig         $systemConfig
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->httpRequest = $httpRequest;

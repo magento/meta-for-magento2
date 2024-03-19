@@ -158,9 +158,9 @@ interface CreateOrderApiProductItemInterface
     /**
      * Get discount
      *
-     * @return \Meta\Sales\Api\Data\CreateOrderApiDiscountInterface
+     * @return \Meta\Sales\Api\Data\CreateOrderApiDiscountInterface | null
      */
-    public function getDiscount(): CreateOrderApiDiscountInterface;
+    public function getDiscount(): ?CreateOrderApiDiscountInterface;
 
     /**
      * Set discount

@@ -302,6 +302,10 @@ class CreateOrderApi implements CreateOrderApiInterface
         if (!$address->getLastname()) {
             $address->setLastname($metaAddressInfo->getLastname());
         }
+
+        if (!$address->getTelephone()) {
+            $address->setTelephone($metaAddressInfo->getTelephone());
+        }
     }
 
     /**
@@ -477,6 +481,9 @@ class CreateOrderApi implements CreateOrderApiInterface
             'email' => $email,
             'firstName' => $firstName,
             'lastName' => $lastName,
+            'productItems' => $productItems,
+            'shipmentDetails' => $shipmentDetails,
+            'billingAddress' => $billingAddress,
             'channel' => $channel,
             'buyerRemarketingOptIn' => $buyerRemarketingOptIn,
             'createInvoice' => $createInvoice
