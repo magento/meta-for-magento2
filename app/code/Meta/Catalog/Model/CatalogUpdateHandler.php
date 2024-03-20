@@ -248,7 +248,14 @@ class CatalogUpdateHandler
     {
         $requestData = [];
         foreach ($productUpdates as $productUpdate) {
-            $identifier = $this->productIdentifier->getMagentoProductRetailerId($productUpdate);
+            // Can not use productIdentifier->getMagentoProductRetailerId(),
+            // since it does not take FacebookCatalogUpdate Object
+            if ($this->productIdentifier->getProductIdentifierColName() === 'sku') {
+                $identifier = $productUpdate->getSku();
+            } else {
+                $identifier = $productUpdate->getProductId();
+            }
+
             if ($identifier) {
                 $requestData[] = $this->batchApi->buildDeleteProductRequest($identifier);
             }
