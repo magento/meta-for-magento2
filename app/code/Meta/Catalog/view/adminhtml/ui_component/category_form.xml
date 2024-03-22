@@ -8,7 +8,7 @@
                 </item>
             </argument>
             <settings>
-                <label translate="true">Sync to Facebook Catalog</label>
+                <label translate="true">Sync to Meta</label>
                 <dataType>boolean</dataType>
             </settings>
             <formElements>

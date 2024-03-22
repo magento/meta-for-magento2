@@ -48,8 +48,8 @@ class Notification implements MessageInterface
      * @param RequestInterface $request
      */
     public function __construct(
-        SystemConfig $systemConfig,
-        UrlInterface $urlBuilder,
+        SystemConfig     $systemConfig,
+        UrlInterface     $urlBuilder,
         RequestInterface $request
     ) {
         $this->systemConfig = $systemConfig;
@@ -72,8 +72,7 @@ class Notification implements MessageInterface
     {
         $storeId = $this->request->getParam('store');
         if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->getAccessToken($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+            && $this->systemConfig->getAccessToken($storeId))) {
             return false;
         }
 

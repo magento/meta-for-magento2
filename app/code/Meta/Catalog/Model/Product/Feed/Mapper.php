@@ -143,7 +143,7 @@ class Mapper
      * Maps, and optionally filters, an array of product links into the Meta feed format
      *
      * @param ProductLinkInterface[] $product_links
-     * @param string $link_type
+     * @param string|null $link_type
      * @return array
      */
     public function mapProductLinks(array $product_links, string $link_type = null): array

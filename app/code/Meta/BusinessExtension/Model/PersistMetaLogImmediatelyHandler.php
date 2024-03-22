@@ -21,34 +21,51 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Model;
 
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class PersistMetaLogImmediatelyHandler
 {
-
     /**
      * @var GraphAPIAdapter
      */
-    private $graphApiAdapter;
+    private GraphAPIAdapter $graphApiAdapter;
+
+    /**
+     * @var SystemConfig
+     */
+    private SystemConfig $systemConfig;
 
     /**
      * PersistMetaLogImmediatelyHandler constructor
      *
      * @param GraphAPIAdapter $graphAPIAdapter
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        GraphAPIAdapter $graphAPIAdapter
+        GraphAPIAdapter $graphAPIAdapter,
+        SystemConfig $systemConfig
     ) {
         $this->graphApiAdapter = $graphAPIAdapter;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
      * Consumer handler to persist exception logs from message queue to Meta
      *
      * @param string $message
+     * @return void
      */
-    public function persistMetaLogImmediately(string $message)
+    public function persistMetaLogImmediately(string $message): void
     {
         $context = json_decode($message, true);
-        $this->graphApiAdapter->persistLogToMeta($context);
+        $accessToken = null;
+        if (isset($context['store_id'])) {
+            $accessToken = $this->systemConfig->getAccessToken($context['store_id']);
+        }
+        // Meta expects extra_data field to be dict<string, string>
+        $context['extra_data'] = array_map(function ($value) {
+            return is_string($value) ? $value : json_encode($value);
+        }, $context['extra_data']);
+        $this->graphApiAdapter->persistLogToMeta($context, $accessToken);
     }
 }

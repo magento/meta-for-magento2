@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Meta\Sales\Model\Mapper;
 
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
@@ -111,42 +110,78 @@ class OrderItemMapper
     public function map(array $item, int $storeId): OrderItem
     {
         $product = $this->productIdentifier->getProductByFacebookRetailerId($item['retailer_id']);
-        $pricePerUnit = $item['price_per_unit']['amount'];
-
-        $originalPrice = $this->getPriceBeforeDiscount($item['product_id'], $storeId) ?? $pricePerUnit;
+        $productInfo = $this->getProductInfo($item['product_id'], $storeId);
 
         $quantity = $item['quantity'];
-        $taxAmount = $item['tax_details']['estimated_tax']['amount'];
 
-        $rowTotal = $pricePerUnit * $quantity;
+        // strike-through price if available, otherwise list price
+        $originalPrice = $productInfo['price'];
+
+        // sale price if available, otherwise list price
+        $price = $productInfo['sale_price'] ?? $originalPrice;
+
+        // actual price, including applied item-level discounts
+        $discountPrice = $item['price_per_unit']['amount'];
+
+        $discountAmountItems = $price - $discountPrice;
+        $discountPercent = round(($discountAmountItems / $price) * 100, 2);
+
+        $discountAmountOrder = 0;
         $promotionDetails = $item['promotion_details']['data'] ?? null;
-        $discountAmount = 0;
         if ($promotionDetails) {
             foreach ($promotionDetails as $promotionDetail) {
                 if ($promotionDetail['target_granularity'] === 'order_level') {
-                    $discountAmount += $promotionDetail['applied_amount']['amount'];
+                    $discountAmountOrder += $promotionDetail['applied_amount']['amount'];
                 }
             }
         }
 
+        $rowTotal = $price * $quantity;
+        $rowWeight = $product->getWeight() * $quantity;
+        $rowTaxAmount = $item['tax_details']['estimated_tax']['amount'];
+        $rowDiscountAmount = round(($discountAmountItems * $quantity) + $discountAmountOrder, 2);
+        $rowDiscountPrice = $discountPrice * $quantity - $discountAmountOrder;
+
+        // discount price can be $0 for free BXGY items
+        $taxPercent = $rowDiscountPrice > 0 ? round(($rowTaxAmount / $rowDiscountPrice) * 100, 2) : 0;
+        $priceInclTax = round(($price * (100 + $taxPercent) / 100), 2);
+        $rowTotalInclTax = round(($priceInclTax * $quantity), 2);
+
+        // Dynamic Checkout:
+        // set applied_rule_ids
+
         /** @var OrderItem $orderItem */
         $orderItem = $this->orderItemFactory->create();
-        $orderItem->setProductId($product->getId())
+
+        $orderItem
+            ->setProductId($product->getId())
             ->setSku($product->getSku())
             ->setName($product->getName())
             ->setQtyOrdered($quantity)
-            ->setBasePrice($originalPrice)
             ->setOriginalPrice($originalPrice)
-            ->setPrice($originalPrice)
-            ->setTaxAmount($taxAmount)
+            ->setBaseOriginalPrice($originalPrice)
+            ->setPrice($price)
+            ->setBasePrice($price)
+            ->setPriceInclTax($priceInclTax)
+            ->setBasePriceInclTax($priceInclTax)
+            ->setTaxAmount($rowTaxAmount)
+            ->setBaseTaxAmount($rowTaxAmount)
+            ->setTaxPercent($taxPercent)
             ->setRowTotal($rowTotal)
-            ->setDiscountAmount($discountAmount)
-            ->setBaseDiscountAmount($discountAmount)
-            ->setProductType($product->getTypeId());
-
-        if ($rowTotal != 0) {
-            $orderItem->setTaxPercent(round(($taxAmount / $rowTotal) * 100, 2));
-        }
+            ->setBaseRowTotal($rowTotal)
+            ->setRowTotalInclTax($rowTotalInclTax)
+            ->setBaseRowTotalInclTax($rowTotalInclTax)
+            ->setRowWeight($rowWeight)
+            ->setDiscountAmount($rowDiscountAmount)
+            ->setBaseDiscountAmount($rowDiscountAmount)
+            ->setDiscountPercent($discountPercent)
+            ->setProductType($product->getTypeId())
+            ->setWeight($product->getWeight())
+            ->setIsVirtual(false)
+            ->setIsQtyDecimal(false)
+            ->setStoreId($storeId)
+            ->setDiscountTaxCompensationAmount(0)
+            ->setBaseDiscountTaxCompensationAmount(0);
 
         $productOptions = $this->getProductOptions($product, $orderItem);
         if ($productOptions) {
@@ -208,26 +243,32 @@ class OrderItemMapper
     }
 
     /**
-     * Get price before discount from api loaded facebook product info
+     * Get product info for the provided product.
      *
      * @param string|int $fbProductId
      * @param int $storeId
      * @return string|bool
      */
-    private function getPriceBeforeDiscount($fbProductId, int $storeId)
+    private function getProductInfo($fbProductId, int $storeId)
     {
-        try {
-            $this->graphAPIAdapter
-                ->setDebugMode($this->systemConfig->isDebugMode($storeId))
-                ->setAccessToken($this->systemConfig->getAccessToken($storeId));
-            $productInfo = $this->graphAPIAdapter->getProductInfo($fbProductId);
-            if ($productInfo && array_key_exists('price', $productInfo)) {
-                //this returns amount without $, ex: $100.00 -> 100.00
-                return substr($productInfo['price'], 1);
+        $this->graphAPIAdapter
+            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
+            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+
+        $productInfo = $this->graphAPIAdapter->getProductInfo($fbProductId);
+
+        // strip the currency from the prices
+
+        if ($productInfo) {
+            if (array_key_exists('price', $productInfo)) {
+                $productInfo['price'] = substr($productInfo['price'], 1);
             }
-        } catch (GuzzleException $e) {
-            $this->logger->critical($e->getMessage());
+
+            if (array_key_exists('sale_price', $productInfo)) {
+                $productInfo['sale_price'] = substr($productInfo['sale_price'], 1);
+            }
         }
-        return false;
+
+        return $productInfo;
     }
 }

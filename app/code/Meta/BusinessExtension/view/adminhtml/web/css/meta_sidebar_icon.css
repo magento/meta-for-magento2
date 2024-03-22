@@ -1,0 +1,26 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the code directory.
+ */
+
+/* Add a grayscale Meta logo to the left sidebar item for this extension. */
+.admin__menu .level-0.item-facebook > a {
+    padding-top: 4px;
+}
+
+.admin__menu .level-0.item-facebook > a:before {
+    content: url('../images/meta.svg');
+    filter: contrast(0) grayscale(1) brightness(1.50);
+    height: 28px;
+    margin: 0 auto;
+    width: 38px;
+}
+
+.admin__menu .level-0.item-facebook:hover > a:before,
+.admin__menu .level-0.item-facebook._active > a:before {
+    filter: contrast(0) grayscale(1) brightness(2);
+}

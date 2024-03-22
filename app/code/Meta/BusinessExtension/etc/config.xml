@@ -5,24 +5,20 @@
         <facebook>
             <business_extension>
                 <active>1</active>
-                <onsite>0</onsite>
-                <commerce_extension>0</commerce_extension>
-                <meta_exception_logging_enabled>1</meta_exception_logging_enabled>
-                <meta_telemetry_logging_enabled>0</meta_telemetry_logging_enabled>
                 <client_access_token>195311308289826|52dcd04d6c7ed113121b5eb4be23b4a7</client_access_token>
+                <enable_memory_profiling>0</enable_memory_profiling>
             </business_extension>
             <catalog_management>
                 <product_identifier>sku</product_identifier>
             </catalog_management>
             <debug>
-                <debug_mode>1</debug_mode>
+                <debug_mode>0</debug_mode>
             </debug>
             <!-- Internal. Overrides default graph base URL
             <internal>
-                <graph_base_url>
-                    https://graph.facebook.com/
-                </graph_base_url>
-            </internal> -->
+                <graph_base_url>https://graph.facebook.com/</graph_base_url>
+                <extension_base_url>https://www.my-od.commercepartnerhub.com/</extension_base_url>
+            </internal>-->
         </facebook>
     </default>
 </config>

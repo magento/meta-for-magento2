@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="facebook_catalog_update" resource="sales" engine="innodb" comment="Facebook Catalog Update">
+    <table name="facebook_catalog_update" resource="sales" engine="innodb" comment="Meta Catalog Update">
         <column xsi:type="int" name="row_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Row ID"/>
         <column xsi:type="int" name="product_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Product ID"/>
         <column xsi:type="varchar" name="sku" nullable="true" length="255" comment="Product Sku"/>

@@ -21,6 +21,7 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 
 class ModuleInfo extends Field
 {
@@ -37,23 +38,31 @@ class ModuleInfo extends Field
     private $systemConfig;
 
     /**
+     * @var ApiKeyService
+     */
+    private $apiKeyService;
+
+    /**
      * @param Context $context
      * @param SystemConfig $systemConfig
+     * @param ApiKeyService $apiKeyService
      * @param array $data
      */
     public function __construct(
-        Context $context,
-        SystemConfig $systemConfig,
-        array $data = []
+        Context       $context,
+        SystemConfig  $systemConfig,
+        ApiKeyService $apiKeyService,
+        array         $data = []
     ) {
         $this->systemConfig = $systemConfig;
+        $this->apiKeyService = $apiKeyService;
         parent::__construct($context, $data);
     }
 
     /**
      * Remove scope label
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -65,7 +74,7 @@ class ModuleInfo extends Field
     /**
      * Return element html
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -152,5 +161,55 @@ class ModuleInfo extends Field
     public function getSupportUrl()
     {
         return $this->systemConfig->getSupportUrl($this->getStoreId());
+    }
+
+    /**
+     * Retrieve Custom API Key
+     *
+     * @return string
+     */
+    public function getAPIToken()
+    {
+        return $this->apiKeyService->getCustomApiKey();
+    }
+
+    /**
+     * Retrieve FBE installation status for this store
+     *
+     * @return bool
+     */
+    public function getIsFBEInstalled()
+    {
+        return $this->systemConfig->isFBEInstalled($this->getStoreId());
+    }
+
+    /**
+     * Retrieve whether currently in Debug Mode
+     *
+     * @return bool
+     */
+    public function getIsDebugMode()
+    {
+        return $this->systemConfig->isDebugMode();
+    }
+
+    /**
+     * Retrieve the Commerce Partner Integration ID
+     *
+     * @return string
+     */
+    public function getCommercePartnerIntegrationId()
+    {
+        return $this->systemConfig->getCommercePartnerIntegrationId($this->getStoreId());
+    }
+
+    /**
+     * Retrieve the Commerce Partner External Business ID
+     *
+     * @return string
+     */
+    public function getExternalBusinessID()
+    {
+        return $this->systemConfig->getExternalBusinessId($this->getStoreId());
     }
 }

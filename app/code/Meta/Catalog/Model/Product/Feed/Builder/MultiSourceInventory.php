@@ -20,13 +20,17 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Model\Product\Feed\Builder;
 
-use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\Product;
+use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
+use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
+use Magento\InventoryConfigurationApi\Api\GetStockItemConfigurationInterface;
 use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
 use Magento\InventorySalesApi\Api\IsProductSalableInterface;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
-class MultiSourceInventory implements InventoryInterface
+class MultiSourceInventory extends InventoryRequirements implements InventoryInterface
 {
     /**
      * @var Product
@@ -64,21 +68,53 @@ class MultiSourceInventory implements InventoryInterface
     private $stockQty;
 
     /**
+     * @var GetStockItemConfigurationInterface
+     */
+    private GetStockItemConfigurationInterface $getStockItemConfiguration;
+
+    /**
+     * @var StockItemRepositoryInterface
+     */
+    private $stockItemRepository;
+
+    /**
+     * @var StockItemCriteriaInterfaceFactory
+     */
+    private $stockItemCriteriaInterfaceFactory;
+
+    /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
      * @param IsProductSalableInterface $isProductSalableInterface
      * @param GetProductSalableQtyInterface $getProductSalableQtyInterface
      * @param SystemConfig $systemConfig
      * @param StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver
+     * @param GetStockItemConfigurationInterface $getStockItemConfiguration
+     * @param StockItemRepositoryInterface $stockItemRepository
+     * @param StockItemCriteriaInterfaceFactory $stockItemCriteriaInterfaceFactory
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
-        IsProductSalableInterface $isProductSalableInterface,
-        GetProductSalableQtyInterface $getProductSalableQtyInterface,
-        SystemConfig $systemConfig,
-        StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver
+        IsProductSalableInterface          $isProductSalableInterface,
+        GetProductSalableQtyInterface      $getProductSalableQtyInterface,
+        SystemConfig                       $systemConfig,
+        StockByWebsiteIdResolverInterface  $stockByWebsiteIdResolver,
+        GetStockItemConfigurationInterface $getStockItemConfiguration,
+        StockItemRepositoryInterface       $stockItemRepository,
+        StockItemCriteriaInterfaceFactory  $stockItemCriteriaInterfaceFactory,
+        FBEHelper                          $fbeHelper
     ) {
         $this->isProductSalableInterface = $isProductSalableInterface;
         $this->getProductSalableQtyInterface = $getProductSalableQtyInterface;
         $this->systemConfig = $systemConfig;
         $this->stockByWebsiteIdResolver = $stockByWebsiteIdResolver;
+        $this->getStockItemConfiguration = $getStockItemConfiguration;
+        $this->stockItemRepository = $stockItemRepository;
+        $this->stockItemCriteriaInterfaceFactory = $stockItemCriteriaInterfaceFactory;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
@@ -120,6 +156,43 @@ class MultiSourceInventory implements InventoryInterface
     }
 
     /**
+     * Checks if product is having managed stock
+     *
+     * @return bool
+     */
+    public function isStockManagedForProduct(): bool
+    {
+        try {
+            $websiteId = (int)$this->product->getStore()->getWebsiteId();
+            $stockId = $this->stockByWebsiteIdResolver->execute($websiteId)->getStockId();
+            $stockItemConfiguration = $this->getStockItemConfiguration->execute($this->product->getSku(), $stockId);
+            return $stockItemConfiguration->isManageStock();
+        } catch (\Throwable $e) {
+            $this->fbeHelper->logExceptionImmediatelytoMeta(
+                $e,
+                [
+                    'store_id' => $this->product->getStoreId(),
+                    'event' => 'catalog_sync',
+                    'event_type' => 'multi_source_inventory_sync_error'
+                ]
+            );
+            try {
+
+                // fallback to single inventory mechanism in case of error
+                $criteria = $this->stockItemCriteriaInterfaceFactory->create();
+                $criteria->setProductsFilter($this->product->getId());
+                $stocksItems = $this->stockItemRepository->getList($criteria)->getItems();
+                $productStock = array_shift($stocksItems);
+                return (bool)$productStock->getManageStock();
+            } catch (\Throwable $e) {
+                // if single inventory mechanism also fails, always return true and
+                // let inventory count decide quantity to sell
+                return true;
+            }
+        }
+    }
+
+    /**
      * Initiate inventory for the product
      *
      * @param Product $product
@@ -127,7 +200,7 @@ class MultiSourceInventory implements InventoryInterface
      */
     public function initInventoryForProduct(Product $product): MultiSourceInventory
     {
-        $websiteId = (int) $product->getStore()->getWebsiteId();
+        $websiteId = (int)$product->getStore()->getWebsiteId();
         $stockId = $this->stockByWebsiteIdResolver->execute($websiteId)->getStockId();
         $this->product = $product;
         $this->stockStatus = $this->isInStock($product, $stockId);
@@ -142,7 +215,13 @@ class MultiSourceInventory implements InventoryInterface
      */
     public function getAvailability(): string
     {
-        return $this->getInventory() && $this->stockStatus ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
+        // unmanaged stock is always available
+        if (!$this->isStockManagedForProduct()) {
+            return self::STATUS_IN_STOCK;
+        }
+
+        return $this->meetsInventoryRequirementsToBeInStock($this->product)
+        && $this->stockStatus ? self::STATUS_IN_STOCK : self::STATUS_OUT_OF_STOCK;
     }
 
     /**
@@ -155,8 +234,13 @@ class MultiSourceInventory implements InventoryInterface
         if (!$this->product) {
             return 0;
         }
+
+        if (!$this->isStockManagedForProduct()) {
+            return self::UNMANAGED_STOCK_QTY;
+        }
+
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
-        $quantityAvailableForCatalog = (int) $this->stockQty - $outOfStockThreshold;
+        $quantityAvailableForCatalog = (int)$this->stockQty - $outOfStockThreshold;
         return $quantityAvailableForCatalog > 0 ? $quantityAvailableForCatalog : 0;
     }
 }

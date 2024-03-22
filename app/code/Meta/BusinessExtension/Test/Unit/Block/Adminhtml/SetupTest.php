@@ -7,8 +7,8 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
 use Meta\BusinessExtension\Block\Adminhtml\Setup;
+use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -29,7 +29,7 @@ class SetupTest extends TestCase
     /**
      * @var MockObject
      */
-    private $graphAPIAdapter;
+    private $commerceExtensionHelper;
 
     /**
      * @var MockObject
@@ -68,10 +68,6 @@ class SetupTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->graphAPIAdapter = $this->getMockBuilder(GraphAPIAdapter::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->systemConfig = $this->getMockBuilder(SystemConfig::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -92,6 +88,10 @@ class SetupTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->commerceExtensionHelper = $this->getMockBuilder(CommerceExtensionHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->apiKeyService->method('upsertApiKey')
             ->willReturn($apiKey);
 
@@ -100,9 +100,9 @@ class SetupTest extends TestCase
             $this->requestInterface,
             $this->fbeHelper,
             $this->systemConfig,
-            $this->graphAPIAdapter,
             $this->storeRepo,
             $this->websiteCollectionFactory,
+            $this->commerceExtensionHelper,
             $this->apiKeyService,
             []
         );

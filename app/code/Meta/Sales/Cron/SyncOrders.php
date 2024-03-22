@@ -60,9 +60,9 @@ class SyncOrders
      */
     public function __construct(
         StoreManagerInterface $storeManager,
-        SystemConfig $systemConfig,
-        CommerceHelper $commerceHelper,
-        FBEHelper $fbeHelper
+        SystemConfig          $systemConfig,
+        CommerceHelper        $commerceHelper,
+        FBEHelper             $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->commerceHelper = $commerceHelper;
@@ -79,9 +79,8 @@ class SyncOrders
      */
     private function pullOrdersForStore(int $storeId)
     {
-        if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->isActiveOrderSync($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
+            && $this->systemConfig->isActiveExtension($storeId))) {
             return;
         }
 
@@ -95,7 +94,7 @@ class SyncOrders
      */
     public function execute()
     {
-        foreach ($this->storeManager->getStores() as $store) {
+        foreach ($this->systemConfig->getAllOnsiteFBEInstalledStores() as $store) {
             try {
                 $this->pullOrdersForStore((int)$store->getId());
             } catch (Exception $e) {

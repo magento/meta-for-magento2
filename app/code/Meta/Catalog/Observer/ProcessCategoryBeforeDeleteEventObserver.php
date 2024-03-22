@@ -24,7 +24,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
-use Meta\Catalog\Model\Feed\CategoryCollection;
+use Meta\Catalog\Model\Category\CategoryCollection;
 
 class ProcessCategoryBeforeDeleteEventObserver implements ObserverInterface
 {
@@ -53,8 +53,7 @@ class ProcessCategoryBeforeDeleteEventObserver implements ObserverInterface
         FBEHelper          $helper,
         CategoryCollection $categoryCollection,
         ManagerInterface   $messageManager
-    )
-    {
+    ) {
         $this->fbeHelper = $helper;
         $this->categoryCollection = $categoryCollection;
         $this->messageManager = $messageManager;
@@ -82,7 +81,8 @@ class ProcessCategoryBeforeDeleteEventObserver implements ObserverInterface
                 'Failed to delete Category from Meta for one or more stores.' .
                 ' Please see Exception log for more detail.'
             );
-            $this->fbeHelper->log(sprintf("Error occurred while deleting category: %s , id: %s",
+            $this->fbeHelper->log(sprintf(
+                "Error occurred while deleting category: %s , id: %s",
                 $category_name,
                 $category_id
             ));

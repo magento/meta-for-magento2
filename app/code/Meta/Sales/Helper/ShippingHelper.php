@@ -10,6 +10,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Sales\Model\Order\Shipment\Track;
 use Psr\Log\LoggerInterface;
+use Magento\Directory\Model\Region;
 
 class ShippingHelper extends AbstractHelper
 {
@@ -37,10 +38,10 @@ class ShippingHelper extends AbstractHelper
      * @param array $supportedShippingCarriers
      */
     public function __construct(
-        Context $context,
-        RegionFactory $regionFactory,
+        Context         $context,
+        RegionFactory   $regionFactory,
         LoggerInterface $logger,
-        array $supportedShippingCarriers = []
+        array           $supportedShippingCarriers = []
     ) {
         parent::__construct($context);
         $this->regionFactory = $regionFactory;
@@ -79,6 +80,20 @@ class ShippingHelper extends AbstractHelper
     }
 
     /**
+     * Gets the region name from state code
+     *
+     * @param null|string $stateCode - State code
+     * @param null|string $countryCode - Country code
+     * @return Region
+     */
+    public function getRegionFromCode(?string $stateCode, ?string $countryCode): Region
+    {
+        $region = $this->regionFactory->create();
+        $region = $region->loadByCode($stateCode, $countryCode);
+        return $region;
+    }
+
+    /**
      * A map for popular US carriers with long titles
      *
      * @return array
@@ -86,8 +101,8 @@ class ShippingHelper extends AbstractHelper
     private function getSupplementaryCarriersMap()
     {
         return [
-            'UPS'   => 'United Parcel Service',
-            'USPS'  => 'United States Postal Service',
+            'UPS' => 'United Parcel Service',
+            'USPS' => 'United States Postal Service',
             'FEDEX' => 'Federal Express',
         ];
     }
