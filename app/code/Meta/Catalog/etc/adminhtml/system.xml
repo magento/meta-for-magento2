@@ -1,56 +1,70 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="facebook_business_extension">
-            <group id="catalog_management" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
-<!--                <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\FBEFieldSet</frontend_model>-->
-<!--                <attribute type="group">catalog</attribute>-->
-                <label>Catalog Management</label>
-                <fieldset_css>meta-section-config</fieldset_css>
-                <depends>
-                    <field id="facebook_business_extension/business_extension/active">1</field>
-                </depends>
-                <field id="enable_catalog_sync" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="manual_data_sync" translate="label" type="text" sortOrder="15" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <field id="product_feed" translate="label" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
+                    <label>Push Products</label>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/installed">1</field>
+                        <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                    </depends>
+                    <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
+                </field>
+                <field id="category_feed" translate="label" type="text" sortOrder="30" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
+                    <label>Push Categories</label>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/installed">1</field>
+                        <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                    </depends>
+                    <comment>Upload Product Categories to Meta</comment>
+                    <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed</frontend_model>
+                </field>
+            </group>
+            <group id="business_extension" translate="label" type="text" showInDefault="0"
+                   showInWebsite="0" showInStore="0">
+                <field id="enable_catalog_sync" translate="label comment" type="select" sortOrder="10" showInDefault="0"
+                       showInWebsite="0" showInStore="0">
                     <label>Enable Catalog Sync</label>
                     <config_path>facebook/catalog_management/enable_catalog_sync</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Enable catalog syncing with Meta</comment>
-                </field>
-                <field id="product_feed" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Push Products</label>
                     <depends>
-                        <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                        <field id="facebook_business_extension/testing/debug_mode">1</field>
                     </depends>
-                    <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\ProductFeed</frontend_model>
-                </field>
-                <field id="category_feed" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Push All Categories to Meta Catalog</label>
-                    <depends>
-                        <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
-                    </depends>
-                    <frontend_model>Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed</frontend_model>
-                </field>
-                <field id="price_incl_tax" translate="label comment" type="select" sortOrder="50" showInDefault="0" showInWebsite="0" showInStore="0">
-                    <label>Price Including Tax</label>
-                    <depends>
-                        <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
-                    </depends>
-                    <config_path>facebook/catalog_management/price_incl_tax</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Use price including tax in feed. Should be "No" for the US and "Yes" for the UK. Note: only works if Sales -> Tax -> Price Display Settings -> Display Product Prices In Catalog is set to "Including Tax"</comment>
-                </field>
-                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <label>Out-of-Stock Threshold</label>
-                    <depends>
-                        <field id="facebook_business_extension/catalog_management/enable_catalog_sync">1</field>
-                    </depends>
-                    <config_path>facebook/catalog_management/out_of_stock_threshold</config_path>
-                    <comment>Product's availability will be out of stock if inventory count is lower than the specified threshold value</comment>
                 </field>
             </group>
-            <group id="attribute_mapping" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
-                <label>Attribute Mapping</label>
-                <field id="custom_attribute_mapping" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+            <group id="business_settings" translate="label" type="text" sortOrder="20" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <field id="out_of_stock_threshold" translate="label comment" type="text" sortOrder="60"
+                       showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Out-of-Stock Threshold</label>
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                    </depends>
+                    <config_path>facebook/catalog_management/out_of_stock_threshold</config_path>
+                    <comment>Product's availability will be out of stock if inventory count is lower than the specified
+                        threshold value
+                    </comment>
+                </field>
+            </group>
+            <group id="attribute_mapping" translate="label" type="text" sortOrder="30" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <depends>
+                    <field id="facebook_business_extension/business_extension/enable_catalog_sync">1</field>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
+                <label>Catalog Configuration</label>
+                <field id="custom_attribute_mapping" translate="label" sortOrder="10" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
                     <label>Custom Attribute Mapping</label>
                     <backend_model>Meta\Catalog\Block\Adminhtml\Config\Backend\ArraySerialized</backend_model>
                     <frontend_model>Meta\Catalog\Block\Adminhtml\MetaAttributeMappingData</frontend_model>

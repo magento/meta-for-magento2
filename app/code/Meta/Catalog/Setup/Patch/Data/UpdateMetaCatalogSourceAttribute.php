@@ -62,6 +62,7 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
     {
         $connection = $this->moduleDataSetup->getConnection();
         $tableName = $this->moduleDataSetup->getTable('eav_attribute');
+        // phpcs:disable
         $oldSourceModel = 'Facebook\BusinessExtension\Model\Config\Source\Product\GoogleProductCategory';
         $newSourceModel = \Meta\Catalog\Model\Config\Source\Product\GoogleProductCategory::class;
 
@@ -93,6 +94,7 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
     {
         $connection = $this->moduleDataSetup->getConnection();
         $tableName = $this->moduleDataSetup->getTable('eav_attribute');
+        // phpcs:disable
         $oldSourceModel = 'Facebook\BusinessExtension\Model\Config\Source\Product\GoogleProductCategory';
         $newSourceModel = \Meta\Catalog\Model\Config\Source\Product\GoogleProductCategory::class;
         $connection->update(

@@ -11,14 +11,8 @@
 
 var FBUtils = (function(){
     return {
-        isIE : function isIE() {
-            return (
-                /MSIE |Trident\/|Edge\//.test(window.navigator.userAgent)
-            );
-        },
-
-        parseURL : function parseURL(url) {
-            var parser = document.createElement('a');
+        parseURL: function parseURL(url) {
+            const parser = document.createElement('a');
             parser.href = url;
             return parser;
         },
@@ -29,15 +23,6 @@ var FBUtils = (function(){
             var u1host = u1.host.replace('web.', 'www.');
             var u2host = u2.host.replace('web.', 'www.');
             return u1.protocol === u2.protocol && u1host === u2host;
-        },
-
-        togglePopupOriginWeb : function togglePopupOriginWeb(fae_origin) {
-            var current_origin = window.facebookAdsExtensionConfig.popupOrigin;
-            if (fae_origin.includes('web.') && !current_origin.includes('web.')) {
-                window.facebookAdsExtensionConfig.popupOrigin = current_origin.replace('www.', 'web.');
-            } else if (!fae_origin.includes('web.') && current_origin.includes('web.')) {
-                window.facebookAdsExtensionConfig.popupOrigin = current_origin.replace('web.', 'www.');
-            }
         }
     }
 }());

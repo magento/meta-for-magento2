@@ -8,4 +8,12 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/settings-sync/:externalBusinessId" method="GET">
+        <service class="Meta\BusinessExtension\Api\SettingsWebhookListenerInterface"
+                 method="getCoreConfig"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
+

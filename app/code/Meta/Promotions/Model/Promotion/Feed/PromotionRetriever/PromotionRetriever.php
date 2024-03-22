@@ -28,11 +28,6 @@ class PromotionRetriever
     private const LIMIT = 2000;
 
     /**
-     * @var int
-     */
-    protected $storeId;
-
-    /**
      * @var FBEHelper
      */
     protected $fbeHelper;
@@ -55,25 +50,16 @@ class PromotionRetriever
     }
 
     /**
-     * Set store id
-     *
-     * @param int $storeId
-     * @return $this
-     */
-    public function setStoreId($storeId)
-    {
-        $this->storeId = $storeId;
-        return $this;
-    }
-
-    /**
      * Retrieve promotions
      *
+     * @param int $websiteId
      * @return array
      */
-    public function retrieve(): array
+    public function retrieve($websiteId): array
     {
-        $catalogActiveRule = $this->ruleCollection->create()->addFieldToFilter('is_active', 1);
+        $catalogActiveRule = $this->ruleCollection->create()
+            ->addFieldToFilter('is_active', 1)
+            ->addWebsiteFilter($websiteId);
         return $catalogActiveRule->getItems();
     }
 

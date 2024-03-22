@@ -20,9 +20,10 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Model;
 
+use Magento\Framework\Model\AbstractModel;
+use Magento\Sales\Model\Order;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Model\ResourceModel\FacebookOrder as ResourceModel;
-use Magento\Framework\Model\AbstractModel;
 
 class FacebookOrder extends AbstractModel implements FacebookOrderInterface
 {
@@ -105,6 +106,32 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     }
 
     /**
+     * Get synced shipment metadata
+     *
+     * @return array
+     */
+    public function getSyncedShipments()
+    {
+        return json_decode($this->getData('synced_shipments') ?? '{}', true);
+    }
+
+    /**
+     * Update synced shipment metadata
+     *
+     * @param mixed $magentoShipmentId
+     * @param array $trackingInfo
+     * @return $this
+     */
+    public function updateSyncedShipment($magentoShipmentId, $trackingInfo)
+    {
+        $shipments = $this->getSyncedShipments();
+        $shipments[$magentoShipmentId] = $this->encodeTrackingInfo($trackingInfo);
+        $this->setData('synced_shipments', json_encode($shipments));
+
+        return $this;
+    }
+
+    /**
      * Get extra data
      *
      * @return mixed
@@ -124,5 +151,35 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     {
         $this->setData('extra_data', json_encode($extraData));
         return $this;
+    }
+
+    /**
+     * Determine if the given shipment's tracking is not yet synced
+     *
+     * @param Order $order
+     * @param mixed $magentoShipmentId
+     * @param array $trackingInfo
+     * @return bool
+     */
+    public function isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo): bool
+    {
+        $syncedShipments = $order->getExtensionAttributes()->getSyncedShipments();
+        if (!array_key_exists($magentoShipmentId, $syncedShipments)) {
+            return true;
+        }
+
+        $syncedShipment = $syncedShipments[$magentoShipmentId];
+        return $syncedShipment !== $this->encodeTrackingInfo($trackingInfo);
+    }
+
+    /**
+     * Encoding the given tracking info for storage as metadata on a synced Shipment
+     *
+     * @param array $trackingInfo
+     * @return string
+     */
+    private function encodeTrackingInfo($trackingInfo): string
+    {
+        return $trackingInfo['carrier'] . '|' . $trackingInfo['tracking_number'];
     }
 }

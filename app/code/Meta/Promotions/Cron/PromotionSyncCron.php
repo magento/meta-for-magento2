@@ -50,8 +50,8 @@ class PromotionSyncCron
      */
     public function __construct(
         SystemConfig $systemConfig,
-        Uploader $uploader,
-        FBEHelper $fbeHelper
+        Uploader     $uploader,
+        FBEHelper    $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->uploader = $uploader;
@@ -65,7 +65,7 @@ class PromotionSyncCron
      */
     public function execute()
     {
-        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+        foreach ($this->systemConfig->getAllOnsiteFBEInstalledStores() as $store) {
             try {
                 if ($this->systemConfig->isPromotionsSyncEnabled($store->getId())) {
                     $this->uploader->uploadPromotions($store->getId());

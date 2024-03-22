@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Meta_Sales::rest_api" title="Meta – Orders API" sortOrder="52">
+                    <resource id="Meta_Sales::create_order" title="Create Meta Order" sortOrder="200"/>
+                    <resource id="Meta_Sales::create_cart" title="Create Cart" sortOrder="100"/>
+                    <resource id="Meta_Sales::add_cart_items" title="Add Cart Items" sortOrder="101"/>
+                    <resource id="Meta_Sales::cart_shipping_options" title="Cart Shipping Options" sortOrder="102"/>
+                    <resource id="Meta_Sales::cart_totals" title="Cart Totals" sortOrder="103"/>
+                    <resource id="Meta_Sales::update_cart_item" title="Update Cart Item" sortOrder="104"/>
+
+                    <resource id="Meta_Sales::create_rule" title="Create Cart Rule" sortOrder="102"/>
+                    <resource id="Meta_Sales::check_status" title="Check Subscription Status" sortOrder="103"/>
+                    <resource id="Meta_Sales::subscribe_for_coupon" title="Subscribe for Coupon" sortOrder="103"/>
+                    <resource id="Meta_Sales::delete_discount" title="Delete Expired/Used Coupon Codes" sortOrder="104"/>
+
+                    <resource id="Meta_Sales::add_cart_coupon" title="Add Cart Coupon" sortOrder="105"/>
+                    <resource id="Meta_Sales::delete_cart_coupon" title="Delete Cart Coupon" sortOrder="106"/>
+                    <resource id="Meta_Sales::set_cart_shipping_option" title="Set Cart Shipping Option"
+                              sortOrder="107"/>
+                    <resource id="Meta_Sales::delete_cart_item" title="Delete Cart Item" sortOrder="108"/>
+                    <resource id="Meta_Sales::health_check" title="Health Check" sortOrder="109"/>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

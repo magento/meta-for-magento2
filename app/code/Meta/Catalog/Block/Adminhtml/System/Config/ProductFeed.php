@@ -91,7 +91,7 @@ class ProductFeed extends Field
     {
         /** @var Button $button */
         $button = $this->getLayout()->createBlock(Button::class);
-        return $button->setData(['id' => 'fb_feed_upload_btn', 'label' => __('Upload to Meta')])
+        return $button->setData(['id' => 'fb_feed_upload_btn', 'label' => __('Push Products to Meta')])
             ->toHtml();
     }
 }

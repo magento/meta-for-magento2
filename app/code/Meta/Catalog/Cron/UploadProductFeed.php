@@ -23,7 +23,6 @@ namespace Meta\Catalog\Cron;
 use Exception;
 use Meta\Catalog\Model\Product\Feed\Uploader;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 
 class UploadProductFeed
@@ -50,8 +49,8 @@ class UploadProductFeed
      */
     public function __construct(
         SystemConfig $systemConfig,
-        Uploader $uploader,
-        FBEHelper $fbeHelper
+        Uploader     $uploader,
+        FBEHelper    $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->uploader = $uploader;
@@ -63,12 +62,14 @@ class UploadProductFeed
      *
      * @param int $storeId
      * @return $this
-     * @throws LocalizedException
+     * @throws \Throwable
      */
     private function uploadForStore($storeId)
     {
         if ($this->isFeedUploadEnabled($storeId)) {
-            $this->uploader->uploadFullCatalog($storeId);
+            $traceId = $this->fbeHelper->genUniqueTraceID();
+            $flowName = 'daily_product_feed_upload';
+            $this->uploader->uploadFullCatalog($storeId, $flowName, $traceId);
         }
 
         return $this;
@@ -92,7 +93,7 @@ class UploadProductFeed
      */
     public function execute()
     {
-        foreach ($this->systemConfig->getStoreManager()->getStores() as $store) {
+        foreach ($this->systemConfig->getAllFBEInstalledStores() as $store) {
             try {
                 $this->uploadForStore($store->getId());
             } catch (Exception $e) {

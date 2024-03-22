@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/meta/createOrder" method="PUT">
+        <service class="Meta\Sales\Api\CreateOrderApiInterface" method="createOrder"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/createCart" method="POST">
+        <service class="Meta\Sales\Api\CreateCartApiInterface" method="createCart"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/addCartItems" method="POST">
+        <service class="Meta\Sales\Api\AddCartItemsApiInterface" method="addCartItems"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/cartShippingOptions" method="POST">
+        <service class="Meta\Sales\Api\CartShippingOptionsApiInterface" method="cartShippingOptions"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/cartTotals" method="GET">
+        <service class="Meta\Sales\Api\CartTotalsApiInterface" method="getCartTotals"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/updateCartItem" method="PUT">
+        <service class="Meta\Sales\Api\UpdateCartItemApiInterface" method="updateCartItem"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/:couponCode/addCartCoupon" method="PUT">
+        <service class="Meta\Sales\Api\AddCartCouponApiInterface" method="addCartCoupon"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/deleteCartCoupon" method="DELETE">
+        <service class="Meta\Sales\Api\DeleteCartCouponApiInterface" method="deleteCartCoupon"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/setCartShippingOption" method="POST">
+        <service class="Meta\Sales\Api\SetCartShippingOptionApiInterface" method="setCartShippingOption"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/:cartId/:itemId/deleteCartItem" method="DELETE">
+        <service class="Meta\Sales\Api\DeleteCartItemApiInterface" method="deleteCartItem"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/healthCheck" method="GET">
+        <service class="Meta\Sales\Api\HealthCheckApiInterface" method="healthCheck"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/meta/:externalBusinessId/createDiscountRule" method="POST">
+        <service class="Meta\Sales\Api\DiscountRuleApiInterface" method="createRule"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/deleteDiscount" method="POST">
+        <service class="Meta\Sales\Api\DiscountDeleteApiInterface" method="deleteDiscount"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/checkSubscriptionStatus" method="GET">
+        <service class="Meta\Sales\Api\NewsletterSubscriptionDiscountStatusApiInterface" method="checkSubscriptionStatus"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/meta/:externalBusinessId/addNewsletterSubscriber" method="POST">
+        <service class="Meta\Sales\Api\NewsletterSubscriptionDiscountApiInterface" method="subscribeForCoupon"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+</routes>

@@ -10,19 +10,19 @@ if ($block->getFacebookPixelID()) {
         {
             "*": {
                 "Meta_Conversion/js/metaPixelTracker" : {
-                    "url" : "<?= $block->escapeJs($trackerUrl); ?>",
-                    "payload": <?= json_encode([
-                        "eventName" => $block->getEventToObserveName(),
-                        "searchQuery" => $block->getSearchQuery()
+                    "url" : "<?= $block->escapeHtml($trackerUrl); ?>",
+                    "payload": <?= /* @noEscape */ json_encode([
+                        "eventName" => $block->escapeHtml($block->getEventToObserveName()),
+                        "searchQuery" => $block->escapeHtml($block->getSearchQuery())
                     ]) ?>,
-                    "browserEventData": <?= json_encode([
-                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                        'fbPixelId' => $block->getFacebookPixelID(),
-                        'source' => $block->getSource(),
-                        'pluginVersion' => $block->getPluginVersion(),
+                    "browserEventData": <?= /* @noEscape */ json_encode([
+                        'fbAgentVersion' => $block->escapeHtml($block->getFacebookAgentVersion()),
+                        'fbPixelId' => $block->escapeHtml($block->getFacebookPixelID()),
+                        'source' => $block->escapeHtml($block->getSource()),
+                        'pluginVersion' => $block->escapeHtml($block->getPluginVersion()),
                         'track' => 'track',
                         'event' => 'Search',
-                        'payload' => ['search_string' => $block->getSearchQuery()]
+                        'payload' => ['search_string' => $block->escapeHtml($block->getSearchQuery())]
                     ]) ?>
                 }
             }

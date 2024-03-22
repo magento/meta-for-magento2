@@ -79,8 +79,8 @@ class SyncRefundsAndCancellations
      */
     private function pullRefundsAndCancellationsForStore(int $storeId)
     {
-        if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->isActiveOrderSync($storeId))) {
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
+            && $this->systemConfig->isActiveExtension($storeId))) {
             return;
         }
 
@@ -95,7 +95,7 @@ class SyncRefundsAndCancellations
      */
     public function execute()
     {
-        foreach ($this->storeManager->getStores() as $store) {
+        foreach ($this->systemConfig->getAllOnsiteFBEInstalledStores() as $store) {
             try {
                 $this->pullRefundsAndCancellationsForStore((int)$store->getId());
             } catch (Exception $e) {

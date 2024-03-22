@@ -10,19 +10,19 @@ if ($block->getFacebookPixelID()) {
         {
             "*": {
                 "Meta_Conversion/js/metaPixelTracker" : {
-                    "url" : "<?= $block->escapeJs($trackerUrl); ?>",
-                    "payload": <?= json_encode([
-                        "eventName" => $block->getEventToObserveName(),
-                        "categoryId" => $block->getCategoryId(),
+                    "url" : "<?= $block->escapeHtml($trackerUrl); ?>",
+                    "payload": <?= /* @noEscape */ json_encode([
+                        "eventName" => $block->escapeHtml($block->getEventToObserveName()),
+                        "categoryId" => $block->escapeHtml($block->getCategoryId()),
                     ]) ?>,
-                    "browserEventData": <?= json_encode([
-                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                        'fbPixelId' => $block->getFacebookPixelID(),
-                        'source' => $block->getSource(),
-                        'pluginVersion' => $block->getPluginVersion(),
+                    "browserEventData": <?= /* @noEscape */ json_encode([
+                        'fbAgentVersion' => $block->escapeHtml($block->getFacebookAgentVersion()),
+                        'fbPixelId' => $block->escapeHtml($block->getFacebookPixelID()),
+                        'source' => $block->escapeHtml($block->getSource()),
+                        'pluginVersion' => $block->escapeHtml($block->getPluginVersion()),
                         'track' => 'trackCustom',
                         'event' => 'ViewCategory',
-                        'payload' => ['category_name' => $block->getCategoryName() ]
+                        'payload' => ['category_name' => $block->escapeHtml($block->getCategoryName()) ]
                     ]) ?>
                 }
             }

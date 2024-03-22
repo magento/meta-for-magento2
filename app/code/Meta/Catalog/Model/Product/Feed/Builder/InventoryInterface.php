@@ -17,6 +17,7 @@ declare(strict_types=1);
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Meta\Catalog\Model\Product\Feed\Builder;
 
 use Magento\Catalog\Model\Product;
@@ -27,7 +28,8 @@ interface InventoryInterface
 
     public const STATUS_OUT_OF_STOCK = 'out of stock';
 
-    public const UNMANAGED_STOCK_QTY = 9999;
+    // -1 is unmanaged inventory in Meta catalog
+    public const UNMANAGED_STOCK_QTY = -1;
 
     /**
      * Init inventory for product

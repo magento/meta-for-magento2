@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <facebook>
             <promotions>
+                <!-- No longer has a UI toggle. To update post-install,
+                 run the following sql command and then refresh cache using `bin/magento cache:clean`
+                 `update core_config_data set value=1 where path like 'facebook/promotions/enable_promotions_sync';`
+                 -->
                 <enable_promotions_sync>1</enable_promotions_sync>
             </promotions>
         </facebook>
