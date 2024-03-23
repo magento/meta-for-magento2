@@ -11,6 +11,7 @@ use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -56,6 +57,11 @@ class SetupTest extends TestCase
      */
     private $apiKeyService;
 
+    /**
+     * @var MockObject
+     */
+    private $adobeCloudConfigInterface;
+
     public function testGetApiKey()
     {
         $apiKey = 'sample-api-key';
@@ -95,6 +101,10 @@ class SetupTest extends TestCase
         $this->apiKeyService->method('upsertApiKey')
             ->willReturn($apiKey);
 
+        $this->adobeCloudConfigInterface = $this->getMockBuilder(AdobeCloudConfigInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $setup = new Setup(
             $this->context,
             $this->requestInterface,
@@ -104,6 +114,7 @@ class SetupTest extends TestCase
             $this->websiteCollectionFactory,
             $this->commerceExtensionHelper,
             $this->apiKeyService,
+            $this->adobeCloudConfigInterface,
             []
         );
 
