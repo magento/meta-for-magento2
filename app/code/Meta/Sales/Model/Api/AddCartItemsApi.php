@@ -86,10 +86,7 @@ class AddCartItemsApi implements AddCartItemsApiInterface
             try {
                 $itemsAdded[] = $this->guestCartItemRepository->save($item);
             } catch (\Exception $e) {
-                $exceptions[] = [
-                    'sku' => $item->getSku(),
-                    'exception_message' => $e->getMessage()
-                ];
+                $exceptions[] = new AddCartItemsApiExceptionResponse($item->getSku(), $e->getMessage());
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
                     [

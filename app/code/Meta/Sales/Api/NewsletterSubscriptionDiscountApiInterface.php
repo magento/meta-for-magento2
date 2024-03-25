@@ -31,7 +31,7 @@ interface NewsletterSubscriptionDiscountApiInterface
      * @param string $externalBusinessId
      * @param string $email
      * @param int $ruleId
-     * @return CouponInterface
+     * @return \Magento\SalesRule\Api\Data\CouponInterface
      */
     public function subscribeForCoupon(string $externalBusinessId, string $email, int $ruleId): CouponInterface;
 }

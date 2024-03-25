@@ -23,19 +23,19 @@ namespace Meta\Sales\Api;
 /**
  * AddCartItemsApi response
  */
-interface AddCartItemsApiResponseInterface
+interface AddCartItemsApiExceptionResponseInterface
 {
     /**
-     * Get array of CartItemInterface for items added successfully
+     * Get sku which failed
      *
-     * @return \Magento\Quote\Api\Data\CartItemInterface[]
+     * @return string
      */
-    public function getItemsAdded(): array;
+    public function getSku(): string;
 
     /**
-     * Get array of SKU/exception message for items that failed to be added
+     * Get message for this exception
      *
-     * @return \Meta\Sales\Model\Api\AddCartItemsApiExceptionResponse[]
+     * @return string
      */
-    public function getExceptions(): array;
+    public function getExceptionMessage(): string;
 }

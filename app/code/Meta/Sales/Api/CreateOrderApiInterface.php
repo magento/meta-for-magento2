@@ -48,7 +48,7 @@ interface CreateOrderApiInterface
      * @param string|null $channel
      * @param bool $buyerRemarketingOptIn
      * @param bool $createInvoice
-     * @return OrderInterface
+     * @return \Magento\Sales\Api\Data\OrderInterface
      */
     public function createOrder(
         string                                 $cartId,
