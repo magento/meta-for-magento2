@@ -82,6 +82,16 @@ class DiscountRuleApi implements DiscountRuleApiInterface
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
+            if (empty($rule->getWebsiteIds())) {
+                $rule->setWebsiteIds([
+                    $this->orderHelper->getWebsiteIdFromStoreId((int)$storeId)
+                ]);
+            }
+            if (empty($rule->getCustomerGroupIds())) {
+                $rule->setCustomerGroupIds(
+                    [0] // By default, the ID for logged out customers.
+                );
+            }
             $savedRule = $this->ruleRepository->save($rule);
             return (string)$savedRule->getRuleId();
         } catch (\Exception $e) {
