@@ -51,10 +51,10 @@ class ApiKeyService
     protected $logger;
 
     /**
-     * @param KeyGenerator $apiKeyGenerator
-     * @param WriterInterface $configWriter
+     * @param KeyGenerator         $apiKeyGenerator
+     * @param WriterInterface      $configWriter
      * @param ScopeConfigInterface $scopeConfig
-     * @param LoggerInterface $logger
+     * @param LoggerInterface      $logger
      */
     public function __construct(
         KeyGenerator         $apiKeyGenerator,

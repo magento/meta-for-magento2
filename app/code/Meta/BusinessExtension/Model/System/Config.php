@@ -166,14 +166,14 @@ class Config
     private ?string $version = '1.3.1-dev';
 
     /**
-     * @method __construct
-     * @param StoreManagerInterface $storeManager
-     * @param ScopeConfigInterface $scopeConfig
-     * @param ResourceConfig $resourceConfig
-     * @param TypeListInterface $cacheTypeList
-     * @param CacheInterface $cache
-     * @param ComposerInformation $composerInformation
-     * @param FacebookInstalledFeature $fbeInstalledFeatureResource
+     * @method                                       __construct
+     * @param                                        StoreManagerInterface    $storeManager
+     * @param                                        ScopeConfigInterface     $scopeConfig
+     * @param                                        ResourceConfig           $resourceConfig
+     * @param                                        TypeListInterface        $cacheTypeList
+     * @param                                        CacheInterface           $cache
+     * @param                                        ComposerInformation      $composerInformation
+     * @param                                        FacebookInstalledFeature $fbeInstalledFeatureResource
      * @SuppressWarnings(PHPMD.ExcessivePublicCount)
      */
     public function __construct(
@@ -232,7 +232,7 @@ class Config
     /**
      * Get commerce manager url
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getCommerceManagerUrl($storeId = null): string
@@ -243,7 +243,7 @@ class Config
     /**
      * Get catalog manager url
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getCatalogManagerUrl($storeId = null): string
@@ -254,7 +254,7 @@ class Config
     /**
      * Get support url
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getSupportUrl($storeId = null): string
@@ -265,7 +265,7 @@ class Config
     /**
      * Get promotions url
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getPromotionsUrl($storeId = null): string
@@ -290,8 +290,8 @@ class Config
     /**
      * Is active extension
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return bool
      */
     public function isActiveExtension($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
@@ -302,8 +302,8 @@ class Config
     /**
      * Is fbe installed
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return bool
      */
     public function isFBEInstalled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
@@ -318,8 +318,8 @@ class Config
     /**
      * The base URL for rendering the Commerce Extension Splash page.
      *
-     * @param int|null $scopeId
-     * @param string $scope
+     * @param  int|null $scopeId
+     * @param  string   $scope
      * @return string
      */
     public function getCommerceExtensionBaseURL($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): string
@@ -355,8 +355,8 @@ class Config
     /**
      * Get out of stock threshold
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getOutOfStockThreshold($scopeId = null, $scope = null)
@@ -371,8 +371,8 @@ class Config
     /**
      * Is order sync enabled
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return bool
      */
     public function isOrderSyncEnabled($scopeId = null, $scope = null): bool
@@ -385,9 +385,9 @@ class Config
      * Get default order status
      *
      * @SuppressWarnings(PHPMD.BooleanGetMethodName)
-     * @param int $scopeId
-     * @param int $scope
-     * @return bool
+     * @param                                        int $scopeId
+     * @param                                        int $scope
+     * @return                                       bool
      */
     public function getDefaultOrderStatus($scopeId = null, $scope = null)
     {
@@ -397,8 +397,8 @@ class Config
     /**
      * Should use default fulfillment address
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return bool
      */
     public function shouldUseDefaultFulfillmentAddress($scopeId = null, $scope = null)
@@ -409,8 +409,8 @@ class Config
     /**
      * Get fulfillment address
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return array
      */
     public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): array
@@ -471,8 +471,8 @@ class Config
     /**
      * Is auto newsletter subscription on
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return bool
      */
     public function isAutoNewsletterSubscriptionOn($scopeId = null, $scope = null): bool
@@ -483,11 +483,11 @@ class Config
     /**
      * Get config
      *
-     * @param string $configPath
-     * @param int $scopeId
-     * @param int $scope
+     * @param  string $configPath
+     * @param  int    $scopeId
+     * @param  int    $scope
      * @return mixed
-     * @todo implement method for getting boolean values
+     * @todo   implement method for getting boolean values
      */
     public function getConfig($configPath, $scopeId = null, $scope = null)
     {
@@ -495,8 +495,10 @@ class Config
             return $this->scopeConfig->getValue($configPath);
         }
         try {
-            $value = $this->scopeConfig->getValue($configPath, $scope ?: ScopeInterface::SCOPE_STORE, $scopeId === null
-                ? $this->storeManager->getStore()->getId() : $scopeId);
+            $value = $this->scopeConfig->getValue(
+                $configPath, $scope ?: ScopeInterface::SCOPE_STORE, $scopeId === null
+                ? $this->storeManager->getStore()->getId() : $scopeId
+            );
         } catch (NoSuchEntityException $e) {
             return null;
         }
@@ -506,9 +508,9 @@ class Config
     /**
      * Save config
      *
-     * @param string $path
-     * @param string|int $value
-     * @param int $storeId
+     * @param  string     $path
+     * @param  string|int $value
+     * @param  int        $storeId
      * @return $this
      */
     public function saveConfig($path, $value, $storeId = null)
@@ -524,8 +526,8 @@ class Config
     /**
      * Delete config
      *
-     * @param string $path
-     * @param int $storeId
+     * @param  string $path
+     * @param  int    $storeId
      * @return $this
      */
     public function deleteConfig($path, $storeId = null)
@@ -571,8 +573,8 @@ class Config
     /**
      * Get access token
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return mixed
      */
     public function getAccessToken($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -583,8 +585,8 @@ class Config
     /**
      * Get client access token
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return mixed
      */
     public function getClientAccessToken($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -595,8 +597,8 @@ class Config
     /**
      * Get external business id
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getExternalBusinessId($scopeId = null, $scope = null)
@@ -611,8 +613,8 @@ class Config
     /**
      * Get pixel id
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getPixelId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -623,8 +625,8 @@ class Config
     /**
      * Get pixel aam settings
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getPixelAamSettings($scopeId = null, $scope = null)
@@ -639,8 +641,8 @@ class Config
     /**
      * Get profiles
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getProfiles($scopeId = null, $scope = null)
@@ -651,8 +653,8 @@ class Config
     /**
      * Get page id
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getPageId($scopeId = null, $scope = null)
@@ -663,8 +665,8 @@ class Config
     /**
      * Get catalog id
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return mixed
      */
     public function getCatalogId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -675,8 +677,8 @@ class Config
     /**
      * Get graph API version
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return mixed
      */
     public function getGraphAPIVersion($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -687,8 +689,8 @@ class Config
     /**
      * Get commerce account id
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getCommerceAccountId($scopeId = null, $scope = null)
@@ -703,8 +705,8 @@ class Config
     /**
      * Get commerce partner integration ID
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed|null
      */
     public function getCommercePartnerIntegrationId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -719,8 +721,8 @@ class Config
     /**
      * Is debug mode
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return bool
      */
     public function isDebugMode($scopeId = null, $scope = null): bool
@@ -735,8 +737,8 @@ class Config
     /**
      * Get api version
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getApiVersion($scopeId = null, $scope = null)
@@ -747,8 +749,8 @@ class Config
     /**
      * Get api version last update
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getApiVersionLastUpdate($scopeId = null, $scope = null)
@@ -763,7 +765,7 @@ class Config
     /**
      * Get shipping methods map
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return array
      */
     public function getShippingMethodsMap($storeId = null): array
@@ -778,7 +780,7 @@ class Config
     /**
      * Get shipping methods label map
      *
-     * @param int|null $storeId
+     * @param  int|null $storeId
      * @return array|null
      */
     public function getShippingMethodsLabelMap($storeId = null): array
@@ -793,8 +795,8 @@ class Config
     /**
      * Is catalog sync enabled
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return bool
      */
     public function isCatalogSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
@@ -806,8 +808,8 @@ class Config
     /**
      * Is promotions sync enabled
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return bool
      */
     public function isPromotionsSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
@@ -819,8 +821,8 @@ class Config
     /**
      * Check if extension is in post-onboarding onsite checkout state
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return bool
      */
     private function isPostOnboardingState($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
@@ -835,10 +837,12 @@ class Config
     public function getAllFBEInstalledStores()
     {
         $stores = $this->storeManager->getStores();
-        return array_filter($stores, function ($store) {
-            $scopeId = $store->getId();
-            return $this->isPostOnboardingState($scopeId);
-        });
+        return array_filter(
+            $stores, function ($store) {
+                $scopeId = $store->getId();
+                return $this->isPostOnboardingState($scopeId);
+            }
+        );
     }
 
     /**
@@ -847,20 +851,22 @@ class Config
     public function getAllOnsiteFBEInstalledStores()
     {
         $stores = $this->storeManager->getStores();
-        return array_filter($stores, function ($store) {
-            $scopeId = $store->getId();
-            return $this->isPostOnboardingState($scopeId) &&
+        return array_filter(
+            $stores, function ($store) {
+                $scopeId = $store->getId();
+                return $this->isPostOnboardingState($scopeId) &&
                 $this->isActiveExtension($scopeId) &&
                 // A slight nuance. You can be installed, but not "onsite" -- unless you have valid commerce account.
                 $this->getCommerceAccountId($scopeId);
-        });
+            }
+        );
     }
 
     /**
      * Get feed id
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return mixed
      */
     public function getFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -871,8 +877,8 @@ class Config
     /**
      * Get offers feed id
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param  int    $scopeId
+     * @param  string $scope
      * @return mixed
      */
     public function getOffersFeedId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -883,8 +889,8 @@ class Config
     /**
      * Get product identifier attr
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function getProductIdentifierAttr($scopeId = null, $scope = null)
@@ -895,8 +901,8 @@ class Config
     /**
      * Is all categories sync enabled or not
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      */
     public function isAllCategoriesSyncEnabled($scopeId = null, $scope = null)
@@ -907,8 +913,8 @@ class Config
     /**
      * Is price incl tax
      *
-     * @param int $scopeId
-     * @param int $scope
+     * @param  int $scopeId
+     * @param  int $scope
      * @return bool
      */
     public function isPriceInclTax($scopeId = null, $scope = null): bool
@@ -919,8 +925,8 @@ class Config
     /**
      * Check if test mode enabled for the server events
      *
-     * @param int|null $scopeId
-     * @param string|null $scope
+     * @param  int|null    $scopeId
+     * @param  string|null $scope
      * @return bool
      */
     public function isServerTestModeEnabled(int $scopeId = null, string $scope = null): bool
@@ -935,8 +941,8 @@ class Config
     /**
      * Get server event test code
      *
-     * @param int|null $scopeId
-     * @param string|null $scope
+     * @param  int|null    $scopeId
+     * @param  string|null $scope
      * @return string|null
      */
     public function getServerTestCode(int $scopeId = null, string $scope = null): ?string
@@ -951,8 +957,8 @@ class Config
     /**
      * Get store weight unit
      *
-     * @param int|null $scopeId
-     * @param string|null $scope
+     * @param  int|null    $scopeId
+     * @param  string|null $scope
      * @return mixed
      */
     public function getWeightUnit(int $scopeId = null, string $scope = null)
@@ -963,8 +969,8 @@ class Config
     /**
      * Check if additional attributes sync is disabled
      *
-     * @param int|null $scopeId
-     * @param string|null $scope
+     * @param  int|null    $scopeId
+     * @param  string|null $scope
      * @return bool
      */
     public function isAdditionalAttributesSyncDisabled(int $scopeId = null, string $scope = null): bool
@@ -979,8 +985,8 @@ class Config
     /**
      * Check if unsupported products are disabled
      *
-     * @param int|null $scopeId
-     * @param string|null $scope
+     * @param  int|null    $scopeId
+     * @param  string|null $scope
      * @return bool
      */
     public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null): bool
@@ -995,9 +1001,9 @@ class Config
     /**
      * Get Products Fetch Batch Size
      *
-     * @param int $default
-     * @param int|null $scopeId
-     * @param string|null $scope
+     * @param  int         $default
+     * @param  int|null    $scopeId
+     * @param  string|null $scope
      * @return int
      */
     public function getProductsFetchBatchSize(int $default = 200, int $scopeId = null, string $scope = null): int
@@ -1016,8 +1022,8 @@ class Config
     /**
      * Check if Memory Profiling is enabled
      *
-     * @param int|null $scopeId
-     * @param string|null $scope
+     * @param  int|null    $scopeId
+     * @param  string|null $scope
      * @return bool
      */
     public function isMemoryProfilingEnabled(int $scopeId = null, string $scope = null): bool
@@ -1032,8 +1038,8 @@ class Config
     /**
      * Check if feature is installed
      *
-     * @param string $featureType
-     * @param int $storeId
+     * @param  string $featureType
+     * @param  int    $storeId
      * @return bool
      */
     private function isFeatureInstalled($featureType, $storeId)
@@ -1048,7 +1054,7 @@ class Config
     /**
      * Check if FBE Catalog is Installed
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isFBECatalogInstalled($storeId = null)
@@ -1059,7 +1065,7 @@ class Config
     /**
      * Check if FBE pixel is Installed
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isFBEPixelInstalled($storeId = null)
@@ -1070,7 +1076,7 @@ class Config
     /**
      * Check if FBE ads is Installed
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isFBEAdsInstalled($storeId = null)
@@ -1081,7 +1087,7 @@ class Config
     /**
      * Check if FBE ads is Installed
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isFBEShopInstalled($storeId = null)
@@ -1093,7 +1099,7 @@ class Config
      * Save the External Business ID
      *
      * @param string $externalBusinessId
-     * @param int $storeId
+     * @param int    $storeId
      */
     public function saveExternalBusinessIdForStore(string $externalBusinessId, int $storeId): void
     {

@@ -39,9 +39,9 @@ class DeleteConnection extends Field
     private $systemConfig;
 
     /**
-     * @param Context $context
+     * @param Context      $context
      * @param SystemConfig $systemConfig
-     * @param array $data
+     * @param array        $data
      */
     public function __construct(
         Context $context,
@@ -90,8 +90,8 @@ class DeleteConnection extends Field
     /**
      * Get element html
      *
-     * @param AbstractElement $element
-     * @return string
+     * @param                                         AbstractElement $element
+     * @return                                        string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -107,7 +107,9 @@ class DeleteConnection extends Field
      */
     public function getButtonHtml()
     {
-        /** @var Button $button */
+        /**
+ * @var Button $button 
+*/
         $button = $this->getLayout()->createBlock(Button::class);
         return $button->setData(['id' => 'fb_delete_connection_btn', 'label' => __('Delete Connection')])
             ->toHtml();

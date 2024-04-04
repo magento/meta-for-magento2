@@ -80,13 +80,13 @@ class FBEHelper
     /**
      * FBEHelper constructor
      *
-     * @param ObjectManagerInterface $objectManager
-     * @param Logger $logger
-     * @param StoreManagerInterface $storeManager
-     * @param SystemConfig $systemConfig
+     * @param ObjectManagerInterface   $objectManager
+     * @param Logger                   $logger
+     * @param StoreManagerInterface    $storeManager
+     * @param SystemConfig             $systemConfig
      * @param ProductMetadataInterface $productMetadata
-     * @param GraphAPIConfig $graphAPIConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
+     * @param GraphAPIConfig           $graphAPIConfig
+     * @param GraphAPIAdapter          $graphAPIAdapter
      */
     public function __construct(
         ObjectManagerInterface   $objectManager,
@@ -158,7 +158,7 @@ class FBEHelper
     /**
      * Get partner agent
      *
-     * @param bool $withMagentoVersion
+     * @param  bool $withMagentoVersion
      * @return string
      */
     public function getPartnerAgent($withMagentoVersion = false)
@@ -174,7 +174,7 @@ class FBEHelper
     /**
      * Get url
      *
-     * @param string $partialURL
+     * @param  string $partialURL
      * @return mixed
      */
     public function getUrl($partialURL)
@@ -186,8 +186,8 @@ class FBEHelper
     /**
      * Create object
      *
-     * @param string $fullClassName
-     * @param array $arguments
+     * @param  string $fullClassName
+     * @param  array  $arguments
      * @return mixed
      */
     public function createObject($fullClassName, array $arguments = [])
@@ -198,7 +198,7 @@ class FBEHelper
     /**
      * Get object
      *
-     * @param string $fullClassName
+     * @param  string $fullClassName
      * @return mixed
      */
     public function getObject($fullClassName)
@@ -209,7 +209,7 @@ class FBEHelper
     /**
      * Is valid fbid
      *
-     * @param string $id
+     * @param  string $id
      * @return bool
      */
     public static function isValidFBID($id) // phpcs:ignore
@@ -242,7 +242,7 @@ class FBEHelper
     /**
      * Get fbe external business id
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return mixed|string|null
      */
     public function getFBEExternalBusinessId($storeId)
@@ -259,7 +259,7 @@ class FBEHelper
     /**
      * Log
      *
-     * @param string $info
+     * @param string  $info
      * @param mixed[] $context
      */
     public function log($info, array $context = [])
@@ -292,7 +292,7 @@ class FBEHelper
     /**
      * Log critical
      *
-     * @param string $message
+     * @param string  $message
      * @param mixed[] $context
      */
     public function logCritical($message, array $context = [])
@@ -304,7 +304,7 @@ class FBEHelper
      * Log exception
      *
      * @param Throwable $e
-     * @param array $context
+     * @param array     $context
      */
     public function logException(Throwable $e, array $context = [])
     {
@@ -318,10 +318,10 @@ class FBEHelper
     /**
      * Log exception details
      *
-     * @param int $code
+     * @param int    $code
      * @param string $message
      * @param string $traceAsString
-     * @param array $context
+     * @param array  $context
      */
     public function logExceptionDetails($code, $message, $traceAsString, array $context = [])
     {
@@ -362,7 +362,7 @@ class FBEHelper
      * Log exception and persist immediately with Meta
      *
      * @param Throwable $e
-     * @param array $context
+     * @param array     $context
      */
     public function logExceptionImmediatelyToMeta(Throwable $e, array $context = [])
     {
@@ -375,10 +375,10 @@ class FBEHelper
      *
      * `logExceptionImmediatelyToMeta` should be preferred whenever a /Throwable is available.
      *
-     * @param int $code
+     * @param int    $code
      * @param string $message
      * @param string $traceAsString
-     * @param array $context
+     * @param array  $context
      */
     public function logExceptionDetailsImmediatelyToMeta($code, $message, $traceAsString, array $context = [])
     {
@@ -390,7 +390,7 @@ class FBEHelper
      * Log telemetry and persist with Meta
      *
      * @param string $message
-     * @param array $context
+     * @param array  $context
      */
     public function logTelemetryToMeta(string $message, array $context = [])
     {
@@ -422,7 +422,7 @@ class FBEHelper
     /**
      * Fetch aam settings
      *
-     * @param string $pixelId
+     * @param  string $pixelId
      * @return mixed
      */
     private function fetchAAMSettings($pixelId)
@@ -454,8 +454,8 @@ class FBEHelper
     /**
      * Save aam settings
      *
-     * @param object $settings
-     * @param int $storeId
+     * @param  object $settings
+     * @param  int    $storeId
      * @return false|string
      */
     private function saveAAMSettings($settings, $storeId)
@@ -477,8 +477,8 @@ class FBEHelper
     /**
      * Fetch and save aam settings
      *
-     * @param string $pixelId
-     * @param int $storeId
+     * @param  string $pixelId
+     * @param  int    $storeId
      * @return false|string|null
      */
     public function fetchAndSaveAAMSettings($pixelId, $storeId)

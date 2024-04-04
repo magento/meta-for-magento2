@@ -46,8 +46,8 @@ class Authenticator
      * Authenticator constructor
      *
      * @param ScopeConfigInterface $scopeConfig
-     * @param Http $httpRequest
-     * @param SystemConfig $systemConfig
+     * @param Http                 $httpRequest
+     * @param SystemConfig         $systemConfig
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,

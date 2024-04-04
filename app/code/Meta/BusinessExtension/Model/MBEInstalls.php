@@ -83,14 +83,14 @@ class MBEInstalls
     /**
      * Construct
      *
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphApiAdapter
-     * @param FacebookInstalledFeature $installedFeatureResource
+     * @param FBEHelper                 $fbeHelper
+     * @param SystemConfig              $systemConfig
+     * @param GraphAPIAdapter           $graphApiAdapter
+     * @param FacebookInstalledFeature  $installedFeatureResource
      * @param CatalogConfigUpdateHelper $catalogConfigUpdateHelper
-     * @param ApiKeyService $apiKeyService
-     * @param StoreManagerInterface $storeManager
-     * @param LoggerInterface $logger
+     * @param ApiKeyService             $apiKeyService
+     * @param StoreManagerInterface     $storeManager
+     * @param LoggerInterface           $logger
      * @param AdobeCloudConfigInterface $adobeConfig
      */
     public function __construct(
@@ -118,8 +118,8 @@ class MBEInstalls
     /**
      * Process fbe_installs response
      *
-     * @param array $response
-     * @param int $storeId
+     * @param  array $response
+     * @param  int   $storeId
      * @return bool
      * @throws GuzzleException
      * @throws LocalizedException
@@ -159,7 +159,7 @@ class MBEInstalls
      * Save pixelId and update AAMSettings
      *
      * @param array $pixelId
-     * @param int $storeId
+     * @param int   $storeId
      */
     private function savePixelId($pixelId, $storeId)
     {
@@ -184,7 +184,7 @@ class MBEInstalls
      * Save profiles
      *
      * @param array $profiles
-     * @param int $storeId
+     * @param int   $storeId
      */
     private function saveProfiles($profiles, $storeId)
     {
@@ -202,8 +202,8 @@ class MBEInstalls
     /**
      * Save pages
      *
-     * @param array $pages
-     * @param int $storeId
+     * @param  array $pages
+     * @param  int   $storeId
      * @throws GuzzleException
      * @throws LocalizedException
      */
@@ -252,8 +252,8 @@ class MBEInstalls
     /**
      * Save commerce partner integration id
      *
-     * @param int $commercePartnerIntegrationId
-     * @param int $storeId
+     * @param  int $commercePartnerIntegrationId
+     * @param  int $storeId
      * @return $this
      */
     public function saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId)
@@ -264,8 +264,10 @@ class MBEInstalls
                 $commercePartnerIntegrationId,
                 $storeId
             );
-            $this->fbeHelper->log("Saved fbe_installs commerce_partner_integration_id ---" .
-                "{$commercePartnerIntegrationId} for storeID: {$storeId}");
+            $this->fbeHelper->log(
+                "Saved fbe_installs commerce_partner_integration_id ---" .
+                "{$commercePartnerIntegrationId} for storeID: {$storeId}"
+            );
         }
         return $this;
     }
@@ -294,7 +296,7 @@ class MBEInstalls
      * Save installed features
      *
      * @param array $data
-     * @param int $storeId
+     * @param int   $storeId
      */
     private function saveInstalledFeatures($data, $storeId)
     {
@@ -309,7 +311,7 @@ class MBEInstalls
     /**
      * Update MBE settings through the 'fbe_installs' API
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return void
      */
     public function updateMBESettings($storeId)
@@ -330,7 +332,7 @@ class MBEInstalls
      *
      * Keep Meta side CommercePartnerIntegration updated with latest info from Magento
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      * @throws \Exception
      */
@@ -367,8 +369,10 @@ class MBEInstalls
                         'store_id' => $storeId,
                         'event' => 'inconsistent_cpi',
                     ];
-                    $e = new \Exception("Commerce Partner Integration ID inconsistent between Meta and Magento. 
-                    Existing ID: $existingIntegrationId and New ID: $integrationId");
+                    $e = new \Exception(
+                        "Commerce Partner Integration ID inconsistent between Meta and Magento. 
+                    Existing ID: $existingIntegrationId and New ID: $integrationId"
+                    );
                     $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
                 }
                 $this->saveCommercePartnerIntegrationId($integrationId, $storeId);

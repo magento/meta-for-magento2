@@ -39,7 +39,7 @@ class PersistMetaLogImmediatelyHandler
      * PersistMetaLogImmediatelyHandler constructor
      *
      * @param GraphAPIAdapter $graphAPIAdapter
-     * @param SystemConfig $systemConfig
+     * @param SystemConfig    $systemConfig
      */
     public function __construct(
         GraphAPIAdapter $graphAPIAdapter,
@@ -52,7 +52,7 @@ class PersistMetaLogImmediatelyHandler
     /**
      * Consumer handler to persist exception logs from message queue to Meta
      *
-     * @param string $message
+     * @param  string $message
      * @return void
      */
     public function persistMetaLogImmediately(string $message): void
@@ -63,9 +63,11 @@ class PersistMetaLogImmediatelyHandler
             $accessToken = $this->systemConfig->getAccessToken($context['store_id']);
         }
         // Meta expects extra_data field to be dict<string, string>
-        $context['extra_data'] = array_map(function ($value) {
-            return is_string($value) ? $value : json_encode($value);
-        }, $context['extra_data']);
+        $context['extra_data'] = array_map(
+            function ($value) {
+                return is_string($value) ? $value : json_encode($value);
+            }, $context['extra_data']
+        );
         $this->graphApiAdapter->persistLogToMeta($context, $accessToken);
     }
 }

@@ -43,10 +43,10 @@ class ModuleInfo extends Field
     private $apiKeyService;
 
     /**
-     * @param Context $context
-     * @param SystemConfig $systemConfig
+     * @param Context       $context
+     * @param SystemConfig  $systemConfig
      * @param ApiKeyService $apiKeyService
-     * @param array $data
+     * @param array         $data
      */
     public function __construct(
         Context       $context,
@@ -62,7 +62,7 @@ class ModuleInfo extends Field
     /**
      * Remove scope label
      *
-     * @param AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -74,8 +74,8 @@ class ModuleInfo extends Field
     /**
      * Return element html
      *
-     * @param AbstractElement $element
-     * @return string
+     * @param                                         AbstractElement $element
+     * @return                                        string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)

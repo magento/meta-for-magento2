@@ -41,7 +41,7 @@ class MetaIssueNotification extends AbstractDb
     /**
      * Delete all notifications matching notification id
      *
-     * @param string $notificationId
+     * @param  string $notificationId
      * @return int
      */
     public function deleteByNotificationId(string $notificationId): int

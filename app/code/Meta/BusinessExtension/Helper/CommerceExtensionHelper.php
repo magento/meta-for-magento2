@@ -43,7 +43,7 @@ class CommerceExtensionHelper
     /**
      * FBEHelper constructor
      *
-     * @param SystemConfig $systemConfig
+     * @param SystemConfig    $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
      */
     public function __construct(
@@ -86,7 +86,7 @@ class CommerceExtensionHelper
     /**
      * Whether to enable the new Commerce Extension UI
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isCommerceExtensionEnabled($storeId)
@@ -98,7 +98,7 @@ class CommerceExtensionHelper
     /**
      * Whether there is an error blocking usage of the Commerce Extension.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function hasCommerceExtensionPermissionError($storeId)
@@ -110,7 +110,7 @@ class CommerceExtensionHelper
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getCommerceExtensionIFrameURL($storeId)

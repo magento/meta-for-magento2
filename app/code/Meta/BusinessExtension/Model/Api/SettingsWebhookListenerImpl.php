@@ -61,7 +61,9 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
      */
     private CollectionFactory $collectionFactory;
 
-    /** @var Authenticator */
+    /**
+     * @var Authenticator 
+     */
     private Authenticator $authenticator;
 
     /**
@@ -80,14 +82,14 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     private $issueNotification;
 
     /**
-     * @param SystemConfig $systemConfig
-     * @param FBEHelper $fbeHelper
-     * @param CollectionFactory $collectionFactory
-     * @param Authenticator $authenticator
+     * @param SystemConfig              $systemConfig
+     * @param FBEHelper                 $fbeHelper
+     * @param CollectionFactory         $collectionFactory
+     * @param Authenticator             $authenticator
      * @param CatalogConfigUpdateHelper $catalogConfigUpdateHelper
-     * @param GraphAPIAdapter $graphApiAdapter
-     * @param CoreConfigFactory $coreConfigFactory
-     * @param MetaIssueNotification $issueNotification
+     * @param GraphAPIAdapter           $graphApiAdapter
+     * @param CoreConfigFactory         $coreConfigFactory
+     * @param MetaIssueNotification     $issueNotification
      */
     public function __construct(
         SystemConfig              $systemConfig,
@@ -112,7 +114,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Process webhook POST request
      *
-     * @param SettingsWebhookRequestInterface[] $settingsWebhookRequest
+     * @param  SettingsWebhookRequestInterface[] $settingsWebhookRequest
      * @return void
      * @throws LocalizedException
      */
@@ -142,7 +144,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Process webhook POST request
      *
-     * @param SettingsWebhookRequestInterface $setting
+     * @param  SettingsWebhookRequestInterface $setting
      * @throws LocalizedException
      */
     private function updateSetting(SettingsWebhookRequestInterface $setting): void
@@ -193,7 +195,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Get storeId
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return string
      * @throws LocalizedException
      */
@@ -210,7 +212,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Polling from fbe_install Graph API
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string[]
      * @throws LocalizedException
      */
@@ -236,20 +238,22 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Exception helper
      *
-     * @param string $errorMessage
+     * @param  string $errorMessage
      * @throws LocalizedException
      */
     private function throwException(string $errorMessage)
     {
-        throw new LocalizedException(__(
-            $errorMessage
-        ));
+        throw new LocalizedException(
+            __(
+                $errorMessage
+            )
+        );
     }
 
     /**
      * Get config values where MBE is installed for $externalBusinessId
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return array
      */
     private function getMBEInstalledConfigsByExternalBusinessId(string $externalBusinessId): array
@@ -276,7 +280,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Process webhook GET request to pull core config from Magento to Meta
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return \Meta\BusinessExtension\Api\CoreConfigInterface
      * @throws LocalizedException
      */
@@ -304,8 +308,8 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Fetch core config by $storeId
      *
-     * @param string $externalBusinessId
-     * @param string $storeId
+     * @param  string $externalBusinessId
+     * @param  string $storeId
      * @return array
      */
     private function getCoreConfigByStoreId(string $externalBusinessId, string $storeId): array
@@ -328,7 +332,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     /**
      * Update Graph API version
      *
-     * @param string $graphApiVersion
+     * @param  string $graphApiVersion
      * @return void
      */
     private function updateGraphAPIVersion(string $graphApiVersion): void

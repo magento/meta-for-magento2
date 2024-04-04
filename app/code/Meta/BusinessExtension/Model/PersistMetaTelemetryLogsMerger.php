@@ -28,21 +28,25 @@ class PersistMetaTelemetryLogsMerger implements MergerInterface
     /**
      * Combine multiple queue messages into one
      *
-     * @param object[] $messages
+     * @param  object[] $messages
      * @return object[]|MergedMessageInterface[]
      */
     public function merge(array $messages)
     {
         if (isset($messages['persist.meta.telemetry.logs'])) {
-            $telemetryLogs = array_map(function ($message) {
-                $decodedMessage = json_decode($message, true);
-                unset($decodedMessage['log_type']);
-                // Meta expects extra_data field to be dict<string, string>
-                $decodedMessage['extra_data'] = array_map(function ($value) {
-                    return is_string($value) ? $value : json_encode($value);
-                }, $decodedMessage['extra_data']);
-                return $decodedMessage;
-            }, $messages['persist.meta.telemetry.logs']);
+            $telemetryLogs = array_map(
+                function ($message) {
+                    $decodedMessage = json_decode($message, true);
+                    unset($decodedMessage['log_type']);
+                    // Meta expects extra_data field to be dict<string, string>
+                    $decodedMessage['extra_data'] = array_map(
+                        function ($value) {
+                            return is_string($value) ? $value : json_encode($value);
+                        }, $decodedMessage['extra_data']
+                    );
+                    return $decodedMessage;
+                }, $messages['persist.meta.telemetry.logs']
+            );
             $mergedLogs = json_encode($telemetryLogs);
             return ['persist.meta.telemetry.logs' => [$mergedLogs]];
         }

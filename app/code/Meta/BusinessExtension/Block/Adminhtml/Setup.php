@@ -79,16 +79,16 @@ class Setup extends Template
     private AdobeCloudConfigInterface $adobeConfig;
 
     /**
-     * @param Context $context
-     * @param RequestInterface $request
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param StoreRepositoryInterface $storeRepo
-     * @param WebsiteCollectionFactory $websiteCollectionFactory
-     * @param CommerceExtensionHelper $commerceExtensionHelper
-     * @param ApiKeyService $apiKeyService
+     * @param Context                   $context
+     * @param RequestInterface          $request
+     * @param FBEHelper                 $fbeHelper
+     * @param SystemConfig              $systemConfig
+     * @param StoreRepositoryInterface  $storeRepo
+     * @param WebsiteCollectionFactory  $websiteCollectionFactory
+     * @param CommerceExtensionHelper   $commerceExtensionHelper
+     * @param ApiKeyService             $apiKeyService
      * @param AdobeCloudConfigInterface $adobeConfig
-     * @param array $data
+     * @param array                     $data
      */
     public function __construct(
         Context                   $context,
@@ -190,7 +190,7 @@ class Setup extends Template
     /**
      * Fetch pixel id
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string|null
      */
     public function fetchPixelId($storeId)
@@ -232,7 +232,7 @@ class Setup extends Template
     /**
      * Get external business id
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string|null
      */
     public function getExternalBusinessId($storeId)
@@ -315,7 +315,7 @@ class Setup extends Template
     /**
      * Is fbe installed
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isFBEInstalled($storeId)
@@ -326,7 +326,7 @@ class Setup extends Template
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getCommerceExtensionIFrameURL($storeId)
@@ -337,7 +337,7 @@ class Setup extends Template
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function hasCommerceExtensionIFramePermissionError($storeId)
