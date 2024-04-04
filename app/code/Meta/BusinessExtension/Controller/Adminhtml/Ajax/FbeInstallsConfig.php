@@ -71,10 +71,10 @@ class FbeInstallsConfig implements HttpGetActionInterface
      * Construct
      *
      * @param RequestInterface $request
-     * @param FBEHelper $fbeHelper
-     * @param JsonFactory $jsonFactory
-     * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
+     * @param FBEHelper        $fbeHelper
+     * @param JsonFactory      $jsonFactory
+     * @param SystemConfig     $systemConfig
+     * @param GraphAPIAdapter  $graphAPIAdapter
      */
     public function __construct(
         RequestInterface $request,
@@ -103,8 +103,10 @@ class FbeInstallsConfig implements HttpGetActionInterface
             $json = json_encode([]);
             $this->endpoint = $this->getFBEInstallsEndpoint();
             if (!$this->endpoint) {
-                $this->fbeHelper->logCritical('Could not get MBEInstalls Config. No endpoint found.' .
-                    ' Check MBE API version config.');
+                $this->fbeHelper->logCritical(
+                    'Could not get MBEInstalls Config. No endpoint found.' .
+                    ' Check MBE API version config.'
+                );
             } else {
                 $json = $this->getFbeInstallsConfig();
             }

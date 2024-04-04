@@ -57,14 +57,13 @@ class MbeUpdateInstalledConfig extends AbstractAjax implements HttpPostActionInt
     private $logger;
 
     /**
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
-     * @param MBEInstalls $mbeInstalls
-     * @param LoggerInterface $logger
+     * @param Context          $context
+     * @param JsonFactory      $resultJsonFactory
+     * @param FBEHelper        $fbeHelper
+     * @param MBEInstalls      $mbeInstalls
+     * @param LoggerInterface  $logger
      * @param RequestInterface $request
-     * @param EventManager $eventManager
-     *
+     * @param EventManager     $eventManager
      */
     public function __construct(
         Context          $context,
@@ -105,8 +104,10 @@ class MbeUpdateInstalledConfig extends AbstractAjax implements HttpPostActionInt
             $this->mbeInstalls->updateMBESettings($storeId);
             
             if ($triggerPostOnboarding) {
-                $this->logger->info('Trigger facebook_fbe_onboarding_after '
-                    . 'for Store {$storeId} after MBE Config Update');
+                $this->logger->info(
+                    'Trigger facebook_fbe_onboarding_after '
+                    . 'for Store {$storeId} after MBE Config Update'
+                );
                 $this->eventManager->dispatch('facebook_fbe_onboarding_after', ['store_id' => $storeId]);
             }
             $response = [

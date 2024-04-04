@@ -47,10 +47,10 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Construct
      *
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
+     * @param Context         $context
+     * @param JsonFactory     $resultJsonFactory
+     * @param FBEHelper       $fbeHelper
+     * @param SystemConfig    $systemConfig
      * @param GraphAPIAdapter $graphApiAdapter
      */
     public function __construct(
@@ -110,8 +110,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Save catalog id
      *
-     * @param int $catalogId
-     * @param int $storeId
+     * @param  int $catalogId
+     * @param  int $storeId
      * @return $this
      */
     public function saveCatalogId($catalogId, $storeId)
@@ -130,8 +130,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Save commerce partner integration id
      *
-     * @param int $commercePartnerIntegrationId
-     * @param int $storeId
+     * @param  int $commercePartnerIntegrationId
+     * @param  int $storeId
      * @return $this
      */
     public function saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId)
@@ -142,8 +142,10 @@ class PersistConfiguration extends AbstractAjax
                 $commercePartnerIntegrationId,
                 $storeId
             );
-            $this->fbeHelper->log('Commerce Partner Integration ID saved on instance --- '
-                . $commercePartnerIntegrationId);
+            $this->fbeHelper->log(
+                'Commerce Partner Integration ID saved on instance --- '
+                . $commercePartnerIntegrationId
+            );
         }
         return $this;
     }
@@ -151,8 +153,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Based on commerce PI presence it enables catalog sync.
      *
-     * @param int $commercePartnerIntegrationId
-     * @param int $storeId
+     * @param  int $commercePartnerIntegrationId
+     * @param  int $storeId
      * @return $this
      */
     public function enableCatalogSync($commercePartnerIntegrationId, $storeId)
@@ -172,8 +174,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Save external business id
      *
-     * @param int $externalBusinessId
-     * @param int $storeId
+     * @param  int $externalBusinessId
+     * @param  int $storeId
      * @return $this
      */
     public function saveExternalBusinessId($externalBusinessId, $storeId)
@@ -192,7 +194,7 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Update install flag to true and save
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return $this
      */
     public function saveInstalledFlag($storeId)
@@ -209,9 +211,9 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Complete onsite onboarding
      *
-     * @param string $accessToken
-     * @param int $pageId
-     * @param int $storeId
+     * @param  string $accessToken
+     * @param  int    $pageId
+     * @param  int    $storeId
      * @return $this
      * @throws LocalizedException
      * @throws \GuzzleHttp\Exception\GuzzleException

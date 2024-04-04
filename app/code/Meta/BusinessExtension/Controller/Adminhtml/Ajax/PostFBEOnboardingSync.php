@@ -50,9 +50,9 @@ class PostFBEOnboardingSync extends AbstractAjax
     /**
      * Construct
      *
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
+     * @param Context      $context
+     * @param JsonFactory  $resultJsonFactory
+     * @param FBEHelper    $fbeHelper
      * @param SystemConfig $systemConfig
      * @param EventManager $eventManager
      */
@@ -93,11 +93,13 @@ class PostFBEOnboardingSync extends AbstractAjax
                     self::ACCESS_TOKEN_NOT_SET_ERROR_MESSAGE,
                     $storeName
                 );
-                $this->fbeHelper->log(sprintf(
-                    '%s %s',
-                    self::ACCESS_TOKEN_NOT_SET_ERROR_MESSAGE,
-                    $storeName
-                ));
+                $this->fbeHelper->log(
+                    sprintf(
+                        '%s %s',
+                        self::ACCESS_TOKEN_NOT_SET_ERROR_MESSAGE,
+                        $storeName
+                    )
+                );
                 return $response;
             }
             // Dispatch the facebook_post_fbe_onboarding_sync event,
