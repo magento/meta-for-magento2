@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Model;
 
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
@@ -102,6 +103,12 @@ class ProductRepository
         $childProduct->setConfigurableSettings($configurableSettings);
         $childProduct->setParentProductUrl($product->getProductUrl());
         $childProduct->setVisibility($product->getVisibility());
+
+        // If variant is enabled individually, use parent status to decide the final status.
+        // else, leave it disabled.
+        if ($childProduct->getStatus() == Status::STATUS_ENABLED) {
+            $childProduct->setStatus($product->getStatus());
+        }
         //todo put all these attributes to a list
         if (!$childProduct->getDescription()) {
             $childProduct->setDescription($product->getDescription());
@@ -113,17 +120,26 @@ class ProductRepository
             $childProduct->setWeight($product->getWeight());
         }
 
-        $material = $childProduct->getResource()->getAttribute('material');
-        if ($material && !$material->getSource()->getOptionText($childProduct->getData('material'))) {
-            $childProduct->setData('material', $product->getData('material'));
-        }
-
-        $pattern = $childProduct->getResource()->getAttribute('pattern');
-        if ($pattern && !$pattern->getSource()->getOptionText($childProduct->getData('pattern'))) {
-            $childProduct->setData('pattern', $product->getData('pattern'));
-        }
+        $this->updateAttributeFromParentIfNotSet($childProduct, $product, 'material');
+        $this->updateAttributeFromParentIfNotSet($childProduct, $product, 'pattern');
         $this->appendImagesFromParentProduct($childProduct, $product);
         return $childProduct;
+    }
+
+    /**
+     * If not set, Update attribute in variant from parent
+     *
+     * @param Product $childProduct
+     * @param Product $product
+     * @param string $key
+     * @return void
+     */
+    private function updateAttributeFromParentIfNotSet(Product $childProduct, Product $product, string $key)
+    {
+        $attribute = $childProduct->getResource()->getAttribute($key);
+        if ($attribute && !$attribute->getSource()->getOptionText($childProduct->getData($key))) {
+            $childProduct->setData($key, $product->getData($key));
+        }
     }
 
     /**
