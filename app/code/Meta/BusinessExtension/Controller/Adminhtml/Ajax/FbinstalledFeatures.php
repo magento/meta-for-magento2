@@ -54,9 +54,9 @@ class FbinstalledFeatures implements HttpPostActionInterface
     /**
      * Construct
      *
-     * @param RequestInterface $request
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
+     * @param RequestInterface         $request
+     * @param JsonFactory              $resultJsonFactory
+     * @param FBEHelper                $fbeHelper
      * @param FacebookInstalledFeature $fbInstalledFeatureResource
      */
     public function __construct(
@@ -93,8 +93,10 @@ class FbinstalledFeatures implements HttpPostActionInterface
                 ]
             );
             throw new LocalizedException(
-                __('There was error while processing your request.' .
-                ' Please contact admin for more details.')
+                __(
+                    'There was error while processing your request.' .
+                    ' Please contact admin for more details.'
+                )
             );
         }
     }

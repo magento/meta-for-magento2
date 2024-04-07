@@ -165,8 +165,8 @@ class OrderMapper
             ->setBillingAddress($billingAddress)
             ->setShippingAddress($shippingAddress)
             ->setStoreId($storeId)
-            ->setPayment($payment)
-            ->setCanSendNewEmailFlag(false);
+            ->setCanSendNewEmailFlag(false)
+            ->setPayment($payment);
 
         $this->applyShippingToOrder($order, $data, $storeId);
         $this->applyItemsToOrder($order, $data, $storeId);
@@ -184,14 +184,21 @@ class OrderMapper
      * @param array $data
      * @param int $storeId
      * @return void
+     * @throws LocalizedException
      */
     private function applyShippingToOrder(Order $order, array $data, int $storeId)
     {
         $metaShippingOptionName = $data['selected_shipping_option']['name'];
         $magentoShippingReferenceID = $data['selected_shipping_option']['reference_id'];
 
-        $shippingMethod = $this->getShippingMethod($metaShippingOptionName, $magentoShippingReferenceID, $storeId);
-        $shippingDescription = $this->getShippingDescription($metaShippingOptionName, $shippingMethod, $storeId);
+        if (strpos($magentoShippingReferenceID, '_') !== false) {
+            $shippingMethod = $magentoShippingReferenceID;
+            $shippingDescription = $metaShippingOptionName;
+        } else {
+            $shippingMethod = $this->getShippingMethod($metaShippingOptionName, $magentoShippingReferenceID, $storeId);
+            $shippingDescription = $this->getShippingDescription($metaShippingOptionName, $shippingMethod, $storeId);
+        }
+
         // This should never happen, as it means Meta has passed a shipping method with no equivalent in Magento.
         // @todo strictly handle this edge case by canceling the entire Meta order if this happens.
         $fallbackShippingDescription = $metaShippingOptionName . " - {$shippingMethod}";

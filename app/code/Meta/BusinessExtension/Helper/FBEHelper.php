@@ -40,6 +40,7 @@ class FBEHelper
     private const URL_TYPE_WEB = 'web';
 
     public const PERSIST_META_LOG_IMMEDIATELY = 'persist_meta_log_immediately';
+    public const PERSIST_META_TELEMETRY_LOGS = 'persist_meta_telemetry_logs';
 
     /**
      * @var GraphAPIConfig
@@ -79,13 +80,13 @@ class FBEHelper
     /**
      * FBEHelper constructor
      *
-     * @param ObjectManagerInterface $objectManager
-     * @param Logger $logger
-     * @param StoreManagerInterface $storeManager
-     * @param SystemConfig $systemConfig
+     * @param ObjectManagerInterface   $objectManager
+     * @param Logger                   $logger
+     * @param StoreManagerInterface    $storeManager
+     * @param SystemConfig             $systemConfig
      * @param ProductMetadataInterface $productMetadata
-     * @param GraphAPIConfig $graphAPIConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
+     * @param GraphAPIConfig           $graphAPIConfig
+     * @param GraphAPIAdapter          $graphAPIAdapter
      */
     public function __construct(
         ObjectManagerInterface   $objectManager,
@@ -157,7 +158,7 @@ class FBEHelper
     /**
      * Get partner agent
      *
-     * @param bool $withMagentoVersion
+     * @param  bool $withMagentoVersion
      * @return string
      */
     public function getPartnerAgent($withMagentoVersion = false)
@@ -173,7 +174,7 @@ class FBEHelper
     /**
      * Get url
      *
-     * @param string $partialURL
+     * @param  string $partialURL
      * @return mixed
      */
     public function getUrl($partialURL)
@@ -185,8 +186,8 @@ class FBEHelper
     /**
      * Create object
      *
-     * @param string $fullClassName
-     * @param array $arguments
+     * @param  string $fullClassName
+     * @param  array  $arguments
      * @return mixed
      */
     public function createObject($fullClassName, array $arguments = [])
@@ -197,7 +198,7 @@ class FBEHelper
     /**
      * Get object
      *
-     * @param string $fullClassName
+     * @param  string $fullClassName
      * @return mixed
      */
     public function getObject($fullClassName)
@@ -208,7 +209,7 @@ class FBEHelper
     /**
      * Is valid fbid
      *
-     * @param string $id
+     * @param  string $id
      * @return bool
      */
     public static function isValidFBID($id) // phpcs:ignore
@@ -241,7 +242,7 @@ class FBEHelper
     /**
      * Get fbe external business id
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return mixed|string|null
      */
     public function getFBEExternalBusinessId($storeId)
@@ -258,7 +259,7 @@ class FBEHelper
     /**
      * Log
      *
-     * @param string $info
+     * @param string  $info
      * @param mixed[] $context
      */
     public function log($info, array $context = [])
@@ -268,7 +269,11 @@ class FBEHelper
             return;
         }
 
-        $extraData = ['timestamp' => time()];
+        $extraData = [
+            'timestamp' => time(),
+            'seller_platform_app_version' => $this->getMagentoVersion(),
+            'extension_version' => $this->systemConfig->getModuleVersion()
+        ];
 
         if (isset($context['store_id'])) {
             $extraData['store_id'] = $context['store_id'];
@@ -280,13 +285,14 @@ class FBEHelper
         } else {
             $context['extra_data'] = $extraData;
         }
+
         $this->logger->info($info, $context);
     }
 
     /**
      * Log critical
      *
-     * @param string $message
+     * @param string  $message
      * @param mixed[] $context
      */
     public function logCritical($message, array $context = [])
@@ -298,7 +304,7 @@ class FBEHelper
      * Log exception
      *
      * @param Throwable $e
-     * @param array $context
+     * @param array     $context
      */
     public function logException(Throwable $e, array $context = [])
     {
@@ -309,6 +315,14 @@ class FBEHelper
         $this->logExceptionDetails($exceptionCode, $errorMessage, $exceptionTrace, $context);
     }
 
+    /**
+     * Log exception details
+     *
+     * @param int    $code
+     * @param string $message
+     * @param string $traceAsString
+     * @param array  $context
+     */
     public function logExceptionDetails($code, $message, $traceAsString, array $context = [])
     {
         // If the log type is not set just log the error message and trace.
@@ -328,6 +342,11 @@ class FBEHelper
         if (isset($context['store_id'])) {
             $extraData['store_id'] = $context['store_id'];
             $context['commerce_merchant_settings_id'] = $this->systemConfig->getCommerceAccountId($context['store_id']);
+            $context['external_business_id'] = $this->systemConfig->getExternalBusinessId($context['store_id']);
+            $context['commerce_partner_integration_id'] =
+                $this->systemConfig->getCommercePartnerIntegrationId($context['store_id']);
+            $context['page_id'] = $this->systemConfig->getPageId($context['store_id']);
+            $context['pixel_id'] = $this->systemConfig->getPixelId($context['store_id']);
         }
 
         if (isset($context['extra_data'])) {
@@ -343,7 +362,7 @@ class FBEHelper
      * Log exception and persist immediately with Meta
      *
      * @param Throwable $e
-     * @param array $context
+     * @param array     $context
      */
     public function logExceptionImmediatelyToMeta(Throwable $e, array $context = [])
     {
@@ -356,15 +375,27 @@ class FBEHelper
      *
      * `logExceptionImmediatelyToMeta` should be preferred whenever a /Throwable is available.
      *
-     * @param int $code
+     * @param int    $code
      * @param string $message
      * @param string $traceAsString
-     * @param array $context
+     * @param array  $context
      */
     public function logExceptionDetailsImmediatelyToMeta($code, $message, $traceAsString, array $context = [])
     {
         $context['log_type'] = self::PERSIST_META_LOG_IMMEDIATELY;
         $this->logExceptionDetails($code, $message, $traceAsString, $context);
+    }
+
+    /**
+     * Log telemetry and persist with Meta
+     *
+     * @param string $message
+     * @param array  $context
+     */
+    public function logTelemetryToMeta(string $message, array $context = [])
+    {
+        $context['log_type'] = self::PERSIST_META_TELEMETRY_LOGS;
+        $this->log($message, $context);
     }
 
     /**
@@ -391,7 +422,7 @@ class FBEHelper
     /**
      * Fetch aam settings
      *
-     * @param string $pixelId
+     * @param  string $pixelId
      * @return mixed
      */
     private function fetchAAMSettings($pixelId)
@@ -423,8 +454,8 @@ class FBEHelper
     /**
      * Save aam settings
      *
-     * @param object $settings
-     * @param int $storeId
+     * @param  object $settings
+     * @param  int    $storeId
      * @return false|string
      */
     private function saveAAMSettings($settings, $storeId)
@@ -446,8 +477,8 @@ class FBEHelper
     /**
      * Fetch and save aam settings
      *
-     * @param string $pixelId
-     * @param int $storeId
+     * @param  string $pixelId
+     * @param  int    $storeId
      * @return false|string|null
      */
     public function fetchAndSaveAAMSettings($pixelId, $storeId)
@@ -474,4 +505,23 @@ class FBEHelper
         }
     }
 
+    /**
+     * Return unique trace id for telemetry flows
+     *
+     * @return string
+     */
+    public function genUniqueTraceID(): string
+    {
+        return uniqid("magento_");
+    }
+
+    /**
+     * Return current time in milliseconds
+     *
+     * @return int
+     */
+    public function getCurrentTimeInMS(): int
+    {
+        return (int)(microtime(true) * 1000);
+    }
 }

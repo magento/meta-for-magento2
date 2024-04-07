@@ -44,8 +44,8 @@ class Index extends Action
     /**
      * Index constructor
      *
-     * @param Action\Context $context
-     * @param KeyGenerator $apiKeyGenerator
+     * @param Action\Context  $context
+     * @param KeyGenerator    $apiKeyGenerator
      * @param WriterInterface $configWriter
      * @param LoggerInterface $logger
      */

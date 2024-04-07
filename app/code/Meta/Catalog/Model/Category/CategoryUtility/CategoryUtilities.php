@@ -30,6 +30,7 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
@@ -177,15 +178,24 @@ class CategoryUtilities
      *
      * @param int $storeId
      * @param string $eventType
+     * @param string $flowName
+     * @param string $flowStep
      * @param array $extraData
      * @return array
      */
-    public function getCategoryLoggerContext(int $storeId, string $eventType, array $extraData): array
-    {
+    public function getCategoryLoggerContext(
+        int $storeId,
+        string $eventType,
+        string $flowName,
+        string $flowStep,
+        array $extraData
+    ): array {
         return [
             'store_id' => $storeId,
             'event' => 'category_sync',
             'event_type' => $eventType,
+            'flow_name' => $flowName,
+            'flow_step' => $flowStep,
             'catalog_id' => $this->systemConfig->getCatalogId($storeId),
             'extra_data' => $extraData
         ];
@@ -195,33 +205,35 @@ class CategoryUtilities
      * Get all categories for store
      *
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return Collection
-     * @throws \Throwable
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
-    public function getAllCategoriesForStore(int $storeId): Collection
+    public function getAllCategoriesForStore(int $storeId, string $flowName, string $traceId): Collection
     {
         $store = $this->systemConfig->getStoreManager()->getStore($storeId);
         $rootCategoryId = $store->getRootCategoryId();
         $rootCategory = $this->categoryRepository->get($rootCategoryId, $storeId);
 
-        return $this->getAllChildrenCategories($rootCategory, $storeId);
+        return $this->getAllChildrenCategories($rootCategory, $storeId, $flowName, $traceId);
     }
 
     /**
      * Get all categories
      *
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return Collection
-     * @throws \Throwable
+     * @throws LocalizedException
      */
-    public function getAllCategoriesForSeller(int $storeId): Collection
+    public function getAllCategoriesForSeller(int $storeId, string $flowName, string $traceId): Collection
     {
-        $this->fbeHelper->log(sprintf(
-            "searching all the categories for seller, store id: %d",
-            $storeId
-        ));
+        $startTime = $this->fbeHelper->getCurrentTimeInMS();
 
-        return $this->categoryCollection->create()
+        $categories = $this->categoryCollection->create()
             ->setStoreId($storeId)
             ->addAttributeToSelect('*')
             ->addAttributeToFilter([
@@ -230,6 +242,29 @@ class CategoryUtilities
                     "like" => Category::TREE_ROOT_ID . "/%"
                 ]
             ]);
+
+        $context = $this->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'category_sync_fetch_categories_for_seller',
+            [
+                'external_trace_id' => $traceId,
+                'time_taken_ms' => $this->fbeHelper->getCurrentTimeInMS() - $startTime,
+                'num_categories_fetched' => $categories->count()
+            ]
+        );
+
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf(
+                "Fetching categories for seller: storeId: %d, flow: %s",
+                $storeId,
+                $flowName
+            ),
+            $context
+        );
+
+        return $categories;
     }
 
     /**
@@ -239,15 +274,20 @@ class CategoryUtilities
      *
      * @param Category $category
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return Collection
-     * @throws \Throwable
+     * @throws LocalizedException
      */
-    public function getAllChildrenCategories(Category $category, int $storeId): Collection
-    {
-        $this->fbeHelper->log(sprintf("searching children category for category: %s", $category->getName()));
+    public function getAllChildrenCategories(
+        Category $category,
+        int $storeId,
+        string $flowName,
+        string $traceId
+    ): Collection {
         $categoryPath = $category->getPath();
-
-        return $this->categoryCollection->create()
+        $startTime = $this->fbeHelper->getCurrentTimeInMS();
+        $categories = $this->categoryCollection->create()
             ->setStoreId($storeId)
             ->addAttributeToSelect('*')
             ->addAttributeToFilter(
@@ -262,6 +302,31 @@ class CategoryUtilities
                     ]
                 ]
             );
+
+        $context = $this->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'category_sync_fetch_categories_for_store',
+            [
+                'external_trace_id' => $traceId,
+                'time_taken_ms' => $this->fbeHelper->getCurrentTimeInMS() - $startTime,
+                'num_categories_fetched' => $categories->count(),
+                'root_category_id' => $category->getId()
+            ]
+        );
+
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf(
+                "Fetching categories for store: storeId: %d, categoryId: %s, flow: %s",
+                $storeId,
+                $category->getId(),
+                $flowName
+            ),
+            $context
+        );
+
+        return $categories;
     }
 
     /**
@@ -483,7 +548,7 @@ class CategoryUtilities
     {
         return array_map(
             function ($store) {
-                return $store->getId();
+                return (int)$store->getId();
             },
             $this->systemConfig->getAllFBEInstalledStores()
         );

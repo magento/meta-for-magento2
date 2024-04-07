@@ -43,10 +43,10 @@ class ModuleInfo extends Field
     private $apiKeyService;
 
     /**
-     * @param Context $context
-     * @param SystemConfig $systemConfig
+     * @param Context       $context
+     * @param SystemConfig  $systemConfig
      * @param ApiKeyService $apiKeyService
-     * @param array $data
+     * @param array         $data
      */
     public function __construct(
         Context       $context,
@@ -62,7 +62,7 @@ class ModuleInfo extends Field
     /**
      * Remove scope label
      *
-     * @param AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -74,8 +74,8 @@ class ModuleInfo extends Field
     /**
      * Return element html
      *
-     * @param AbstractElement $element
-     * @return string
+     * @param                                         AbstractElement $element
+     * @return                                        string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -191,5 +191,25 @@ class ModuleInfo extends Field
     public function getIsDebugMode()
     {
         return $this->systemConfig->isDebugMode();
+    }
+
+    /**
+     * Retrieve the Commerce Partner Integration ID
+     *
+     * @return string
+     */
+    public function getCommercePartnerIntegrationId()
+    {
+        return $this->systemConfig->getCommercePartnerIntegrationId($this->getStoreId());
+    }
+
+    /**
+     * Retrieve the Commerce Partner External Business ID
+     *
+     * @return string
+     */
+    public function getExternalBusinessID()
+    {
+        return $this->systemConfig->getExternalBusinessId($this->getStoreId());
     }
 }

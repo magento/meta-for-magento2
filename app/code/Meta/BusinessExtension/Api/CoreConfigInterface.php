@@ -70,21 +70,6 @@ interface CoreConfigInterface
     public function setIsCatalogSyncEnabled(bool $val): void;
 
     /**
-     * IsOnsiteCheckoutEnabled Getter
-     *
-     * @return bool
-     */
-    public function isOnsiteCheckoutEnabled(): bool;
-
-    /**
-     * IsOnsiteCheckoutEnabled Setter
-     *
-     * @param bool $val
-     * @return void
-     */
-    public function setIsOnsiteCheckoutEnabled(bool $val): void;
-
-    /**
      * IsPromotionsSyncEnabled Getter
      *
      * @return bool
@@ -128,21 +113,6 @@ interface CoreConfigInterface
      * @return void
      */
     public function setOutOfStockThreshold(?string $val): void;
-
-    /**
-     * IsCommerceExtensionEnabled Getter
-     *
-     * @return bool
-     */
-    public function isCommerceExtensionEnabled(): bool;
-
-    /**
-     * IsOnsiteCheckoutEnabled Setter
-     *
-     * @param bool $val
-     * @return void
-     */
-    public function setIsCommerceExtensionEnabled(bool $val): void;
 
     /**
      * FeedId Getter

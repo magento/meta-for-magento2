@@ -18,17 +18,22 @@ declare(strict_types=1);
  * limitations under the License.
  */
 
-namespace Meta\BusinessExtension\Api\CustomApiKey;
+namespace Meta\Sales\Api;
 
-use GuzzleHttp\Exception\GuzzleException;
+use Meta\Sales\Api\AddCartItemsApiResponseInterface;
 
-class UnauthorizedTokenException extends \Exception implements GuzzleException
+/**
+ * Add items to Magento cart
+ */
+interface AddCartItemsApiInterface
 {
     /**
-     * Construct
+     * Add items to Magento cart
+     *
+     * @param string $externalBusinessId
+     * @param \Magento\Quote\Api\Data\CartItemInterface[] $items
+     * @return \Meta\Sales\Api\AddCartItemsApiResponseInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function __construct()
-    {
-        parent::__construct("Unauthorized Token", 401);
-    }
+    public function addCartItems(string $externalBusinessId, array $items): AddCartItemsApiResponseInterface;
 }

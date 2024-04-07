@@ -72,21 +72,28 @@ class CatalogSyncHelper
      * Syncs all products and categories to Meta Catalog
      *
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return void
      */
-    public function syncFullCatalog(int $storeId)
+    public function syncFullCatalog(int $storeId, string $flowName, string $traceId)
     {
         try {
             if ($this->systemConfig->isCatalogSyncEnabled($storeId)) {
-                $this->uploader->uploadFullCatalog($storeId);
-                $this->categoryCollection->pushAllCategoriesToFbCollections($storeId);
+                $this->uploader->uploadFullCatalog($storeId, $flowName, $traceId);
+                $this->categoryCollection->pushAllCategoriesToFbCollections($storeId, $flowName, $traceId);
             }
         } catch (\Throwable $e) {
             $context = [
                 'store_id' => $storeId,
                 'event' => 'full_catalog_sync',
                 'event_type' => 'all_products_and_categories_sync',
+                'flow_name' => $flowName,
+                'flow_step' => 'all_products_and_categories_sync_error',
                 'catalog_id' => $this->systemConfig->getCatalogId($storeId),
+                [
+                    'external_trace_id' => $traceId
+                ]
             ];
             $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
         }

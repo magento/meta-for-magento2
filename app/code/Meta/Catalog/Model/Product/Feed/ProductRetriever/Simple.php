@@ -17,19 +17,26 @@ declare(strict_types=1);
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Meta\Catalog\Model\Product\Feed\ProductRetriever;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 
 class Simple implements ProductRetrieverInterface
 {
-    private const LIMIT = 2000;
+    private const LIMIT_DEFAULT = 200;
+
+    /**
+     * @var int
+     */
+    private $limit;
 
     /**
      * @var ProductRepositoryInterface
@@ -57,21 +64,30 @@ class Simple implements ProductRetrieverInterface
     private $productCollectionFactory;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * @param FBEHelper $fbeHelper
      * @param CollectionFactory $productCollectionFactory
      * @param ProductRepositoryInterface $productRepo
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        FBEHelper $fbeHelper,
-        CollectionFactory $productCollectionFactory,
+        FBEHelper                  $fbeHelper,
+        CollectionFactory          $productCollectionFactory,
         ProductRepositoryInterface $productRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder      $searchCriteriaBuilder,
+        SystemConfig               $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productRepo = $productRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->systemConfig = $systemConfig;
+        $this->limit = $this->systemConfig->getProductsFetchBatchSize(self::LIMIT_DEFAULT);
     }
 
     /**
@@ -90,8 +106,11 @@ class Simple implements ProductRetrieverInterface
      * @param int $limit
      * @return array
      */
-    public function retrieve($offset = 1, $limit = self::LIMIT): array
+    public function retrieve($offset = 1, $limit = null): array
     {
+        if ($limit == null) {
+            $limit = $this->getLimit();
+        }
         $storeId = $this->storeId ?? $this->fbeHelper->getStore()->getId();
 
         $collection = $this->productCollectionFactory->create();
@@ -117,12 +136,18 @@ class Simple implements ProductRetrieverInterface
             ->order(new \Zend_Db_Expr('e.updated_at desc'))
             ->limit($limit, $offset);
 
-        $search = $this
-            ->searchCriteriaBuilder
-            ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
-            ->create();
+        if ($this->systemConfig->isAdditionalAttributesSyncDisabled()) {
+            $products = $collection->getItems();
+        } else {
+            // in case of unsupported product we need complete data for products which is return by product repo api.
+            $search = $this
+                ->searchCriteriaBuilder
+                ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
+                ->create();
 
-        return $this->productRepo->getList($search)->getItems();
+            $products = $this->productRepo->getList($search)->getItems();
+        }
+        return $products;
     }
 
     /**
@@ -130,6 +155,6 @@ class Simple implements ProductRetrieverInterface
      */
     public function getLimit()
     {
-        return self::LIMIT;
+        return $this->limit;
     }
 }

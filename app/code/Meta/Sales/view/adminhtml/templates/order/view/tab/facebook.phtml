@@ -14,11 +14,17 @@ $optInFlag = $block->isEmailRemarketingAllowedForOrder() ? 'Yes' : 'No';
     <div class="admin__page-section-content">
         <div class="admin__page-section-item order-facebook-details">
             <address class="admin__page-section-item-content">
-                <p><b>Magento Order ID</b>: <?= $block->getOrder()->getIncrementId() ?></p>
-                <p><b>Meta Order ID</b>: <?= $block->getOrder()->getExtensionAttributes()->getFacebookOrderId() ?></p>
-                <p><b>Channel</b>: <?= $block->getOrder()->getExtensionAttributes()->getChannel() ?></p>
-                <p><b>Email Marketing Allowed</b>: <?= $optInFlag ?></p>
-                <p><b><a href="<?= $block->escapeUrl($block->getOrderFacebookUrl()) ?>" target="_blank">View in Commerce Manager</a></b></p>
+                <p><b>Magento Order ID</b>: <?= $block->escapeHtml($block->getOrder()->getIncrementId()) ?></p>
+                <p><b>Meta Order ID</b>: <?= $block->escapeHtml(
+                    $block->getOrder()->getExtensionAttributes()->getFacebookOrderId()
+                ) ?></p>
+                <p><b>Channel</b>: <?= $block->escapeHtml(
+                    $block->getOrder()->getExtensionAttributes()->getChannel()
+                ) ?></p>
+                <p><b>Email Marketing Allowed</b>: <?= $block->escapeHtml($optInFlag) ?></p>
+                <p><b><a href="<?= $block->escapeUrl(
+                    $block->getOrderFacebookUrl()
+                ) ?>" target="_blank">View in Commerce Manager</a></b></p>
             </address>
         </div>
     </div>

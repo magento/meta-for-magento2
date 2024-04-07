@@ -39,8 +39,8 @@ class FacebookInstalledFeature extends AbstractDb
     /**
      * Check if feature exists
      *
-     * @param string $featureType
-     * @param int $storeId
+     * @param  string $featureType
+     * @param  int    $storeId
      * @return bool
      */
     public function doesFeatureTypeExist($featureType, $storeId)
@@ -56,7 +56,7 @@ class FacebookInstalledFeature extends AbstractDb
     /**
      * Delete all features matching storeId
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return int
      */
     public function deleteAll($storeId)
@@ -68,8 +68,8 @@ class FacebookInstalledFeature extends AbstractDb
     /**
      * Save response data from 'installed_features' to table
      *
-     * @param array $features
-     * @param int $storeId
+     * @param  array $features
+     * @param  int   $storeId
      * @return void
      */
     public function saveResponseData($features, $storeId)
@@ -92,8 +92,8 @@ class FacebookInstalledFeature extends AbstractDb
     /**
      * Format array data for insertion in DB
      *
-     * @param array|string $feature
-     * @param string $key
+     * @param  array|string $feature
+     * @param  string       $key
      * @return string|null
      */
     private function formatArrayData($feature, $key)

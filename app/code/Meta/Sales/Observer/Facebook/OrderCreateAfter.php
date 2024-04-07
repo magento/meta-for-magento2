@@ -95,7 +95,7 @@ class OrderCreateAfter implements ObserverInterface
         $storeId = $order->getStoreId();
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))) {
             return;
         }
 

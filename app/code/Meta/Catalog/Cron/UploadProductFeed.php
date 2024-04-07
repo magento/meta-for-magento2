@@ -23,7 +23,6 @@ namespace Meta\Catalog\Cron;
 use Exception;
 use Meta\Catalog\Model\Product\Feed\Uploader;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 
 class UploadProductFeed
@@ -63,12 +62,14 @@ class UploadProductFeed
      *
      * @param int $storeId
      * @return $this
-     * @throws LocalizedException
+     * @throws \Throwable
      */
     private function uploadForStore($storeId)
     {
         if ($this->isFeedUploadEnabled($storeId)) {
-            $this->uploader->uploadFullCatalog($storeId);
+            $traceId = $this->fbeHelper->genUniqueTraceID();
+            $flowName = 'daily_product_feed_upload';
+            $this->uploader->uploadFullCatalog($storeId, $flowName, $traceId);
         }
 
         return $this;

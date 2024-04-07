@@ -130,14 +130,16 @@ class AdditionalAttributes
      */
     public function getCorrectText(Product $product, string $attribute)
     {
-        if ($product->getData($attribute)) {
-            $text = $product->getAttributeText($attribute);
-            if (!$text) {
-                $text = $product->getData($attribute);
-            }
-            return $text;
+        $attribute_data = $product->getData($attribute);
+        if (!$attribute_data) {
+            return false;
         }
-        return false;
+
+        if (is_string($attribute_data)) {
+            $text = $product->getAttributeText($attribute);
+            return $text ?: $attribute_data;
+        }
+        return $attribute_data;
     }
 
     /**

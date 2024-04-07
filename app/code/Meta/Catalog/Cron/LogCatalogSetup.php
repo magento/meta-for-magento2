@@ -109,7 +109,7 @@ class LogCatalogSetup
                             ),
                             'extensions' => self::$logInstalledModules
                                 ? json_encode($this->fullModuleList->getAll())
-                                : null
+                                : 'Logging installed modules not enabled'
                         ]
                     ],
                     $accessToken

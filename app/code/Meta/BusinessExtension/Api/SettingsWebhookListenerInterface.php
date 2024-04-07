@@ -18,7 +18,7 @@ interface SettingsWebhookListenerInterface
      * Process settings GET request
      *
      * @param string $externalBusinessId
-     * @return CoreConfigInterface
+     * @return \Meta\BusinessExtension\Api\CoreConfigInterface
      */
     public function getCoreConfig(string $externalBusinessId):CoreConfigInterface;
 }

@@ -14,7 +14,7 @@
 
     require(['Meta_BusinessExtension/js/error_logging'], (errorLogging) => {
         window.removeEventListener('error', onEarlyError);
-        
+
         errorLogging.init(
             '<?=$escaper->escapeJs($block->getReportClientErrorRoute())?>',
             '<?=$escaper->escapeJs($block->getSelectedStoreId())?>',
@@ -33,10 +33,16 @@
             businessVertical: 'ECOMMERCE',
             channel: <?=$block->isCommerceExtensionEnabled() ? "'COMMERCE'" : "'COMMERCE_OFFSITE'"?>,
             cleanConfigCacheUrl: '<?= $escaper->escapeHtml($block->getCleanCacheAjaxRoute()) ?>',
+            commerce_partner_seller_platform_type:
+                '<?= $escaper->escapeHtml($block->getCommercePartnerSellerPlatformType()) ?>',
+            repairRepairCommercePartnerIntegrationUrl: '<?=
+                $escaper->escapeHtml($block->getRepairRepairCommercePartnerIntegrationAjaxRoute())
+            ?>',
             currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>',
             customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>',
             debug: true,
             deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>',
+            updateInstalledMBEConfig: '<?= $escaper->escapeHtml($block->getUpdateMBEConfigAjaxRoute()) ?>',
             externalBusinessId: '<?=
                 $escaper->escapeHtml($block->getExternalBusinessId($block->getSelectedStoreId()))
             ?>',
@@ -70,7 +76,7 @@
                         ) ?>
                     </b>
                 </p>
-                <p><?= $escaper->escapeHtml(__("If this persists, it may indicate that Magento no longer has permission 
+                <p><?= $escaper->escapeHtml(__("If this persists, it may indicate that Magento no longer has permission
                     to access your Meta Business. You can delete your connection to
                     Meta and complete setup again.")) ?>
                 </p>

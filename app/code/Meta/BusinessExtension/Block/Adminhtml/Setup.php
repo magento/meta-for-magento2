@@ -31,9 +31,11 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 
 /**
  * @api
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class Setup extends Template
 {
@@ -72,26 +74,33 @@ class Setup extends Template
     private $commerceExtensionHelper;
 
     /**
-     * @param Context $context
-     * @param RequestInterface $request
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param StoreRepositoryInterface $storeRepo
-     * @param WebsiteCollectionFactory $websiteCollectionFactory
-     * @param CommerceExtensionHelper $commerceExtensionHelper
-     * @param ApiKeyService $apiKeyService
-     * @param array $data
+     * @var AdobeCloudConfigInterface
+     */
+    private AdobeCloudConfigInterface $adobeConfig;
+
+    /**
+     * @param Context                   $context
+     * @param RequestInterface          $request
+     * @param FBEHelper                 $fbeHelper
+     * @param SystemConfig              $systemConfig
+     * @param StoreRepositoryInterface  $storeRepo
+     * @param WebsiteCollectionFactory  $websiteCollectionFactory
+     * @param CommerceExtensionHelper   $commerceExtensionHelper
+     * @param ApiKeyService             $apiKeyService
+     * @param AdobeCloudConfigInterface $adobeConfig
+     * @param array                     $data
      */
     public function __construct(
-        Context                  $context,
-        RequestInterface         $request,
-        FBEHelper                $fbeHelper,
-        SystemConfig             $systemConfig,
-        StoreRepositoryInterface $storeRepo,
-        WebsiteCollectionFactory $websiteCollectionFactory,
-        CommerceExtensionHelper $commerceExtensionHelper,
-        ApiKeyService            $apiKeyService,
-        array                    $data = []
+        Context                   $context,
+        RequestInterface          $request,
+        FBEHelper                 $fbeHelper,
+        SystemConfig              $systemConfig,
+        StoreRepositoryInterface  $storeRepo,
+        WebsiteCollectionFactory  $websiteCollectionFactory,
+        CommerceExtensionHelper   $commerceExtensionHelper,
+        ApiKeyService             $apiKeyService,
+        AdobeCloudConfigInterface $adobeConfig,
+        array                     $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
         parent::__construct($context, $data);
@@ -101,6 +110,7 @@ class Setup extends Template
         $this->websiteCollectionFactory = $websiteCollectionFactory;
         $this->commerceExtensionHelper = $commerceExtensionHelper;
         $this->apiKeyService = $apiKeyService;
+        $this->adobeConfig = $adobeConfig;
     }
 
     /**
@@ -180,7 +190,7 @@ class Setup extends Template
     /**
      * Fetch pixel id
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string|null
      */
     public function fetchPixelId($storeId)
@@ -222,7 +232,7 @@ class Setup extends Template
     /**
      * Get external business id
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string|null
      */
     public function getExternalBusinessId($storeId)
@@ -231,9 +241,14 @@ class Setup extends Template
         if ($storedExternalId) {
             return $storedExternalId;
         }
-        $storeId = $this->fbeHelper->getStore()->getId();
+        if ($storeId === null) {
+            $storeId = $this->getSelectedStoreId();
+        }
+
         $this->fbeHelper->log("Store id---" . $storeId);
-        return uniqid('fbe_magento_' . $storeId . '_');
+        $generatedExternalId = uniqid('fbe_magento_' . $storeId . '_');
+        $this->systemConfig->saveExternalBusinessIdForStore($generatedExternalId, (int)$storeId);
+        return $generatedExternalId;
     }
 
     /**
@@ -300,7 +315,7 @@ class Setup extends Template
     /**
      * Is fbe installed
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isFBEInstalled($storeId)
@@ -311,7 +326,7 @@ class Setup extends Template
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getCommerceExtensionIFrameURL($storeId)
@@ -322,7 +337,7 @@ class Setup extends Template
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function hasCommerceExtensionIFramePermissionError($storeId)
@@ -442,6 +457,16 @@ class Setup extends Template
     }
 
     /**
+     * Call this method to get a string indicator on seller types (hosted by Adobe).
+     *
+     * @return string
+     */
+    public function getCommercePartnerSellerPlatformType(): string
+    {
+        return $this->adobeConfig->getCommercePartnerSellerPlatformType();
+    }
+
+    /**
      * Call this method to Get the existing Api key or generate and return it.
      *
      * @return string
@@ -449,5 +474,25 @@ class Setup extends Template
     public function getCustomApiKey(): string
     {
         return $this->apiKeyService->getCustomApiKey();
+    }
+
+    /**
+     * Get repair CPI ajax route
+     *
+     * @return mixed
+     */
+    public function getRepairRepairCommercePartnerIntegrationAjaxRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/RepairCommercePartnerIntegration');
+    }
+
+    /**
+     * Get MBE Update Installed Config ajax route
+     *
+     * @return string
+     */
+    public function getUpdateMBEConfigAjaxRoute()
+    {
+        return $this->fbeHelper->getUrl('fbeadmin/ajax/MBEUpdateInstalledConfig');
     }
 }

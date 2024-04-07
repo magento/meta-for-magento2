@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Meta\Sales\Model\Mapper;
 
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;

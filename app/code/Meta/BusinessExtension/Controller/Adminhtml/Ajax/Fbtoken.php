@@ -41,9 +41,9 @@ class Fbtoken extends AbstractAjax
     /**
      * Construct
      *
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
+     * @param Context      $context
+     * @param JsonFactory  $resultJsonFactory
+     * @param FBEHelper    $fbeHelper
      * @param SystemConfig $systemConfig
      */
     public function __construct(

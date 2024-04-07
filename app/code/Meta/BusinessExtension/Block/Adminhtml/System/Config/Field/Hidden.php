@@ -22,8 +22,8 @@ class Hidden extends Field
     private $secureRenderer;
 
     /**
-     * @param Context $context
-     * @param array $data
+     * @param Context                 $context
+     * @param array                   $data
      * @param SecureHtmlRenderer|null $secureRenderer
      */
     public function __construct(Context $context, array $data = [], ?SecureHtmlRenderer $secureRenderer = null)
@@ -36,8 +36,8 @@ class Hidden extends Field
     /**
      * Decorate field row html to be invisible
      *
-     * @param AbstractElement $element
-     * @param string $html
+     * @param  AbstractElement $element
+     * @param  string          $html
      * @return string
      */
     protected function _decorateRowHtml(AbstractElement $element, $html)

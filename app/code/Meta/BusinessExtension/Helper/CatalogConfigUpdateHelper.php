@@ -41,7 +41,7 @@ class CatalogConfigUpdateHelper
     private EventManager $eventManager;
 
     /**
-     * @param FBEHelper $fbeHelper
+     * @param FBEHelper    $fbeHelper
      * @param SystemConfig $systemConfig
      * @param EventManager $eventManager
      */
@@ -60,11 +60,11 @@ class CatalogConfigUpdateHelper
      * Function enables Meta Commerce Sync and do full catalog sync.
      * Do not call it apart from catalog update webhook event, it may cause stale state for catalog integration.
      *
-     * @param int $storeId
-     * @param string $catalogId
-     * @param string $commercePartnerIntegrationId
-     * @param string $pixelId
-     * @param bool $triggerFullSync
+     * @param  int    $storeId
+     * @param  string $catalogId
+     * @param  string $commercePartnerIntegrationId
+     * @param  string $pixelId
+     * @param  bool   $triggerFullSync
      * @return void
      */
     public function updateCatalogConfiguration(
@@ -109,8 +109,10 @@ class CatalogConfigUpdateHelper
                 // for e.g. clears all the product set ids for categories for old catalog
                 $this->eventManager->dispatch('facebook_update_catalog_configuration', ['store_id' => $storeId]);
 
-                $this->fbeHelper->log('Catalog configuration updated and stale product set ids cleared --- '
-                    . $commercePartnerIntegrationId);
+                $this->fbeHelper->log(
+                    'Catalog configuration updated and stale product set ids cleared --- '
+                    . $commercePartnerIntegrationId
+                );
 
             }
 

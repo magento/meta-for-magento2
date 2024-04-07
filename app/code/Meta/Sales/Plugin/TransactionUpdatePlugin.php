@@ -19,10 +19,15 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Plugin;
 
-use Taxjar\SalesTax\Model\Transaction;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
+use Meta\BusinessExtension\Logger\Logger;
 
-class TransactionUpdatePlugin {
+class TransactionUpdatePlugin
+{
+    /**
+     * @var Logger
+     */
+    private Logger $logger;
 
     /**
      * @var FacebookOrderInterfaceFactory
@@ -30,19 +35,29 @@ class TransactionUpdatePlugin {
     private FacebookOrderInterfaceFactory $facebookOrderFactory;
 
     /**
+     * @param Logger $logger
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      */
     public function __construct(
+        Logger $logger,
         FacebookOrderInterfaceFactory $facebookOrderFactory
     ) {
         $this->facebookOrderFactory = $facebookOrderFactory;
+        $this->logger = $logger;
     }
 
     /**
      * Overriding the GetProvider method of Taxjar to return Facebook to exempt the order in
+     *
      * Taxjar plugin with marketplace exemption
+     *
+     * @param mixed $_subject
+     * @param mixed $result
+     * @param mixed $order
+     * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterGetProvider(Transaction $subject, $result, $order): string
+    public function afterGetProvider($_subject, $result, $order): string
     {
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($order->getId(), 'magento_order_id');

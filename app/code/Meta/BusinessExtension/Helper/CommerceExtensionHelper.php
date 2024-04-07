@@ -43,7 +43,7 @@ class CommerceExtensionHelper
     /**
      * FBEHelper constructor
      *
-     * @param SystemConfig $systemConfig
+     * @param SystemConfig    $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
      */
     public function __construct(
@@ -61,7 +61,7 @@ class CommerceExtensionHelper
      */
     public function getSplashPageURL()
     {
-        if (!$this->systemConfig->isCommerceExtensionEnabled()) {
+        if (!$this->systemConfig->isActiveExtension()) {
             return 'https://business.facebook.com/fbe-iframe-get-started/?';
         }
 
@@ -76,7 +76,7 @@ class CommerceExtensionHelper
      */
     public function getPopupOrigin()
     {
-        if (!$this->systemConfig->isCommerceExtensionEnabled()) {
+        if (!$this->systemConfig->isActiveExtension()) {
             return 'https://business.facebook.com';
         }
 
@@ -86,19 +86,19 @@ class CommerceExtensionHelper
     /**
      * Whether to enable the new Commerce Extension UI
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isCommerceExtensionEnabled($storeId)
     {
         $storeHasCommercePartnerIntegration = !!$this->systemConfig->getCommercePartnerIntegrationId($storeId);
-        return $storeHasCommercePartnerIntegration || $this->systemConfig->isCommerceExtensionEnabled();
+        return $storeHasCommercePartnerIntegration || $this->systemConfig->isActiveExtension($storeId);
     }
 
     /**
      * Whether there is an error blocking usage of the Commerce Extension.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function hasCommerceExtensionPermissionError($storeId)
@@ -110,7 +110,7 @@ class CommerceExtensionHelper
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getCommerceExtensionIFrameURL($storeId)

@@ -63,13 +63,13 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
     private EventManager $eventManager;
 
     /**
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param RequestInterface $request
+     * @param Context                  $context
+     * @param JsonFactory              $resultJsonFactory
+     * @param FBEHelper                $fbeHelper
+     * @param SystemConfig             $systemConfig
+     * @param RequestInterface         $request
      * @param FacebookInstalledFeature $fbeInstalledFeatureResource
-     * @param EventManager $eventManager
+     * @param EventManager             $eventManager
      */
     public function __construct(
         Context $context,
@@ -137,7 +137,7 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
     /**
      * Delete config keys
      *
-     * @param string|int|null $storeId Store ID to delete from.
+     * @param  string|int|null $storeId Store ID to delete from.
      * @return Fbdeleteasset
      */
     private function deleteConfigKeys($storeId)
@@ -169,7 +169,7 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
     /**
      * Delete installed features
      *
-     * @param string|int|null $storeId Store ID to delete from.
+     * @param  string|int|null $storeId Store ID to delete from.
      * @return Fbdeleteasset
      */
     private function deleteInstalledFeatures($storeId)

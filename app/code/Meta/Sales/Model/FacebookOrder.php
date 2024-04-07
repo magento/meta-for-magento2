@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Sales\Model;
 
 use Magento\Framework\Model\AbstractModel;
+use Magento\Sales\Model\Order;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Model\ResourceModel\FacebookOrder as ResourceModel;
 
@@ -124,7 +125,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     public function updateSyncedShipment($magentoShipmentId, $trackingInfo)
     {
         $shipments = $this->getSyncedShipments();
-        $shipments[$magentoShipmentId] = self::encodeTrackingInfo($trackingInfo);
+        $shipments[$magentoShipmentId] = $this->encodeTrackingInfo($trackingInfo);
         $this->setData('synced_shipments', json_encode($shipments));
 
         return $this;
@@ -160,7 +161,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
      * @param array $trackingInfo
      * @return bool
      */
-    public static function isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo)
+    public function isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo): bool
     {
         $syncedShipments = $order->getExtensionAttributes()->getSyncedShipments();
         if (!array_key_exists($magentoShipmentId, $syncedShipments)) {
@@ -168,7 +169,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
         }
 
         $syncedShipment = $syncedShipments[$magentoShipmentId];
-        return $syncedShipment !== FacebookOrder::encodeTrackingInfo($trackingInfo);
+        return $syncedShipment !== $this->encodeTrackingInfo($trackingInfo);
     }
 
     /**
@@ -177,7 +178,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
      * @param array $trackingInfo
      * @return string
      */
-    private static function encodeTrackingInfo($trackingInfo)
+    private function encodeTrackingInfo($trackingInfo): string
     {
         return $trackingInfo['carrier'] . '|' . $trackingInfo['tracking_number'];
     }

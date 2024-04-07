@@ -12,7 +12,7 @@
                     <depends>
                         <field id="facebook_business_extension/business_extension/installed">1</field>
                         <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
-                        <field id="facebook_business_extension/business_extension/onsite">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <comment>Pull orders awaiting acknowledgement from your Meta Commerce Account</comment>
                 </field>
@@ -21,8 +21,8 @@
                    showInWebsite="0"
                    showInStore="1">
                 <field id="orders_sync_active" translate="label comment" type="select" sortOrder="10"
-                       showInDefault="1"
-                       showInWebsite="0" showInStore="1">
+                       showInDefault="0"
+                       showInWebsite="0" showInStore="0">
                     <label>Enable Orders Sync</label>
                     <config_path>facebook/orders_sync/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -92,13 +92,13 @@
             <group id="business_settings" translate="label" type="text" sortOrder="10" showInDefault="1"
                    showInWebsite="0" showInStore="1">
                 <field id="auto_subscribe_to_newsletter" translate="label comment" type="select" sortOrder="40"
-                       showInDefault="1" showInWebsite="0" showInStore="1">
+                       showInDefault="0" showInWebsite="0" showInStore="0">
                     <label>Subscribe to Newsletter</label>
                     <config_path>facebook/orders_sync/auto_subscribe_to_newsletter</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="facebook_business_extension/business_extension/orders_sync_active">1</field>
-                        <field id="facebook_business_extension/business_extension/onsite">1</field>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
                     </depends>
                     <comment>Automatically subscribe buyers to the Adobe Commerce newsletter. Note: only works if the
                         buyer agreed to use their email for marketing purposes on Meta
@@ -111,7 +111,6 @@
                 <fieldset_css>meta-section-config</fieldset_css>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
-                    <field id="facebook_business_extension/business_extension/onsite">1</field>
                 </depends>
                 <field id="standard" translate="label comment" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="0" showInStore="1">

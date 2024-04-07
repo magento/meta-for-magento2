@@ -53,7 +53,7 @@ abstract class LoggingPluginBase
     public function __construct(
         FBEHelper                $fbeHelper,
         RequestInterface         $request,
-        StoreRepositoryInterface $storeRepository,
+        StoreRepositoryInterface $storeRepository
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->request = $request;
@@ -74,7 +74,7 @@ abstract class LoggingPluginBase
         string   $log_prefix,
         $subject,
         callable $progress,
-        ...$args,
+        ...$args
     ) {
         return $this->wrapCallableWithLogging(
             true, // $should_log_errors
@@ -100,7 +100,7 @@ abstract class LoggingPluginBase
         string   $log_prefix,
         $subject,
         callable $progress,
-        ...$args,
+        ...$args
     ) {
         return $this->wrapCallableWithLogging(
             true, // $should_log_errors
@@ -130,15 +130,15 @@ abstract class LoggingPluginBase
         string   $log_prefix,
         $subject,
         callable $progress,
-        ...$args,
+        ...$args
     ) {
         $classname = $this->getClassnameForLogging($subject);
-        if (!str_starts_with($classname, "Meta\\")) {
+        if (!preg_match('/^Meta\\\\/', $classname)) {
             return $progress(...$args);
         }
 
         if ($should_log_impressions) {
-            $this->fbeHelper->log(
+            $this->fbeHelper->logTelemetryToMeta(
                 $log_prefix . ': ' . $classname,
                 $this->getTelemetryLogData($log_prefix, $subject, 'Start'),
             );
@@ -157,7 +157,7 @@ abstract class LoggingPluginBase
             throw $ex;
         } finally {
             if ($should_log_impressions) {
-                $this->fbeHelper->log(
+                $this->fbeHelper->logTelemetryToMeta(
                     $log_prefix . ': ' . $classname,
                     $this->getTelemetryLogData($log_prefix, $subject, 'End'),
                 );
@@ -194,7 +194,6 @@ abstract class LoggingPluginBase
         $storeId = $this->getMaybeStoreID();
         return [
             'flow_name' => $log_prefix . ': ' . $this->getClassnameForLogging($subject),
-            'log_type' => 'persist_meta_telemetry_logs',
             'store_id' => $storeId,
             'flow_step' => $step,
         ];

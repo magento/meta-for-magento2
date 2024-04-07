@@ -20,10 +20,12 @@ declare(strict_types=1);
 
 namespace Meta\Catalog\Model\Category;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category as Category;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Category\CategoryUtility\CategoryUtilities;
@@ -84,51 +86,90 @@ class CategoryCollection
      */
     public function makeHttpRequestsAfterCategorySave(Category $category, bool $isNameChanged): void
     {
+        $flowName = 'category_update_real_time';
+        $traceId = $this->fbeHelper->genUniqueTraceID();
+
         if ($this->systemConfig->isAllCategoriesSyncEnabled()) {
             // fetches all the stores for seller
             $storeIds = $this->categoryUtilities->getAllFBEInstalledStoreIds();
         } else {
             $storeIds = $category->getStoreIds();
         }
-
-        $this->fbeHelper->log("Category real time update: store counts: " . count($storeIds));
         foreach ($storeIds as $storeId) {
             try {
-                $categories = [];
-                if ($isNameChanged) {
-                    $categories = $this->categoryUtilities->getAllChildrenCategories(
-                        $category,
-                        (int)$storeId
-                    );
-                } else {
-                    $categories[] = $this->categoryRepository->get($category->getId(), $storeId);
-                }
                 if (!$this->systemConfig->isCatalogSyncEnabled($storeId)) {
-                    $this->fbeHelper->log(
-                        "Category real time update: meta catalog sync is not enabled for store: " . $storeId
-                    );
                     continue;
                 }
                 $accessToken = $this->systemConfig->getAccessToken($storeId);
                 if ($accessToken === null) {
-                    $this->fbeHelper->log(
-                        "can't find access token, won't update category with fb, storeId: " . $storeId
-                    );
                     continue;
                 }
-                $this->pushCategoriesToFBCollections($categories, $accessToken, (int)$storeId);
+                $startTime = $this->fbeHelper->getCurrentTimeInMS();
+                $context = $this->categoryUtilities->getCategoryLoggerContext(
+                    (int)$storeId,
+                    '', /* event_type */
+                    $flowName,
+                    'category_update_sync_real_time_start',
+                    [
+                        'external_trace_id' => $traceId,
+                        'category_id' => $category->getId(),
+                        'category_name' => $category->getName()
+                    ]
+                );
+                $this->fbeHelper->logTelemetryToMeta(
+                    sprintf(
+                        "Category real time update: categoryId: %s, storeId: %s, flow: %s",
+                        $category->getId(),
+                        $storeId,
+                        $flowName
+                    ),
+                    $context
+                );
+
+                $categories = [];
+                if ($isNameChanged) {
+                    $categories = $this->categoryUtilities->getAllChildrenCategories(
+                        $category,
+                        (int)$storeId,
+                        $flowName,
+                        $traceId
+                    );
+                } else {
+                    $categories[] = $this->categoryRepository->get($category->getId(), $storeId);
+                }
+                $this->pushCategoriesToFBCollections($categories, $accessToken, (int)$storeId, $flowName, $traceId);
+
+                $context = $this->categoryUtilities->getCategoryLoggerContext(
+                    (int)$storeId,
+                    '', /* event_type */
+                    $flowName,
+                    'category_update_sync_real_time_completed',
+                    [
+                        'external_trace_id' => $traceId,
+                        'time_taken' => $this->fbeHelper->getCurrentTimeInMS() - $startTime
+                    ]
+                );
+
+                $this->fbeHelper->logTelemetryToMeta(
+                    sprintf(
+                        "Category real time update completed: categoryId: %s, storeId: %s, flow: %s",
+                        $category->getId(),
+                        $storeId,
+                        $flowName
+                    ),
+                    $context
+                );
             } catch (\Throwable $e) {
-                $extraData = [
-                    'category_id' => $category->getId(),
-                    'category_name' => $category->getName(),
-                    'num_of_stores_for_category' => count($storeIds)
-                ];
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
                     $this->categoryUtilities->getCategoryLoggerContext(
-                        $storeId,
+                        (int)$storeId,
                         'category_sync_real_time',
-                        $extraData
+                        $flowName,
+                        'category_update_sync_real_time_error',
+                        [
+                            'external_trace_id' => $traceId
+                        ]
                     )
                 );
             }
@@ -142,29 +183,61 @@ class CategoryCollection
      * this means if a category contains any category, we won't create a collection for it.
      *
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return string|null
+     * @throws NoSuchEntityException
      * @throws \Throwable
      */
-    public function pushAllCategoriesToFbCollections(int $storeId): ?string
+    public function pushAllCategoriesToFbCollections(int $storeId, string $flowName, string $traceId): ?string
     {
         $accessToken = $this->systemConfig->getAccessToken($storeId);
         if (!$accessToken) {
-            $this->fbeHelper->log(
-                "Category force update: can't find access token, abort pushAllCategoriesToFbCollections"
-            );
             return null;
         }
 
-        if ($this->systemConfig->isAllCategoriesSyncEnabled()) {
-            $categories = $this->categoryUtilities->getAllCategoriesForSeller($storeId);
-        } else {
-            $categories = $this->categoryUtilities->getAllCategoriesForStore($storeId);
-        }
-        $this->fbeHelper->log(
-            "Category force update: categories for store:" . $storeId . " count:" . $categories->getSize()
+        $startTime = $this->fbeHelper->getCurrentTimeInMS();
+        $context = $this->categoryUtilities->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'all_categories_sync_for_store_starts',
+            [
+                'external_trace_id' => $traceId,
+                'all_categories_sync_enabled' => $this->systemConfig->isAllCategoriesSyncEnabled()
+            ]
         );
 
-        return $this->pushCategoriesToFBCollections($categories, $accessToken, $storeId);
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf("All Categories sync starts: storeId: %s ,flow: %s", $storeId, $flowName),
+            $context
+        );
+
+        if ($this->systemConfig->isAllCategoriesSyncEnabled()) {
+            $categories = $this->categoryUtilities->getAllCategoriesForSeller($storeId, $flowName, $traceId);
+        } else {
+            $categories = $this->categoryUtilities->getAllCategoriesForStore($storeId, $flowName, $traceId);
+        }
+
+        $response = $this->pushCategoriesToFBCollections($categories, $accessToken, $storeId, $flowName, $traceId);
+
+        $context = $this->categoryUtilities->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'all_categories_sync_for_store_completed',
+            [
+                'external_trace_id' => $traceId,
+                'time_taken' => $this->fbeHelper->getCurrentTimeInMS() - $startTime
+            ]
+        );
+
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf("All Categories sync completed: storeId: %s ,flow: %s", $storeId, $flowName),
+            $context
+        );
+
+        return $response;
     }
 
     /**
@@ -173,17 +246,36 @@ class CategoryCollection
      * @param Collection $categories
      * @param string $accessToken
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return string|null
      *
+     * @throws NoSuchEntityException
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @throws \Throwable
      */
     private function pushCategoriesToFBCollections(
         $categories,
-        $accessToken,
-        int $storeId
+        string $accessToken,
+        int $storeId,
+        string $flowName,
+        string $traceId
     ): ?string {
+        $startTime = $this->fbeHelper->getCurrentTimeInMS();
+        $context = $this->categoryUtilities->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'categories_sync_to_meta_started',
+            [
+                'external_trace_id' => $traceId
+            ]
+        );
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf("Category sync, push categories to Meta starts: storeId: %s, flow: %s", $storeId, $flowName),
+            $context
+        );
+
         $resArray = [];
         $catalogId = $this->systemConfig->getCatalogId($storeId);
         $requests = [];
@@ -205,29 +297,12 @@ class CategoryCollection
                 );
 
                 if (!$isVisibleOnMeta && !$isAllCategoriesSyncEnabled) {
-                    $this->fbeHelper->log(sprintf(
-                        "Category sync disabled: Category %s and store %s",
-                        $category->getName(),
-                        $storeId
-                    ));
                     continue;
                 }
 
                 $setId = $category->getData(SystemConfig::META_PRODUCT_SET_ID);
-                $this->fbeHelper->log(sprintf(
-                    "Category update: setId for CATEGORY %s and store %s is %s",
-                    $category->getName(),
-                    $storeId,
-                    $setId
-                ));
                 $products = $this->categoryUtilities->getCategoryProducts($category, $storeId);
                 if ($setId) {
-                    $this->fbeHelper->log(sprintf(
-                        "Category update: Updating FB product set %s for CATEGORY %s and store %s",
-                        $setId,
-                        $category->getName(),
-                        $storeId
-                    ));
                     $requests[] = $this->updateCategoryWithFBRequestJson(
                         $category,
                         $products,
@@ -244,11 +319,6 @@ class CategoryCollection
                         ));
                         continue;
                     }
-                    $this->fbeHelper->log(sprintf(
-                        "Category update: Creating new FB product set for CATEGORY %s and store %s",
-                        $category->getName(),
-                        $storeId
-                    ));
                     $requests[] = $this->pushCategoryWithFBRequestJson(
                         $category,
                         $products,
@@ -259,17 +329,16 @@ class CategoryCollection
                 }
                 $updatedCategories[] = $category;
                 if (count($requests) === self::BATCH_MAX) {
-                    // TODO: phpcs: array_merge(...) is used in a loop and is a resources greedy construction.
-                    $resArray = array_merge(
-                        $resArray,
-                        $this->flushCategoryBatchRequest(
-                            $requests,
-                            $updatedCategories,
-                            $currentBatch,
-                            $accessToken,
-                            $storeId
-                        )
+                    $batchResponse = $this->flushCategoryBatchRequest(
+                        $requests,
+                        $updatedCategories,
+                        $currentBatch,
+                        $accessToken,
+                        $storeId,
+                        $flowName,
+                        $traceId
                     );
+                    array_push($resArray, ...$batchResponse);
                     $requests = [];
                     $updatedCategories = [];
                     $currentBatch++;
@@ -282,42 +351,48 @@ class CategoryCollection
                 );
                 $extraData = [
                     'category_id' => $category->getId(),
-                    'category_name' => $category->getName()
+                    'category_name' => $category->getName(),
+                    'external_trace_id' => $traceId,
+                    'batch_num' => $currentBatch
                 ];
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $e,
                     $this->categoryUtilities->getCategoryLoggerContext(
                         $storeId,
                         'categories_push_to_meta',
+                        $flowName,
+                        'categories_sync_to_meta_error',
                         $extraData
                     )
                 );
             }
         }
         if (!empty($requests)) {
-            try {
-                $resArray = array_merge(
-                    $resArray,
-                    $this->flushCategoryBatchRequest(
-                        $requests,
-                        $updatedCategories,
-                        $currentBatch,
-                        $accessToken,
-                        $storeId
-                    )
-                );
-            } catch (\Throwable $e) {
-                $extraData = [];
-                $this->fbeHelper->logExceptionImmediatelyToMeta(
-                    $e,
-                    $this->categoryUtilities->getCategoryLoggerContext(
-                        $storeId,
-                        'categories_push_to_meta_last_page',
-                        $extraData
-                    )
-                );
-            }
+            $batchResponse = $this->flushCategoryBatchRequest(
+                $requests,
+                $updatedCategories,
+                $currentBatch,
+                $accessToken,
+                $storeId,
+                $flowName,
+                $traceId
+            );
+            array_push($resArray, ...$batchResponse);
         }
+        $context = $this->categoryUtilities->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'categories_sync_to_meta_completed',
+            [
+                'external_trace_id' => $traceId,
+                'time_taken' => $this->fbeHelper->getCurrentTimeInMS() - $startTime
+            ]
+        );
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf("Category sync, push categories to Meta ends: storeId: %s, flow: %s", $storeId, $flowName),
+            $context
+        );
         return json_encode($resArray);
     }
 
@@ -393,26 +468,87 @@ class CategoryCollection
      * Flush catalog batch request
      *
      * @param array $requests
-     * @param array $updated_categories
+     * @param array $updatedCategories
      * @param int $currentBatch
      * @param string $accessToken
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return array
-     * @throws \Throwable
      */
     private function flushCategoryBatchRequest(
-        array $requests,
-        array $updated_categories,
-        int   $currentBatch,
-        $accessToken,
-        int   $storeId
+        array  $requests,
+        array  $updatedCategories,
+        int    $currentBatch,
+        string $accessToken,
+        int    $storeId,
+        string $flowName,
+        string $traceId
     ): array {
-        $this->fbeHelper->log(sprintf('Pushing batch %d with %d categories', $currentBatch, count($requests)));
-        $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
-            ->setAccessToken($accessToken);
-        $batch_response = $this->fbeHelper->getGraphAPIAdapter()->graphAPIBatchRequest($requests);
-        $this->fbeHelper->log('Category push response ' . json_encode($batch_response));
-        return $this->processCategoryBatchResponse($batch_response, $updated_categories, $storeId);
+        $context = $this->categoryUtilities->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'category_sync_flush_batch_request',
+            [
+                'external_trace_id' => $traceId,
+                'batch_num' => $currentBatch,
+                'batch_size' => count($updatedCategories),
+            ]
+        );
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf(
+                'Pushing category batch: BatchNum %d, CategoryCount: %d, flow: %s ',
+                $currentBatch,
+                count($requests),
+                $flowName
+            ),
+            $context
+        );
+
+        try {
+            $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
+                ->setAccessToken($accessToken);
+            $batchResponse = $this->fbeHelper->getGraphAPIAdapter()->graphAPIBatchRequest($requests);
+
+            return $this->processCategoryBatchResponse(
+                $batchResponse,
+                $updatedCategories,
+                $storeId,
+                $currentBatch,
+                $flowName,
+                $traceId
+            );
+        } catch (\Throwable $e) {
+            $categoryIds = [];
+            foreach ($updatedCategories as $category) {
+                $categoryIds[] = $category->getId();
+            }
+            $resArray[] = __(
+                "Error occurred while updating product categories: %1," .
+                " please check the error log for more details",
+                json_encode($categoryIds)
+            );
+
+            $extraData = [
+                'external_trace_id' => $traceId,
+                'batch_num' => $currentBatch,
+                'batch_size' => count($updatedCategories),
+                'categories' => json_encode($categoryIds)
+            ];
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
+                $e,
+                $this->categoryUtilities->getCategoryLoggerContext(
+                    $storeId,
+                    'category_push_batch_request_error',
+                    $flowName,
+                    'category_sync_batch_request_error',
+                    $extraData
+                )
+            );
+
+            return $resArray;
+        }
     }
 
     /**
@@ -421,16 +557,26 @@ class CategoryCollection
      * @param array $batchResponse
      * @param array $updatedCategories
      * @param int $storeId
+     * @param int $batchNum
+     * @param string $flowName
+     * @param string $traceId
      * @return array
      * @throws \Throwable
      */
-    private function processCategoryBatchResponse(array $batchResponse, array $updatedCategories, int $storeId): array
-    {
+    private function processCategoryBatchResponse(
+        array  $batchResponse,
+        array  $updatedCategories,
+        int    $storeId,
+        int    $batchNum,
+        string $flowName,
+        string $traceId
+    ): array {
         $categoryCount = count($updatedCategories);
         $responseCount = count($batchResponse);
 
         $responses = [];
         if ($categoryCount === $responseCount) {
+            $categorySaveErrorCount = 0;
             foreach ($updatedCategories as $index => $category) {
                 $response = $batchResponse[$index];
 
@@ -448,16 +594,60 @@ class CategoryCollection
                         $category->getName(),
                         $response['body']
                     ));
+                    $categorySaveErrorCount++;
                 }
                 $responses[] = $responseData;
             }
+
+            $context = $this->categoryUtilities->getCategoryLoggerContext(
+                $storeId,
+                '', /* event_type */
+                $flowName,
+                'category_sync_batch_response_processed',
+                [
+                    'external_trace_id' => $traceId,
+                    'batch_num' => $batchNum,
+                    'batch_size' => $categoryCount,
+                    'category_save_error_count' => $categorySaveErrorCount,
+                    'category_upload_response' => json_encode($batchResponse)
+                ]
+            );
+            $this->fbeHelper->logTelemetryToMeta(
+                sprintf(
+                    "Category batch response processed: BatchNum: %d, " .
+                    "CategoriesCount: %d, CategorySaveErrorCount: %d, flow: %s",
+                    $batchNum,
+                    $responseCount,
+                    $categorySaveErrorCount,
+                    $flowName
+                ),
+                $context
+            );
             return $responses;
         } else {
-            $this->fbeHelper->log(sprintf(
-                "Category batch upload response count: %s is not equal to requested categories count: %s",
-                $responseCount,
-                $categoryCount
-            ));
+            $context = $this->categoryUtilities->getCategoryLoggerContext(
+                $storeId,
+                '', /* event_type */
+                $flowName,
+                'category_sync_batch_response_size_mismatch',
+                [
+                    'external_trace_id' => $traceId,
+                    'batch_num' => $batchNum,
+                    'response_size' => $responseCount,
+                    'batch_size' => $categoryCount
+                ]
+            );
+            $this->fbeHelper->logTelemetryToMeta(
+                sprintf(
+                    "Category batch response error, response count not equal" .
+                     "category count: BatchNum: %d, ResponseCount: %d, CategoriesCount: %d, flow: %s",
+                    $batchNum,
+                    $responseCount,
+                    $categoryCount,
+                    $flowName
+                ),
+                $context
+            );
             return $batchResponse;
         }
     }
@@ -488,41 +678,67 @@ class CategoryCollection
      * @param Category $category
      * @return void
      * @throws \Throwable
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function deleteCategoryAndSubCategoryFromFB(Category $category): void
     {
+        $flowName = 'category_delete_real_time';
+        $traceId = $this->fbeHelper->genUniqueTraceID();
+
         $storeIds = $this->categoryUtilities->getAllFBEInstalledStoreIds();
         $this->fbeHelper->log("Delete Categories: store counts: " . count($storeIds));
         foreach ($storeIds as $storeId) {
             $accessToken = $this->systemConfig->getAccessToken($storeId);
             if ($accessToken === null) {
-                $this->fbeHelper->log(sprintf(
-                    "can't find access token, won't do category delete, store: %s",
-                    $storeId
-                ));
                 continue;
             }
-            $childrenCategories = $this->categoryUtilities->getAllChildrenCategories($category, $storeId);
+
+            $startTime = $this->fbeHelper->getCurrentTimeInMS();
+            $context = $this->categoryUtilities->getCategoryLoggerContext(
+                $storeId,
+                '', /* event_type */
+                $flowName,
+                'category_and_children_delete_for_store_start',
+                [
+                    'external_trace_id' => $traceId,
+                    'root_category_id' => $category->getId()
+                ]
+            );
+
+            $this->fbeHelper->logTelemetryToMeta(
+                sprintf(
+                    "Delete Categories started: storeId: %d, categoryId: %s, flow: %s",
+                    $storeId,
+                    $category->getId(),
+                    $flowName
+                ),
+                $context
+            );
+
+            $childrenCategories = $this->categoryUtilities->getAllChildrenCategories(
+                $category,
+                $storeId,
+                $flowName,
+                $traceId
+            );
             $requests = [];
             $currentBatch = 1;
             foreach ($childrenCategories as $childrenCategory) {
                 try {
-                    $this->fbeHelper->log(sprintf(
-                        "Deleted category name: %s, store: %s",
-                        $childrenCategory->getName(),
-                        $storeId
-                    ));
                     $setId = $childrenCategory->getData(SystemConfig::META_PRODUCT_SET_ID);
                     if ($setId == null) {
-                        $this->fbeHelper->log(sprintf(
-                            "cant find product set id, won't make category delete api, store: %s",
-                            $storeId
-                        ));
                         continue;
                     }
                     $requests[] = $this->deleteCategoryWithFBRequestJson($setId);
                     if (count($requests) === self::BATCH_MAX) {
-                        $this->flushCategoryDeleteBatchRequest($requests, $currentBatch, $accessToken, $storeId);
+                        $this->flushCategoryDeleteBatchRequest(
+                            $requests,
+                            $currentBatch,
+                            $accessToken,
+                            $storeId,
+                            $flowName,
+                            $traceId
+                        );
                         $requests = [];
                         $currentBatch++;
                     }
@@ -530,13 +746,16 @@ class CategoryCollection
                     $extraData = [
                         'category_id' => $category->getId(),
                         'category_name' => $category->getName(),
-                        'num_categories_for_delete' => $childrenCategories->getSize()
+                        'num_categories_for_delete' => $childrenCategories->getSize(),
+                        'external_trace_id' => $traceId
                     ];
                     $this->fbeHelper->logExceptionImmediatelyToMeta(
                         $e,
                         $this->categoryUtilities->getCategoryLoggerContext(
                             $storeId,
                             'delete_categories',
+                            $flowName,
+                            'delete_categories_error',
                             $extraData
                         )
                     );
@@ -544,23 +763,55 @@ class CategoryCollection
             }
             if (!empty($requests)) {
                 try {
-                    $this->flushCategoryDeleteBatchRequest($requests, $currentBatch, $accessToken, $storeId);
+                    $this->flushCategoryDeleteBatchRequest(
+                        $requests,
+                        $currentBatch,
+                        $accessToken,
+                        $storeId,
+                        $flowName,
+                        $traceId
+                    );
                 } catch (\Throwable $e) {
                     $extraData = [
                         'category_id' => $category->getId(),
                         'category_name' => $category->getName(),
-                        'num_categories_for_delete' => $childrenCategories->getSize()
+                        'num_categories_for_delete' => $childrenCategories->getSize(),
+                        'external_trace_id' => $traceId
                     ];
                     $this->fbeHelper->logExceptionImmediatelyToMeta(
                         $e,
                         $this->categoryUtilities->getCategoryLoggerContext(
                             $storeId,
                             'delete_categories_last_page',
+                            $flowName,
+                            'delete_categories_error_last_page',
                             $extraData
                         )
                     );
                 }
             }
+
+            $context = $this->categoryUtilities->getCategoryLoggerContext(
+                $storeId,
+                '', /* event_type */
+                $flowName,
+                'category_and_children_delete_for_store_completed',
+                [
+                    'external_trace_id' => $traceId,
+                    'root_category_id' => $category->getId(),
+                    'time_taken' => $this->fbeHelper->getCurrentTimeInMS() - $startTime
+                ]
+            );
+
+            $this->fbeHelper->logTelemetryToMeta(
+                sprintf(
+                    "Delete Categories completed: storeId: %d, categoryId: %s, flow: %s",
+                    $storeId,
+                    $category->getId(),
+                    $flowName
+                ),
+                $context
+            );
         }
     }
 
@@ -571,20 +822,39 @@ class CategoryCollection
      * @param int $currentBatch
      * @param string $accessToken
      * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return void
-     * @throws \Throwable
+     * @throws GuzzleException
      */
     private function flushCategoryDeleteBatchRequest(
         array $requests,
         int   $currentBatch,
-        $accessToken,
-        int   $storeId
+        string $accessToken,
+        int   $storeId,
+        string $flowName,
+        string $traceId
     ): void {
-        $this->fbeHelper->log(sprintf(
-            'Deleting Product set batch %d with %d categories',
-            $currentBatch,
-            count($requests)
-        ));
+        $context = $this->categoryUtilities->getCategoryLoggerContext(
+            $storeId,
+            '', /* event_type */
+            $flowName,
+            'category_flush_delete_batch_request',
+            [
+                'external_trace_id' => $traceId,
+                'batch_num' => $currentBatch,
+                'batch_size' => count($requests),
+            ]
+        );
+        $this->fbeHelper->logTelemetryToMeta(
+            sprintf(
+                'Pushing delete category batch: BatchNum %d, BatchSize: %d, flow: %s',
+                $currentBatch,
+                count($requests),
+                $flowName
+            ),
+            $context
+        );
         $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
             ->setAccessToken($accessToken);
         $batchResponse = $this->fbeHelper->getGraphAPIAdapter()->graphAPIBatchRequest($requests);

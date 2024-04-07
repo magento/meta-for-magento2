@@ -59,6 +59,30 @@ require(['jquery'], function (jQuery) {
         });
     }
 
+    function updateMBEConfigAndReloadPage(triggerPostOnboarding) {
+        jQuery.ajax({
+            type: 'post',
+            url: ajaxify(window.facebookBusinessExtensionConfig.updateInstalledMBEConfig),
+            data: ajaxParam({
+                storeId: window.facebookBusinessExtensionConfig.storeId,
+                triggerPostOnboarding: triggerPostOnboarding
+            }),
+            success: function onSuccess(data, _textStatus, _jqXHR) {
+                let msg = '';
+                if (data.success) {
+                    msg = data.message;
+                    console.log("Update success");
+                } else {
+                    msg = data.error_message;
+                }
+                cleanConfigCacheAndReloadPage();
+            },
+            error: function () {
+                console.error('There was a problem updating the installed MBE config');
+            }
+        });
+    }
+
     function cleanConfigCacheAndReloadPage() {
         jQuery.ajax({
             type: 'post',
@@ -95,6 +119,17 @@ require(['jquery'], function (jQuery) {
         document.getElementById('commerce-extension-iframe').height = height;
     }
 
+    function handleUpdateMBEConfigEvent(message) {
+        if (message.event === 'CommerceExtension::UPDATE_AND_COMPLETE') {
+            updateMBEConfigAndReloadPage(true);
+        }
+
+        if (message.event === 'CommerceExtension::UPDATE') {
+            updateMBEConfigAndReloadPage(false);
+        }
+    }
+
+
     function listenForCommerceExtensionMessage(event) {
         const origin = event.origin || event.originalEvent.origin;
         const commerceExtensionOrigin = document.getElementById("commerce-extension-iframe").src;
@@ -103,13 +138,30 @@ require(['jquery'], function (jQuery) {
             if (message != null) {
                 handleCommerceExtensionDeletion(message);
                 handleResizeEvent(message);
+                handleUpdateMBEConfigEvent(message)
             }
         }
+    }
+
+    function repairCommercePartnerIntegration() {
+        jQuery.ajax({
+            type: 'post',
+            url: ajaxify(window.facebookBusinessExtensionConfig.repairRepairCommercePartnerIntegrationUrl),
+            data: ajaxParam({
+                storeId: window.facebookBusinessExtensionConfig.storeId,
+            }),
+            success: function onSuccess(_data) {
+            },
+            error: function () {
+                console.error('There was error repairing the Meta Commerce Partner Integration');
+            }
+        });
     }
 
     const commerceIframe = document.getElementById("commerce-extension-iframe");
     if (commerceIframe != null) {
         window.addEventListener('message', listenForCommerceExtensionMessage);
+        repairCommercePartnerIntegration();
     }
 
     const resetLink = document.getElementById('commerce-extension-reset-link');

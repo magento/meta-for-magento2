@@ -21,14 +21,13 @@ declare(strict_types=1);
 namespace Meta\Catalog\Model;
 
 use GuzzleHttp\Exception\GuzzleException;
-use Magento\Framework\Exception\LocalizedException;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Meta\Catalog\Model\ResourceModel\FacebookCatalogUpdate as FBCatalogUpdateResourceModel;
 use Meta\Catalog\Model\ResourceModel\FacebookCatalogUpdate\Collection;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\Catalog\Model\Product\Feed\Method\BatchApi;
-use Meta\Catalog\Model\Config\Source\Product\Identifier;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -38,32 +37,37 @@ class CatalogUpdateHandler
     /**
      * @var FBCatalogUpdateResourceModel
      */
-    private $fbCatalogUpdateResourceModel;
+    private FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel;
 
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * @var ProductRepository
      */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /**
      * @var GraphAPIAdapter
      */
-    private $graphApiAdapter;
+    private GraphAPIAdapter $graphApiAdapter;
 
     /**
      * @var BatchApi
      */
-    private $batchApi;
+    private BatchApi $batchApi;
+
+    /**
+     * @var ProductIdentifier
+     */
+    private ProductIdentifier $productIdentifier;
 
     /**
      * CatalogUpdateConsumer constructor
@@ -74,6 +78,7 @@ class CatalogUpdateHandler
      * @param ProductRepository $productRepository
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param BatchApi $batchApi
+     * @param ProductIdentifier $productIdentifier
      */
     public function __construct(
         FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel,
@@ -81,7 +86,8 @@ class CatalogUpdateHandler
         SystemConfig                 $systemConfig,
         ProductRepository            $productRepository,
         GraphAPIAdapter              $graphAPIAdapter,
-        BatchApi                     $batchApi
+        BatchApi                     $batchApi,
+        ProductIdentifier            $productIdentifier
     ) {
         $this->fbCatalogUpdateResourceModel = $fbCatalogUpdateResourceModel;
         $this->fbeHelper = $fbeHelper;
@@ -89,6 +95,7 @@ class CatalogUpdateHandler
         $this->productRepository = $productRepository;
         $this->graphApiAdapter = $graphAPIAdapter;
         $this->batchApi = $batchApi;
+        $this->productIdentifier = $productIdentifier;
     }
 
     /**
@@ -131,7 +138,6 @@ class CatalogUpdateHandler
             foreach ($stores as $store) {
                 $catalogId = $this->setupConfigs($store->getId());
                 $storeId = (int)$store->getId();
-                $productIdentifer = $this->systemConfig->getProductIdentifierAttr($storeId);
 
                 if (!$catalogId) {
                     continue;
@@ -139,7 +145,7 @@ class CatalogUpdateHandler
                 if ($method === 'update') {
                     $this->processUpdates($productUpdates, $storeId, $catalogId);
                 } elseif ($method === 'delete') {
-                    $this->processDeletes($productUpdates, $productIdentifer, $catalogId);
+                    $this->processDeletes($productUpdates, $catalogId);
                 }
             }
         } catch (\Throwable $e) {
@@ -202,18 +208,25 @@ class CatalogUpdateHandler
 
         $requestData = [];
         foreach ($products as $product) {
-            if (isset($productLinks[$product->getId()])) {
-                $parentProduct = $parentProducts->getItemById($productLinks[$product->getId()]);
-                if ($parentProduct) {
-                    $product = $this->productRepository->loadParentProductData($product, $parentProduct);
-                }
-            }
-            if ($product->getSendToFacebook() === false) {
-                continue;
-            }
             try {
-                $requestData[] = $this->batchApi->buildRequestForIndividualProduct($product);
-            } catch (LocalizedException $e) {
+                if (isset($productLinks[$product->getId()])) {
+                    $parentProduct = $parentProducts->getItemById($productLinks[$product->getId()]);
+                    if ($parentProduct) {
+                        $product = $this->productRepository->loadParentProductData($product, $parentProduct);
+                    }
+                }
+
+                $syncWithMeta = $product->getSendToFacebook();
+                // null value should be treated as syncWithMeta enabled
+                if (!$syncWithMeta && $syncWithMeta !== null) {
+                    $identifier = $this->productIdentifier->getMagentoProductRetailerId($product);
+                    if ($identifier) {
+                        $requestData[] = $this->batchApi->buildDeleteProductRequest($identifier);
+                    }
+                } else {
+                    $requestData[] = $this->batchApi->buildRequestForIndividualProduct($product);
+                }
+            } catch (\Throwable $e) {
                 $this->fbeHelper->logException($e);
                 continue;
             }
@@ -227,23 +240,23 @@ class CatalogUpdateHandler
      * Process product batch delete
      *
      * @param Collection $productUpdates
-     * @param mixed $productIdentifer
      * @param string $catalogId
      * @return void
      * @throws GuzzleException
      */
-    private function processDeletes(Collection $productUpdates, $productIdentifer, string $catalogId)
+    private function processDeletes(Collection $productUpdates, string $catalogId)
     {
         $requestData = [];
-
         foreach ($productUpdates as $productUpdate) {
-            if ($productIdentifer === Identifier::PRODUCT_IDENTIFIER_SKU) {
+            // Can not use productIdentifier->getMagentoProductRetailerId(),
+            // since it does not take FacebookCatalogUpdate Object
+            if ($this->productIdentifier->getProductIdentifierColName() === 'sku') {
                 $identifier = $productUpdate->getSku();
             } else {
                 $identifier = $productUpdate->getProductId();
             }
 
-            if (isset($identifier)) {
+            if ($identifier) {
                 $requestData[] = $this->batchApi->buildDeleteProductRequest($identifier);
             }
         }

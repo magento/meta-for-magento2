@@ -216,7 +216,7 @@ class FacebookCatalogUpdate extends AbstractDb
     /**
      * Delete all the product update entries
      *
-     * @param $sku
+     * @param bool|int|string $sku
      * @return void
      */
     public function deleteUpdateProductEntries($sku): void
