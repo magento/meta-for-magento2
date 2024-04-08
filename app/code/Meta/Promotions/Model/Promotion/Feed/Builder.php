@@ -22,6 +22,7 @@ namespace Meta\Promotions\Model\Promotion\Feed;
 
 use Magento\SalesRule\Api\Data\CouponInterface;
 use Magento\SalesRule\Model\Coupon;
+use Magento\SalesRule\Model\ResourceModel\Coupon\CollectionFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\SalesRule\Model\ResourceModel\Rule\CollectionFactory as RuleCollection;
@@ -87,23 +88,31 @@ class Builder
     private $ruleFactory;
 
     /**
+     * @var CollectionFactory
+     */
+    protected $couponFactory;
+
+    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param RuleCollection $ruleCollection
      * @param RuleFactory $ruleFactory
+     * @param CollectionFactory $couponFactory
      */
     public function __construct(
-        FBEHelper      $fbeHelper,
-        SystemConfig   $systemConfig,
-        RuleCollection $ruleCollection,
-        RuleFactory    $ruleFactory
+        FBEHelper         $fbeHelper,
+        SystemConfig      $systemConfig,
+        RuleCollection    $ruleCollection,
+        RuleFactory       $ruleFactory,
+        CollectionFactory $couponFactory
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->ruleCollection = $ruleCollection;
         $this->ruleFactory = $ruleFactory;
+        $this->couponFactory = $couponFactory;
     }
 
     /**
@@ -247,9 +256,14 @@ class Builder
      */
     private function getFirst10CouponsSerialized(Rule $rule): string
     {
-        $coupons = $rule->getCoupons();
-        array_unshift($coupons, $rule->getPrimaryCoupon());
+        // Query for all generated coupons
+        $coupons = $this->couponFactory->create()->addRuleToFilter($rule)->addGeneratedCouponsFilter()->getItems();
+
+        // Only take the first 10 (for perf reasons)
         $coupons = array_slice($coupons, 0, 10);
+
+        // Add the discount's primary coupon to the front of the list
+        array_unshift($coupons, $rule->getPrimaryCoupon());
 
         $coupons = array_map(
             function (Coupon $coupon): array {
