@@ -30,9 +30,9 @@ class LoggingTemplatePlugin extends LoggingPluginBase
     /**
      * Logs exceptions that happen within Meta-owned Templates/Blocks.
      *
-     * @param ActionInterface $subject
-     * @param callable $progress
-     * @param array $args
+     * @param  ActionInterface $subject
+     * @param  callable        $progress
+     * @param  array           $args
      * @return ResponseInterface
      * @throws Throwable
      */

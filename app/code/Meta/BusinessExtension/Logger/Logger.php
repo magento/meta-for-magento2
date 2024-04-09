@@ -29,7 +29,7 @@ class Logger extends \Monolog\Logger
      * Logger constructor
      *
      * @param ObjectManagerInterface $objectManager
-     * @param PublisherInterface $publisher
+     * @param PublisherInterface     $publisher
      */
     public function __construct(
         ObjectManagerInterface $objectManager,

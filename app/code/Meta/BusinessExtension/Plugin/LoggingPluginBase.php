@@ -46,8 +46,8 @@ abstract class LoggingPluginBase
     /**
      * Construct LoggingPluginBase.
      *
-     * @param FBEHelper $fbeHelper
-     * @param RequestInterface $request
+     * @param FBEHelper                $fbeHelper
+     * @param RequestInterface         $request
      * @param StoreRepositoryInterface $storeRepository
      */
     public function __construct(
@@ -63,10 +63,10 @@ abstract class LoggingPluginBase
     /**
      * Wraps the given $progress function with error and start/end logging.
      *
-     * @param string $log_prefix
-     * @param mixed $subject
-     * @param callable $progress
-     * @param array $args
+     * @param  string   $log_prefix
+     * @param  mixed    $subject
+     * @param  callable $progress
+     * @param  array    $args
      * @return mixed
      * @throws Throwable
      */
@@ -89,10 +89,10 @@ abstract class LoggingPluginBase
     /**
      * Wraps the given $progress function with error logging.
      *
-     * @param string $log_prefix
-     * @param mixed $subject
-     * @param callable $progress
-     * @param array $args
+     * @param  string   $log_prefix
+     * @param  mixed    $subject
+     * @param  callable $progress
+     * @param  array    $args
      * @return mixed
      * @throws Throwable
      */
@@ -115,12 +115,12 @@ abstract class LoggingPluginBase
     /**
      * Wraps the given $progress function with logging.
      *
-     * @param bool $should_log_errors
-     * @param bool $should_log_impressions
-     * @param string $log_prefix
-     * @param mixed $subject
-     * @param callable $progress
-     * @param array $args
+     * @param  bool     $should_log_errors
+     * @param  bool     $should_log_impressions
+     * @param  string   $log_prefix
+     * @param  mixed    $subject
+     * @param  callable $progress
+     * @param  array    $args
      * @return mixed
      * @throws Throwable
      */
@@ -168,7 +168,7 @@ abstract class LoggingPluginBase
     /**
      * Gets the error log data.
      *
-     * @param mixed $subject
+     * @param  mixed $subject
      * @return array
      */
     private function getErrorLogData($subject)
@@ -184,9 +184,9 @@ abstract class LoggingPluginBase
     /**
      * Gets the telemetry log data to log for a given Step.
      *
-     * @param string $log_prefix
-     * @param mixed $subject
-     * @param string $step
+     * @param  string $log_prefix
+     * @param  mixed  $subject
+     * @param  string $step
      * @return array
      */
     private function getTelemetryLogData(string $log_prefix, $subject, string $step)
@@ -202,7 +202,7 @@ abstract class LoggingPluginBase
     /**
      * Gets the data to log for a given Step.
      *
-     * @param mixed $subject
+     * @param  mixed $subject
      * @return string
      */
     private function getClassnameForLogging($subject)
