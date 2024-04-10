@@ -321,7 +321,7 @@ class OrderMapper
             'street' => $street,
             'city' => $data['shipping_address']['city'],
             'email' => $data['buyer_details']['email'],
-            'telephone' => 'N/A', // is required by magento
+            'telephone' => $data['buyer_details']['phone_number'] ?? 'N/A',
             'country_id' => $data['shipping_address']['country'] // maps 1:1
         ];
 

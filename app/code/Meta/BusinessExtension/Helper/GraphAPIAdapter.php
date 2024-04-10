@@ -617,7 +617,7 @@ class GraphAPIAdapter
     {
         $requestFields = [
             'id',
-            'buyer_details',
+            'buyer_details{name, email, email_remarketing_option, phone_number}',
             'channel',
             'created',
             'estimated_payment_details',
