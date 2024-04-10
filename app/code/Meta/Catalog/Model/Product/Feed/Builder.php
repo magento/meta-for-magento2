@@ -87,6 +87,7 @@ class Builder
 
     private const ATTR_UNSUPPORTED_PRODUCT_DATA = 'unsupported_product_data';
     private const ATTR_FEATURES = 'features';
+    private const CUSTOM_ATTR_PREFIX = 'custom_attribute_';
 
     private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
         '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
@@ -792,10 +793,11 @@ class Builder
 
             $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
             foreach ($customAttributes as $customAttribute) {
-                if (in_array($customAttribute, array_keys($entry))) {
+                $customAttributeKey = self::CUSTOM_ATTR_PREFIX . $customAttribute;
+                if (in_array($customAttributeKey, array_keys($entry))) {
                     continue;
                 }
-                $entry[$customAttribute] =
+                $entry[$customAttributeKey] =
                     $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
             }
         }
@@ -957,10 +959,11 @@ class Builder
 
             $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
             foreach ($customAttributes as $customAttribute) {
-                if (in_array($customAttribute, $headerFields)) {
+                $customAttributeKey = self::CUSTOM_ATTR_PREFIX . $customAttribute;
+                if (in_array($customAttributeKey, $headerFields)) {
                     continue;
                 }
-                $headerFields[] = $customAttribute;
+                $headerFields[] = $customAttributeKey;
             }
         }
 
