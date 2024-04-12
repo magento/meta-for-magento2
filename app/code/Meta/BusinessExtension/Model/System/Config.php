@@ -492,12 +492,17 @@ class Config
     public function getConfig($configPath, $scopeId = null, $scope = null)
     {
         if (!$scope && $this->isSingleStoreMode()) {
-            return $this->scopeConfig->getValue($configPath);
+            $singleStoreResult = $this->scopeConfig->getValue($configPath);
+            if ($singleStoreResult !== null) {
+                return $singleStoreResult;
+            }
         }
         try {
             $value = $this->scopeConfig->getValue(
-                $configPath, $scope ?: ScopeInterface::SCOPE_STORE, $scopeId === null
-                ? $this->storeManager->getStore()->getId() : $scopeId
+                $configPath,
+                $scope ?: ScopeInterface::SCOPE_STORE,
+                $scopeId === null
+                    ? $this->storeManager->getStore()->getId() : $scopeId
             );
         } catch (NoSuchEntityException $e) {
             return null;
@@ -838,7 +843,8 @@ class Config
     {
         $stores = $this->storeManager->getStores();
         return array_filter(
-            $stores, function ($store) {
+            $stores,
+            function ($store) {
                 $scopeId = $store->getId();
                 return $this->isPostOnboardingState($scopeId);
             }
@@ -852,7 +858,8 @@ class Config
     {
         $stores = $this->storeManager->getStores();
         return array_filter(
-            $stores, function ($store) {
+            $stores,
+            function ($store) {
                 $scopeId = $store->getId();
                 return $this->isPostOnboardingState($scopeId) &&
                 $this->isActiveExtension($scopeId) &&
