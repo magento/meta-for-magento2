@@ -30,8 +30,8 @@ interface AddCartItemsApiInterface
     /**
      * Add items to Magento cart
      *
-     * @param string $externalBusinessId
-     * @param \Magento\Quote\Api\Data\CartItemInterface[] $items
+     * @param  string                                      $externalBusinessId
+     * @param  \Magento\Quote\Api\Data\CartItemInterface[] $items
      * @return \Meta\Sales\Api\AddCartItemsApiResponseInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */

@@ -35,7 +35,7 @@ class TransactionUpdatePlugin
     private FacebookOrderInterfaceFactory $facebookOrderFactory;
 
     /**
-     * @param Logger $logger
+     * @param Logger                        $logger
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      */
     public function __construct(
@@ -51,10 +51,10 @@ class TransactionUpdatePlugin
      *
      * Taxjar plugin with marketplace exemption
      *
-     * @param mixed $_subject
-     * @param mixed $result
-     * @param mixed $order
-     * @return string
+     * @param                                         mixed $_subject
+     * @param                                         mixed $result
+     * @param                                         mixed $order
+     * @return                                        string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetProvider($_subject, $result, $order): string

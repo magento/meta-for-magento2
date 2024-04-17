@@ -39,7 +39,7 @@ class OrderLoadAfter implements ObserverInterface
     private LoggerInterface $logger;
 
     /**
-     * @param OrderHelper $orderHelper
+     * @param OrderHelper     $orderHelper
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -53,12 +53,14 @@ class OrderLoadAfter implements ObserverInterface
     /**
      * Load order's extension attributes
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return void
      */
     public function execute(Observer $observer)
     {
-        /** @var Order $order */
+        /**
+ * @var Order $order 
+*/
         $order = $observer->getEvent()->getOrder();
 
         if (!($order && $order->getId())) {

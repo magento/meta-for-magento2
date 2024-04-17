@@ -53,10 +53,10 @@ class CartShippingOptionsApi implements CartShippingOptionsApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator                     $authenticator
-     * @param OrderHelper                       $orderHelper
-     * @param GuestShippingMethodManagement     $guestShippingMethodManagement
-     * @param FBEHelper                         $fbeHelper
+     * @param Authenticator                 $authenticator
+     * @param OrderHelper                   $orderHelper
+     * @param GuestShippingMethodManagement $guestShippingMethodManagement
+     * @param FBEHelper                     $fbeHelper
      */
     public function __construct(
         Authenticator                   $authenticator,
@@ -73,9 +73,9 @@ class CartShippingOptionsApi implements CartShippingOptionsApiInterface
     /**
      * Fetch Magento cart shipping options
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param \Magento\Quote\Api\Data\AddressInterface $address
+     * @param  string                                   $externalBusinessId
+     * @param  string                                   $cartId
+     * @param  \Magento\Quote\Api\Data\AddressInterface $address
      * @return \Magento\Quote\Api\Data\ShippingMethodInterface[]
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -87,10 +87,12 @@ class CartShippingOptionsApi implements CartShippingOptionsApiInterface
         try {
             return $this->guestShippingMethodManagement->estimateByExtendedAddress($cartId, $address);
         } catch (NoSuchEntityException $e) {
-            $le = new LocalizedException(__(
-                "No such entity with cartId = %1",
-                $cartId
-            ));
+            $le = new LocalizedException(
+                __(
+                    "No such entity with cartId = %1",
+                    $cartId
+                )
+            );
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $le,
                 [

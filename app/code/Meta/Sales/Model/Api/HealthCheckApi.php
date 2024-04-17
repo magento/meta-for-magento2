@@ -38,7 +38,7 @@ class HealthCheckApi implements HealthCheckApiInterface
 
     /**
      * @param Authenticator $authenticator
-     * @param OrderHelper $orderHelper
+     * @param OrderHelper   $orderHelper
      */
     public function __construct(
         Authenticator $authenticator,
@@ -51,7 +51,7 @@ class HealthCheckApi implements HealthCheckApiInterface
     /**
      * Health check for the Magento Dynamic Checkout API
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */

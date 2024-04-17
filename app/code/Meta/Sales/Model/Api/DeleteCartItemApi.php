@@ -51,10 +51,10 @@ class DeleteCartItemApi implements DeleteCartItemApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator             $authenticator
-     * @param OrderHelper               $orderHelper
-     * @param GuestCartItemRepository   $guestCartItemRepository
-     * @param FBEHelper                 $fbeHelper
+     * @param Authenticator           $authenticator
+     * @param OrderHelper             $orderHelper
+     * @param GuestCartItemRepository $guestCartItemRepository
+     * @param FBEHelper               $fbeHelper
      */
     public function __construct(
         Authenticator               $authenticator,
@@ -71,9 +71,9 @@ class DeleteCartItemApi implements DeleteCartItemApiInterface
     /**
      * Delete item from Magento cart
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param string $itemId
+     * @param  string $externalBusinessId
+     * @param  string $cartId
+     * @param  string $itemId
      * @return bool
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
@@ -87,10 +87,12 @@ class DeleteCartItemApi implements DeleteCartItemApiInterface
             return $this->guestCartItemRepository->deleteById($cartId, $itemId);
         } catch (NoSuchEntityException $e) {
             if (strpos($e->getMessage(), 'cartId') !== false) {
-                $le = new LocalizedException(__(
-                    "No such entity with cartId = %1",
-                    $cartId
-                ));
+                $le = new LocalizedException(
+                    __(
+                        "No such entity with cartId = %1",
+                        $cartId
+                    )
+                );
             } else {
                 $le = $e;
             }

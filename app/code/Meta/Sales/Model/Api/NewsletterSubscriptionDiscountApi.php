@@ -73,13 +73,13 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
     /**
      * Constructor for NewsletterSubscriptionDiscountApi.
      *
-     * @param SubscriberFactory $subscriberFactory Factory for creating newsletter subscriber instances.
-     * @param RuleFactory $ruleFactory Factory for creating sales rule instances.
-     * @param OrderHelper $orderHelper Helper for order-related functionalities.
-     * @param FBEHelper $fbeHelper Helper for Facebook Business Extension related functionalities.
-     * @param MassgeneratorFactory $massGeneratorFactory Factory for creating mass coupon code generator instances.
+     * @param SubscriberFactory                    $subscriberFactory                    Factory for creating newsletter subscriber instances.
+     * @param RuleFactory                          $ruleFactory                          Factory for creating sales rule instances.
+     * @param OrderHelper                          $orderHelper                          Helper for order-related functionalities.
+     * @param FBEHelper                            $fbeHelper                            Helper for Facebook Business Extension related functionalities.
+     * @param MassgeneratorFactory                 $massGeneratorFactory                 Factory for creating mass coupon code generator instances.
      * @param NewsletterSubscriptionDiscountStatus $newsletterSubscriptionDiscountStatus
-     * @param Authenticator $authenticator Authenticator for API requests.
+     * @param Authenticator                        $authenticator                        Authenticator for API requests.
      */
     public function __construct(
         SubscriberFactory $subscriberFactory,
@@ -102,9 +102,9 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
     /**
      * Subscribes a user for a coupon based on newsletter subscription.
      *
-     * @param string $externalBusinessId The external business ID.
-     * @param string $email The email address of the subscriber.
-     * @param int $ruleId The ID of the sales rule.
+     * @param  string $externalBusinessId The external business ID.
+     * @param  string $email              The email address of the subscriber.
+     * @param  int    $ruleId             The ID of the sales rule.
      * @return CouponInterface The generated coupon.
      * @throws LocalizedException If an error occurs during the process.
      */
@@ -117,7 +117,8 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
             if ($this->newsletterSubscriptionDiscountStatus->checkSubscriptionStatus(
                 $externalBusinessId,
                 $email
-            )) {
+            )
+            ) {
                 throw new LocalizedException(__('The buyer is already subscribed to the newsletter.'));
             }
             $rule = $this->ruleFactory->create()->load($ruleId);
@@ -154,7 +155,7 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
     /**
      * Generates a coupon code based on a sales rule ID.
      *
-     * @param int $ruleId The sales rule ID.
+     * @param  int $ruleId The sales rule ID.
      * @return string The generated coupon code.
      */
     private function generateCoupon(int $ruleId): CouponInterface

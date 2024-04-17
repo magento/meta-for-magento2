@@ -48,7 +48,7 @@ class AddCartItemsApiResponse implements AddCartItemsApiResponseInterface
     /**
      * Setter for items added
      *
-     * @param \Magento\Quote\Api\Data\CartItemInterface[] $items
+     * @param  \Magento\Quote\Api\Data\CartItemInterface[] $items
      * @return void
      */
     public function setItemsAdded(array $items): void
@@ -69,7 +69,7 @@ class AddCartItemsApiResponse implements AddCartItemsApiResponseInterface
     /**
      * Setter for exceptions
      *
-     * @param AddCartItemsApiExceptionResponseInterface[] $exceptions
+     * @param  AddCartItemsApiExceptionResponseInterface[] $exceptions
      * @return void
      */
     public function setExceptions(array $exceptions): void

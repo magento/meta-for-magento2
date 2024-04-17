@@ -28,9 +28,9 @@ interface NewsletterSubscriptionDiscountApiInterface
      *
      * If valid, returns an opt-in coupon.
      *
-     * @param string $externalBusinessId
-     * @param string $email
-     * @param int $ruleId
+     * @param  string $externalBusinessId
+     * @param  string $email
+     * @param  int    $ruleId
      * @return \Magento\SalesRule\Api\Data\CouponInterface
      */
     public function subscribeForCoupon(string $externalBusinessId, string $email, int $ruleId): CouponInterface;

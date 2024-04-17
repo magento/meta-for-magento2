@@ -39,7 +39,7 @@ class ModifyMetaCronjobExecution implements DataPatchInterface, PatchRevertableI
      * ModifyMetaCronjobExecution constructor.
      *
      * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param WriterInterface $configWriter
+     * @param WriterInterface          $configWriter
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,

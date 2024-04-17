@@ -28,11 +28,11 @@ class FacebookSalesOrderGridPlugin
     /**
      * Before loading sales grid
      *
-     * @param Collection $subject
-     * @param bool $printQuery
-     * @param bool $logQuery
-     * @return null
-     * @throws LocalizedException
+     * @param                                         Collection $subject
+     * @param                                         bool       $printQuery
+     * @param                                         bool       $logQuery
+     * @return                                        null
+     * @throws                                        LocalizedException
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function beforeLoad(Collection $subject, $printQuery = false, $logQuery = false)

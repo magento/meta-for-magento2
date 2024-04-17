@@ -66,11 +66,11 @@ class Refund implements ObserverInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
+     * @param SystemConfig                  $systemConfig
+     * @param GraphAPIAdapter               $graphAPIAdapter
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param CommerceHelper $commerceHelper
-     * @param FBEHelper $fbeHelper
+     * @param CommerceHelper                $commerceHelper
+     * @param FBEHelper                     $fbeHelper
      */
     public function __construct(
         SystemConfig                  $systemConfig,
@@ -99,7 +99,7 @@ class Refund implements ObserverInterface
     /**
      * Get Store ID
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return string
      */
     protected function getStoreId(Observer $observer)
@@ -120,17 +120,21 @@ class Refund implements ObserverInterface
     /**
      * Refund facebook order from observer event
      *
-     * @param Observer $observer
-     * @return void
-     * @throws GuzzleException|Exception
+     * @param                                        Observer $observer
+     * @return                                       void
+     * @throws                                       GuzzleException|Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function executeImpl(Observer $observer)
     {
-        /** @var Payment $payment */
+        /**
+ * @var Payment $payment 
+*/
         $payment = $observer->getEvent()->getPayment();
-        /** @var CreditmemoInterface $creditmemo */
+        /**
+ * @var CreditmemoInterface $creditmemo 
+*/
         $creditmemo = $observer->getEvent()->getCreditmemo();
         $comments = $creditmemo->getComments();
 
@@ -146,7 +150,8 @@ class Refund implements ObserverInterface
         $storeId = $payment->getOrder()->getStoreId();
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 
@@ -210,14 +215,14 @@ class Refund implements ObserverInterface
     /**
      * Refund a facebook order
      *
-     * @param int $storeId
-     * @param string $fbOrderId
-     * @param array $items
-     * @param float|null $shippingRefundAmount
-     * @param float|null $deductionAmount
-     * @param float|null $adjustmentAmount
-     * @param string|null $currencyCode
-     * @param string|null $reasonText
+     * @param  int         $storeId
+     * @param  string      $fbOrderId
+     * @param  array       $items
+     * @param  float|null  $shippingRefundAmount
+     * @param  float|null  $deductionAmount
+     * @param  float|null  $adjustmentAmount
+     * @param  string|null $currencyCode
+     * @param  string|null $reasonText
      * @throws GuzzleException
      * @throws Exception
      */
@@ -248,20 +253,22 @@ class Refund implements ObserverInterface
         } catch (GuzzleException $e) {
             $response = $e->getResponse();
             $body = json_decode((string)$response->getBody());
-            throw new LocalizedException(__(
-                'Error code: "%1"; Error message: "%2"',
-                (string)$body->error->code,
-                (string)($body->error->error_user_msg ?? $body->error->message)
-            ));
+            throw new LocalizedException(
+                __(
+                    'Error code: "%1"; Error message: "%2"',
+                    (string)$body->error->code,
+                    (string)($body->error->error_user_msg ?? $body->error->message)
+                )
+            );
         }
     }
 
     /**
      * Private helper function that returns array of items that should be refunded
      *
-     * @param CreditmemoInterface $creditmemo
-     * @param OrderPaymentInterface $payment
-     * @param bool $useNumericID
+     * @param  CreditmemoInterface   $creditmemo
+     * @param  OrderPaymentInterface $payment
+     * @param  bool                  $useNumericID
      * @return array
      */
     private function getRefundItems(
@@ -299,8 +306,8 @@ class Refund implements ObserverInterface
     /**
      * Private helper function that returns array of items that should be canceled
      *
-     * @param CreditmemoInterface $creditmemo
-     * @param bool $useNumericID
+     * @param  CreditmemoInterface $creditmemo
+     * @param  bool                $useNumericID
      * @return array
      */
     private function getCanceledItems(

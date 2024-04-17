@@ -29,7 +29,7 @@ trait MetaObserverTrait
     /**
      * Execute function
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return void
      * @throws Throwable
      */
@@ -54,7 +54,7 @@ trait MetaObserverTrait
     /**
      * Implementation of the execute function
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return void
      */
     abstract protected function executeImpl(Observer $observer);
@@ -69,7 +69,7 @@ trait MetaObserverTrait
     /**
      * Get Store ID
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return string
      */
     abstract protected function getStoreId(Observer $observer);

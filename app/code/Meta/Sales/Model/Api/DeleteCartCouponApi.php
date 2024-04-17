@@ -51,10 +51,10 @@ class DeleteCartCouponApi implements DeleteCartCouponApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator             $authenticator
-     * @param OrderHelper               $orderHelper
-     * @param GuestCouponManagement     $guestCouponManagement
-     * @param FBEHelper                 $fbeHelper
+     * @param Authenticator         $authenticator
+     * @param OrderHelper           $orderHelper
+     * @param GuestCouponManagement $guestCouponManagement
+     * @param FBEHelper             $fbeHelper
      */
     public function __construct(
         Authenticator               $authenticator,
@@ -71,8 +71,8 @@ class DeleteCartCouponApi implements DeleteCartCouponApiInterface
     /**
      * Delete coupon from Magento cart
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
+     * @param  string $externalBusinessId
+     * @param  string $cartId
      * @return bool
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotDeleteException
@@ -85,10 +85,12 @@ class DeleteCartCouponApi implements DeleteCartCouponApiInterface
         try {
             return $this->guestCouponManagement->remove($cartId);
         } catch (NoSuchEntityException $e) {
-            $le = new LocalizedException(__(
-                "No such entity with cartId = %1",
-                $cartId
-            ));
+            $le = new LocalizedException(
+                __(
+                    "No such entity with cartId = %1",
+                    $cartId
+                )
+            );
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $le,
                 [

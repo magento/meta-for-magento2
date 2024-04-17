@@ -53,9 +53,9 @@ class DiscountRuleApi implements DiscountRuleApiInterface
      * DiscountRuleApi constructor.
      *
      * @param RuleRepositoryInterface $ruleRepository
-     * @param FBEHelper $fbeHelper
-     * @param OrderHelper $orderHelper
-     * @param Authenticator $authenticator
+     * @param FBEHelper               $fbeHelper
+     * @param OrderHelper             $orderHelper
+     * @param Authenticator           $authenticator
      */
     public function __construct(
         RuleRepositoryInterface $ruleRepository,
@@ -72,8 +72,8 @@ class DiscountRuleApi implements DiscountRuleApiInterface
     /**
      * Create a cart rule
      *
-     * @param string $externalBusinessId
-     * @param RuleInterface $rule
+     * @param  string        $externalBusinessId
+     * @param  RuleInterface $rule
      * @return int
      * @throws LocalizedException
      */
@@ -83,9 +83,11 @@ class DiscountRuleApi implements DiscountRuleApiInterface
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
             if (empty($rule->getWebsiteIds())) {
-                $rule->setWebsiteIds([
+                $rule->setWebsiteIds(
+                    [
                     $this->orderHelper->getWebsiteIdFromStoreId((int)$storeId)
-                ]);
+                    ]
+                );
             }
             if (empty($rule->getCustomerGroupIds())) {
                 $rule->setCustomerGroupIds(

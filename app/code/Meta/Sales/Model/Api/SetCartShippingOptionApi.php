@@ -53,10 +53,10 @@ class SetCartShippingOptionApi implements SetCartShippingOptionApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator                         $authenticator
-     * @param OrderHelper                           $orderHelper
-     * @param GuestShippingInformationManagement    $guestShippingInformationManagement
-     * @param FBEHelper                             $fbeHelper
+     * @param Authenticator                      $authenticator
+     * @param OrderHelper                        $orderHelper
+     * @param GuestShippingInformationManagement $guestShippingInformationManagement
+     * @param FBEHelper                          $fbeHelper
      */
     public function __construct(
         Authenticator                           $authenticator,
@@ -73,9 +73,9 @@ class SetCartShippingOptionApi implements SetCartShippingOptionApiInterface
     /**
      * Set Magento cart shipping option
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
+     * @param  string                                                  $externalBusinessId
+     * @param  string                                                  $cartId
+     * @param  \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
      * @return \Magento\Checkout\Api\Data\PaymentDetailsInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -89,10 +89,12 @@ class SetCartShippingOptionApi implements SetCartShippingOptionApiInterface
         try {
             return $this->guestShippingInformationManagement->saveAddressInformation($cartId, $addressInformation);
         } catch (NoSuchEntityException $e) {
-            $le = new LocalizedException(__(
-                "No such entity with cartId = %1",
-                $cartId
-            ));
+            $le = new LocalizedException(
+                __(
+                    "No such entity with cartId = %1",
+                    $cartId
+                )
+            );
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $le,
                 [

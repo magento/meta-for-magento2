@@ -35,6 +35,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Create refund from facebook api data
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
@@ -94,16 +95,17 @@ class CreateRefund
 
     /**
      * RefundProcessor constructor.
-     * @param CreditmemoFactory $creditMemoFactory
-     * @param OrderRepositoryInterface $orderRepository
-     * @param CreateOrder $createOrder
-     * @param CreditmemoService $creditMemoService
+     *
+     * @param CreditmemoFactory             $creditMemoFactory
+     * @param OrderRepositoryInterface      $orderRepository
+     * @param CreateOrder                   $createOrder
+     * @param CreditmemoService             $creditMemoService
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param Invoice $invoice
-     * @param InvoiceManagementInterface $invoiceManagement
-     * @param TransactionFactory $transactionFactory
-     * @param FormatInterface $localeFormat
-     * @param LoggerInterface $logger
+     * @param Invoice                       $invoice
+     * @param InvoiceManagementInterface    $invoiceManagement
+     * @param TransactionFactory            $transactionFactory
+     * @param FormatInterface               $localeFormat
+     * @param LoggerInterface               $logger
      */
     public function __construct(
         CreditmemoFactory             $creditMemoFactory,
@@ -132,9 +134,9 @@ class CreateRefund
     /**
      * Processes the refund data from Facebook and creates a credit memo in Magento.
      *
-     * @param array $facebookOrderData
-     * @param array $facebookRefundData
-     * @param int $storeId
+     * @param  array $facebookOrderData
+     * @param  array $facebookRefundData
+     * @param  int   $storeId
      * @throws LocalizedException
      */
     public function execute(array $facebookOrderData, array $facebookRefundData, int $storeId)
@@ -226,8 +228,8 @@ class CreateRefund
     /**
      * Retrieve or create a Magento order based on Facebook Order ID.
      *
-     * @param array $data
-     * @param int $storeId
+     * @param  array $data
+     * @param  int   $storeId
      * @return Order
      * @throws LocalizedException
      * @throws GuzzleException
@@ -246,7 +248,7 @@ class CreateRefund
     /**
      * Retrieve or create a Magento order based on Facebook Order ID.
      *
-     * @param Order $order
+     * @param  Order $order
      * @return Invoice
      * @throws LocalizedException
      */

@@ -45,10 +45,10 @@ class Facebook extends Template implements TabInterface
     private $adminHelper;
 
     /**
-     * @param Context $context
+     * @param Context      $context
      * @param SystemConfig $systemConfig
-     * @param Admin $adminHelper
-     * @param array $data
+     * @param Admin        $adminHelper
+     * @param array        $data
      */
     public function __construct(
         Context $context,

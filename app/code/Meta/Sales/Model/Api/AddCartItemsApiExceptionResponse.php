@@ -43,7 +43,7 @@ class AddCartItemsApiExceptionResponse implements AddCartItemsApiExceptionRespon
     /**
      * Constructor for AddCartItemsApiExceptionResponse.
      *
-     * @param string $sku The SKU of the item that failed to be added.
+     * @param string $sku              The SKU of the item that failed to be added.
      * @param string $exceptionMessage The exception message.
      */
     public function __construct(string $sku, string $exceptionMessage)

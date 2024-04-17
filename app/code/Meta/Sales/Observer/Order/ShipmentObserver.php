@@ -63,11 +63,11 @@ class ShipmentObserver implements ObserverInterface
     private $fbeHelper;
 
     /**
-     * @param SystemConfig $systemConfig
+     * @param SystemConfig    $systemConfig
      * @param LoggerInterface $logger
-     * @param Shipper $shipper
-     * @param OrderHelper $orderHelper
-     * @param FBEHelper $fbeHelper
+     * @param Shipper         $shipper
+     * @param OrderHelper     $orderHelper
+     * @param FBEHelper       $fbeHelper
      */
     public function __construct(
         SystemConfig    $systemConfig,
@@ -106,7 +106,7 @@ class ShipmentObserver implements ObserverInterface
     /**
      * Get Store ID
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return string
      */
     protected function getStoreId(Observer $observer)
@@ -117,14 +117,16 @@ class ShipmentObserver implements ObserverInterface
     /**
      * Get Shipment from Observer
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return Shipment|null
      */
     protected function getShipment(Observer $observer)
     {
         $event = $observer->getEvent()->getName();
 
-        /** @var Shipment $shipment */
+        /**
+ * @var Shipment $shipment 
+*/
         if ($event == Shipper::MAGENTO_EVENT_SHIPMENT_SAVE_AFTER) {
             $shipment = $observer->getEvent()->getShipment();
         } elseif ($event == Shipper::MAGENTO_EVENT_TRACKING_SAVE_AFTER) {
@@ -139,7 +141,7 @@ class ShipmentObserver implements ObserverInterface
     /**
      * Executor Implementation
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @throws LocalizedException
      * @throws GuzzleException
      * @throws Exception
@@ -149,7 +151,8 @@ class ShipmentObserver implements ObserverInterface
         $shipment = $this->getShipment($observer);
         $storeId = $shipment->getOrder()->getStoreId();
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 
@@ -159,7 +162,7 @@ class ShipmentObserver implements ObserverInterface
     /**
      * Attempt to determine if a shipment needs to be synced or just updated
      *
-     * @param Shipment $shipment
+     * @param  Shipment $shipment
      * @throws LocalizedException
      * @throws GuzzleException
      * @throws Exception
@@ -186,7 +189,7 @@ class ShipmentObserver implements ObserverInterface
     /**
      * Sync a new shipment
      *
-     * @param Shipment $shipment
+     * @param  Shipment $shipment
      * @throws LocalizedException
      * @throws GuzzleException
      * @throws Exception
@@ -198,18 +201,20 @@ class ShipmentObserver implements ObserverInterface
         } catch (GuzzleException $e) {
             $response = $e->getResponse();
             $body = json_decode((string)$response->getBody());
-            throw new LocalizedException(__(
-                'Error code: "%1"; Error message: "%2"',
-                (string)$body->error->code,
-                (string)($body->error->error_user_msg ?? $body->error->message)
-            ));
+            throw new LocalizedException(
+                __(
+                    'Error code: "%1"; Error message: "%2"',
+                    (string)$body->error->code,
+                    (string)($body->error->error_user_msg ?? $body->error->message)
+                )
+            );
         }
     }
 
     /**
      * Sync an update to shipment tracking
      *
-     * @param Shipment $shipment
+     * @param  Shipment $shipment
      * @throws LocalizedException
      * @throws GuzzleException
      * @throws Exception
@@ -224,11 +229,13 @@ class ShipmentObserver implements ObserverInterface
 
             // check if error was for order already having the same tracking info
             if ($body->error->error_subcode !== 2382045) {
-                throw new LocalizedException(__(
-                    'Error code: "%1"; Error message: "%2"',
-                    (string)$body->error->code,
-                    (string)($body->error->error_user_msg ?? $body->error->message)
-                ));
+                throw new LocalizedException(
+                    __(
+                        'Error code: "%1"; Error message: "%2"',
+                        (string)$body->error->code,
+                        (string)($body->error->error_user_msg ?? $body->error->message)
+                    )
+                );
             }
         }
     }

@@ -52,10 +52,10 @@ class CartTotalsApi implements CartTotalsApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator             $authenticator
-     * @param OrderHelper               $orderHelper
-     * @param GuestCartTotalRepository  $guestCartTotalRepository
-     * @param FBEHelper                 $fbeHelper
+     * @param Authenticator            $authenticator
+     * @param OrderHelper              $orderHelper
+     * @param GuestCartTotalRepository $guestCartTotalRepository
+     * @param FBEHelper                $fbeHelper
      */
     public function __construct(
         Authenticator               $authenticator,
@@ -72,8 +72,8 @@ class CartTotalsApi implements CartTotalsApiInterface
     /**
      * Get Magento cart totals
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
+     * @param  string $externalBusinessId
+     * @param  string $cartId
      * @return \Magento\Quote\Api\Data\TotalsInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -85,10 +85,12 @@ class CartTotalsApi implements CartTotalsApiInterface
         try {
             return $this->guestCartTotalRepository->get($cartId);
         } catch (NoSuchEntityException $e) {
-            $le = new LocalizedException(__(
-                "No such entity with cartId = %1",
-                $cartId
-            ));
+            $le = new LocalizedException(
+                __(
+                    "No such entity with cartId = %1",
+                    $cartId
+                )
+            );
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $le,
                 [

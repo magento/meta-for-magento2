@@ -54,10 +54,10 @@ class OrderHelper
     /**
      * Constructor
      *
-     * @param OrderExtensionFactory $orderExtensionFactory
+     * @param OrderExtensionFactory         $orderExtensionFactory
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param CollectionFactory $collectionFactory
-     * @param StoreManagerInterface $storeManager
+     * @param CollectionFactory             $collectionFactory
+     * @param StoreManagerInterface         $storeManager
      */
     public function __construct(
         OrderExtensionFactory         $orderExtensionFactory,
@@ -74,12 +74,14 @@ class OrderHelper
     /**
      * Assign Meta order's extension attributes such as facebook_order_id to a Magento order
      *
-     * @param mixed $magentoOrderId
+     * @param  mixed $magentoOrderId
      * @return FacebookOrderInterface
      */
     public function loadFacebookOrderFromMagentoId($magentoOrderId): FacebookOrderInterface
     {
-        /** @var FacebookOrderInterface $facebookOrder */
+        /**
+ * @var FacebookOrderInterface $facebookOrder 
+*/
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($magentoOrderId, 'magento_order_id');
 
@@ -89,8 +91,8 @@ class OrderHelper
     /**
      * Assign Meta order's extension attributes such as facebook_order_id to a Magento order
      *
-     * @param OrderInterface $order
-     * @param bool $reload
+     * @param  OrderInterface $order
+     * @param  bool           $reload
      * @return void
      */
     public function setFacebookOrderExtensionAttributes(OrderInterface $order, bool $reload = false)
@@ -128,9 +130,11 @@ class OrderHelper
     {
         $installedConfigs = $this->getMBEInstalledConfigsByExternalBusinessId($externalBusinessId);
         if (empty($installedConfigs)) {
-            throw new LocalizedException(__(
-                'No store id was found for external_business_id: '.$externalBusinessId
-            ));
+            throw new LocalizedException(
+                __(
+                    'No store id was found for external_business_id: '.$externalBusinessId
+                )
+            );
         }
         return $installedConfigs[0]->getScopeId();
     }
@@ -138,7 +142,7 @@ class OrderHelper
     /**
      * Get configs where MBE is installed for $externalBusinessId
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return array
      */
     public function getMBEInstalledConfigsByExternalBusinessId(string $externalBusinessId): array
@@ -162,7 +166,7 @@ class OrderHelper
     /**
      * Get website ID from store ID
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return int
      */
     public function getWebsiteIdFromStoreId(int $storeId): int

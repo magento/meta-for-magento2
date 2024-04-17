@@ -28,8 +28,8 @@ interface DeleteCartCouponApiInterface
     /**
      * Delete coupon from Magento cart
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
+     * @param  string $externalBusinessId
+     * @param  string $cartId
      * @return bool
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotDeleteException

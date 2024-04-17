@@ -38,6 +38,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Create order from facebook api data
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
@@ -94,16 +95,16 @@ class CreateOrder
     private LoggerInterface $logger;
 
     /**
-     * @param ManagerInterface $eventManager
-     * @param OrderManagementInterface $orderManagement
-     * @param SystemConfig $systemConfig
+     * @param ManagerInterface              $eventManager
+     * @param OrderManagementInterface      $orderManagement
+     * @param SystemConfig                  $systemConfig
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param InvoiceManagementInterface $invoiceManagement
-     * @param TransactionFactory $transactionFactory
-     * @param OrderMapper $orderMapper
-     * @param OrderSequenceManager $orderSequenceManager
-     * @param LoggerInterface $logger
-     * @param OrderRepository $orderRepository
+     * @param InvoiceManagementInterface    $invoiceManagement
+     * @param TransactionFactory            $transactionFactory
+     * @param OrderMapper                   $orderMapper
+     * @param OrderSequenceManager          $orderSequenceManager
+     * @param LoggerInterface               $logger
+     * @param OrderRepository               $orderRepository
      */
     public function __construct(
         ManagerInterface              $eventManager,
@@ -132,7 +133,7 @@ class CreateOrder
     /**
      * Generate a new increment order ID and associate it with a current order
      *
-     * @param Order $order
+     * @param  Order $order
      * @return string|null
      * @throws LocalizedException
      */
@@ -148,8 +149,8 @@ class CreateOrder
     /**
      * Create order without a quote to honor FB totals and tax calculations
      *
-     * @param array $data
-     * @param int $storeId
+     * @param  array $data
+     * @param  int   $storeId
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
@@ -174,7 +175,9 @@ class CreateOrder
             'email_remarketing_option' => $data['buyer_details']['email_remarketing_option'],
         ];
 
-        /** @var FacebookOrderInterface $facebookOrder */
+        /**
+ * @var FacebookOrderInterface $facebookOrder 
+*/
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->setFacebookOrderId($facebookOrderId)
             ->setMagentoOrderId($order->getId())
@@ -190,10 +193,12 @@ class CreateOrder
             ->setEmailRemarketingOption($emailRemarketingOption);
         $order->setExtensionAttributes($extensionAttributes);
 
-        $this->eventManager->dispatch('facebook_order_create_after', [
+        $this->eventManager->dispatch(
+            'facebook_order_create_after', [
             'order' => $order,
             'facebook_order' => $facebookOrder,
-        ]);
+            ]
+        );
 
         return $order;
     }

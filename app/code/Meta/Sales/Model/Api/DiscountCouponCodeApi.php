@@ -49,9 +49,9 @@ class DiscountCouponCodeApi implements DiscountCouponCodeApiInterface
     /**
      * Constructor for DiscountCouponCodeApi.
      *
-     * @param RuleFactory $ruleFactory Factory for creating sales rule instances.
+     * @param RuleFactory          $ruleFactory          Factory for creating sales rule instances.
      * @param MassgeneratorFactory $massGeneratorFactory Factory for creating mass coupon code generator instances.
-     * @param Authenticator $authenticator
+     * @param Authenticator        $authenticator
      */
     public function __construct(
         RuleFactory $ruleFactory,
@@ -66,7 +66,7 @@ class DiscountCouponCodeApi implements DiscountCouponCodeApiInterface
     /**
      * Generate a coupon code based on a rule ID.
      *
-     * @param int $ruleId The ID of the rule to generate the coupon for.
+     * @param  int $ruleId The ID of the rule to generate the coupon for.
      * @return string The generated coupon code.
      * @throws LocalizedException If the rule does not exist or coupon generation fails.
      */

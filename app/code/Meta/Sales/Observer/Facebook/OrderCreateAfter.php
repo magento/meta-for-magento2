@@ -60,11 +60,11 @@ class OrderCreateAfter implements ObserverInterface
     /**
      * Constructor
      *
-     * @param SystemConfig $systemConfig
-     * @param LoggerInterface $logger
-     * @param FBEHelper $fbeHelper
+     * @param SystemConfig        $systemConfig
+     * @param LoggerInterface     $logger
+     * @param FBEHelper           $fbeHelper
      * @param SubscriptionManager $subscriptionManager
-     * @param Subscriber $subscriber
+     * @param Subscriber          $subscriber
      */
     public function __construct(
         SystemConfig        $systemConfig,
@@ -83,19 +83,24 @@ class OrderCreateAfter implements ObserverInterface
     /**
      * Execute
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return void
      */
     public function execute(Observer $observer)
     {
-        /** @var Order $order */
+        /**
+ * @var Order $order 
+*/
         $order = $observer->getEvent()->getOrder();
-        /** @var FacebookOrder $facebookOrder */
+        /**
+ * @var FacebookOrder $facebookOrder 
+*/
         $facebookOrder = $observer->getEvent()->getFacebookOrder();
         $storeId = $order->getStoreId();
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 
@@ -117,8 +122,8 @@ class OrderCreateAfter implements ObserverInterface
     /**
      * Subscribe to newsletter
      *
-     * @param string $email
-     * @param int $storeId
+     * @param  string $email
+     * @param  int    $storeId
      * @return $this
      */
     private function subscribeToNewsletter($email, $storeId)

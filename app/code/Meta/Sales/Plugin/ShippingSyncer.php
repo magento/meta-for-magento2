@@ -61,12 +61,12 @@ class ShippingSyncer
     /**
      * Constructor for Shipping settings update plugin
      *
-     * @param GraphAPIAdapter $graphApiAdapter
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
+     * @param GraphAPIAdapter       $graphApiAdapter
+     * @param FBEHelper             $fbeHelper
+     * @param SystemConfig          $systemConfig
      * @param StoreManagerInterface $storeManager
-     * @param ShippingFileBuilder $shippingFileBuilder
-     * @param ShippingData $shippingData
+     * @param ShippingFileBuilder   $shippingFileBuilder
+     * @param ShippingData          $shippingData
      */
     public function __construct(
         GraphAPIAdapter       $graphApiAdapter,
@@ -87,8 +87,8 @@ class ShippingSyncer
     /**
      * Syncing shipping profiles to Meta
      *
-     * @param string $eventType
-     * @param int|null $storeId
+     * @param  string   $eventType
+     * @param  int|null $storeId
      * @return void
      */
     public function syncShippingProfiles(string $eventType, $storeId = null)
@@ -105,8 +105,8 @@ class ShippingSyncer
     /**
      * Syncing shipping profiles for an individual store
      *
-     * @param string $eventType
-     * @param int $storeId
+     * @param  string $eventType
+     * @param  int    $storeId
      * @return void
      */
     private function syncShippingProfilesForStore(string $eventType, $storeId)
@@ -134,11 +134,13 @@ class ShippingSyncer
                 'CREATE'
             );
         } catch (Exception $e) {
-            $this->fbeHelper->logExceptionImmediatelyToMeta($e, [
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
+                $e, [
                 'store_id' => $storeId,
                 'event' => 'shipping_profile_sync',
                 'event_type' => $eventType
-            ]);
+                ]
+            );
         }
     }
 }

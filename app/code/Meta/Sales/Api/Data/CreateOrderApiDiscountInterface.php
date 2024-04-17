@@ -39,7 +39,7 @@ interface CreateOrderApiDiscountInterface
     /**
      * Set coupon code
      *
-     * @param string $couponCode
+     * @param  string $couponCode
      * @return CreateOrderApiDiscountInterface
      */
     public function setCouponCode(string $couponCode): CreateOrderApiDiscountInterface;
@@ -54,7 +54,7 @@ interface CreateOrderApiDiscountInterface
     /**
      * Set amount
      *
-     * @param float $amount
+     * @param  float $amount
      * @return CreateOrderApiDiscountInterface
      */
     public function setAmount(float $amount): CreateOrderApiDiscountInterface;
@@ -69,7 +69,7 @@ interface CreateOrderApiDiscountInterface
     /**
      * Set source
      *
-     * @param string $source
+     * @param  string $source
      * @return CreateOrderApiDiscountInterface
      */
     public function setSource(string $source): CreateOrderApiDiscountInterface;

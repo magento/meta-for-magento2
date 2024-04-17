@@ -26,7 +26,7 @@ interface DiscountCouponCodeApiInterface
     /**
      * Generates a discount coupon based on the provided rule.
      *
-     * @param int $ruleId ID of the rule based on which the coupon is generated.
+     * @param  int $ruleId ID of the rule based on which the coupon is generated.
      * @return string The generated coupon code.
      */
     public function generateCouponCode(int $ruleId): string;

@@ -52,7 +52,7 @@ class ShippingData
     public const EXTERNAL_REFERENCE_ID = 'external_reference_id';
 
     /**
-     * @param CollectionFactory $tableRateCollection
+     * @param CollectionFactory    $tableRateCollection
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
@@ -66,7 +66,7 @@ class ShippingData
     /**
      * Setter for store ID
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return $this
      */
     public function setStoreId($storeId)
@@ -78,7 +78,7 @@ class ShippingData
     /**
      * Returns shipping profiles based on the AbstractModel carrier passed in
      *
-     * @param string $shippingProfileType
+     * @param  string $shippingProfileType
      * @return array
      */
     public function buildShippingProfile(string $shippingProfileType): array
@@ -124,8 +124,8 @@ class ShippingData
     /**
      * Get field from abstract carrier DB
      *
-     * @param string $shippingProfileType
-     * @param string $field
+     * @param  string $shippingProfileType
+     * @param  string $field
      * @return mixed
      */
     public function getFieldFromModel(string $shippingProfileType, string $field)
@@ -137,28 +137,28 @@ class ShippingData
     /**
      * Get external reference id for shipping settings which meta will use to identify the selected shipping option
      *
-     * @param string $shippingProfileType
+     * @param  string $shippingProfileType
      * @return string
      */
     private function getExternalReferenceID(string $shippingProfileType): string
     {
         switch ($shippingProfileType) {
-            case ShippingProfileTypes::TABLE_RATE:
-                return ShippingMethodTypes::TABLE_RATE;
-            case ShippingProfileTypes::FLAT_RATE:
-                return ShippingMethodTypes::FLAT_RATE;
-            case ShippingProfileTypes::FREE_SHIPPING:
-                return ShippingMethodTypes::FREE_SHIPPING;
-            default:
-                return "";
+        case ShippingProfileTypes::TABLE_RATE:
+            return ShippingMethodTypes::TABLE_RATE;
+        case ShippingProfileTypes::FLAT_RATE:
+            return ShippingMethodTypes::FLAT_RATE;
+        case ShippingProfileTypes::FREE_SHIPPING:
+            return ShippingMethodTypes::FREE_SHIPPING;
+        default:
+            return "";
         }
     }
 
     /**
      * A function that builds shipping methods info for shipping profiles which are not table rates
      *
-     * @param string $allowedCountries
-     * @param float $price
+     * @param  string $allowedCountries
+     * @param  float  $price
      * @return array
      */
     private function buildShippingMethodsInfo(string $allowedCountries, float $price): array
@@ -181,7 +181,7 @@ class ShippingData
      *
      * Link: https://experienceleague.adobe.com/docs/commerce-admin/stores-sales/delivery/basic-methods/shipping-table-rate.html
      *
-     * @param string $selectedCondition
+     * @param  string $selectedCondition
      * @return array
      */
     protected function getShippingMethodsInfoForTableRates(string $selectedCondition): array

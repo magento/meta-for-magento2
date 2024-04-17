@@ -45,7 +45,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set product name
      *
-     * @param string $name
+     * @param  string $name
      * @return CreateOrderApiProductItemInterface
      */
     public function setName(string $name): CreateOrderApiProductItemInterface;
@@ -60,7 +60,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Get product SKU
      *
-     * @param string $sku
+     * @param  string $sku
      * @return CreateOrderApiProductItemInterface
      */
     public function setSku(string $sku): CreateOrderApiProductItemInterface;
@@ -75,7 +75,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set product unit base price
      *
-     * @param float $perUnitBasePrice
+     * @param  float $perUnitBasePrice
      * @return CreateOrderApiProductItemInterface
      */
     public function setPerUnitBasePrice(float $perUnitBasePrice): CreateOrderApiProductItemInterface;
@@ -90,7 +90,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set product net price
      *
-     * @param float $netPrice
+     * @param  float $netPrice
      * @return CreateOrderApiProductItemInterface
      */
     public function setNetPrice(float $netPrice): CreateOrderApiProductItemInterface;
@@ -105,7 +105,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set product subtotal
      *
-     * @param float $subTotalPrice
+     * @param  float $subTotalPrice
      * @return CreateOrderApiProductItemInterface
      */
     public function setSubTotalPrice(float $subTotalPrice): CreateOrderApiProductItemInterface;
@@ -120,7 +120,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set product tax
      *
-     * @param float $tax
+     * @param  float $tax
      * @return CreateOrderApiProductItemInterface
      */
     public function setTax(float $tax): CreateOrderApiProductItemInterface;
@@ -135,7 +135,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set tax rate
      *
-     * @param float $taxRate
+     * @param  float $taxRate
      * @return CreateOrderApiProductItemInterface
      */
     public function setTaxRate(float $taxRate): CreateOrderApiProductItemInterface;
@@ -150,7 +150,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set product quantity
      *
-     * @param int $quantity
+     * @param  int $quantity
      * @return CreateOrderApiProductItemInterface
      */
     public function setQuantity(int $quantity): CreateOrderApiProductItemInterface;
@@ -165,7 +165,7 @@ interface CreateOrderApiProductItemInterface
     /**
      * Set discount
      *
-     * @param \Meta\Sales\Api\Data\CreateOrderApiDiscountInterface $discount
+     * @param  \Meta\Sales\Api\Data\CreateOrderApiDiscountInterface $discount
      * @return CreateOrderApiProductItemInterface
      */
     public function setDiscount(CreateOrderApiDiscountInterface $discount): CreateOrderApiProductItemInterface;

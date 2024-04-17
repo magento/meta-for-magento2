@@ -33,9 +33,9 @@ class MetaTaxCalculation
     /**
      * Update tax to the Meta calculated tax value for each line item and shipping
      *
-     * @param TaxCalculationInterface $taxCalculation
-     * @param TaxDetailsInterface $result
-     * @param QuoteDetailsInterface $quoteDetails
+     * @param  TaxCalculationInterface $taxCalculation
+     * @param  TaxDetailsInterface     $result
+     * @param  QuoteDetailsInterface   $quoteDetails
      * @return TaxDetailsInterface
      */
     public function afterCalculateTax(
@@ -57,7 +57,7 @@ class MetaTaxCalculation
      *
      * If there is an item for which we do not have the Meta calculated tax, then return null
      *
-     * @param QuoteDetailsInterface $quoteDetails
+     * @param  QuoteDetailsInterface $quoteDetails
      * @return array|null
      */
     private function buildItemCodeToTaxMap(
@@ -84,8 +84,8 @@ class MetaTaxCalculation
     /**
      * Update the tax for the items
      *
-     * @param TaxDetailsInterface $taxDetails
-     * @param array $itemCodeToTaxMap
+     * @param  TaxDetailsInterface $taxDetails
+     * @param  array               $itemCodeToTaxMap
      * @return void
      */
     private function updateItemsTax(
@@ -114,8 +114,8 @@ class MetaTaxCalculation
     /**
      * Check if Meta calculated tax is available in the map for all the items, return false if it isn't
      *
-     * @param TaxDetailsItemInterface[] $items
-     * @param array $itemCodeToTaxMap
+     * @param  TaxDetailsItemInterface[] $items
+     * @param  array                     $itemCodeToTaxMap
      * @return bool
      */
     private function checkMetaTaxAvailableForAllItems(
@@ -135,9 +135,9 @@ class MetaTaxCalculation
     /**
      * Update the tax for an individual line item
      *
-     * @param TaxDetailsItemInterface $item
-     * @param float $tax
-     * @param float $taxRate
+     * @param  TaxDetailsItemInterface $item
+     * @param  float                   $tax
+     * @param  float                   $taxRate
      * @return void
      */
     private function updateTax(

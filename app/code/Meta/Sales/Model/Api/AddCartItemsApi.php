@@ -51,10 +51,10 @@ class AddCartItemsApi implements AddCartItemsApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator             $authenticator
-     * @param OrderHelper               $orderHelper
-     * @param GuestCartItemRepository   $guestCartItemRepository
-     * @param FBEHelper                 $fbeHelper
+     * @param Authenticator           $authenticator
+     * @param OrderHelper             $orderHelper
+     * @param GuestCartItemRepository $guestCartItemRepository
+     * @param FBEHelper               $fbeHelper
      */
     public function __construct(
         Authenticator               $authenticator,
@@ -71,8 +71,8 @@ class AddCartItemsApi implements AddCartItemsApiInterface
     /**
      * Add items to Magento cart
      *
-     * @param string $externalBusinessId
-     * @param \Magento\Quote\Api\Data\CartItemInterface[] $items
+     * @param  string                                      $externalBusinessId
+     * @param  \Magento\Quote\Api\Data\CartItemInterface[] $items
      * @return \Meta\Sales\Api\AddCartItemsApiResponseInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */

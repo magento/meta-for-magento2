@@ -32,10 +32,10 @@ class ShippingHelper extends AbstractHelper
     /**
      * Constructor
      *
-     * @param Context $context
-     * @param RegionFactory $regionFactory
+     * @param Context         $context
+     * @param RegionFactory   $regionFactory
      * @param LoggerInterface $logger
-     * @param array $supportedShippingCarriers
+     * @param array           $supportedShippingCarriers
      */
     public function __construct(
         Context         $context,
@@ -65,7 +65,7 @@ class ShippingHelper extends AbstractHelper
     /**
      * Gets the region name from state code
      *
-     * @param int $stateId - State code
+     * @param  int $stateId - State code
      * @return string
      */
     public function getRegionName($stateId)
@@ -82,8 +82,8 @@ class ShippingHelper extends AbstractHelper
     /**
      * Gets the region name from state code
      *
-     * @param null|string $stateCode - State code
-     * @param null|string $countryCode - Country code
+     * @param  null|string $stateCode   - State code
+     * @param  null|string $countryCode - Country code
      * @return Region
      */
     public function getRegionFromCode(?string $stateCode, ?string $countryCode): Region
@@ -110,8 +110,8 @@ class ShippingHelper extends AbstractHelper
     /**
      * Find code by title
      *
-     * @param string $carrierTitle
-     * @param array $carriersMap
+     * @param  string $carrierTitle
+     * @param  array  $carriersMap
      * @return string|false
      */
     private function findCodeByTitle($carrierTitle, array $carriersMap)
@@ -127,7 +127,7 @@ class ShippingHelper extends AbstractHelper
     /**
      * Get canonical carrier Code
      *
-     * @param Track $track
+     * @param  Track $track
      * @return string
      */
     private function getCanonicalCarrierCode($track)
@@ -154,7 +154,7 @@ class ShippingHelper extends AbstractHelper
     /**
      * Get carrier code for facebook
      *
-     * @param Track $track
+     * @param  Track $track
      * @return string
      */
     public function getCarrierCodeForFacebook($track)

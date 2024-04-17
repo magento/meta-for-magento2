@@ -73,12 +73,12 @@ class OrderItemMapper
     private LoggerInterface $logger;
 
     /**
-     * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
-     * @param LoggerInterface $logger
-     * @param ProductIdentifier $productIdentifier
-     * @param ProductRepository $productRepository
-     * @param ConfigurableType $configurableType
+     * @param SystemConfig              $systemConfig
+     * @param GraphAPIAdapter           $graphAPIAdapter
+     * @param LoggerInterface           $logger
+     * @param ProductIdentifier         $productIdentifier
+     * @param ProductRepository         $productRepository
+     * @param ConfigurableType          $configurableType
      * @param OrderItemInterfaceFactory $orderItemFactory
      */
     public function __construct(
@@ -102,8 +102,8 @@ class OrderItemMapper
     /**
      * Map facebook order item data to magento order item
      *
-     * @param array $item
-     * @param int $storeId
+     * @param  array $item
+     * @param  int   $storeId
      * @return OrderItem
      * @throws LocalizedException
      */
@@ -150,7 +150,9 @@ class OrderItemMapper
         // Dynamic Checkout:
         // set applied_rule_ids
 
-        /** @var OrderItem $orderItem */
+        /**
+ * @var OrderItem $orderItem 
+*/
         $orderItem = $this->orderItemFactory->create();
 
         $orderItem
@@ -194,8 +196,8 @@ class OrderItemMapper
     /**
      * Get configurable product options such as size and color
      *
-     * @param ProductInterface $product
-     * @param OrderItem $orderItem
+     * @param  ProductInterface $product
+     * @param  OrderItem        $orderItem
      * @return array|null
      */
     private function getProductOptions(ProductInterface $product, OrderItem $orderItem): ?array
@@ -245,8 +247,8 @@ class OrderItemMapper
     /**
      * Get product info for the provided product.
      *
-     * @param string|int $fbProductId
-     * @param int $storeId
+     * @param  string|int $fbProductId
+     * @param  int        $storeId
      * @return string|bool
      */
     private function getProductInfo($fbProductId, int $storeId)

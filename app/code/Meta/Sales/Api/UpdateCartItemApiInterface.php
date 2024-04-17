@@ -30,8 +30,8 @@ interface UpdateCartItemApiInterface
     /**
      * Update Magento cart item
      *
-     * @param string $externalBusinessId
-     * @param \Magento\Quote\Api\Data\CartItemInterface $cartItem
+     * @param  string                                    $externalBusinessId
+     * @param  \Magento\Quote\Api\Data\CartItemInterface $cartItem
      * @return \Magento\Quote\Api\Data\CartItemInterface
      * @throws \Magento\Framework\Exception\UnauthorizedTokenException
      * @throws \Magento\Framework\Exception\NoSuchEntityException

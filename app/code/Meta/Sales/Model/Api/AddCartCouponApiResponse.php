@@ -39,7 +39,7 @@ class AddCartCouponApiResponse implements AddCartCouponApiResponseInterface
      * Getter
      *
      * @SuppressWarnings(PHPMD.BooleanGetMethodName)
-     * @return bool
+     * @return                                       bool
      */
     public function getStatus(): bool
     {
@@ -49,7 +49,7 @@ class AddCartCouponApiResponse implements AddCartCouponApiResponseInterface
     /**
      * Setter
      *
-     * @param bool $status
+     * @param  bool $status
      * @return void
      */
     public function setStatus(bool $status): void
@@ -70,7 +70,7 @@ class AddCartCouponApiResponse implements AddCartCouponApiResponseInterface
     /**
      * Setter
      *
-     * @param \Magento\SalesRule\Api\Data\RuleInterface|null $rule
+     * @param  \Magento\SalesRule\Api\Data\RuleInterface|null $rule
      * @return void
      */
     public function setRule(?RuleInterface $rule): void

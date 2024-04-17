@@ -108,14 +108,14 @@ class CommerceHelper
     private array $exceptions = [];
 
     /**
-     * @param GraphAPIAdapter $graphAPIAdapter
-     * @param SystemConfig $systemConfig
+     * @param GraphAPIAdapter               $graphAPIAdapter
+     * @param SystemConfig                  $systemConfig
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param OrderRepository $orderRepository
-     * @param CreateOrder $createOrder
-     * @param CreateRefund $createRefund
-     * @param CreateCancellation $createCancellation
-     * @param FBEHelper $fbeHelper
+     * @param OrderRepository               $orderRepository
+     * @param CreateOrder                   $createOrder
+     * @param CreateRefund                  $createRefund
+     * @param CreateCancellation            $createCancellation
+     * @param FBEHelper                     $fbeHelper
      */
     public function __construct(
         GraphAPIAdapter               $graphAPIAdapter,
@@ -140,12 +140,14 @@ class CommerceHelper
     /**
      * Get facebook order by facebook order id
      *
-     * @param string $facebookOrderId
+     * @param  string $facebookOrderId
      * @return void
      */
     private function getFacebookOrder(string $facebookOrderId): FacebookOrderInterface
     {
-        /** @var FacebookOrderInterface $facebookOrder */
+        /**
+ * @var FacebookOrderInterface $facebookOrder 
+*/
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($facebookOrderId, 'facebook_order_id');
 
@@ -155,8 +157,8 @@ class CommerceHelper
     /**
      * Get facebook orders via api and create magento orders from them
      *
-     * @param int $storeId
-     * @param false|string $cursorAfter
+     * @param  int          $storeId
+     * @param  false|string $cursorAfter
      * @return void
      * @throws GuzzleException
      */
@@ -214,9 +216,9 @@ class CommerceHelper
     /**
      * Cancel Meta order that failed to be created due to product error
      *
-     * @param int $storeId
-     * @param string $facebookOrderId
-     * @param Exception $exception
+     * @param  int       $storeId
+     * @param  string    $facebookOrderId
+     * @param  Exception $exception
      * @return void
      * @throws GuzzleException
      */
@@ -256,10 +258,10 @@ class CommerceHelper
     /**
      * Perform cancel of a facebook order via api
      *
-     * @param int $storeId
-     * @param string $fbOrderId
-     * @param array|null $items
-     * @param bool $isOutOfStockCancellation
+     * @param  int        $storeId
+     * @param  string     $fbOrderId
+     * @param  array|null $items
+     * @param  bool       $isOutOfStockCancellation
      * @return void
      * @throws GuzzleException
      * @throws Exception
@@ -278,18 +280,20 @@ class CommerceHelper
         } catch (GuzzleException $e) {
             $response = $e->getResponse();
             $body = json_decode((string)$response->getBody());
-            throw new LocalizedException(__(
-                'Error code: "%1"; Error message: "%2"',
-                (string)$body->error->code,
-                (string)($body->error->error_user_msg ?? $body->error->message)
-            ));
+            throw new LocalizedException(
+                __(
+                    'Error code: "%1"; Error message: "%2"',
+                    (string)$body->error->code,
+                    (string)($body->error->error_user_msg ?? $body->error->message)
+                )
+            );
         }
     }
 
     /**
      * Pulls orders that have refunds and fetches the corresponding refund details.
      *
-     * @param int $storeId Store ID for which the refund orders need to be pulled.
+     * @param  int $storeId Store ID for which the refund orders need to be pulled.
      * @return array Associative array containing the refund details with Facebook Order IDs as keys.
      * @throws GuzzleException
      */
@@ -345,7 +349,7 @@ class CommerceHelper
     /**
      * Pulls orders that are cancelled and fetches the corresponding cancellation details.
      *
-     * @param int $storeId Store ID for which the cancelled orders need to be pulled.
+     * @param  int $storeId Store ID for which the cancelled orders need to be pulled.
      * @return array Associative array containing the cancellation details with Facebook Order IDs as keys.
      * @throws GuzzleException
      */
@@ -404,7 +408,7 @@ class CommerceHelper
     /**
      * Pull pending facebook orders
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return array
      * @throws GuzzleException
      */
@@ -428,8 +432,8 @@ class CommerceHelper
     /**
      * Get order details from Meta for a given meta order id
      *
-     * @param int $storeId
-     * @param string $metaOrderId
+     * @param  int    $storeId
+     * @param  string $metaOrderId
      * @return mixed
      * @throws GuzzleException
      */
@@ -447,7 +451,7 @@ class CommerceHelper
      *
      * Logic here is copied from AddProductsToCart/AddProductsToCartError in Magento codebase
      *
-     * @param string $message
+     * @param  string $message
      * @return bool
      */
     private function isProductError(string $message)

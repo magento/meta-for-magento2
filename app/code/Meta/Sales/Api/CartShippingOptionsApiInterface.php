@@ -30,9 +30,9 @@ interface CartShippingOptionsApiInterface
     /**
      * Fetch Magento cart shipping options
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param \Magento\Quote\Api\Data\AddressInterface $address
+     * @param  string                                   $externalBusinessId
+     * @param  string                                   $cartId
+     * @param  \Magento\Quote\Api\Data\AddressInterface $address
      * @return \Magento\Quote\Api\Data\ShippingMethodInterface[]
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\LocalizedException

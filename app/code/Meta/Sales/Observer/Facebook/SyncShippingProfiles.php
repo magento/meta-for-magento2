@@ -41,7 +41,7 @@ class SyncShippingProfiles implements ObserverInterface
     /**
      * Constructor
      *
-     * @param FBEHelper $fbeHelper
+     * @param FBEHelper      $fbeHelper
      * @param ShippingSyncer $shippingSyncer
      */
     public function __construct(

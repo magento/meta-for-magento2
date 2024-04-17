@@ -59,10 +59,10 @@ class Cancel implements ObserverInterface
     /**
      * Constructor
      *
-     * @param SystemConfig $systemConfig
-     * @param OrderHelper $orderHelper
+     * @param SystemConfig   $systemConfig
+     * @param OrderHelper    $orderHelper
      * @param CommerceHelper $commerceHelper
-     * @param FBEHelper $fbeHelper
+     * @param FBEHelper      $fbeHelper
      */
     public function __construct(
         SystemConfig   $systemConfig,
@@ -89,7 +89,7 @@ class Cancel implements ObserverInterface
     /**
      * Get Store ID
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return string
      */
     protected function getStoreId(Observer $observer)
@@ -110,18 +110,21 @@ class Cancel implements ObserverInterface
     /**
      * Cancel facebook order
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return void
      * @throws GuzzleException
      */
     protected function executeImpl(Observer $observer)
     {
-        /** @var Order $order */
+        /**
+ * @var Order $order 
+*/
         $order = $observer->getEvent()->getOrder();
         $storeId = $this->getStoreId($observer);
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 

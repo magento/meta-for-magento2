@@ -43,7 +43,7 @@ class ShippingFileBuilder
     /**
      * Creates file with shipping profiles that we can send to Meta
      *
-     * @param array $shippingProfiles
+     * @param  array $shippingProfiles
      * @return string
      * @throws FileSystemException
      */
