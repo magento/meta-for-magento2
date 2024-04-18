@@ -132,6 +132,16 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
+            $this->fbeHelper->logExceptionImmediatelytoMeta(
+                $e,
+                [
+                    'store_id' => $this->product->getStoreId(),
+                    'event' => 'catalog_sync',
+                    'event_type' => 'multi_source_inventory_sync_get_stock_status_error',
+                    'product_id' => $this->product->getSku(),
+                    'stock_id' => $stockId
+                ]
+            );
             return false;
         }
     }
@@ -151,6 +161,16 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
+            $this->fbeHelper->logExceptionImmediatelytoMeta(
+                $e,
+                [
+                    'store_id' => $this->product->getStoreId(),
+                    'event' => 'catalog_sync',
+                    'event_type' => 'multi_source_inventory_sync_get_stock_qty_error',
+                    'product_id' => $this->product->getSku(),
+                    'stock_id' => $stockId
+                ]
+            );
             return 0;
         }
     }
@@ -173,7 +193,8 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 [
                     'store_id' => $this->product->getStoreId(),
                     'event' => 'catalog_sync',
-                    'event_type' => 'multi_source_inventory_sync_error'
+                    'event_type' => 'multi_source_inventory_sync_error',
+                    'product_id' => $this->product->getSku()
                 ]
             );
             try {
