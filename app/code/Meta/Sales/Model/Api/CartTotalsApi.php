@@ -24,10 +24,15 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\TotalsInterface;
 use Magento\Quote\Model\GuestCart\GuestCartTotalRepository;
+use Magento\Quote\Model\Quote;
+use Magento\SalesRule\Model\Rule;
+use Magento\SalesRule\Api\RuleRepositoryInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\Sales\Api\CartTotalsApiInterface;
 use Meta\Sales\Helper\OrderHelper;
+use Magento\Quote\Model\QuoteRepository;
+use Magento\Quote\Model\QuoteIdMaskFactory;
 
 class CartTotalsApi implements CartTotalsApiInterface
 {
@@ -52,21 +57,45 @@ class CartTotalsApi implements CartTotalsApiInterface
     private FBEHelper $fbeHelper;
 
     /**
+     * @var QuoteRepository
+     */
+    private QuoteRepository $quoteRepository;
+
+    /**
+     * @var RuleRepositoryInterface
+     */
+    private RuleRepositoryInterface $ruleRepository;
+
+    /**
+     * @var QuoteIdMaskFactory
+     */
+    private QuoteIdMaskFactory $quoteIdMaskFactory;
+
+    /**
      * @param Authenticator            $authenticator
      * @param OrderHelper              $orderHelper
      * @param GuestCartTotalRepository $guestCartTotalRepository
      * @param FBEHelper                $fbeHelper
+     * @param QuoteRepository          $quoteRepository
+     * @param RuleRepositoryInterface  $ruleRepository
+     * @param QuoteIdMaskFactory       $quoteIdMaskFactory
      */
     public function __construct(
         Authenticator               $authenticator,
         OrderHelper                 $orderHelper,
         GuestCartTotalRepository    $guestCartTotalRepository,
-        FBEHelper                   $fbeHelper
+        FBEHelper                   $fbeHelper,
+        QuoteRepository             $quoteRepository,
+        RuleRepositoryInterface     $ruleRepository,
+        QuoteIdMaskFactory          $quoteIdMaskFactory
     ) {
         $this->authenticator = $authenticator;
         $this->orderHelper = $orderHelper;
         $this->guestCartTotalRepository = $guestCartTotalRepository;
         $this->fbeHelper = $fbeHelper;
+        $this->quoteRepository = $quoteRepository;
+        $this->ruleRepository = $ruleRepository;
+        $this->quoteIdMaskFactory = $quoteIdMaskFactory;
     }
 
     /**
@@ -83,7 +112,25 @@ class CartTotalsApi implements CartTotalsApiInterface
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
         try {
-            return $this->guestCartTotalRepository->get($cartId);
+            $quoteId = (int)$this->quoteIdMaskFactory->create()->load($cartId, 'masked_id')->getQuoteId();
+            /**
+             * @var Quote $quote
+             */
+            $quote = $this->quoteRepository->get($quoteId);
+            $totals = $this->guestCartTotalRepository->get($cartId);
+            $rules = explode(',', $quote->getAppliedRuleIds() ?? "");
+            foreach ($rules as $ruleId) {
+                if ($ruleId) {
+                    $rule = $this->ruleRepository->getById($ruleId);
+                    if ($rule->getSimpleAction() === Rule::BUY_X_GET_Y_ACTION) {
+                        $attrs = $totals->getExtensionAttributes();
+                        $attrs->setBxgyDiscountApplied(true);
+                        $totals->setExtensionAttributes($attrs);
+                        break 1; // Exit
+                    }
+                }
+            }
+            return $totals;
         } catch (NoSuchEntityException $e) {
             $le = new LocalizedException(
                 __(
