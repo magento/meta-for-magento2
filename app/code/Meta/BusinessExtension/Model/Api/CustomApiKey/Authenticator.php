@@ -23,6 +23,7 @@ namespace Meta\BusinessExtension\Model\Api\CustomApiKey;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Exception\LocalizedException;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Authenticator
@@ -43,32 +44,41 @@ class Authenticator
     private SystemConfig $systemConfig;
 
     /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
      * Authenticator constructor
      *
      * @param ScopeConfigInterface $scopeConfig
      * @param Http                 $httpRequest
      * @param SystemConfig         $systemConfig
+     * @param FBEHelper            $fbeHelper
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         Http                 $httpRequest,
-        SystemConfig         $systemConfig
+        SystemConfig         $systemConfig,
+        FBEHelper            $fbeHelper
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->httpRequest = $httpRequest;
         $this->systemConfig = $systemConfig;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
      * Authenticate an API request (validate the token and RSA signature)
      *
+     * @param string|null $storeId
      * @return void
      * @throws LocalizedException
      */
-    public function authenticateRequest(): void
+    public function authenticateRequest(?string $storeId = null): void
     {
         $this->authenticateToken();
-        $this->authenticateSignature();
+        $this->authenticateSignature($storeId);
     }
 
     /**
@@ -104,10 +114,11 @@ class Authenticator
     /**
      * Authenticate RSA Signature for API Request
      *
+     * @param string|null $storeId
      * @return void
      * @throws LocalizedException
      */
-    private function authenticateSignature(): void
+    private function authenticateSignature(?string $storeId = null): void
     {
         // phpcs:ignore Magento2.Functions.DiscouragedFunction
         $publicKey = file_get_contents(__DIR__ . '/PublicKey.pem');
@@ -130,7 +141,23 @@ class Authenticator
         $verification = openssl_verify($originalMessage, $decodedSignature, $publicKeyResource, OPENSSL_ALGO_SHA256);
 
         if (!$verification) {
-            throw new LocalizedException(__('RSA Signature Validation Failed'));
+            $ex = new LocalizedException(__('RSA Signature Validation Failed'));
+            if ($storeId !== null) {
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $ex,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'authentication_error',
+                        'event_type' => 'rsa_signature_validation_error',
+                        'extra_data' => [
+                            'request_uri' => $requestUri,
+                            'request_body' => $requestBody,
+                            'request_signature' => $signature
+                        ]
+                    ]
+                );
+            }
+            throw $ex;
         }
     }
 }

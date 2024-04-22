@@ -57,8 +57,8 @@ class HealthCheckApi implements HealthCheckApiInterface
      */
     public function healthCheck(string $externalBusinessId): bool
     {
-        $this->authenticator->authenticateRequest();
-        $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
+        $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
+        $this->authenticator->authenticateRequest($storeId);
 
         return true;
     }
