@@ -39,15 +39,17 @@ class FacebookInstalledFeature extends AbstractDb
     /**
      * Check if feature exists
      *
-     * @param  string $featureType
-     * @param  int    $storeId
+     * @param string $featureType
+     * @param int $storeId
      * @return bool
      */
     public function doesFeatureTypeExist($featureType, $storeId)
     {
         $connection = $this->getConnection();
+
+        $facebookInstalledFeaturesTable = $connection->getTableName(self::TABLE_NAME);
         $select = $connection->select()
-            ->from(self::TABLE_NAME)
+            ->from($facebookInstalledFeaturesTable)
             ->where('feature_type = ?', $featureType)
             ->where('store_id = ?', $storeId);
         return $connection->fetchRow($select) !== false;
@@ -56,20 +58,22 @@ class FacebookInstalledFeature extends AbstractDb
     /**
      * Delete all features matching storeId
      *
-     * @param  int $storeId
+     * @param int $storeId
      * @return int
      */
     public function deleteAll($storeId)
     {
         $connection = $this->getConnection();
-        return $connection->delete(self::TABLE_NAME, ['store_id = ?' => $storeId]);
+
+        $facebookInstalledFeaturesTable = $connection->getTableName(self::TABLE_NAME);
+        return $connection->delete($facebookInstalledFeaturesTable, ['store_id = ?' => $storeId]);
     }
-    
+
     /**
      * Save response data from 'installed_features' to table
      *
-     * @param  array $features
-     * @param  int   $storeId
+     * @param array $features
+     * @param int $storeId
      * @return void
      */
     public function saveResponseData($features, $storeId)
@@ -84,16 +88,18 @@ class FacebookInstalledFeature extends AbstractDb
             },
             array_values($features)
         );
-        
+
         $connection = $this->getConnection();
-        $connection->insertOnDuplicate(self::TABLE_NAME, $finalFeatures);
+
+        $facebookInstalledFeaturesTable = $connection->getTableName(self::TABLE_NAME);
+        $connection->insertOnDuplicate($facebookInstalledFeaturesTable, $finalFeatures);
     }
 
     /**
      * Format array data for insertion in DB
      *
-     * @param  array|string $feature
-     * @param  string       $key
+     * @param array|string $feature
+     * @param string $key
      * @return string|null
      */
     private function formatArrayData($feature, $key)

@@ -41,13 +41,15 @@ class MetaIssueNotification extends AbstractDb
     /**
      * Delete all notifications matching notification id
      *
-     * @param  string $notificationId
+     * @param string $notificationId
      * @return int
      */
     public function deleteByNotificationId(string $notificationId): int
     {
         $connection = $this->getConnection();
-        return $connection->delete(self::TABLE_NAME, ['notification_id = ?' => $notificationId]);
+
+        $metaIssueNotificationTable = $connection->getTableName(self::TABLE_NAME);
+        return $connection->delete($metaIssueNotificationTable, ['notification_id = ?' => $notificationId]);
     }
 
     /**
@@ -63,7 +65,9 @@ class MetaIssueNotification extends AbstractDb
             'message' => $notification->getMessage(),
             'severity' => $notification->getSeverity(),
         ];
-        $connection->insertOnDuplicate(self::TABLE_NAME, $version_notification);
+
+        $metaIssueNotificationTable = $connection->getTableName(self::TABLE_NAME);
+        $connection->insertOnDuplicate($metaIssueNotificationTable, $version_notification);
     }
 
     /**
@@ -72,8 +76,10 @@ class MetaIssueNotification extends AbstractDb
     public function loadVersionNotification()
     {
         $connection = $this->getConnection();
+
+        $metaIssueNotificationTable = $connection->getTableName(self::TABLE_NAME);
         $select = $connection->select()
-            ->from(self::TABLE_NAME)
+            ->from($metaIssueNotificationTable)
             ->where('notification_id = ?', MetaIssueNotification::VERSION_NOTIFICATION_ID);
         return $connection->fetchRow($select);
     }

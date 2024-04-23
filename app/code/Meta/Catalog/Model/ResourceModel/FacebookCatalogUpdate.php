@@ -65,11 +65,11 @@ class FacebookCatalogUpdate extends AbstractDb
      * @param string $connectionName
      */
     public function __construct(
-        Context $context,
+        Context           $context,
         CollectionFactory $collectionFactory,
-        Random $random,
-        OptionProvider $optionProvider,
-        DateTime $dateTime,
+        Random            $random,
+        OptionProvider    $optionProvider,
+        DateTime          $dateTime,
         $connectionName = null
     ) {
         parent::__construct($context, $connectionName);
@@ -106,7 +106,10 @@ class FacebookCatalogUpdate extends AbstractDb
             }
         }
         if (!empty($dataToInsert)) {
-            return $this->getConnection()->insertMultiple(self::TABLE_NAME, $dataToInsert);
+            $connection = $this->getConnection();
+
+            $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+            return $connection->insertMultiple($facebookCatalogUpdateTable, $dataToInsert);
         }
         return 0;
     }
@@ -146,7 +149,9 @@ class FacebookCatalogUpdate extends AbstractDb
 
         $connection = $this->getConnection();
         $updateWhere = $connection->quoteInto('row_id IN (?)', $data);
-        return $connection->update(self::TABLE_NAME, ['batch_id' => $batchId], $updateWhere);
+
+        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        return $connection->update($facebookCatalogUpdateTable, ['batch_id' => $batchId], $updateWhere);
     }
 
     /**
@@ -158,7 +163,9 @@ class FacebookCatalogUpdate extends AbstractDb
     public function deleteBatch(string $batchId): int
     {
         $connection = $this->getConnection();
-        return $connection->delete(self::TABLE_NAME, ['batch_id = ?' => $batchId]);
+
+        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        return $connection->delete($facebookCatalogUpdateTable, ['batch_id = ?' => $batchId]);
     }
 
     /**
@@ -170,7 +177,9 @@ class FacebookCatalogUpdate extends AbstractDb
     public function clearBatchId(string $batchId): int
     {
         $connection = $this->getConnection();
-        return $connection->update(self::TABLE_NAME, ['batch_id' => null], ['batch_id = ?' => $batchId]);
+
+        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        return $connection->update($facebookCatalogUpdateTable, ['batch_id' => null], ['batch_id = ?' => $batchId]);
     }
 
     /**
@@ -206,11 +215,16 @@ class FacebookCatalogUpdate extends AbstractDb
     private function getChildProductLinks(array $parentIds)
     {
         $parentLinkField = $this->optionProvider->getProductEntityLinkField();
-        $select = $this->getConnection()->select()
-            ->from($this->getTable('catalog_product_super_link'), ['parent_id', 'product_id'])
-            ->joinLeft(['e' => $this->getTable('catalog_product_entity')], "e.{$parentLinkField} = parent_id")
+        $connection = $this->getConnection();
+
+        $catalogProductSuperLinkTable = $connection->getTableName('catalog_product_super_link');
+        $catalogProductEntityTable = $connection->getTableName('catalog_product_entity');
+
+        $select = $connection->select()
+            ->from($catalogProductSuperLinkTable, ['parent_id', 'product_id'])
+            ->joinLeft(['e' => $catalogProductEntityTable], "e.{$parentLinkField} = parent_id")
             ->where('e.entity_id IN (?)', $parentIds);
-        return $this->getConnection()->fetchAll($select);
+        return $connection->fetchAll($select);
     }
 
     /**
@@ -225,7 +239,9 @@ class FacebookCatalogUpdate extends AbstractDb
             return;
         }
         $connection = $this->getConnection();
-        $connection->delete(self::TABLE_NAME, ['sku = ?' => $sku, 'method = ?' => 'update']);
+
+        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        $connection->delete($facebookCatalogUpdateTable, ['sku = ?' => $sku, 'method = ?' => 'update']);
     }
 
     /**
@@ -259,8 +275,10 @@ class FacebookCatalogUpdate extends AbstractDb
     {
         $dateLimit = $this->dateTime->date(null, '-7 days');
         $connection = $this->getConnection();
+
+        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
         return $connection->delete(
-            self::TABLE_NAME,
+            $facebookCatalogUpdateTable,
             [
                 "batch_id IS NOT NULL",
                 "created_at < '{$dateLimit}'"
