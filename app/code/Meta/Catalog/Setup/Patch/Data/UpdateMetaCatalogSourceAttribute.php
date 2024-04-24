@@ -10,7 +10,7 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
     /**
      * @var ModuleDataSetupInterface
      */
-    private $moduleDataSetup;
+    private ModuleDataSetupInterface $moduleDataSetup;
 
     /**
      * @param ModuleDataSetupInterface $moduleDataSetup
@@ -28,7 +28,7 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
      */
     public static function getDependencies(): array
     {
-        return  [];
+        return [];
     }
 
     /**
@@ -48,11 +48,12 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
      */
     public function apply(): void
     {
-        $this->moduleDataSetup->getConnection()->startSetup();
+        $connection = $this->moduleDataSetup->getConnection();
+        $connection->startSetup();
 
         $this->updateAttribute();
 
-        $this->moduleDataSetup->getConnection()->endSetup();
+        $connection->endSetup();
     }
 
     /**
@@ -61,13 +62,14 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
     private function updateAttribute()
     {
         $connection = $this->moduleDataSetup->getConnection();
-        $tableName = $this->moduleDataSetup->getTable('eav_attribute');
+        $eavAttributeTable = $this->moduleDataSetup->getTable('eav_attribute');
+
         // phpcs:disable
         $oldSourceModel = 'Facebook\BusinessExtension\Model\Config\Source\Product\GoogleProductCategory';
         $newSourceModel = \Meta\Catalog\Model\Config\Source\Product\GoogleProductCategory::class;
 
         $connection->update(
-            $tableName,
+            $eavAttributeTable,
             ['source_model' => $newSourceModel],
             $connection->quoteInto('source_model = ?', $oldSourceModel)
         );
@@ -93,12 +95,13 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
     private function revertAttributeUpdate()
     {
         $connection = $this->moduleDataSetup->getConnection();
-        $tableName = $this->moduleDataSetup->getTable('eav_attribute');
+        $eavAttributeTable = $this->moduleDataSetup->getTable('eav_attribute');
+
         // phpcs:disable
         $oldSourceModel = 'Facebook\BusinessExtension\Model\Config\Source\Product\GoogleProductCategory';
         $newSourceModel = \Meta\Catalog\Model\Config\Source\Product\GoogleProductCategory::class;
         $connection->update(
-            $tableName,
+            $eavAttributeTable,
             ['source_model' => $oldSourceModel],
             $connection->quoteInto('source_model = ?', $newSourceModel)
         );

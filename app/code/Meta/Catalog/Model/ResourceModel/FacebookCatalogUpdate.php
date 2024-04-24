@@ -106,9 +106,9 @@ class FacebookCatalogUpdate extends AbstractDb
             }
         }
         if (!empty($dataToInsert)) {
-            $connection = $this->getConnection();
+            $connection = $this->_resources->getConnection();
 
-            $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+            $facebookCatalogUpdateTable = $this->_resources->getTableName(self::TABLE_NAME);
             return $connection->insertMultiple($facebookCatalogUpdateTable, $dataToInsert);
         }
         return 0;
@@ -147,10 +147,10 @@ class FacebookCatalogUpdate extends AbstractDb
         $collection->setPageSize(self::BATCH_LIMIT);
         $data = $collection->getData();
 
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
         $updateWhere = $connection->quoteInto('row_id IN (?)', $data);
 
-        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        $facebookCatalogUpdateTable = $this->_resources->getTableName(self::TABLE_NAME);
         return $connection->update($facebookCatalogUpdateTable, ['batch_id' => $batchId], $updateWhere);
     }
 
@@ -162,9 +162,9 @@ class FacebookCatalogUpdate extends AbstractDb
      */
     public function deleteBatch(string $batchId): int
     {
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
 
-        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        $facebookCatalogUpdateTable = $this->_resources->getTableName(self::TABLE_NAME);
         return $connection->delete($facebookCatalogUpdateTable, ['batch_id = ?' => $batchId]);
     }
 
@@ -176,9 +176,9 @@ class FacebookCatalogUpdate extends AbstractDb
      */
     public function clearBatchId(string $batchId): int
     {
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
 
-        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        $facebookCatalogUpdateTable = $this->_resources->getTableName(self::TABLE_NAME);
         return $connection->update($facebookCatalogUpdateTable, ['batch_id' => null], ['batch_id = ?' => $batchId]);
     }
 
@@ -215,10 +215,10 @@ class FacebookCatalogUpdate extends AbstractDb
     private function getChildProductLinks(array $parentIds)
     {
         $parentLinkField = $this->optionProvider->getProductEntityLinkField();
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
 
-        $catalogProductSuperLinkTable = $connection->getTableName('catalog_product_super_link');
-        $catalogProductEntityTable = $connection->getTableName('catalog_product_entity');
+        $catalogProductSuperLinkTable = $this->_resources->getTableName('catalog_product_super_link');
+        $catalogProductEntityTable = $this->_resources->getTableName('catalog_product_entity');
 
         $select = $connection->select()
             ->from($catalogProductSuperLinkTable, ['parent_id', 'product_id'])
@@ -238,9 +238,9 @@ class FacebookCatalogUpdate extends AbstractDb
         if ($sku === null) {
             return;
         }
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
 
-        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        $facebookCatalogUpdateTable = $this->_resources->getTableName(self::TABLE_NAME);
         $connection->delete($facebookCatalogUpdateTable, ['sku = ?' => $sku, 'method = ?' => 'update']);
     }
 
@@ -274,9 +274,9 @@ class FacebookCatalogUpdate extends AbstractDb
     public function cleanupTable()
     {
         $dateLimit = $this->dateTime->date(null, '-7 days');
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
 
-        $facebookCatalogUpdateTable = $connection->getTableName(self::TABLE_NAME);
+        $facebookCatalogUpdateTable = $this->_resources->getTableName(self::TABLE_NAME);
         return $connection->delete(
             $facebookCatalogUpdateTable,
             [
