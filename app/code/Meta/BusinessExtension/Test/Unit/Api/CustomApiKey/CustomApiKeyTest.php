@@ -9,6 +9,7 @@ use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Meta\BusinessExtension\Helper\FBEHelper;
 
 class CustomApiKeyTest extends TestCase
 {
@@ -27,6 +28,11 @@ class CustomApiKeyTest extends TestCase
      */
     private SystemConfig $systemConfig;
 
+    /**
+     * @var MockObject
+     */
+    private FBEHelper $fbeHelper;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,6 +43,9 @@ class CustomApiKeyTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->systemConfig = $this->getMockBuilder(SystemConfig::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->fbeHelper = $this->getMockBuilder(FBEHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -58,7 +67,8 @@ class CustomApiKeyTest extends TestCase
         $authenticator = new Authenticator(
             $this->scopeConfig,
             $this->httpRequest,
-            $this->systemConfig
+            $this->systemConfig,
+            $this->fbeHelper
         );
         $authenticator->authenticateRequestDangerouslySkipSignatureValidation();
     }
@@ -77,7 +87,8 @@ class CustomApiKeyTest extends TestCase
         $authenticator = new Authenticator(
             $this->scopeConfig,
             $this->httpRequest,
-            $this->systemConfig
+            $this->systemConfig,
+            $this->fbeHelper
         );
         $authenticator->authenticateRequestDangerouslySkipSignatureValidation();
     }
