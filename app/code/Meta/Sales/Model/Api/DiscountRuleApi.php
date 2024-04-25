@@ -53,15 +53,15 @@ class DiscountRuleApi implements DiscountRuleApiInterface
      * DiscountRuleApi constructor.
      *
      * @param RuleRepositoryInterface $ruleRepository
-     * @param FBEHelper               $fbeHelper
-     * @param OrderHelper             $orderHelper
-     * @param Authenticator           $authenticator
+     * @param FBEHelper $fbeHelper
+     * @param OrderHelper $orderHelper
+     * @param Authenticator $authenticator
      */
     public function __construct(
         RuleRepositoryInterface $ruleRepository,
-        FBEHelper $fbeHelper,
-        OrderHelper $orderHelper,
-        Authenticator $authenticator
+        FBEHelper               $fbeHelper,
+        OrderHelper             $orderHelper,
+        Authenticator           $authenticator
     ) {
         $this->ruleRepository = $ruleRepository;
         $this->fbeHelper = $fbeHelper;
@@ -72,8 +72,8 @@ class DiscountRuleApi implements DiscountRuleApiInterface
     /**
      * Create a cart rule
      *
-     * @param  string        $externalBusinessId
-     * @param  RuleInterface $rule
+     * @param string $externalBusinessId
+     * @param RuleInterface $rule
      * @return int
      * @throws LocalizedException
      */
@@ -85,7 +85,7 @@ class DiscountRuleApi implements DiscountRuleApiInterface
             if (empty($rule->getWebsiteIds())) {
                 $rule->setWebsiteIds(
                     [
-                    $this->orderHelper->getWebsiteIdFromStoreId((int)$storeId)
+                        $this->orderHelper->getWebsiteIdFromStoreId((int)$storeId)
                     ]
                 );
             }
@@ -94,6 +94,10 @@ class DiscountRuleApi implements DiscountRuleApiInterface
                     [0] // By default, the ID for logged out customers.
                 );
             }
+            if ($rule->getFromDate() === null) {
+                $rule->setFromDate(date('Y-m-d'));
+            }
+
             $savedRule = $this->ruleRepository->save($rule);
             return (string)$savedRule->getRuleId();
         } catch (\Exception $e) {
