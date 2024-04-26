@@ -35,7 +35,7 @@ class PullOrders extends Field
     /**
      * Remove scope label
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -47,8 +47,8 @@ class PullOrders extends Field
     /**
      * Get ajax url
      *
-     * @todo   move to helper
      * @return string
+     * @todo   move to helper
      */
     public function getAjaxUrl()
     {
@@ -58,8 +58,8 @@ class PullOrders extends Field
     /**
      * Get element html
      *
-     * @param                                         AbstractElement $element
-     * @return                                        string
+     * @param AbstractElement $element
+     * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -76,8 +76,8 @@ class PullOrders extends Field
     public function getButtonHtml()
     {
         /**
- * @var Button $button 
-*/
+         * @var Button $button
+         */
         $button = $this->getLayout()->createBlock(Button::class);
         return $button->setData(['id' => 'fb_pull_orders_btn', 'label' => __('Pull Orders from Meta')])
             ->toHtml();

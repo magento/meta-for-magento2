@@ -42,10 +42,12 @@ class PersistMetaTelemetryLogsMerger implements MergerInterface
                     $decodedMessage['extra_data'] = array_map(
                         function ($value) {
                             return is_string($value) ? $value : json_encode($value);
-                        }, $decodedMessage['extra_data']
+                        },
+                        $decodedMessage['extra_data']
                     );
                     return $decodedMessage;
-                }, $messages['persist.meta.telemetry.logs']
+                },
+                $messages['persist.meta.telemetry.logs']
             );
             $mergedLogs = json_encode($telemetryLogs);
             return ['persist.meta.telemetry.logs' => [$mergedLogs]];

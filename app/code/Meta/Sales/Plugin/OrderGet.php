@@ -40,11 +40,11 @@ class OrderGet
     private LoggerInterface $logger;
 
     /**
-     * @param OrderHelper     $orderHelper
+     * @param OrderHelper $orderHelper
      * @param LoggerInterface $logger
      */
     public function __construct(
-        OrderHelper $orderHelper,
+        OrderHelper     $orderHelper,
         LoggerInterface $logger
     ) {
         $this->orderHelper = $orderHelper;
@@ -54,8 +54,8 @@ class OrderGet
     /**
      * After get order collection plugin
      *
-     * @param  OrderRepositoryInterface $subject
-     * @param  OrderCollection          $orderCollection
+     * @param OrderRepositoryInterface $subject
+     * @param OrderCollection $orderCollection
      * @return OrderCollection
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter) $subject
@@ -65,8 +65,8 @@ class OrderGet
         try {
             foreach ($orderCollection->getItems() as $order) {
                 /**
- * @var OrderInterface $order 
-*/
+                 * @var OrderInterface $order
+                 */
                 $this->orderHelper->setFacebookOrderExtensionAttributes($order);
             }
         } catch (Exception $e) {

@@ -143,14 +143,14 @@ class ShippingData
     private function getExternalReferenceID(string $shippingProfileType): string
     {
         switch ($shippingProfileType) {
-        case ShippingProfileTypes::TABLE_RATE:
-            return ShippingMethodTypes::TABLE_RATE;
-        case ShippingProfileTypes::FLAT_RATE:
-            return ShippingMethodTypes::FLAT_RATE;
-        case ShippingProfileTypes::FREE_SHIPPING:
-            return ShippingMethodTypes::FREE_SHIPPING;
-        default:
-            return "";
+            case ShippingProfileTypes::TABLE_RATE:
+                return ShippingMethodTypes::TABLE_RATE;
+            case ShippingProfileTypes::FLAT_RATE:
+                return ShippingMethodTypes::FLAT_RATE;
+            case ShippingProfileTypes::FREE_SHIPPING:
+                return ShippingMethodTypes::FREE_SHIPPING;
+            default:
+                return "";
         }
     }
 

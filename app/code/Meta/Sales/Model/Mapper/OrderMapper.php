@@ -89,15 +89,15 @@ class OrderMapper
     private ShippingHelper $shippingHelper;
 
     /**
-     * @param StoreManagerInterface        $storeManager
-     * @param GraphAPIAdapter              $graphAPIAdapter
-     * @param SystemConfig                 $systemConfig
-     * @param OrderInterfaceFactory        $orderFactory
+     * @param StoreManagerInterface $storeManager
+     * @param GraphAPIAdapter $graphAPIAdapter
+     * @param SystemConfig $systemConfig
+     * @param OrderInterfaceFactory $orderFactory
      * @param OrderPaymentInterfaceFactory $paymentFactory
      * @param OrderAddressInterfaceFactory $orderAddressFactory
-     * @param OrderItemMapper              $orderItemMapper
-     * @param ShippingData                 $shippingData
-     * @param ShippingHelper               $shippingHelper
+     * @param OrderItemMapper $orderItemMapper
+     * @param ShippingData $shippingData
+     * @param ShippingHelper $shippingHelper
      */
     public function __construct(
         StoreManagerInterface        $storeManager,
@@ -124,8 +124,8 @@ class OrderMapper
     /**
      * Map facebook order data to a magento order
      *
-     * @param  array $data
-     * @param  int   $storeId
+     * @param array $data
+     * @param int $storeId
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
@@ -148,14 +148,14 @@ class OrderMapper
             ->setSameAsBilling(true);
 
         /**
- * @var Payment $payment 
-*/
+         * @var Payment $payment
+         */
         $payment = $this->paymentFactory->create();
         $payment->setMethod('facebook');
 
         /**
- * @var Order $order 
-*/
+         * @var Order $order
+         */
         $order = $this->orderFactory->create();
         $order
             ->setState(Order::STATE_NEW)
@@ -185,9 +185,9 @@ class OrderMapper
     /**
      * Apply shipping to magento order
      *
-     * @param  Order $order
-     * @param  array $data
-     * @param  int   $storeId
+     * @param Order $order
+     * @param array $data
+     * @param int $storeId
      * @return void
      * @throws LocalizedException
      */
@@ -217,9 +217,9 @@ class OrderMapper
     /**
      * Get Magento shipping method code. For example: "flatrate_flatrate"
      *
-     * @param  string $shippingOptionName  (possible values: "standard", "expedited", "rush")
-     * @param  string $shippingReferenceId
-     * @param  int    $storeId
+     * @param string $shippingOptionName (possible values: "standard", "expedited", "rush")
+     * @param string $shippingReferenceId
+     * @param int $storeId
      * @return string|null
      * @throws LocalizedException
      */
@@ -242,8 +242,8 @@ class OrderMapper
     /**
      * Get custom shipping method label
      *
-     * @param  string $shippingOptionName
-     * @param  int    $storeId
+     * @param string $shippingOptionName
+     * @param int $storeId
      * @return string|null
      */
     private function getShippingMethodLabel(string $shippingOptionName, int $storeId): ?string
@@ -260,9 +260,9 @@ class OrderMapper
     /**
      * Get ShippingMethodDescription
      *
-     * @param  string $metaShippingTitle
-     * @param  string $shippingMethod
-     * @param  int    $storeId
+     * @param string $metaShippingTitle
+     * @param string $shippingMethod
+     * @param int $storeId
      * @return string|null
      */
     private function getShippingDescription(string $metaShippingTitle, string $shippingMethod, int $storeId): ?string
@@ -303,7 +303,7 @@ class OrderMapper
     /**
      * Create a magento order billing address from facebook order data
      *
-     * @param  array $data
+     * @param array $data
      * @return Order\Address
      */
     private function getOrderBillingAddress(array $data): Order\Address
@@ -331,8 +331,8 @@ class OrderMapper
         ];
 
         /**
- * @var Order\Address $billingAddress 
-*/
+         * @var Order\Address $billingAddress
+         */
         $billingAddress = $this->orderAddressFactory->create(['data' => $addressData]);
 
         $billingAddress->setAddressType(Order\Address::TYPE_BILLING);
@@ -342,9 +342,9 @@ class OrderMapper
     /**
      * Apply discounts to magento order
      *
-     * @param  Order $order
-     * @param  array $data
-     * @param  array $items
+     * @param Order $order
+     * @param array $data
+     * @param array $items
      * @return void
      */
     private function applyDiscountsToOrder(Order $order, array $data, array $items)
@@ -402,9 +402,9 @@ class OrderMapper
     /**
      * Apply items to magento order from facebook order data
      *
-     * @param  Order $order
-     * @param  array $data
-     * @param  int   $storeId
+     * @param Order $order
+     * @param array $data
+     * @param int $storeId
      * @return void
      */
     private function applyItemsToOrder(Order $order, array $data, int $storeId)
@@ -441,9 +441,9 @@ class OrderMapper
     /**
      * Apply totals to magento order from facebook order data
      *
-     * @param  Order $order
-     * @param  array $data
-     * @param  int   $storeId
+     * @param Order $order
+     * @param array $data
+     * @param int $storeId
      * @return void
      * @throws NoSuchEntityException
      */

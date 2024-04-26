@@ -59,7 +59,7 @@ class OrderLoadAfter implements ObserverInterface
     public function execute(Observer $observer)
     {
         /**
- * @var Order $order 
+ * @var Order $order
 */
         $order = $observer->getEvent()->getOrder();
 

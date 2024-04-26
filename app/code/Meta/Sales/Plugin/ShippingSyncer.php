@@ -135,7 +135,8 @@ class ShippingSyncer
             );
         } catch (Exception $e) {
             $this->fbeHelper->logExceptionImmediatelyToMeta(
-                $e, [
+                $e,
+                [
                 'store_id' => $storeId,
                 'event' => 'shipping_profile_sync',
                 'event_type' => $eventType

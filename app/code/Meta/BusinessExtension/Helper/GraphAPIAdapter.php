@@ -575,7 +575,9 @@ class GraphAPIAdapter
     public function graphAPIBatchRequest(array $requests)
     {
         $response = $this->callApi(
-            'POST', '', [
+            'POST',
+            '',
+            [
             'access_token' => $this->accessToken,
             'batch' => json_encode($requests)
             ]

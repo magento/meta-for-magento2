@@ -32,6 +32,7 @@ use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 
 /**
  * API class for managing newsletter subscription discount coupons.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscountApiInterface
 {

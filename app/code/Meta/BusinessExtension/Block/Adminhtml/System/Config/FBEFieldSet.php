@@ -77,20 +77,20 @@ class FBEFieldSet extends Fieldset
         $group = $element->getDataByPath('group/group');
 
         switch ($group) {
-        case 'catalog':
-            $showSection = $this->systemConfig->isFBECatalogInstalled($storeId);
-            break;
-        case 'conversion':
-            $showSection = $this->systemConfig->isFBEPixelInstalled($storeId);
-            break;
-        case 'ads':
-            $showSection = $this->systemConfig->isFBEAdsInstalled($storeId);
-            break;
-        case 'fb_shop':
-            $showSection = $this->systemConfig->isFBEShopInstalled($storeId);
-            break;
-        default:
-            $showSection = false;
+            case 'catalog':
+                $showSection = $this->systemConfig->isFBECatalogInstalled($storeId);
+                break;
+            case 'conversion':
+                $showSection = $this->systemConfig->isFBEPixelInstalled($storeId);
+                break;
+            case 'ads':
+                $showSection = $this->systemConfig->isFBEAdsInstalled($storeId);
+                break;
+            case 'fb_shop':
+                $showSection = $this->systemConfig->isFBEShopInstalled($storeId);
+                break;
+            default:
+                $showSection = false;
         }
         
         if ($showSection) {

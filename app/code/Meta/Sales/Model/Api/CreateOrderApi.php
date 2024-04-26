@@ -143,21 +143,21 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Constructor
      *
-     * @param EventManagerInterface         $eventManager
-     * @param QuoteManagement               $quoteManagement
-     * @param CartRepositoryInterface       $quoteRepository
-     * @param SystemConfig                  $systemConfig
+     * @param EventManagerInterface $eventManager
+     * @param QuoteManagement $quoteManagement
+     * @param CartRepositoryInterface $quoteRepository
+     * @param SystemConfig $systemConfig
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param InvoiceManagementInterface    $invoiceManagement
-     * @param TransactionFactory            $transactionFactory
-     * @param CheckoutSession               $checkoutSession
-     * @param OrderHelper                   $orderHelper
-     * @param Authenticator                 $authenticator
-     * @param FBEHelper                     $fbeHelper
-     * @param CommerceHelper                $commerceHelper
-     * @param QuoteIdMaskFactory            $quoteIdMaskFactory
-     * @param RequestInterface|null         $request
-     * @param RemoteAddress|null            $remoteAddress
+     * @param InvoiceManagementInterface $invoiceManagement
+     * @param TransactionFactory $transactionFactory
+     * @param CheckoutSession $checkoutSession
+     * @param OrderHelper $orderHelper
+     * @param Authenticator $authenticator
+     * @param FBEHelper $fbeHelper
+     * @param CommerceHelper $commerceHelper
+     * @param QuoteIdMaskFactory $quoteIdMaskFactory
+     * @param RequestInterface|null $request
+     * @param RemoteAddress|null $remoteAddress
      */
     public function __construct(
         EventManagerInterface         $eventManager,
@@ -198,14 +198,14 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Get facebook order by facebook order id
      *
-     * @param  string $facebookOrderId
+     * @param string $facebookOrderId
      * @return FacebookOrderInterface
      */
     private function getFacebookOrder(string $facebookOrderId): FacebookOrderInterface
     {
         /**
- * @var FacebookOrder $facebookOrder 
-*/
+         * @var FacebookOrder $facebookOrder
+         */
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($facebookOrderId, 'facebook_order_id');
 
@@ -215,8 +215,8 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Adds tax details to each item
      *
-     * @param  CreateOrderApiProductItemInterface[] $productItems
-     * @param  Quote                                $quote
+     * @param CreateOrderApiProductItemInterface[] $productItems
+     * @param Quote $quote
      * @return void
      */
     private function addMetaTaxToItem(array $productItems, Quote $quote): void
@@ -229,8 +229,8 @@ class CreateOrderApi implements CreateOrderApiInterface
         // Set the tax per item
         $items = [];
         /**
- * @var Quote\Item $quoteItem 
-*/
+         * @var Quote\Item $quoteItem
+         */
         foreach ($quote->getAllItems() as $quoteItem) {
             $quoteItem->setData("meta_tax", $tax_map[$quoteItem->getSku()]["meta_tax"]);
             $quoteItem->setData("meta_tax_rate", $tax_map[$quoteItem->getSku()]["meta_tax_rate"]);
@@ -243,9 +243,9 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Validate quote
      *
-     * @param  int        $quoteId
-     * @param  string     $facebookOrderId
-     * @param  Quote|null $quote
+     * @param int $quoteId
+     * @param string $facebookOrderId
+     * @param Quote|null $quote
      * @return void
      * @throws LocalizedException
      */
@@ -272,9 +272,10 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Populate any missing address information
      *
-     * @param  AddressInterface $address
-     * @param  AddressInterface $metaAddressInfo
+     * @param AddressInterface $address
+     * @param AddressInterface $metaAddressInfo
      * @return void
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     private function populateAddress(
         AddressInterface $address,
@@ -316,12 +317,12 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Populate customer information in quote
      *
-     * @param  Quote            $quote
-     * @param  string           $email
-     * @param  string           $firstName
-     * @param  string           $lastName
-     * @param  AddressInterface $shippingAddress
-     * @param  AddressInterface $billingAddress
+     * @param Quote $quote
+     * @param string $email
+     * @param string $firstName
+     * @param string $lastName
+     * @param AddressInterface $shippingAddress
+     * @param AddressInterface $billingAddress
      * @return void
      */
     private function populateCustomerInformation(
@@ -358,8 +359,8 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Create an invoice
      *
-     * @param  OrderInterface $magentoOrder
-     * @param  Transaction    $transactionSave
+     * @param OrderInterface $magentoOrder
+     * @param Transaction $transactionSave
      * @return InvoiceInterface
      * @throws LocalizedException
      */
@@ -376,10 +377,10 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Create a meta order record in DB
      *
-     * @param  string         $facebookOrderId
-     * @param  OrderInterface $magentoOrder
-     * @param  string         $channel
-     * @param  bool           $buyerOptin
+     * @param string $facebookOrderId
+     * @param OrderInterface $magentoOrder
+     * @param string $channel
+     * @param bool $buyerOptin
      * @return FacebookOrderInterface
      */
     private function createMetaOrderRecord(
@@ -404,8 +405,8 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Populate the checkout session details
      *
-     * @param  Quote          $quote
-     * @param  OrderInterface $magentoOrder
+     * @param Quote $quote
+     * @param OrderInterface $magentoOrder
      * @return void
      */
     private function populateCheckoutSessionDetails(
@@ -422,9 +423,9 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Build the context for logging to Meta
      *
-     * @param  int    $storeId
-     * @param  string $eventType
-     * @param  array  $extraData
+     * @param int $storeId
+     * @param string $eventType
+     * @param array $extraData
      * @return array
      */
     private function buildMetaLogContext(
@@ -443,23 +444,23 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * Create order
      *
-     * @param                                         string                                 $cartId
-     * @param                                         string                                 $orderId
-     * @param                                         float                                  $orderTotal
-     * @param                                         float                                  $taxTotal
-     * @param                                         string                                 $email
-     * @param                                         string                                 $firstName
-     * @param                                         string                                 $lastName
-     * @param                                         CreateOrderApiProductItemInterface[]   $productItems
-     * @param                                         CreateOrderApiShipmentDetailsInterface $shipmentDetails
-     * @param                                         AddressInterface                       $billingAddress
-     * @param                                         string                                 $channel
-     * @param                                         bool                                   $buyerRemarketingOptIn
-     * @param                                         bool                                   $createInvoice
-     * @return                                        OrderInterface
-     * @throws                                        LocalizedException
-     * @throws                                        NoSuchEntityException
-     * @throws                                        Throwable
+     * @param string $cartId
+     * @param string $orderId
+     * @param float $orderTotal
+     * @param float $taxTotal
+     * @param string $email
+     * @param string $firstName
+     * @param string $lastName
+     * @param CreateOrderApiProductItemInterface[] $productItems
+     * @param CreateOrderApiShipmentDetailsInterface $shipmentDetails
+     * @param AddressInterface $billingAddress
+     * @param string $channel
+     * @param bool $buyerRemarketingOptIn
+     * @param bool $createInvoice
+     * @return OrderInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws Throwable
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function createOrder(
@@ -499,8 +500,8 @@ class CreateOrderApi implements CreateOrderApiInterface
         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
         $quoteId = (int)$quoteIdMask->getQuoteId();
         /**
- * @var Quote $quote 
-*/
+         * @var Quote $quote
+         */
         $quote = $this->quoteRepository->get($quoteId);
         $storeId = $quote->getStoreId();
 
@@ -561,9 +562,10 @@ class CreateOrderApi implements CreateOrderApiInterface
             $this->eventManager->dispatch('checkout_submit_all_after', ['order' => $magentoOrder, 'quote' => $quote]);
 
             $this->eventManager->dispatch(
-                'facebook_order_create_after', [
-                'order' => $magentoOrder,
-                'facebook_order' => $facebookOrder,
+                'facebook_order_create_after',
+                [
+                    'order' => $magentoOrder,
+                    'facebook_order' => $facebookOrder,
                 ]
             );
             return $magentoOrder;
@@ -597,9 +599,9 @@ class CreateOrderApi implements CreateOrderApiInterface
      *
      * Confirms that the totals in the magento order match the totals in meta
      *
-     * @param  int    $storeId
-     * @param  string $metaOrderId
-     * @param  Quote  $quote
+     * @param int $storeId
+     * @param string $metaOrderId
+     * @param Quote $quote
      * @return void
      * @throws GuzzleException
      * @throws LocalizedException

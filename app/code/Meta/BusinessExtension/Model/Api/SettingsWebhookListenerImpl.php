@@ -62,7 +62,7 @@ class SettingsWebhookListenerImpl implements SettingsWebhookListenerInterface
     private CollectionFactory $collectionFactory;
 
     /**
-     * @var Authenticator 
+     * @var Authenticator
      */
     private Authenticator $authenticator;
 

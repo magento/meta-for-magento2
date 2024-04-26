@@ -1,5 +1,8 @@
 <?php
-/** @var \Meta\Conversion\Block\Pixel\AddToCart $block */
+/**
+ * @var \Meta\Conversion\Block\Pixel\AddToCart $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
 $trackerUrl = $block->getTrackerUrl();
 ?>
 <?php if ($block->getFacebookPixelID()): ?>
@@ -7,7 +10,7 @@ $trackerUrl = $block->getTrackerUrl();
     <script>
         window.addToCartData =
             <?= /* @noEscape */ json_encode([
-                "url" => $block->escapeUrl($trackerUrl),
+                "url" => $escaper->escapeUrl($trackerUrl),
                 "eventName" => $block->getEventToObserveName(),
                 'fbAgentVersion' => $block->getFacebookAgentVersion(),
                 'fbPixelId' => $block->getFacebookPixelID(),
@@ -36,14 +39,14 @@ $trackerUrl = $block->getTrackerUrl();
                         // In case product is added from category page get options using added product's id
                         // Get id of last added product
                         var productId = data.productIds[data.productIds.length - 1];
-                        var categorySwatchData = $('[data-role=swatch-option-'+productId+']')
+                        var categorySwatchData = $('[data-role=swatch-option-' + productId + ']')
                             .data('mage-SwatchRenderer');
                         if (categorySwatchData) {
                             var simpleProductId = categorySwatchData.getProductId();
                         } else {
                             // else check product data from configurable options
                             var configurableProduct = data.form.data().mageConfigurable;
-                            if(configurableProduct) {
+                            if (configurableProduct) {
                                 var simpleProductId = configurableProduct.simpleProduct;
                             }
                         }
@@ -62,10 +65,10 @@ $trackerUrl = $block->getTrackerUrl();
                         dataType: 'json',
                         success: function (res) {
                             var addToCartConfigPixel = {
-                                "url" : window.addToCartData.url,
+                                "url": window.addToCartData.url,
                                 "payload": {
-                                    "eventName" : window.addToCartData.eventName,
-                                    "productId" : res.productId
+                                    "eventName": window.addToCartData.eventName,
+                                    "productId": res.productId
                                 },
                                 "browserEventData": {
                                     'fbAgentVersion': window.addToCartData.fbAgentVersion,
