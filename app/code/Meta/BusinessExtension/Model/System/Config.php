@@ -483,9 +483,9 @@ class Config
     /**
      * Get config
      *
-     * @param string $configPath
-     * @param int $scopeId
-     * @param int $scope
+     * @param  string $configPath
+     * @param  int $scopeId
+     * @param  int $scope
      * @return mixed
      * @todo   implement method for getting boolean values
      */
