@@ -387,7 +387,7 @@ class Config
      * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      * @param int $scopeId
      * @param int $scope
-     * @return                                       bool
+     * @return bool
      */
     public function getDefaultOrderStatus($scopeId = null, $scope = null)
     {
@@ -863,7 +863,8 @@ class Config
                 $scopeId = $store->getId();
                 return $this->isPostOnboardingState($scopeId) &&
                     $this->isActiveExtension($scopeId) &&
-                    // A slight nuance. You can be installed, but not "onsite" -- unless you have valid commerce account.
+                    // A slight nuance.
+                    // You can be installed, but not "onsite" -- unless you have valid commerce account.
                     $this->getCommerceAccountId($scopeId);
             }
         );
