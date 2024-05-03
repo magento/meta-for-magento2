@@ -194,10 +194,6 @@ class InitiateCheckout extends Common
      */
     public function getContentTypeQuote(): string
     {
-        $items = $this->getQuote()->getAllVisibleItems();
-        foreach ($items as $item) {
-            $product = $item->getProduct();
-        }
-        return $this->magentoDataHelper->getContentType($product);/** @phpstan-ignore-line */
+        return 'product';
     }
 }

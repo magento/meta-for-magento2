@@ -138,11 +138,7 @@ class InitiateCheckout implements TrackerInterface
             return '';
         }
 
-        $items = $quote->getAllVisibleItems();
-        foreach ($items as $item) {
-            $product = $item->getProduct();
-        }
-        return $this->magentoDataHelper->getContentType($product); /** @phpstan-ignore-line */
+        return 'product';
     }
 
     /**
