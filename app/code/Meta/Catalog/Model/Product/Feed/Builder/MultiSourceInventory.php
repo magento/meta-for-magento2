@@ -188,15 +188,18 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
             $stockItemConfiguration = $this->getStockItemConfiguration->execute($this->product->getSku(), $stockId);
             return $stockItemConfiguration->isManageStock();
         } catch (\Throwable $e) {
-            $this->fbeHelper->logExceptionImmediatelytoMeta(
-                $e,
-                [
-                    'store_id' => $this->product->getStoreId(),
-                    'event' => 'catalog_sync',
-                    'event_type' => 'multi_source_inventory_sync_error',
-                    'product_id' => $this->product->getSku()
-                ]
-            );
+            // Sampling rate of 1/1000 calls. Reasonable across millions of products
+            if (random_int(1, 1000) <= 1) {
+                $this->fbeHelper->logExceptionImmediatelytoMeta(
+                    $e,
+                    [
+                        'store_id' => $this->product->getStoreId(),
+                        'event' => 'catalog_sync',
+                        'event_type' => 'multi_source_inventory_sync_error',
+                        'product_id' => $this->product->getSku()
+                    ]
+                );
+            }
             try {
 
                 // fallback to single inventory mechanism in case of error
