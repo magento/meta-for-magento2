@@ -132,16 +132,19 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
-            $this->fbeHelper->logExceptionImmediatelytoMeta(
-                $e,
-                [
-                    'store_id' => $this->product->getStoreId(),
-                    'event' => 'catalog_sync',
-                    'event_type' => 'multi_source_inventory_sync_get_stock_status_error',
-                    'product_id' => $this->product->getSku(),
-                    'stock_id' => $stockId
-                ]
-            );
+            // Sampling rate of 1/1000 calls. Reasonable across millions of products
+            if (random_int(1, 1000) <= 1) {
+                $this->fbeHelper->logExceptionImmediatelytoMeta(
+                    $e,
+                    [
+                        'store_id' => $this->product->getStoreId(),
+                        'event' => 'catalog_sync',
+                        'event_type' => 'multi_source_inventory_sync_is_in_stock_error',
+                        'product_id' => $this->product->getSku(),
+                        'stock_id' => $stockId
+                    ]
+                );
+            }
             return false;
         }
     }
@@ -161,16 +164,19 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
-            $this->fbeHelper->logExceptionImmediatelytoMeta(
-                $e,
-                [
-                    'store_id' => $this->product->getStoreId(),
-                    'event' => 'catalog_sync',
-                    'event_type' => 'multi_source_inventory_sync_get_stock_qty_error',
-                    'product_id' => $this->product->getSku(),
-                    'stock_id' => $stockId
-                ]
-            );
+            // Sampling rate of 1/1000 calls. Reasonable across millions of products
+            if (random_int(1, 1000) <= 1) {
+                $this->fbeHelper->logExceptionImmediatelytoMeta(
+                    $e,
+                    [
+                        'store_id' => $this->product->getStoreId(),
+                        'event' => 'catalog_sync',
+                        'event_type' => 'multi_source_inventory_sync_get_stock_qty_error',
+                        'product_id' => $this->product->getSku(),
+                        'stock_id' => $stockId
+                    ]
+                );
+            }
             return 0;
         }
     }
@@ -195,13 +201,12 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                     [
                         'store_id' => $this->product->getStoreId(),
                         'event' => 'catalog_sync',
-                        'event_type' => 'multi_source_inventory_sync_error',
+                        'event_type' => 'multi_source_inventory_sync_is_stock_managed_error',
                         'product_id' => $this->product->getSku()
                     ]
                 );
             }
             try {
-
                 // fallback to single inventory mechanism in case of error
                 $criteria = $this->stockItemCriteriaInterfaceFactory->create();
                 $criteria->setProductsFilter($this->product->getId());
