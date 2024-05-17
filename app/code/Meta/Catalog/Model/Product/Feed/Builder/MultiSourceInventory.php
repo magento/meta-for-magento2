@@ -132,8 +132,8 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
-            // Sampling rate of 1/1000 calls. Reasonable across millions of products
-            if (random_int(1, 1000) <= 1) {
+            // Sampling rate of 1/100 calls
+            if (random_int(1, 100) <= 1) {
                 $this->fbeHelper->logExceptionImmediatelytoMeta(
                     $e,
                     [
@@ -164,8 +164,8 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
-            // Sampling rate of 1/1000 calls. Reasonable across millions of products
-            if (random_int(1, 1000) <= 1) {
+            // Sampling rate of 1/100 calls
+            if (random_int(1, 100) <= 1) {
                 $this->fbeHelper->logExceptionImmediatelytoMeta(
                     $e,
                     [
@@ -194,8 +194,8 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
             $stockItemConfiguration = $this->getStockItemConfiguration->execute($this->product->getSku(), $stockId);
             return $stockItemConfiguration->isManageStock();
         } catch (\Throwable $e) {
-            // Sampling rate of 1/1000 calls. Reasonable across millions of products
-            if (random_int(1, 1000) <= 1) {
+            // Sampling rate of 1/100 calls
+            if (random_int(1, 100) <= 1) {
                 $this->fbeHelper->logExceptionImmediatelytoMeta(
                     $e,
                     [
