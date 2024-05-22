@@ -11,6 +11,13 @@
     <?php endif; ?>
     <?php if ($block->getIsFBEInstalled()): ?>
         <p>External Business ID: <?= $escaper->escapeHtml($block->getExternalBusinessID()) ?></p>
+        <p><?= $escaper->escapeHtml(__('Pixel ID')) ?>: <?= $escaper->escapeHtml($block->getPixelId()) ?></p>
+        <p>
+            <?= $escaper->escapeHtml(__('Advanced matching')) ?>
+            (<a target="_blank"
+                href="<?= $escaper->escapeUrl($block->getAutomaticMatchingHelpCenterArticleLink()) ?>">?</a>):
+            <?= $escaper->escapeHtml($block->getAutomaticMatchingStatus()) ?>
+        </p>
         <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
         <p>Commerce Partner Integration ID: <?= $escaper->escapeHtml($block->getCommercePartnerIntegrationId()) ?></p>
         <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>

@@ -104,6 +104,43 @@ class ModuleInfo extends Field
     }
 
     /**
+     * Retrieve Pixel ID
+     *
+     * @return string
+     */
+    public function getPixelId()
+    {
+        return $this->systemConfig->getPixelId($this->getStoreId());
+    }
+
+    /**
+     * Get Pixel Automatic Matching status
+     *
+     * @return string
+     */
+    public function getAutomaticMatchingStatus(): string
+    {
+        $settingsAsString = $this->systemConfig->getPixelAamSettings($this->getStoreId());
+        if ($settingsAsString) {
+            $settingsAsArray = json_decode($settingsAsString, true);
+            if ($settingsAsArray && isset($settingsAsArray['enableAutomaticMatching'])) {
+                return $settingsAsArray['enableAutomaticMatching'] ? __('Enabled') : __('Disabled');
+            }
+        }
+        return __('N/A');
+    }
+
+    /**
+     * Get AAM help center article link
+     *
+     * @return string
+     */
+    public function getAutomaticMatchingHelpCenterArticleLink(): string
+    {
+        return 'https://www.facebook.com/business/help/611774685654668';
+    }
+
+    /**
      * Retrieve Commerce Account ID
      *
      * @return string
