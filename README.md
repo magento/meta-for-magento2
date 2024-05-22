@@ -1,68 +1,54 @@
-# Meta Business Extension For Magento2
+# Facebook & Instagram for Magento
 
-## Facebook Connects Businesses with People
+[**The official extension from Meta.**](https://commercemarketplace.adobe.com/meta-meta-for-magento2.html) Seamlessly
+manage
+your
+Facebook & Instagram presence from one place.
 
-Marketing on Facebook helps your business build lasting relationships with people, find new customers and increase sales
-for your online store. With this Facebook ad extension, we make it easy to reach the people who matter to your business
-and track the results of your advertising across devices. This extension will help you:
+## Extension Overview
 
-### Reach the right people
+Meta builds technologies that help people connect, find communities and grow businesses.
 
-Set up the Meta pixel to find new customers, optimize your ads for people likely to buy and reach people with relevant
-ads on Facebook after they've visited your website.
+The Facebook & Instagram Extension enables users to set up Conversions API, Pixel, Catalog, and enables Adobe Commerce (
+on-prem) and Magento Open Source users to create and manage a checkout-enabled Shop on Facebook & Instagram. This
+extension will help you:
 
-### Show them the right products
+* **Grow your business** on Facebook & Instagram while managing orders, returns, and more from one place.
+* **Reach new customers** and offer a seamless in-app shopping experience, from discovery to checkout.
+* **Optimize your ads** using AI and easily promote your products and optimize your ads using powerful sales and
+  marketing tools.
+* **Automatically sync** eligible product offerings, inventory, promotions, and orders between your Magento system and
+  Meta.
+* **Gain better data insights** and understand meaningful business outcomes.
 
-Connect your product catalog to Facebook to use dynamic ads. Reach shoppers when they're on Facebook with ads for the
-products they viewed on your website.
+## Installation Assets
 
-### Measure the results of your ads
+### (a) Meta Business Extension
 
-When you have the Meta pixel set up, you can use Facebook ads reporting to understand the sales and revenue that
-resulted from your ads.
-Many online retailers have found success using the Meta pixel to track the performance of their ads and run dynamic ads:
+Meta Business Extension is a popup-based solution that allows users to easily set up the Conversions API, Meta Pixel,
+and Catalog, and allows Adobe Commerce (on-prem) and Magento Open Source users to create and manage a checkout-enabled
+Shop on Facebook & Instagram.
 
-“The ability to measure sales was the first sign that our business would be a success. Our first day of breaking
-100-plus sales always sticks out. Point blank, our marketing plan is Facebook, Facebook, and more Facebook... Facebook
-is 100% the backbone of our customer acquisition efforts and it's been made even better with the improved Facebook
-pixel” — Ali Najafian, co-founder, Trendy Butler
+### (b) Conversions API
 
-“I'm thrilled with the results we've seen since launching dynamic ads. We saw a rise in conversions almost immediately
-after launch and have been able to scale the program at an impressive pace over the past 6 months. These ads have proven
-to be a key component of our marketing efforts” — Megan Lang, Digital Marketing Manager, Food52
+Conversions API is designed to create a direct connection between your marketing data and the systems that help optimize
+ad targeting, decrease cost per result and measure outcomes across Meta technologies.
 
-“With dynamic ads, Target has been able to easily engage consumers with highly relevant creative. The early results have
-exceeded expectations. Performance has been especially strong on mobile devices — an important and fast-growing area for
-Target — where we're seeing two times the conversion rate” — Kristi Argyilan, Senior Vice President, Media and Guest
-Engagement at Target
+### (c) Meta Pixel
 
-## What's included?
+Meta Pixel is a piece of code that you put on your website that allows you to measure the effectiveness of your
+advertising by understanding the actions people take on your website.
 
-### (a) Pixel installer
+### (d) Catalog
 
-Installing the Meta pixel allows you to access the features below:
+Catalog is a container that holds information about the items you want to advertise or sell across Facebook and
+Instagram. You can create catalogs for different types of items, such as products, hotels, flights, destinations, home
+listings or vehicles.
 
-Conversion tracking: See how successful your ad is by seeing what happened as a direct result of your ad (including
-conversions and sales)
+### (e) Checkout
 
-Optimization: Show your ads to people most likely to take a specific action after clicking on them, like adding an item
-to their cart or making a purchase
-
-Remarketing: When people visit your website, reach them again and remind them of your business with a Facebook ad
-
-### (b) Product catalog integration
-
-Importing your product catalog to Facebook allows you to use dynamic ads. Dynamic ads look identical to other link ads
-or carousel-format ads that are available on Facebook. However, instead of individually creating an ad for each of your
-products, Facebook creates the ads for you and personalizes them for each of your customers.
-
-Scale: Use dynamic ads to promote all your products without needing to create individual ads for each item
-
-Highly relevant: Show people ads for products they're interested in to increase the likelihood of a purchase
-
-Always-on: Set up your campaigns once and continually reach people with the right product at the right time
-
-Cross-device: Reach people with ads on any device they use, regardless of where they first see your products
+Checkout allows customers to buy products directly from a shop on Facebook or Instagram and enables your business to run
+Shops Ads.
 
 ## Usage Instructions
 
