@@ -132,6 +132,23 @@ Execute the following commands to manually install Meta Business Extension.
 - You should see a "Facebook & Instagram" Icon on the left hand side.
 - Click "Overview" to link a Meta Account.
 
+### Update Installation
+
+#### Composer Update
+
+* Go to your Magento root path.
+* Execute command `cd /var/www/Magento` or
+  `cd /var/www/html/Magento` based on your server Centos or Ubuntu.
+* Run composer command: `composer update meta/meta-for-magento2`.
+
+#### Manual Update
+
+* Extract files from the latest archive.
+* Execute command `cd /var/www/Magento/app/code` or
+  `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.
+* Replace all files in the `app/code` directory of your Magento
+  project with the files from the `app/code/*` directory of your extracted archive.
+
 ## Need help?
 
 Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help/532749253576163).
