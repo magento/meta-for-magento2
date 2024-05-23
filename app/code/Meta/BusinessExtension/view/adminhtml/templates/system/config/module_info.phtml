@@ -1,48 +1,55 @@
 <?php
 /**
- * @var Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo $block
- * @var $escaper \Magento\Framework\Escaper
+ * @var $block ModuleInfo
+ * @var $escaper Escaper
  */
+
+use Magento\Framework\Escaper;
+use Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo;
+
 ?>
 <div>
     <p>Version: <?= $escaper->escapeHtml($block->getModuleVersion()) ?></p>
-    <?php if ($block->getIsDebugMode()): ?>
+    <?php if ($block->isDebugMode()): ?>
         <p><b>DEBUG MODE</b></p>
     <?php endif; ?>
-    <?php if ($block->getIsFBEInstalled()): ?>
+    <?php if ($block->shouldShowStoreLevelConfig()): ?>
+        <p>Magento Store ID: <?= $escaper->escapeHtml($block->getStoreId()) ?></p>
         <p>External Business ID: <?= $escaper->escapeHtml($block->getExternalBusinessID()) ?></p>
-        <p><?= $escaper->escapeHtml(__('Pixel ID')) ?>: <?= $escaper->escapeHtml($block->getPixelId()) ?></p>
-        <p>
-            <?= $escaper->escapeHtml(__('Advanced matching')) ?>
-            (<a target="_blank"
-                href="<?= $escaper->escapeUrl($block->getAutomaticMatchingHelpCenterArticleLink()) ?>">?</a>):
-            <?= $escaper->escapeHtml($block->getAutomaticMatchingStatus()) ?>
-        </p>
-        <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
-        <p>Commerce Partner Integration ID: <?= $escaper->escapeHtml($block->getCommercePartnerIntegrationId()) ?></p>
-        <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>
-        <p>Catalog ID: <?= $escaper->escapeHtml($block->getCatalogId()) ?></p>
-        <?php if ($block->getCommerceAccountId()): ?>
-            <p>Meta Connector Token: <?= $escaper->escapeHtml($block->getAPIToken()) ?></p>
-            <p><a target="_blank"
-                  href="<?= $escaper->escapeUrl($block->getCommerceManagerUrl()) ?> ">
-                    <?= $escaper->escapeHtml(__('Commerce Manager')) ?>
-                </a>
+        <?php if ($block->isFBEInstalled()): ?>
+            <p><?= $escaper->escapeHtml(__('Pixel ID')) ?>: <?= $escaper->escapeHtml($block->getPixelId()) ?></p>
+            <p>
+                <?= $escaper->escapeHtml(__('Advanced matching')) ?>
+                (<a target="_blank"
+                    href="<?= $escaper->escapeUrl($block->getAutomaticMatchingHelpCenterArticleLink()) ?>">?</a>):
+                <?= $escaper->escapeHtml($block->getAutomaticMatchingStatus()) ?>
             </p>
-        <?php endif; ?>
-        <?php if ($block->getCatalogId()): ?>
-            <p><a target="_blank"
-                  href="<?= $escaper->escapeUrl($block->getCatalogManagerUrl()) ?> ">
-                    <?= $escaper->escapeHtml(__('Catalog Items')) ?>
-                </a>
-            </p>
-        <?php endif; ?>
-        <?php if ($block->getCommerceAccountId()): ?>
-            <p><a target="_blank"
-                  href="<?= $escaper->escapeUrl($block->getSupportUrl()) ?> ">
-                    <?= $escaper->escapeHtml(__('Contact Support')) ?>
-                </a>
-            </p>
+            <p>Commerce Account ID: <?= $escaper->escapeHtml($block->getCommerceAccountId()) ?></p>
+            <p>Commerce Integration ID: <?= $escaper->escapeHtml($block->getCommercePartnerIntegrationId()) ?></p>
+            <p>Page ID: <?= $escaper->escapeHtml($block->getPageId()) ?></p>
+            <p>Catalog ID: <?= $escaper->escapeHtml($block->getCatalogId()) ?></p>
+            <?php if ($block->getCommerceAccountId()): ?>
+                <p>Meta Connector Token: <?= $escaper->escapeHtml($block->getAPIToken()) ?></p>
+                <p><a target="_blank"
+                      href="<?= $escaper->escapeUrl($block->getCommerceManagerUrl()) ?> ">
+                        <?= $escaper->escapeHtml(__('Commerce Manager')) ?>
+                    </a>
+                </p>
+            <?php endif; ?>
+            <?php if ($block->getCatalogId()): ?>
+                <p><a target="_blank"
+                      href="<?= $escaper->escapeUrl($block->getCatalogManagerUrl()) ?> ">
+                        <?= $escaper->escapeHtml(__('Catalog Items')) ?>
+                    </a>
+                </p>
+            <?php endif; ?>
+            <?php if ($block->getCommerceAccountId()): ?>
+                <p><a target="_blank"
+                      href="<?= $escaper->escapeUrl($block->getSupportUrl()) ?> ">
+                        <?= $escaper->escapeHtml(__('Contact Support')) ?>
+                    </a>
+                </p>
+            <?php endif; ?>
         <?php endif; ?>
     <?php endif; ?>
 </div>

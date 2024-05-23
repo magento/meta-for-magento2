@@ -96,11 +96,13 @@ class ModuleInfo extends Field
     /**
      * Retrieve Store Id
      *
-     * @return mixed
+     * @return int|null
      */
-    private function getStoreId()
+    public function getStoreId(): ?int
     {
-        return $this->getRequest()->getParam('store');
+        $storeIdFromParam = $this->getRequest()->getParam('store');
+        return $this->systemConfig->castStoreIdAsInt($storeIdFromParam) ??
+            $this->systemConfig->getDefaultStoreId();
     }
 
     /**
@@ -215,7 +217,7 @@ class ModuleInfo extends Field
      *
      * @return bool
      */
-    public function getIsFBEInstalled()
+    public function isFBEInstalled(): bool
     {
         return $this->systemConfig->isFBEInstalled($this->getStoreId());
     }
@@ -225,7 +227,7 @@ class ModuleInfo extends Field
      *
      * @return bool
      */
-    public function getIsDebugMode()
+    public function isDebugMode()
     {
         return $this->systemConfig->isDebugMode();
     }
@@ -248,5 +250,22 @@ class ModuleInfo extends Field
     public function getExternalBusinessID()
     {
         return $this->systemConfig->getExternalBusinessId($this->getStoreId());
+    }
+
+    /**
+     * Should show store level configs in the extension config page
+     *
+     * @return bool
+     */
+    public function shouldShowStoreLevelConfig(): bool
+    {
+        // Single store mode will always see the default store
+        if ($this->systemConfig->isSingleStoreMode()) {
+            return true;
+        } else {
+            // The store ID is specified in the path param, show store level config
+            $storeIdFromParam = $this->getRequest()->getParam('store');
+            return $storeIdFromParam !== null;
+        }
     }
 }

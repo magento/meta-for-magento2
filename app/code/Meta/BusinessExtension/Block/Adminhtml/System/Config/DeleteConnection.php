@@ -73,7 +73,7 @@ class DeleteConnection extends Field
     {
         return $this->getUrl(
             'fbeadmin/ajax/fbdeleteasset',
-            ['storeId' => $this->getRequest()->getParam('store')]
+            ['storeId' => $this->getStoreId()]
         );
     }
 
@@ -122,6 +122,10 @@ class DeleteConnection extends Field
      */
     protected function getStoreId()
     {
-        return $this->getRequest()->getParam('store');
+        $storeId = $this->getRequest()->getParam('store');
+        if ($storeId === null && $this->systemConfig->isSingleStoreMode()) {
+            $storeId = $this->systemConfig->getDefaultStoreId();
+        }
+        return $storeId;
     }
 }

@@ -22,16 +22,14 @@ namespace Meta\BusinessExtension\Block\Adminhtml;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
-use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\StoreRepositoryInterface;
-use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
-use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 
 /**
  * @api
@@ -42,36 +40,31 @@ class Setup extends Template
     /**
      * @var ApiKeyService
      */
-    private $apiKeyService;
+    private ApiKeyService $apiKeyService;
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var RequestInterface
      */
-    private $request;
+    private RequestInterface $request;
 
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * @var StoreRepositoryInterface
      */
-    public $storeRepo;
-
-    /**
-     * @var WebsiteCollectionFactory
-     */
-    private $websiteCollectionFactory;
+    public StoreRepositoryInterface $storeRepo;
 
     /**
      * @var CommerceExtensionHelper
      */
-    private $commerceExtensionHelper;
+    private CommerceExtensionHelper $commerceExtensionHelper;
 
     /**
      * @var AdobeCloudConfigInterface
@@ -84,7 +77,6 @@ class Setup extends Template
      * @param FBEHelper                 $fbeHelper
      * @param SystemConfig              $systemConfig
      * @param StoreRepositoryInterface  $storeRepo
-     * @param WebsiteCollectionFactory  $websiteCollectionFactory
      * @param CommerceExtensionHelper   $commerceExtensionHelper
      * @param ApiKeyService             $apiKeyService
      * @param AdobeCloudConfigInterface $adobeConfig
@@ -96,7 +88,6 @@ class Setup extends Template
         FBEHelper                 $fbeHelper,
         SystemConfig              $systemConfig,
         StoreRepositoryInterface  $storeRepo,
-        WebsiteCollectionFactory  $websiteCollectionFactory,
         CommerceExtensionHelper   $commerceExtensionHelper,
         ApiKeyService             $apiKeyService,
         AdobeCloudConfigInterface $adobeConfig,
@@ -107,7 +98,6 @@ class Setup extends Template
         $this->request = $request;
         $this->systemConfig = $systemConfig;
         $this->storeRepo = $storeRepo;
-        $this->websiteCollectionFactory = $websiteCollectionFactory;
         $this->commerceExtensionHelper = $commerceExtensionHelper;
         $this->apiKeyService = $apiKeyService;
         $this->adobeConfig = $adobeConfig;
@@ -116,9 +106,9 @@ class Setup extends Template
     /**
      * ID of the selected Store.
      *
-     * @return string|null
+     * @return int|null
      */
-    public function getSelectedStoreId()
+    public function getSelectedStoreId(): ?int
     {
         $stores = $this->getSelectableStores();
         if (empty($stores)) {
@@ -126,25 +116,18 @@ class Setup extends Template
         }
 
         // If there is a store matching query param, return it.
-        $requestStoreId = $this->request->getParam('store_id');
-        try {
-            $this->storeRepo->getById($requestStoreId);
-            return $requestStoreId;
-        } catch (NoSuchEntityException $e) {
-            // Store not found, fallback to default store selection logic.
-            $requestStoreId = null;
-        }
-
-        // Missing or invalid query param, look for a default.
-        foreach ($stores as $store) {
-            if ($store->isDefault() && $store->getWebsiteId() === $this->getFirstWebsiteId()) {
-                return $store['store_id'];
+        $requestStoreId = $this->systemConfig->castStoreIdAsInt($this->request->getParam('store_id'));
+        if ($requestStoreId !== null) {
+            try {
+                $this->storeRepo->getById($requestStoreId);
+                return $requestStoreId;
+            } catch (NoSuchEntityException) {
+                $this->fbeHelper->log("Store with requestStoreId $requestStoreId not found");
             }
         }
 
-        // No default found, return the first store.
-        $firstStore = array_shift($stores);
-        return $firstStore['store_id'];
+        // Missing or invalid query param, look for the default
+        return $this->systemConfig->getDefaultStoreId();
     }
 
     /**
@@ -247,7 +230,7 @@ class Setup extends Template
 
         $this->fbeHelper->log("Store id---" . $storeId);
         $generatedExternalId = uniqid('fbe_magento_' . $storeId . '_');
-        $this->systemConfig->saveExternalBusinessIdForStore($generatedExternalId, (int)$storeId);
+        $this->systemConfig->saveExternalBusinessIdForStore($generatedExternalId, $storeId);
         return $generatedExternalId;
     }
 
@@ -359,7 +342,7 @@ class Setup extends Template
      * Get stores that are selectable (not Admin).
      *
      * @return \Magento\Store\Api\Data\StoreInterface[]
-     */
+     * */
     public function getSelectableStores()
     {
         $stores = $this->storeRepo->getList();
@@ -370,22 +353,6 @@ class Setup extends Template
             ARRAY_FILTER_USE_KEY,
         );
     }
-
-    /**
-     * Get first website id
-     *
-     * @return int|null
-     */
-    public function getFirstWebsiteId()
-    {
-        $collection = $this->websiteCollectionFactory->create();
-        $collection->addFieldToSelect('website_id')
-            ->addFieldToFilter('code', ['neq' => 'admin']);
-        $collection->getSelect()->order('website_id ASC')->limit(1);
-
-        return $collection->getFirstItem()->getWebsiteId();
-    }
-
     /**
      * Get fbe installs config url endpoint
      *
