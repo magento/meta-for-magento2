@@ -85,14 +85,17 @@ class FacebookCatalogUpdateFullReindexPlugin
         $nextVersionId = $cl->getVersion();
 
         while ($currentVersionId < $nextVersionId) {
-            $walker = $this->changeLogBatchWalkerFactory->create(ChangeLogBatchWalker::class);
-            $ids = $walker->walk($cl, $currentVersionId, $nextVersionId, $batchSize);
+            $walker = $this->changelogBatchWalkerFactory->create(ChangelogBatchWalker::class);
+            $batches = $walker->walk($cl, $currentVersionId, $nextVersionId, $batchSize);
 
-            if (empty($ids)) {
-                break;
+            foreach ($batches as $ids) {
+                if (empty($ids)) {
+                    break;
+                }
+                $currentVersionId += $batchSize;
+                $this->fbCatalogUpdateResourceModel->addProductsWithChildren($ids, 'update');
             }
-            $currentVersionId += $batchSize;
-            $this->fbCatalogUpdateResourceModel->addProductsWithChildren($ids, 'update');
+
         }
     }
 
