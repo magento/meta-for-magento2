@@ -22,8 +22,8 @@ namespace Meta\Catalog\Plugin;
 
 use Meta\Catalog\Model\ResourceModel\FacebookCatalogUpdate as FBCatalogUpdateResourceModel;
 use Magento\Indexer\Model\Indexer;
-use Magento\Framework\Mview\View\ChangeLogBatchWalker;
-use Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory;
+use Magento\Framework\Mview\View\ChangelogBatchWalker;
+use Magento\Framework\Mview\View\ChangelogBatchWalkerFactory;
 use Magento\Framework\Mview\View;
 use Magento\Indexer\Model\WorkingStateProvider;
 
@@ -40,9 +40,9 @@ class FacebookCatalogUpdateFullReindexPlugin
     private $fbCatalogUpdateResourceModel;
 
     /**
-     * @var ChangeLogBatchWalkerFactory
+     * @var ChangelogBatchWalkerFactory
      */
-    private $changeLogBatchWalkerFactory;
+    private $changelogBatchWalkerFactory;
 
     /**
      * @var WorkingStateProvider
@@ -54,16 +54,16 @@ class FacebookCatalogUpdateFullReindexPlugin
      *
      * @param WorkingStateProvider $workingStateProvider
      * @param FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel
-     * @param ChangeLogBatchWalkerFactory $changeLogBatchWalkerFactory
+     * @param ChangelogBatchWalkerFactory $changelogBatchWalkerFactory
      */
     public function __construct(
         WorkingStateProvider $workingStateProvider,
         FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel,
-        ChangeLogBatchWalkerFactory $changeLogBatchWalkerFactory
+        ChangelogBatchWalkerFactory $changelogBatchWalkerFactory
     ) {
         $this->workingStateProvider = $workingStateProvider;
         $this->fbCatalogUpdateResourceModel = $fbCatalogUpdateResourceModel;
-        $this->changeLogBatchWalkerFactory = $changeLogBatchWalkerFactory;
+        $this->changelogBatchWalkerFactory = $changelogBatchWalkerFactory;
     }
 
     /**
@@ -77,7 +77,7 @@ class FacebookCatalogUpdateFullReindexPlugin
         if (!$this->shouldSaveUpdates($subject)) {
             return;
         }
-        
+
         $batchSize = View::DEFAULT_BATCH_SIZE;
         $view = $subject->getView();
         $cl = $view->getChangelog();
