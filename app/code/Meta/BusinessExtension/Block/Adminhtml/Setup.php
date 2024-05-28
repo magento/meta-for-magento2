@@ -121,7 +121,7 @@ class Setup extends Template
             try {
                 $this->storeRepo->getById($requestStoreId);
                 return $requestStoreId;
-            } catch (NoSuchEntityException) {
+            } catch (NoSuchEntityException $_ex) {
                 $this->fbeHelper->log("Store with requestStoreId $requestStoreId not found");
             }
         }

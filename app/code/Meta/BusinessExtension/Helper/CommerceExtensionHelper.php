@@ -49,7 +49,7 @@ class CommerceExtensionHelper
      */
     public function __construct(
         SystemConfig             $systemConfig,
-        GraphAPIAdapter          $graphAPIAdapter,
+        GraphAPIAdapter          $graphAPIAdapter
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;

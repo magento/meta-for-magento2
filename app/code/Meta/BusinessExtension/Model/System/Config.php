@@ -348,7 +348,11 @@ class Config
      */
     public function getDefaultStoreId(): ?int
     {
-        return $this->castStoreIdAsInt($this->storeManager->getDefaultStoreView()?->getId());
+        $defaultStoreView = $this->storeManager->getDefaultStoreView();
+        if ($defaultStoreView) {
+            $this->castStoreIdAsInt($defaultStoreView->getId());
+        }
+        return null;
     }
 
     /**
@@ -1123,7 +1127,7 @@ class Config
      * @param string|int|null $storeIdString
      * @return int|null
      */
-    public function castStoreIdAsInt(string|int|null $storeIdString): ?int
+    public function castStoreIdAsInt($storeIdString): ?int
     {
         if (is_numeric($storeIdString)) {
             return (int) $storeIdString;
