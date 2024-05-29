@@ -349,8 +349,8 @@ class Config
     public function getDefaultStoreId(): ?int
     {
         $defaultStoreView = $this->storeManager->getDefaultStoreView();
-        if ($defaultStoreView) {
-            $this->castStoreIdAsInt($defaultStoreView->getId());
+        if ($defaultStoreView !== null) {
+            return $this->castStoreIdAsInt($defaultStoreView->getId());
         }
         return null;
     }
