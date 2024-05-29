@@ -54,82 +54,53 @@ Shops Ads.
 
 Complete usage guide [HERE](https://www.facebook.com/business/help/532749253576163).
 
-Meta Business Extension - Installation steps
-
-INSTALL META BUSINESS EXTENSION FROM ZIP FILE ON YOUR DEV INSTANCE. TEST THAT THE EXTENSION
-WAS INSTALLED CORRECTLY BEFORE SHIPPING THE CODE TO PRODUCTION
-
-Before installing, verify your Magento cron job is up and running, read more about it
-on [this](https://devdocs.magento.com/guides/v2.3/config-guide/cli/config-cli-subcommands-cron.html) page.
-
-Login to your server instance.
-
-### INSTALLATION
-
-#### Magento Marketplace Installation
-
-You can download and install our extension
-in [Magento marketplace](https://marketplace.magento.com/facebook-facebook-for-magento2.html) if you have a marketplace
-account.
+### Installation
 
 #### Composer Installation
 
-* Go to your magento root path
-* Execute command `cd /var/www/Magento` or
-  `cd /var/www/html/Magento` based on your server Centos or Ubuntu.
-* run composer command: `composer require meta/meta-for-magento2 -W`
-
-- To enable modules
-  execute `php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales`
-- Execute `php bin/magento setup:upgrade`
-- Optional `php bin/magento setup:static-content:deploy`
-- Execute `php bin/magento setup:di:compile`
-- Execute `php bin/magento cache:clean`
+* Get the Facebook & Instagram for Magento extension
+  from [Adobe Commerce Marketplace](https://commercemarketplace.adobe.com/meta-meta-for-magento2.html). Make sure to
+  choose the correct edition and store version.
+* Go to your Magento root path.
+* Execute command `cd /var/www/Magento` or `cd /var/www/html/Magento` based on your server Centos or Ubuntu.
+* Install the Meta Business SDK for PHP with `composer require facebook/php-business-sdk`.
+* Run composer command: `composer require meta/meta-for-magento2`.
+* To set up the extension, run:
+    * `php bin/magento setup:upgrade`
+    * `php bin/magento setup:static-content:deploy`
+    * `php bin/magento setup:di:compile`
+    * `php bin/magento cache:clean`
 
 #### Manual Installation
 
-* extract files from an archive.
-* Execute command `cd /var/www/Magento/app/code` or
-  `cd /var/www/html/Magento/app/code` based on your server Centos or Ubuntu.
-* Move all files from the app/code/* directory in your extracted archive to the app/code directory in your Magento
-  project. Your Magento directory should now have a subdirectory named app/code/Meta/BusinessExtension.
+* Extract files from an archive.
+* Execute command `cd /var/www/Magento/app/code` or `cd /var/www/html/Magento/app/code` based on your server Centos or
+  Ubuntu.
+* Move all files from the `app/code/*` directory in your extracted archive to the `app/code` directory in your Magento
+  project. Your Magento directory should now have a subdirectory named `app/code/Meta/BusinessExtension`.
 
-##### ENABLE EXTENSION
+### Enable Extension
 
-* Make sure you have correct read/write permissions on your Magento root directory.
-  Read about them [here](https://magento.stackexchange.com/questions/91870/magento-2-folder-file-permissions).
-* Move to magento root folder by executing command `cd ../../`
+#### Enable Via Script
 
-###### Enable Extension By Running Script
+* Copy the `install-facebook-business-extension.sh` script to your Magento root folder.
+* Give it execute permission with `chmod +x install-facebook-business-extension.sh`.
+* Switch to Magento files owner user and run: `./install-facebook-business-extension.sh`.
+* You should read `Installation finished` when the script is done.
 
-You can install the extension with a bash script.
+#### Enable Manually
 
-- Copy the install-facebook-business-extension.sh script to your Magento root folder.
-- Give it execute permission with `chmod +x install-facebook-business-extension.sh` (you may have to log in as root user
-  to do it).
-- Switch to Magento files owner user and run: `./install-facebook-business-extension.sh`.
-- You should read `Installation finished` when the script is done.
-
-###### Enable Extension By Running Commands Manually
-
-Execute the following commands to manually install Meta Business Extension.
-
-- Install the Facebook Business SDK for PHP: `composer require facebook/php-business-sdk`. This dependency is used by
-  the extension.
-- You will see a message similar to: `Installing facebook/php-business-sdk (8.0.0): Downloading (100%)`
-- Execute `php bin/magento module:status`
-- You should see Meta_BusinessExtension in the list of disabled modules.
-- To enable modules
-  execute `php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales`
-- Execute `php bin/magento setup:upgrade`
-- Optional `php bin/magento setup:static-content:deploy`
-- Execute `php bin/magento setup:di:compile`
-- Execute `php bin/magento cache:clean`
+* Install the Facebook Business SDK for PHP (if you have not already) with `composer require facebook/php-business-sdk`.
+* Run `php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales`.
+* Execute `php bin/magento setup:static-content:deploy`.
+* Execute `php bin/magento setup:upgrade`.
+* Execute `php bin/magento setup:di:compile`.
+* Execute `php bin/magento cache:clean`.
 
 ### Verify Installation
 
 - Upon successful installation, login to your Magento Admin panel.
-- You should see a "Facebook & Instagram" Icon on the left hand side.
+- You should see a "Facebook and Instagram" Icon on the left hand side.
 - Click "Overview" to link a Meta Account.
 
 ### Update Installation
@@ -149,22 +120,22 @@ Execute the following commands to manually install Meta Business Extension.
 * Replace all files in the `app/code` directory of your Magento
   project with the files from the `app/code/*` directory of your extracted archive.
 
-## Need help?
+## Support
 
 Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help/532749253576163).
 
 ## Requirements
 
-Meta Business Extension For Magento 2 requires
+Facebook & Instagram for Magento requires:
 
-* Magento version 2.4.2-2.4.6
-* PHP 7.4 or greater
-* Memory limit of 1 GB or greater (2 GB or higher is preferred)
+* Magento version `^2.4.2`.
+* PHP 7.4 or greater.
+* Memory limit of 1 GB or greater (2 GB or higher is preferred).
 
 ## Contributing
 
-See the CONTRIBUTING file for how to help out.
+See the `CONTRIBUTING.md` file for how to help out.
 
 ## License
 
-Meta Business Extension For Magento2 is Platform-licensed.
+Facebook & Instagram for Magento is platform licensed.
