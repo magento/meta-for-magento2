@@ -136,6 +136,13 @@ Facebook & Instagram for Magento requires:
 
 See the `CONTRIBUTING.md` file for how to help out.
 
+## Data Collection Acknowledgement
+
+When you download the Facebook & Instagram for Magento extension, you agree that Meta will collect information
+about your use for troubleshooting, analytics, and product improvement. You agree to share information with
+Meta about which commerce plugins and extensions you are using. Meta may use this information for troubleshooting,
+analytics, and product improvement.
+
 ## License
 
 Facebook & Instagram for Magento is platform licensed.
