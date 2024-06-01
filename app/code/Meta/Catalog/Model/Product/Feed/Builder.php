@@ -586,7 +586,11 @@ class Builder
      */
     private function getStatus(Product $product)
     {
-        if ($product->getVisibility() == Visibility::VISIBILITY_NOT_VISIBLE) {
+        $parentProductVisibility = $product->getParentProductVisibility();
+
+        // if product is not visible, check for parent product visibility
+        if ($product->getVisibility() == Visibility::VISIBILITY_NOT_VISIBLE
+            && ($parentProductVisibility === null || $parentProductVisibility == Visibility::VISIBILITY_NOT_VISIBLE)) {
             return 'archived';
         }
 

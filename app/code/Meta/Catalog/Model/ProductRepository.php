@@ -102,7 +102,7 @@ class ProductRepository
         $childProduct->setName($product->getName());
         $childProduct->setConfigurableSettings($configurableSettings);
         $childProduct->setParentProductUrl($product->getProductUrl());
-        $childProduct->setVisibility($product->getVisibility());
+        $childProduct->setParentProductVisibility($product->getVisibility());
 
         // If variant is enabled individually, use parent status to decide the final status.
         // else, leave it disabled.
