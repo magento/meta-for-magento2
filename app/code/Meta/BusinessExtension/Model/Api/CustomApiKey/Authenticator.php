@@ -160,4 +160,25 @@ class Authenticator
             throw $ex;
         }
     }
+
+    /**
+     * Verify the RSA signature for an arbitrary data string.
+     *
+     * @param string $data
+     * @param string $signature
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function verifySignature(string $data, string $signature): bool
+    {
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $publicKey = file_get_contents(__DIR__ . '/PublicKey.pem');
+        $publicKeyResource = openssl_get_publickey($publicKey);
+        if ($publicKeyResource === false) {
+            throw new LocalizedException(__('Invalid Public Key'));
+        }
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $decodedSignature = base64_decode($signature);
+        return openssl_verify($data, $decodedSignature, $publicKeyResource, OPENSSL_ALGO_SHA256) === 1;
+    }
 }
