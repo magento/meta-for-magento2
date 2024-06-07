@@ -1024,7 +1024,7 @@ class GraphAPIAdapter
     public function persistLogToMeta($context, $accessToken = null)
     {
         $request = [
-            'access_token' => $accessToken ?? $this->accessToken,
+            'access_token' => $accessToken ?? $this->clientAccessToken,
             'event' => $this->getContextData($context, 'event'),
             'event_type' => $this->getContextData($context, 'event_type'),
             'commerce_merchant_settings_id' => $this->getContextData($context, 'commerce_merchant_settings_id'),

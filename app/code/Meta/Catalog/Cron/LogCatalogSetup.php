@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Meta\Catalog\Cron;
 
 use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\Module\FullModuleList;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -37,15 +36,11 @@ class LogCatalogSetup
      * @var SystemConfig
      */
     private $systemConfig;
+
     /**
      * @var FBEHelper
      */
     private $fbeHelper;
-
-    /**
-     * @var FullModuleList
-     */
-    private $fullModuleList;
 
     /**
      * @var ResourceConnection
@@ -53,28 +48,20 @@ class LogCatalogSetup
     private $resourceConnection;
 
     /**
-     * @var bool
-     */
-    private static $logInstalledModules = false;
-
-    /**
      * @param GraphAPIAdapter    $graphAPIAdapter
      * @param SystemConfig       $systemConfig
      * @param FBEHelper          $fbeHelper
-     * @param FullModuleList     $fullModuleList
      * @param ResourceConnection $resourceConnection
      */
     public function __construct(
         GraphAPIAdapter $graphAPIAdapter,
         SystemConfig $systemConfig,
         FBEHelper $fbeHelper,
-        FullModuleList $fullModuleList,
         ResourceConnection $resourceConnection
     ) {
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->systemConfig = $systemConfig;
         $this->fbeHelper = $fbeHelper;
-        $this->fullModuleList = $fullModuleList;
         $this->resourceConnection = $resourceConnection;
     }
 
@@ -89,10 +76,6 @@ class LogCatalogSetup
             $storeId = $store->getId();
             try {
                 $accessToken = $this->systemConfig->getAccessToken($storeId);
-                if (!$accessToken) {
-                    continue;
-                }
-
                 $this->graphAPIAdapter->persistLogToMeta(
                     [
                         'event' => 'log_catalog_setup_data',
@@ -106,10 +89,7 @@ class LogCatalogSetup
                                     'group_count' => $this->queryGroupCount(),
                                     'breakdown' => $this->queryBreakdown(),
                                 ]
-                            ),
-                            'extensions' => self::$logInstalledModules
-                                ? json_encode($this->fullModuleList->getAll())
-                                : 'Logging installed modules not enabled'
+                            )
                         ]
                     ],
                     $accessToken
