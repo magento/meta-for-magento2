@@ -52,9 +52,9 @@ class Authenticator
      * Authenticator constructor
      *
      * @param ScopeConfigInterface $scopeConfig
-     * @param Http                 $httpRequest
-     * @param SystemConfig         $systemConfig
-     * @param FBEHelper            $fbeHelper
+     * @param Http $httpRequest
+     * @param SystemConfig $systemConfig
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
