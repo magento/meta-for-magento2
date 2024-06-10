@@ -1,4 +1,15 @@
-<?php /** @var \Meta\Conversion\Block\Pixel\Head $block */ ?>
+<?php
+
+use Magento\Framework\Escaper;
+use Meta\Conversion\Block\Pixel\Head;
+
+/**
+ * @var Head $block
+ * @var Escaper $escaper
+ */
+
+$trackerUrl = $block->getTrackerUrl();
+?>
 <?php /** @var \Magento\Framework\Escaper $escaper */ ?>
 <?php if ($block->getFacebookPixelID()) { ?>
 <!-- Meta Business Extension for Magento 2 -->
@@ -21,10 +32,27 @@ fbq(
     <?= /* @noEscape */ $block->getPixelInitCode() ?>,
   {agent: '<?= /* @noEscape */ $block->getFacebookAgentVersion() ?>' }
 );
-fbq('track', 'PageView', {
-  source: "<?= /* @noEscape */ $block->getSource() ?>",
-  pluginVersion: "<?= /* @noEscape */ $block->getPluginVersion() ?>"
-});
+</script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Meta_Conversion/js/metaPixelTracker" : {
+            "url" : "<?= $escaper->escapeUrl($trackerUrl); ?>",
+            "payload": <?= /* @noEscape */ json_encode([
+                "eventName" => $block->getEventToObserveName(),
+            ]) ?>,
+            "browserEventData": <?= /* @noEscape */ json_encode([
+                'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                'fbPixelId' => $block->getFacebookPixelID(),
+                'source' => $block->getSource(),
+                'pluginVersion' => $block->getPluginVersion(),
+                'track' => 'track',
+                'event' => 'PageView',
+                'payload' => []
+            ]) ?>
+        }
+    }
+}
 </script>
 <!-- End Meta Pixel Code -->
 <?php } else { ?>

@@ -133,4 +133,14 @@ class Head extends Common
 
         return $this->customerSession->getCustomer();
     }
+
+    /**
+     * Get Event name
+     *
+     * @return string
+     */
+    public function getEventToObserveName()
+    {
+        return 'facebook_businessextension_ssapi_page_view';
+    }
 }
