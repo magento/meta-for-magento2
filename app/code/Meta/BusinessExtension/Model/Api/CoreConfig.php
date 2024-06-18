@@ -110,6 +110,27 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     }
 
     /**
+     * IsActiveExtension Getter
+     *
+     * @return bool
+     */
+    public function isActiveExtension(): bool
+    {
+        return $this->_getData('isActiveExtension');
+    }
+
+    /**
+     * IsActiveExtension Setter
+     *
+     * @param  bool $val
+     * @return void
+     */
+    public function setIsActiveExtension(bool $val): void
+    {
+        $this->setData('isActiveExtension', $val);
+    }
+
+    /**
      * ProductIdentifierAttr Getter
      *
      * @return string
