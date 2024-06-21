@@ -143,6 +143,7 @@ class Simple implements ProductRetrieverInterface
             $search = $this
                 ->searchCriteriaBuilder
                 ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
+                ->addFilter('store_id', $storeId)
                 ->create();
 
             $products = $this->productRepo->getList($search)->getItems();
