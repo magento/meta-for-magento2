@@ -192,14 +192,15 @@ class AAMFieldsExtractorHelper
      * Set user data
      *
      * @param Event $event
-     * @param array $userDataArray
-     * @return mixed
+     * @param array|null $userDataArray
+     * @param Customer|null $customer
+     * @return Event
      * @SuppressWarnings(PHPMD)
      * Unable to refactor because UserData object from Facebook SDK does not have generic setter function
      */
-    public function setUserData($event, $userDataArray = null)
+    public function setUserData($event, $userDataArray = null, $customer = null)
     {
-        $userDataArray = $this->getNormalizedUserData(null, $userDataArray);
+        $userDataArray = $this->getNormalizedUserData($customer, $userDataArray);
 
         if (empty($userDataArray)) {
             return $event;

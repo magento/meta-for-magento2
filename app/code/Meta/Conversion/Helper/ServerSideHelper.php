@@ -20,38 +20,46 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Helper;
 
+use Magento\Customer\Model\Customer;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Store\Model\ScopeInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Api;
 use FacebookAds\Object\ServerSide\EventRequestAsync;
 use GuzzleHttp\Exception\RequestException;
-use FacebookAds\Object\ServerSide\Event;
 
 /**
  * Helper to fire ServerSide Event.
+ *
+ * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  */
 class ServerSideHelper
 {
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var AAMFieldsExtractorHelper
      */
-    private $aamFieldsExtractorHelper;
+    private AAMFieldsExtractorHelper $aamFieldsExtractorHelper;
 
     /**
      * @var array
      */
-    private $trackedEvents = [];
+    private array $trackedEvents = [];
 
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
+
+    /**
+     * @var CustomerSession
+     */
+    private CustomerSession $customerSession;
 
     /**
      * Constructor
@@ -59,15 +67,28 @@ class ServerSideHelper
      * @param FBEHelper $fbeHelper
      * @param AAMFieldsExtractorHelper $aamFieldsExtractorHelper
      * @param SystemConfig $systemConfig
+     * @param CustomerSession $customerSession
      */
     public function __construct(
         FBEHelper $fbeHelper,
         AAMFieldsExtractorHelper $aamFieldsExtractorHelper,
-        SystemConfig $systemConfig
+        SystemConfig $systemConfig,
+        CustomerSession $customerSession
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->aamFieldsExtractorHelper = $aamFieldsExtractorHelper;
         $this->systemConfig = $systemConfig;
+        $this->customerSession = $customerSession;
+    }
+
+    /**
+     * Get logged in customer
+     *
+     * @return Customer|null
+     */
+    public function getCustomer(): ?Customer
+    {
+        return $this->customerSession->isLoggedIn() ? $this->customerSession->getCustomer() : null;
     }
 
     /**
@@ -75,13 +96,14 @@ class ServerSideHelper
      *
      * @param Event $event
      * @param array $userDataArray
+     * @return void
      */
     public function sendEvent($event, $userDataArray = null)
     {
         try {
             Api::init(null, null, $this->systemConfig->getAccessToken());
 
-            $event = $this->aamFieldsExtractorHelper->setUserData($event, $userDataArray);
+            $event = $this->aamFieldsExtractorHelper->setUserData($event, $userDataArray, $this->getCustomer());
 
             $this->trackedEvents[] = $event;
 
