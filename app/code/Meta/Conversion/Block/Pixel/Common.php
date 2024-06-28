@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Block\Pixel;
 
+use Exception;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -224,6 +225,38 @@ class Common extends \Magento\Framework\View\Element\Template
     public function getContentId(Product $product)
     {
         return $this->magentoDataHelper->getContentId($product);
+    }
+
+    /**
+     * Get automatic matching flag
+     *
+     * @return bool|null
+     */
+    public function getAutomaticMatchingFlag(): ?bool
+    {
+        try {
+            $storeId = $this->_storeManager->getStore()->getId();
+            $settingsAsString = $this->systemConfig->getPixelAamSettings($storeId);
+            if ($settingsAsString) {
+                $settingsAsArray = json_decode($settingsAsString, true);
+                if ($settingsAsArray && isset($settingsAsArray['enableAutomaticMatching'])) {
+                    return (bool)$settingsAsArray['enableAutomaticMatching'];
+                }
+            }
+        } catch (Exception $e) {
+            $this->fbeHelper->logException($e);
+        }
+        return null;
+    }
+
+    /**
+     * Get user data URL
+     *
+     * @return string
+     */
+    public function getUserDataUrl(): string
+    {
+        return $this->getUrl('fbe/pixel/userData');
     }
 
     /**
