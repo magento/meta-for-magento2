@@ -177,39 +177,32 @@ class Refund implements ObserverInterface
             $shippingRefundAmount += $creditmemo->getShippingTaxAmount();
         }
 
-        if ($payment->getOrder()->hasShipments()) {
-            try {
-                $refundItemsBySku = $this->getRefundItems($creditmemo, $payment, false);
-                $this->refundOrder(
-                    (int)$storeId,
-                    $facebookOrder->getFacebookOrderId(),
-                    $refundItemsBySku,
-                    $shippingRefundAmount,
-                    $deductionAmount,
-                    $adjustmentAmount,
-                    $currencyCode,
-                    $reasonText
-                );
-            } catch (LocalizedException $e) {
-                $refundItemsByID = $this->getRefundItems($creditmemo, $payment, true);
-                $this->refundOrder(
-                    (int)$storeId,
-                    $facebookOrder->getFacebookOrderId(),
-                    $refundItemsByID,
-                    $shippingRefundAmount,
-                    $deductionAmount,
-                    $adjustmentAmount,
-                    $currencyCode,
-                    $reasonText
-                );
-            }
-            $payment->getOrder()->addCommentToStatusHistory('Order Refunded on Meta');
-        } else {
-            $canceledItemsByID = $this->getCanceledItems($creditmemo, false);
-            $this->commerceHelper->cancelOrder((int)$storeId, $facebookOrder->getFacebookOrderId(), $canceledItemsByID);
-
-            $payment->getOrder()->addCommentToStatusHistory('Order Canceled on Meta');
+        try {
+            $refundItemsBySku = $this->getRefundItems($creditmemo, $payment, false);
+            $this->refundOrder(
+                (int)$storeId,
+                $facebookOrder->getFacebookOrderId(),
+                $refundItemsBySku,
+                $shippingRefundAmount,
+                $deductionAmount,
+                $adjustmentAmount,
+                $currencyCode,
+                $reasonText
+            );
+        } catch (LocalizedException $e) {
+            $refundItemsByID = $this->getRefundItems($creditmemo, $payment, true);
+            $this->refundOrder(
+                (int)$storeId,
+                $facebookOrder->getFacebookOrderId(),
+                $refundItemsByID,
+                $shippingRefundAmount,
+                $deductionAmount,
+                $adjustmentAmount,
+                $currencyCode,
+                $reasonText
+            );
         }
+        $payment->getOrder()->addCommentToStatusHistory('Order Refunded on Meta');
     }
 
     /**
