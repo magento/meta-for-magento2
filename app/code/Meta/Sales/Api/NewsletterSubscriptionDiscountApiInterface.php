@@ -17,9 +17,8 @@ declare(strict_types=1);
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Meta\Sales\Api;
 
-use Magento\SalesRule\Api\Data\CouponInterface;
+namespace Meta\Sales\Api;
 
 interface NewsletterSubscriptionDiscountApiInterface
 {
@@ -28,10 +27,10 @@ interface NewsletterSubscriptionDiscountApiInterface
      *
      * If valid, returns an opt-in coupon.
      *
-     * @param  string $externalBusinessId
-     * @param  string $email
-     * @param  int    $ruleId
-     * @return \Magento\SalesRule\Api\Data\CouponInterface
+     * @param string $externalBusinessId
+     * @param string $email
+     * @param int $ruleId
+     * @return string
      */
-    public function subscribeForCoupon(string $externalBusinessId, string $email, int $ruleId): CouponInterface;
+    public function subscribeForCoupon(string $externalBusinessId, string $email, int $ruleId): string;
 }

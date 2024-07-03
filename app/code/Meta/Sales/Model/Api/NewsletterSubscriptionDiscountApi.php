@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Meta\Sales\Model\Api;
 
 use Magento\Newsletter\Model\SubscriberFactory;
-use Magento\SalesRule\Api\Data\CouponInterface;
 use Magento\SalesRule\Model\RuleFactory;
 use Magento\SalesRule\Model\Coupon\MassgeneratorFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -106,10 +105,10 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
      * @param string $externalBusinessId The external business ID.
      * @param string $email The email address of the subscriber.
      * @param int $ruleId The ID of the sales rule.
-     * @return CouponInterface The generated coupon.
+     * @return string The generated coupon.
      * @throws LocalizedException If an error occurs during the process.
      */
-    public function subscribeForCoupon(string $externalBusinessId, string $email, int $ruleId): CouponInterface
+    public function subscribeForCoupon(string $externalBusinessId, string $email, int $ruleId): string
     {
         $this->authenticator->authenticateRequest();
 
@@ -128,6 +127,8 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
                 throw new LocalizedException(__('The specified discount rule does not exist.'));
             }
 
+            $coupon = $this->generateCoupon((int)$rule->getId());
+
             // Subscribe the user to the newsletter
             $subscriber = $this->subscriberFactory->create();
             $subscriber->setStoreId($storeId);
@@ -135,7 +136,7 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
             $subscriber->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED);
             $subscriber->save();
 
-            return $this->generateCoupon((int)$rule->getId());
+            return $coupon;
         } catch (\Exception $e) {
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
@@ -160,7 +161,7 @@ class NewsletterSubscriptionDiscountApi implements NewsletterSubscriptionDiscoun
      * @param int $ruleId The sales rule ID.
      * @return string The generated coupon code.
      */
-    private function generateCoupon(int $ruleId): CouponInterface
+    private function generateCoupon(int $ruleId): string
     {
         $rule = $this->ruleFactory->create()->load($ruleId);
         if (!$rule->getId()) {
