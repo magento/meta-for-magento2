@@ -22,6 +22,7 @@ namespace Meta\BusinessExtension\Model;
 
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\CatalogConfigUpdateHelper;
@@ -342,7 +343,7 @@ class MBEInstalls
             $accessToken = $this->systemConfig->getAccessToken($storeId);
             $externalBusinessId = $this->systemConfig->getExternalBusinessId($storeId);
             $customToken = $this->apiKeyService->getCustomApiKey();
-            $domain = $this->storeManager->getStore($storeId)->getBaseUrl();
+            $domain = $this->storeManager->getStore($storeId)->getBaseUrl(UrlInterface::URL_TYPE_WEB);
             $seller_platform_type = $this->adobeConfig->getCommercePartnerSellerPlatformType();
             $extensionVersion = $this->systemConfig->getModuleVersion();
 
