@@ -112,7 +112,6 @@ class Index implements HttpGetActionInterface
      */
     private OrderHelper $orderHelper;
 
-
     /**
      * @param QuoteFactory $quoteFactory
      * @param QuoteIdMaskFactory $quoteIdMaskFactory
@@ -287,7 +286,7 @@ class Index implements HttpGetActionInterface
         // Redirect to checkout
         $this->checkoutSession->replaceQuote($quote);
         $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('checkout/cart');
+        $resultRedirect->setPath('checkout');
 
         return $resultRedirect;
     }
