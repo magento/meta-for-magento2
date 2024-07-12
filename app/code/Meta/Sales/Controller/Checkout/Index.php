@@ -30,6 +30,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartItemInterfaceFactory;
 use Magento\Quote\Model\GuestCart\GuestCartItemRepository;
+use Magento\Quote\Model\GuestCart\GuestCouponManagement;
 use Magento\Quote\Model\Quote\AddressFactory;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteFactory;
@@ -46,21 +47,6 @@ use Meta\Sales\Helper\OrderHelper;
  */
 class Index implements HttpGetActionInterface
 {
-    /**
-     * @var Authenticator
-     */
-    private Authenticator $authenticator;
-
-    /**
-     * @var FBEHelper
-     */
-    private FBEHelper $fbeHelper;
-
-    /**
-     * @var OrderHelper
-     */
-    private OrderHelper $orderHelper;
-
     /**
      * @var QuoteFactory
      */
@@ -92,6 +78,11 @@ class Index implements HttpGetActionInterface
     private CartItemInterfaceFactory $cartItemInterfaceFactory;
 
     /**
+     * @var GuestCouponManagement
+     */
+    private GuestCouponManagement $guestCouponManagement;
+
+    /**
      * @var CheckoutSession
      */
     private CheckoutSession $checkoutSession;
@@ -106,6 +97,21 @@ class Index implements HttpGetActionInterface
      */
     private RedirectFactory $resultRedirectFactory;
 
+    /**
+     * @var Authenticator
+     */
+    private Authenticator $authenticator;
+
+    /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
+
+    /**
+     * @var OrderHelper
+     */
+    private OrderHelper $orderHelper;
+
 
     /**
      * @param QuoteFactory $quoteFactory
@@ -114,12 +120,13 @@ class Index implements HttpGetActionInterface
      * @param CartRepositoryInterface $quoteRepository
      * @param GuestCartItemRepository $guestCartItemRepository
      * @param CartItemInterfaceFactory $cartItemInterfaceFactory
+     * @param GuestCouponManagement $guestCouponManagement
      * @param CheckoutSession $checkoutSession
      * @param Http $httpRequest
      * @param RedirectFactory $resultRedirectFactory
      * @param Authenticator $authenticator
-     * @param OrderHelper $orderHelper
      * @param FBEHelper $fbeHelper
+     * @param OrderHelper $orderHelper
      */
     public function __construct(
         QuoteFactory             $quoteFactory,
@@ -128,11 +135,12 @@ class Index implements HttpGetActionInterface
         CartRepositoryInterface  $quoteRepository,
         GuestCartitemRepository  $guestCartItemRepository,
         CartItemInterfaceFactory $cartItemInterfaceFactory,
-        FBEHelper                $fbeHelper,
+        GuestCouponManagement    $guestCouponManagement,
         CheckoutSession          $checkoutSession,
         Http                     $httpRequest,
         RedirectFactory          $resultRedirectFactory,
         Authenticator            $authenticator,
+        FBEHelper                $fbeHelper,
         OrderHelper              $orderHelper
     )
     {
@@ -142,11 +150,12 @@ class Index implements HttpGetActionInterface
         $this->quoteRepository = $quoteRepository;
         $this->guestCartItemRepository = $guestCartItemRepository;
         $this->cartItemInterfaceFactory = $cartItemInterfaceFactory;
-        $this->fbeHelper = $fbeHelper;
+        $this->guestCouponManagement = $guestCouponManagement;
         $this->checkoutSession = $checkoutSession;
         $this->httpRequest = $httpRequest;
         $this->resultRedirectFactory = $resultRedirectFactory;
         $this->authenticator = $authenticator;
+        $this->fbeHelper = $fbeHelper;
         $this->orderHelper = $orderHelper;
     }
 
@@ -162,6 +171,7 @@ class Index implements HttpGetActionInterface
     {
         $externalBusinessId = $this->httpRequest->getParam('external_business_id');
         $products = explode(',', $this->httpRequest->getParam('products'));
+        $coupon = $this->httpRequest->getParam('coupon');
         $signature = $this->httpRequest->getParam('signature');
 
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
@@ -173,9 +183,9 @@ class Index implements HttpGetActionInterface
         parse_str($query_string, $params);
         unset($params['signature']);
         $new_query_string = http_build_query($params);
-        $validation_uri = str_replace($query_string, $new_query_string, $uri);
+        $validation_uri = urldecode(str_replace($query_string, $new_query_string, $uri));
 
-        if (!$this->authenticator->verifySignature(urldecode($validation_uri), $signature)) {
+        if (!$this->authenticator->verifySignature($validation_uri, $signature)) {
             $e = new LocalizedException(__('RSA Signature Validation Failed'));
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
@@ -185,7 +195,8 @@ class Index implements HttpGetActionInterface
                     'event_type' => 'rsa_signature_validation_error',
                     'extra_data' => [
                         'request_uri' => $uri,
-                        'request_signature' => $signature
+                        'request_signature' => $signature,
+                        'validation_uri' => $validation_uri
                     ]
                 ]
             );
@@ -222,7 +233,7 @@ class Index implements HttpGetActionInterface
         }
 
         $quoteIdMask->setQuoteId($quote->getId())->save();
-        $quoteIdMaskID = $quoteIdMask->getMaskedId();
+        $cartId = $quoteIdMask->getMaskedId();
 
         // Add items to cart
         foreach ($products as $product) {
@@ -233,7 +244,7 @@ class Index implements HttpGetActionInterface
                 $cartItem = $this->cartItemInterfaceFactory->create();
                 $cartItem->setSku($sku);
                 $cartItem->setQty($quantity);
-                $cartItem->setQuoteId($quoteIdMaskID);
+                $cartItem->setQuoteId($cartId);
 
                 $this->guestCartItemRepository->save($cartItem);
             } catch (\Exception $e) {
@@ -244,8 +255,29 @@ class Index implements HttpGetActionInterface
                         'event' => 'meta_checkout_url',
                         'event_type' => 'error_adding_item',
                         'extra_data' => [
-                            'cart_id' => $quote->getId(),
-                            'sku' => $sku
+                            'cart_id' => $cartId,
+                            'sku' => $sku,
+                            'quantity' => $quantity
+                        ]
+                    ]
+                );
+            }
+        }
+
+        // Add coupon to cart
+        if ($coupon) {
+            try {
+                $this->guestCouponManagement->set($cartId, $coupon);
+            } catch (\Exception $e) {
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'meta_checkout_url',
+                        'event_type' => 'error_adding_coupon',
+                        'extra_data' => [
+                            'cart_id' => $cartId,
+                            'coupon' => $coupon
                         ]
                     ]
                 );
