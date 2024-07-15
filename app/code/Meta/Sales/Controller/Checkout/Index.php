@@ -171,6 +171,7 @@ class Index implements HttpGetActionInterface
         $externalBusinessId = $this->httpRequest->getParam('external_business_id');
         $products = explode(',', $this->httpRequest->getParam('products'));
         $coupon = $this->httpRequest->getParam('coupon');
+        $redirect = $this->httpRequest->getParam('redirect');
         $signature = $this->httpRequest->getParam('signature');
 
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
@@ -283,10 +284,14 @@ class Index implements HttpGetActionInterface
             }
         }
 
-        // Redirect to checkout
+        // Redirect to indicated path or checkout
         $this->checkoutSession->replaceQuote($quote);
         $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('checkout');
+        if ($redirect) {
+            $resultRedirect->setPath($redirect);
+        } else {
+            $resultRedirect->setPath('checkout');
+        }
 
         return $resultRedirect;
     }
