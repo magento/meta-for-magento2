@@ -168,24 +168,16 @@ class Index implements HttpGetActionInterface
      */
     public function execute()
     {
-        $externalBusinessId = $this->httpRequest->getParam('external_business_id');
+        $ebid = $this->httpRequest->getParam('ebid');
         $products = explode(',', $this->httpRequest->getParam('products'));
         $coupon = $this->httpRequest->getParam('coupon');
         $redirect = $this->httpRequest->getParam('redirect');
         $signature = $this->httpRequest->getParam('signature');
 
-        $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
+        $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($ebid);
 
         // Verify signature
-        $uri = $this->httpRequest->getRequestUri();
-        $query_string = parse_url($uri, PHP_URL_QUERY);
-        $params = [];
-        parse_str($query_string, $params);
-        unset($params['signature']);
-        $new_query_string = http_build_query($params);
-        $validation_uri = urldecode(str_replace($query_string, $new_query_string, $uri));
-
-        if (!$this->authenticator->verifySignature($validation_uri, $signature)) {
+        if (!$this->authenticator->verifySignature($ebid, $signature)) {
             $e = new LocalizedException(__('RSA Signature Validation Failed'));
             $this->fbeHelper->logExceptionImmediatelyToMeta(
                 $e,
@@ -194,9 +186,9 @@ class Index implements HttpGetActionInterface
                     'event' => 'meta_checkout_url',
                     'event_type' => 'rsa_signature_validation_error',
                     'extra_data' => [
-                        'request_uri' => $uri,
+                        'request_uri' => $this->httpRequest->getRequestUri(),
                         'request_signature' => $signature,
-                        'validation_uri' => $validation_uri
+                        'ebid' => $ebid
                     ]
                 ]
             );
