@@ -79,6 +79,9 @@ Complete usage guide [HERE](https://www.facebook.com/business/help/5327492535761
 * Move all files from the `app/code/*` directory in your extracted archive to the `app/code` directory in your Magento
   project. Your Magento directory should now have a subdirectory named `app/code/Meta/BusinessExtension`.
 
+> [!IMPORTANT]  
+> To install the Meta Business SDK for PHP manually, run `composer require facebook/php-business-sdk` in your terminal or command prompt.
+
 ### Enable Extension
 
 #### Enable Via Script
@@ -90,7 +93,7 @@ Complete usage guide [HERE](https://www.facebook.com/business/help/5327492535761
 
 #### Enable Manually
 
-* Install the Facebook Business SDK for PHP (if you have not already) with `composer require facebook/php-business-sdk`.
+* Install the Meta Business SDK for PHP (if you have not already) with `composer require facebook/php-business-sdk`.
 * Run `php bin/magento module:enable Meta_BusinessExtension Meta_Catalog Meta_Conversion Meta_Promotions Meta_Sales`.
 * Execute `php bin/magento setup:static-content:deploy`.
 * Execute `php bin/magento setup:upgrade`.
