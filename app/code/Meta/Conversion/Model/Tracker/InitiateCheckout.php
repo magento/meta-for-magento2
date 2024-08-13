@@ -110,19 +110,21 @@ class InitiateCheckout implements TrackerInterface
         if (!$quote) {
             return '';
         }
-
+        $categoryIds = [];
+        $categoryNames = [];
         $items = $quote->getAllVisibleItems();
         foreach ($items as $item) {
             $product = $item->getProduct();
-            $categoryIds = $product->getCategoryIds();
+            $categoryIds = array_merge($categoryIds, $product->getCategoryIds());
+        }
+        if (!empty($categoryIds)) {
             $categories = $this->categoryCollection->create()
-                ->addAttributeToSelect('*')
-                ->addAttributeToFilter('entity_id', $categoryIds);
-            $categoryNames = [];
+                ->addAttributeToSelect('name')
+                ->addAttributeToFilter('entity_id', ['in' => $categoryIds]);
             foreach ($categories as $category) {
                 $categoryNames[] = $category->getName();
             }
-        }
+        } // Handle the no categories case - That way we don't create an invalid SQL query.
         return implode(',', $categoryNames); /** @phpstan-ignore-line */
     }
 
