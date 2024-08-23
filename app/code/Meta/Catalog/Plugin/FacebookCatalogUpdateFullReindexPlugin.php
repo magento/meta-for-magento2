@@ -86,16 +86,35 @@ class FacebookCatalogUpdateFullReindexPlugin
 
         while ($currentVersionId < $nextVersionId) {
             $walker = $this->changelogBatchWalkerFactory->create(ChangelogBatchWalker::class);
-            $batches = $walker->walk($cl, $currentVersionId, $nextVersionId, $batchSize);
-
-            foreach ($batches as $ids) {
-                if (empty($ids)) {
+            $batchIds = $walker->walk($cl, $currentVersionId, $nextVersionId, $batchSize);
+            /** Magento v2.4.7 and above, the walk function returns "yield" instead of an array */
+            if (is_array($batchIds)) {
+                if (empty($batchIds)) {
                     break;
                 }
                 $currentVersionId += $batchSize;
-                $this->fbCatalogUpdateResourceModel->addProductsWithChildren($ids, 'update');
+                $this->addProductsWithChildren($batchIds, 'update');
+            } else {
+                foreach ($batchIds as $ids) {
+                    if (empty($ids)) {
+                        break;
+                    }
+                    $this->addProductsWithChildren($ids, 'update');
+                }
+                $currentVersionId += $batchSize;
             }
         }
+    }
+
+    /**
+     * Add products with children
+     *
+     * @param array $batchesIds
+     * @return int
+     */
+    private function addProductsWithChildren($batchesIds)
+    {
+        return $this->fbCatalogUpdateResourceModel->addProductsWithChildren($batchesIds, 'update');
     }
 
     /**
