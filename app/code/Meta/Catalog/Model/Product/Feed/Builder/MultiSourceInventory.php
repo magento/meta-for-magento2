@@ -256,9 +256,9 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
     /**
      * Get available product qty
      *
-     * @return int
+     * @return int|float
      */
-    public function getInventory(): int
+    public function getInventory()
     {
         if (!$this->product) {
             return 0;
@@ -269,7 +269,7 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
         }
 
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
-        $quantityAvailableForCatalog = (int)$this->stockQty - $outOfStockThreshold;
+        $quantityAvailableForCatalog = $this->stockQty - $outOfStockThreshold;
         return $quantityAvailableForCatalog > 0 ? $quantityAvailableForCatalog : 0;
     }
 }

@@ -49,7 +49,7 @@ interface InventoryInterface
     /**
      * Get inventory
      *
-     * @return int
+     * @return int|float
      */
-    public function getInventory(): int;
+    public function getInventory();
 }
