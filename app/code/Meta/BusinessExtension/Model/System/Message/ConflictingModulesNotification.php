@@ -25,7 +25,7 @@ class ConflictingModulesNotification implements MessageInterface
 
     public function __construct(
         MetaIssueNotification      $metaIssueNotification,
-        ModuleManager $moduleManager,
+        ModuleManager $moduleManager
     ) {
         $this->metaIssueNotification = $metaIssueNotification;
         $this->moduleManager = $moduleManager;
