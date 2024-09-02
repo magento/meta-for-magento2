@@ -130,11 +130,12 @@ class FacebookCatalogUpdateFullReindexPlugin
      * Add products with children
      *
      * @param array $batchesIds
+     * @param string $method
      * @return int
      */
-    private function addProductsWithChildren($batchesIds)
+    private function addProductsWithChildren($batchesIds, $method)
     {
-        return $this->fbCatalogUpdateResourceModel->addProductsWithChildren($batchesIds, 'update');
+        return $this->fbCatalogUpdateResourceModel->addProductsWithChildren($batchesIds, $method);
     }
 
     /**
