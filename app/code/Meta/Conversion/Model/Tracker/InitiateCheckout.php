@@ -112,17 +112,28 @@ class InitiateCheckout implements TrackerInterface
         }
 
         $items = $quote->getAllVisibleItems();
+        $categoryIds = [];
         foreach ($items as $item) {
             $product = $item->getProduct();
-            $categoryIds = $product->getCategoryIds();
-            $categories = $this->categoryCollection->create()
-                ->addAttributeToSelect('*')
-                ->addAttributeToFilter('entity_id', $categoryIds);
-            $categoryNames = [];
-            foreach ($categories as $category) {
-                $categoryNames[] = $category->getName();
+            if ($product->getCategoryIds()) {
+                $categoryIds[] = $product->getCategoryIds();
             }
         }
+        
+        /** Handle products without categories assigned */
+        if (empty($categoryIds)) {
+            return '';
+        }
+        $categoryIds = array_merge(...$categoryIds);
+        
+        $categoryNames = [];
+        $categories = $this->categoryCollection->create()
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter('entity_id', ['in' => $categoryIds]);
+        foreach ($categories as $category) {
+            $categoryNames[] = $category->getName();
+        }
+        
         return implode(',', $categoryNames); /** @phpstan-ignore-line */
     }
 
