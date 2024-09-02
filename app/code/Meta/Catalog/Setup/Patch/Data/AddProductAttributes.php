@@ -9,8 +9,9 @@ use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Meta\Catalog\Setup\MetaCatalogAttributes;
+use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 
-class AddProductAttributes implements DataPatchInterface
+class AddProductAttributes implements DataPatchInterface, PatchRevertableInterface
 {
 
     /**
@@ -108,7 +109,8 @@ class AddProductAttributes implements DataPatchInterface
         foreach (array_keys($productAttributes) as $attributeCode) {
             $eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
         }
-
+        //delete the patch entry from patch_list table
+        $this->moduleDataSetup->deleteTableRow('patch_list', 'patch_name', __CLASS__);
         $this->moduleDataSetup->getConnection()->endSetup();
     }
 }
