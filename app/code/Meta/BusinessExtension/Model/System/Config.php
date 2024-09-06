@@ -163,7 +163,7 @@ class Config
      *
      * @var string|null
      */
-    private ?string $version = '1.3.3-dev';
+    private ?string $version = '1.3.3';
 
     /**
      * @method                                       __construct
