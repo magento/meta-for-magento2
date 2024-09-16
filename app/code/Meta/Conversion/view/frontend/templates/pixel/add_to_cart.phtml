@@ -37,7 +37,6 @@ $trackerUrl = $block->getTrackerUrl();
                 let simpleProductId;
                 // Get id of last added product
                 const productId = data.productIds[data.productIds.length - 1];
-                if (!data.response.backUrl) {
                     // check product data from swatch widget
                     const swatchData = $('[data-role=swatch-options]').data('mage-SwatchRenderer');
                     if (swatchData && swatchData.getProductId()) {
@@ -102,7 +101,6 @@ $trackerUrl = $block->getTrackerUrl();
                             metaPixelTracker(addToCartConfigPixel);
                         }
                     });
-                }
             });
         });
     </script>
