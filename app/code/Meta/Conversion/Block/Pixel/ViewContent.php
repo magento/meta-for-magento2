@@ -89,33 +89,20 @@ class ViewContent extends Common
     }
 
     /**
-     * Return content ids
-     *
-     * @return array
+     * Returns content data including content_ids
+     * @return array[]
      */
-    public function getContentIDs(): array
-    {
-        $contentIds = [];
-        foreach ($this->getProducts() as $product) {
-            $contentIds[] = $this->getContentId($product);
-        }
-
-        return $contentIds;
-    }
-
-    /**
-     * Return content
-     *
-     * @return array
-     */
-    public function getContents(): array
+    public function getContentData(): array
     {
         $contents = [];
+        $contentIds = [];
         foreach ($this->getProducts() as $product) {
-            $contents[] = ['id' => $this->getContentId($product), 'quantity' => 1];
+            $contentId = $this->getContentId($product);
+            $contents[] = ['id' => $contentId, 'quantity' => 1];
+            $contentIds[] = $contentId;
         }
 
-        return $contents;
+        return ['contents' => $contents, 'content_ids' => $contentIds];
     }
 
     /**
