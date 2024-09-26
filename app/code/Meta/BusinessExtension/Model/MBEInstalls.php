@@ -329,6 +329,24 @@ class MBEInstalls
     }
 
     /**
+     * Delete MBE settings through the 'fbe_installs' API
+     *
+     * @param  int $storeId
+     * @return void
+     */
+    public function deleteMBESettings($storeId)
+    {
+        $accessToken = $this->systemConfig->getAccessToken($storeId);
+        $businessId = $this->systemConfig->getExternalBusinessId($storeId);
+        if (!$accessToken || !$businessId) {
+            $this->fbeHelper->log("AccessToken or BusinessID not found for storeID: {$storeId}");
+            return;
+        }
+        $this->graphApiAdapter->deleteFBEInstalls($accessToken, $businessId);
+        $this->fbeHelper->log("Delete MBE Settings for storeId: {$storeId}");
+    }
+
+    /**
      * Call Repair CommercePartnerIntegration endpoint
      *
      * Keep Meta side CommercePartnerIntegration updated with latest info from Magento
