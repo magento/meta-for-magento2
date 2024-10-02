@@ -152,6 +152,7 @@ class MBEInstalls
         $this->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId);
         $this->saveMerchantSettingsId($data['commerce_merchant_settings_id'] ?? '', $storeId);
         $this->saveInstalledFeatures($data['installed_features'] ?? '', $storeId);
+        $this->setInstalledFlag($storeId);
         $this->systemConfig->cleanCache();
         return true;
     }
@@ -307,6 +308,21 @@ class MBEInstalls
         }
         $this->installedFeatureResource->saveResponseData($data, $storeId);
         $this->fbeHelper->log("Saved fbe_installs 'installed_features' for storeId: {$storeId}");
+    }
+
+    /**
+     * Update install flag to true and save
+     *
+     * @param  int $storeId
+     */
+    public function setInstalledFlag($storeId)
+    {
+        // set installed to true
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
+            true,
+            $storeId,
+        );
     }
 
     /**
