@@ -1014,6 +1014,25 @@ class GraphAPIAdapter
     }
 
     /**
+     * Get FBE Installs
+     *
+     * @param  string $accessToken
+     * @param  string $externalBusinessId
+     * @return mixed
+     * @throws GuzzleException
+     * @throws JsonException
+     */
+    public function deleteFBEInstalls($accessToken, $externalBusinessId)
+    {
+        $request = [
+            'fbe_external_business_id' => $externalBusinessId,
+            'access_token' => $accessToken,
+        ];
+        $response = $this->callApi('DELETE', "/fbe_business/fbe_installs", $request);
+        return json_decode($response->getBody()->__toString(), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
      * Persist log to Meta
      *
      * @param  mixed[]     $context

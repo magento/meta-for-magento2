@@ -152,6 +152,7 @@ class MBEInstalls
         $this->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId);
         $this->saveMerchantSettingsId($data['commerce_merchant_settings_id'] ?? '', $storeId);
         $this->saveInstalledFeatures($data['installed_features'] ?? '', $storeId);
+        $this->setInstalledFlag($storeId);
         $this->systemConfig->cleanCache();
         return true;
     }
@@ -310,6 +311,21 @@ class MBEInstalls
     }
 
     /**
+     * Update install flag to true and save
+     *
+     * @param  int $storeId
+     */
+    public function setInstalledFlag($storeId)
+    {
+        // set installed to true
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
+            true,
+            $storeId,
+        );
+    }
+
+    /**
      * Update MBE settings through the 'fbe_installs' API
      *
      * @param  int $storeId
@@ -326,6 +342,24 @@ class MBEInstalls
         $response = $this->graphApiAdapter->getFBEInstalls($accessToken, $businessId);
         $this->save($response['data'], $storeId);
         $this->fbeHelper->log("Updated MBE Settings for storeId: {$storeId}");
+    }
+
+    /**
+     * Delete MBE settings through the 'fbe_installs' API
+     *
+     * @param  int $storeId
+     * @return void
+     */
+    public function deleteMBESettings($storeId)
+    {
+        $accessToken = $this->systemConfig->getAccessToken($storeId);
+        $businessId = $this->systemConfig->getExternalBusinessId($storeId);
+        if (!$accessToken || !$businessId) {
+            $this->fbeHelper->log("AccessToken or BusinessID not found for storeID: {$storeId}");
+            return;
+        }
+        $this->graphApiAdapter->deleteFBEInstalls($accessToken, $businessId);
+        $this->fbeHelper->log("Delete MBE Settings for storeId: {$storeId}");
     }
 
     /**
