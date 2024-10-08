@@ -32,6 +32,8 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
+use Magento\Bundle\Model\Product\Type as BundleType;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 
 /**
  * Helper class to get data using Magento Platform methods.
@@ -182,7 +184,20 @@ class MagentoDataHelper
      */
     public function getContentType(Product $product): string
     {
-        return $product->getTypeId() == Configurable::TYPE_CODE ? 'product_group' : 'product';
+        $productType = '';
+        
+        switch ($product->getTypeId()) {
+            case BundleType::TYPE_CODE:
+            case Configurable::TYPE_CODE:
+            case GroupedType::TYPE_CODE:
+                $productType = 'product_group';
+                break;
+            default:
+                $productType = 'product';
+                break;
+        }
+
+        return $productType;
     }
 
     /**
