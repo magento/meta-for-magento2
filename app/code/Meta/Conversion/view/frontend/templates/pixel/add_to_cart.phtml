@@ -71,7 +71,7 @@ $trackerUrl = $block->getTrackerUrl();
                         },
                         type: 'get',
                         dataType: 'json',
-                        async: false,
+                        async: !data.response.backUrl,
                         success: function (res) {
                             const addToCartConfigPixel = {
                                 "url": window.addToCartData.url,
