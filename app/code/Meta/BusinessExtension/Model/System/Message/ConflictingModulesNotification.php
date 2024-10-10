@@ -27,21 +27,16 @@ class ConflictingModulesNotification implements MessageInterface
     /**
      * @var string
      */
-    private static string $meta_business_extension = 'Meta_BusinessExtension';
+    private string $conflictingModuleFound = '';
 
     /**
-     * @var string
-     */
-    private string $conflictingModulesFound = '';
-
-    /**
-     * ConflictingModulesNotification constructor.
+     * Constructor
      *
      * @param MetaIssueNotification $metaIssueNotification
      * @param ModuleManager $moduleManager
      */
     public function __construct(
-        MetaIssueNotification      $metaIssueNotification,
+        MetaIssueNotification $metaIssueNotification,
         ModuleManager $moduleManager
     ) {
         $this->metaIssueNotification = $metaIssueNotification;
@@ -51,7 +46,7 @@ class ConflictingModulesNotification implements MessageInterface
     /**
      * Get identity
      *
-     * @return string
+     * @return mixed|string
      */
     public function getIdentity()
     {
@@ -60,19 +55,16 @@ class ConflictingModulesNotification implements MessageInterface
     }
 
     /**
-     * Validate if any conflicting modules are found
+     * Toggle flag for displaying notification
      *
      * @return bool
      */
-    public function isDisplayed()
+    public function isDisplayed(): bool
     {
-        //find out if the user enabled the Meta Business Extension
-        $has_Meta_BusinessExtension = $this->moduleManager->isEnabled(self::$meta_business_extension);
-
-        //iterate through the user's module manager to see if they have any conflicting modules
+        // iterate through the user's module manager to see if they have any conflicting modules
         foreach (self::$conflictingModules as $conflictingModule) {
-            if ($this->moduleManager->isEnabled($conflictingModule) && $has_Meta_BusinessExtension) {
-                $this->conflictingModulesFound = $conflictingModule;
+            if ($this->moduleManager->isEnabled($conflictingModule)) {
+                $this->conflictingModuleFound = $conflictingModule;
                 return true;
             }
         }
@@ -84,18 +76,18 @@ class ConflictingModulesNotification implements MessageInterface
      *
      * @return string
      */
-    public function getText()
+    public function getText(): string
     {
         return sprintf('The following module conflicts with the Facebook & Instagram Extension: [%s].
-            Please disable the conflicting module.', $this->conflictingModulesFound);
+            Please disable the conflicting module.', $this->conflictingModuleFound);
     }
 
     /**
-     * Get severity
+     * Get severity of the notification
      *
      * @return int
      */
-    public function getSeverity()
+    public function getSeverity(): int
     {
         return self::SEVERITY_CRITICAL;
     }
