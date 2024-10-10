@@ -736,7 +736,7 @@ class Builder
      */
     public function buildProductEntry(Product $product)
     {
-        $this->attrMap = $this->mappingConfig->getAttributeMapping();
+        $this->attrMap = $this->mappingConfig->getAttributeMapping($product->getStoreId());
         $product->setCustomerGroupId(self::NOT_LOGGED_IN_ID);
 
         $inventory = $this->getInventory($product);

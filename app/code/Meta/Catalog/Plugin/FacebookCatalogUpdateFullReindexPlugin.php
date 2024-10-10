@@ -22,10 +22,9 @@ namespace Meta\Catalog\Plugin;
 
 use Meta\Catalog\Model\ResourceModel\FacebookCatalogUpdate as FBCatalogUpdateResourceModel;
 use Magento\Indexer\Model\Indexer;
-use Magento\Framework\Mview\View\ChangelogBatchWalker;
-use Magento\Framework\Mview\View\ChangelogBatchWalkerFactory;
 use Magento\Framework\Mview\View;
 use Magento\Indexer\Model\WorkingStateProvider;
+use Magento\Framework\ObjectManagerInterface;
 
 class FacebookCatalogUpdateFullReindexPlugin
 {
@@ -40,30 +39,30 @@ class FacebookCatalogUpdateFullReindexPlugin
     private $fbCatalogUpdateResourceModel;
 
     /**
-     * @var ChangelogBatchWalkerFactory
-     */
-    private $changelogBatchWalkerFactory;
-
-    /**
      * @var WorkingStateProvider
      */
     private $workingStateProvider;
+
+    /**
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
 
     /**
      * FacebookCatalogUpdateOnIndexerPlugin constructor
      *
      * @param WorkingStateProvider $workingStateProvider
      * @param FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel
-     * @param ChangelogBatchWalkerFactory $changelogBatchWalkerFactory
+     * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
         WorkingStateProvider         $workingStateProvider,
         FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel,
-        ChangelogBatchWalkerFactory  $changelogBatchWalkerFactory
+        ObjectManagerInterface  $objectManager
     ) {
         $this->workingStateProvider = $workingStateProvider;
         $this->fbCatalogUpdateResourceModel = $fbCatalogUpdateResourceModel;
-        $this->changelogBatchWalkerFactory = $changelogBatchWalkerFactory;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -85,7 +84,7 @@ class FacebookCatalogUpdateFullReindexPlugin
         $nextVersionId = $cl->getVersion();
 
         while ($currentVersionId < $nextVersionId) {
-            $walker = $this->changelogBatchWalkerFactory->create(ChangelogBatchWalker::class);
+            $walker = $this->getChangelogBatchWalkerInstance();
             $batches = $walker->walk($cl, $currentVersionId, $nextVersionId, $batchSize);
 
             foreach ($batches as $ids) {
@@ -96,6 +95,27 @@ class FacebookCatalogUpdateFullReindexPlugin
                 $this->fbCatalogUpdateResourceModel->addProductsWithChildren($ids, 'update');
             }
         }
+    }
+
+    /**
+     * Get class object
+     */
+    public function getChangelogBatchWalkerInstance()
+    {
+        if (class_exists(\Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class)) { // @phpstan-ignore-line
+            $changeLogWalkerFactory = $this->objectManager->create(
+                \Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class // @phpstan-ignore-line
+            );
+            return $changeLogWalkerFactory->create(
+                \Magento\Framework\Mview\View\ChangeLogBatchWalker::class // @phpstan-ignore-line
+            );
+        }
+        $changelogWalkerFactory = $this->objectManager->create(
+            \Magento\Framework\Mview\View\ChangelogBatchWalkerFactory::class // @phpstan-ignore-line
+        );
+        return $changelogWalkerFactory->create(
+            \Magento\Framework\Mview\View\ChangelogBatchWalker::class // @phpstan-ignore-line
+        );
     }
 
     /**
