@@ -9,60 +9,86 @@ use Meta\BusinessExtension\Model\ResourceModel\MetaIssueNotification;
 
 class ConflictingModulesNotification implements MessageInterface
 {
-
     /**
      * @var MetaIssueNotification
      */
     private MetaIssueNotification $metaIssueNotification;
+
     /**
      * @var ModuleManager
      */
     private ModuleManager $moduleManager;
 
+    /**
+     * @var array
+     */
     private static array $conflictingModules = ['Apptrian_MetaPixelApi'];
-    private static string $meta_business_extension = 'Meta_BusinessExtension';
-    private string $conflictingModulesFound = '';
 
+    /**
+     * @var string
+     */
+    private string $conflictingModuleFound = '';
+
+    /**
+     * Constructor
+     *
+     * @param MetaIssueNotification $metaIssueNotification
+     * @param ModuleManager $moduleManager
+     */
     public function __construct(
-        MetaIssueNotification      $metaIssueNotification,
-        ModuleManager $moduleManager,
+        MetaIssueNotification $metaIssueNotification,
+        ModuleManager $moduleManager
     ) {
         $this->metaIssueNotification = $metaIssueNotification;
         $this->moduleManager = $moduleManager;
     }
+
+    /**
+     * Get identity
+     *
+     * @return mixed|string
+     */
     public function getIdentity()
     {
         $notification = $this->metaIssueNotification->loadVersionNotification();
         return $notification['notification_id'] ?? '';
     }
 
-    public function isDisplayed()
+    /**
+     * Toggle flag for displaying notification
+     *
+     * @return bool
+     */
+    public function isDisplayed(): bool
     {
-
-        //find out if the user enabled the Meta Business Extension
-        $has_Meta_BusinessExtension = $this->moduleManager->isEnabled(self::$meta_business_extension);
-
-        //iterate through the user's module manager to see if they have any conflicting modules
-        foreach(self::$conflictingModules as $conflictingModule) {
-            if ($this->moduleManager->isEnabled($conflictingModule) && $has_Meta_BusinessExtension)
-            {
-                $this->conflictingModulesFound = $conflictingModule;
+        // iterate through the user's module manager to see if they have any conflicting modules
+        foreach (self::$conflictingModules as $conflictingModule) {
+            if ($this->moduleManager->isEnabled($conflictingModule)) {
+                $this->conflictingModuleFound = $conflictingModule;
                 return true;
             }
         }
         return false;
     }
 
-
-    public function getText()
+    /**
+     * Get text
+     *
+     * @return string
+     */
+    public function getText(): string
     {
-        return sprintf( 'The following module conflicts with the Facebook & Instagram Extension: [%s] . Please disable the conflicting module.',
-            $this->conflictingModulesFound);
+        return sprintf('The following module conflicts with the Facebook & Instagram Extension: [%s].
+            Please disable the conflicting module.', $this->conflictingModuleFound);
     }
 
-    public function getSeverity()
+    /**
+     * Get severity of the notification
+     *
+     * @return int
+     */
+    public function getSeverity(): int
     {
         return self::SEVERITY_CRITICAL;
     }
-
 }

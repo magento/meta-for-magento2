@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Meta\Catalog\Setup\Patch\Data;
 
 use Magento\Catalog\Model\Product;
-use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
+use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 use Meta\Catalog\Setup\MetaCatalogAttributes;
 
-class AddProductAttributes implements DataPatchInterface
+class AddProductAttributes implements DataPatchInterface, PatchRevertableInterface
 {
 
     /**
