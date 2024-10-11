@@ -477,7 +477,7 @@ class Builder
     private function getBrand(Product $product)
     {
         $brand = isset($this->attrMap[self::ATTR_BRAND])
-            ? $product->getData($this->attrMap[self::ATTR_BRAND])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_BRAND])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
         if (!$brand || $brand == '') {
             $brand = $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
@@ -613,7 +613,7 @@ class Builder
     {
         $ageGroup = '';
         if (isset($this->attrMap[self::ATTR_AGE_GROUP])) {
-            $ageGroup = $product->getData($this->attrMap[self::ATTR_AGE_GROUP]);
+            $ageGroup = $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_AGE_GROUP]);
         }
         if (empty($ageGroup)) {
             $ageGroup = $this->additionalAttributes->getCorrectText($product, self::ATTR_AGE_GROUP);
@@ -632,7 +632,7 @@ class Builder
     private function getGender(Product $product)
     {
         $gender = isset($this->attrMap[self::ATTR_GENDER])
-            ? $product->getData($this->attrMap[self::ATTR_GENDER])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_GENDER])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
         if (!$gender || $gender == '') {
             $gender = $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
@@ -674,7 +674,7 @@ class Builder
     private function getMaterial(Product $product)
     {
         $material = isset($this->attrMap[self::ATTR_MATERIAL])
-            ? $product->getData($this->attrMap[self::ATTR_MATERIAL])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_MATERIAL])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
         if (!$material && $material == '') {
             $material = $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
@@ -694,7 +694,7 @@ class Builder
     private function getPattern(Product $product)
     {
         $pattern = isset($this->attrMap[self::ATTR_PATTERN])
-            ? $product->getData($this->attrMap[self::ATTR_PATTERN])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_PATTERN])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
         if (!$pattern && $pattern == '') {
             $pattern = $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
