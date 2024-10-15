@@ -132,7 +132,7 @@ class Index implements HttpGetActionInterface
         QuoteIdMaskFactory       $quoteIdMaskFactory,
         AddressFactory           $quoteAddressFactory,
         CartRepositoryInterface  $quoteRepository,
-        GuestCartitemRepository  $guestCartItemRepository,
+        GuestCartItemRepository  $guestCartItemRepository,
         CartItemInterfaceFactory $cartItemInterfaceFactory,
         GuestCouponManagement    $guestCouponManagement,
         CheckoutSession          $checkoutSession,
