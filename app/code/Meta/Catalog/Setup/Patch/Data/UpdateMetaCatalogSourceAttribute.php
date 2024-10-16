@@ -4,8 +4,9 @@ namespace Meta\Catalog\Setup\Patch\Data;
 
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 
-class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
+class UpdateMetaCatalogSourceAttribute implements DataPatchInterface, PatchRevertableInterface
 {
     /**
      * @var ModuleDataSetupInterface
@@ -85,6 +86,9 @@ class UpdateMetaCatalogSourceAttribute implements DataPatchInterface
         $this->moduleDataSetup->getConnection()->startSetup();
 
         $this->revertAttributeUpdate();
+
+        //delete the patch entry from patch_list table
+        $this->moduleDataSetup->deleteTableRow('patch_list', 'patch_name', __CLASS__);
 
         $this->moduleDataSetup->getConnection()->endSetup();
     }
