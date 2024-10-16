@@ -34,11 +34,16 @@ use Magento\Quote\Model\GuestCart\GuestCouponManagement;
 use Magento\Quote\Model\Quote\AddressFactory;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteFactory;
-use Magento\Quote\Model\QuoteIdMask;
 use Magento\Quote\Model\QuoteIdMaskFactory;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Quote\Api\Data\ProductOptionInterfaceFactory;
+use Magento\ConfigurableProduct\Api\Data\ConfigurableItemOptionValueInterfaceFactory;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Sales\Helper\OrderHelper;
+use Exception;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -98,11 +103,6 @@ class Index implements HttpGetActionInterface
     private RedirectFactory $resultRedirectFactory;
 
     /**
-     * @var Authenticator
-     */
-    private Authenticator $authenticator;
-
-    /**
      * @var FBEHelper
      */
     private FBEHelper $fbeHelper;
@@ -111,6 +111,26 @@ class Index implements HttpGetActionInterface
      * @var OrderHelper
      */
     private OrderHelper $orderHelper;
+
+    /**
+     * @var ProductRepositoryInterface
+     */
+    private ProductRepositoryInterface $productRepository;
+
+    /**
+     * @var ConfigurableType
+     */
+    private ConfigurableType $configurableType;
+
+    /**
+     * @var ProductOptionInterfaceFactory
+     */
+    private ProductOptionInterfaceFactory $productOptionInterfaceFactory;
+
+    /**
+     * @var ConfigurableItemOptionValueInterfaceFactory
+     */
+    private ConfigurableItemOptionValueInterfaceFactory $configurableItemOptionValueFactory;
 
     /**
      * @param QuoteFactory $quoteFactory
@@ -126,6 +146,10 @@ class Index implements HttpGetActionInterface
      * @param Authenticator $authenticator
      * @param FBEHelper $fbeHelper
      * @param OrderHelper $orderHelper
+     * @param ProductRepositoryInterface $productRepository
+     * @param ConfigurableType $configurableType
+     * @param ProductOptionInterfaceFactory $productOptionInterfaceFactory
+     * @param ConfigurableItemOptionValueInterfaceFactory $configurableItemOptionValueFactory
      */
     public function __construct(
         QuoteFactory             $quoteFactory,
@@ -140,9 +164,12 @@ class Index implements HttpGetActionInterface
         RedirectFactory          $resultRedirectFactory,
         Authenticator            $authenticator,
         FBEHelper                $fbeHelper,
-        OrderHelper              $orderHelper
-    )
-    {
+        OrderHelper              $orderHelper,
+        ProductRepositoryInterface $productRepository,
+        ConfigurableType         $configurableType,
+        ProductOptionInterfaceFactory $productOptionInterfaceFactory,
+        ConfigurableItemOptionValueInterfaceFactory $configurableItemOptionValueFactory
+    ) {
         $this->quoteFactory = $quoteFactory;
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->quoteAddressFactory = $quoteAddressFactory;
@@ -153,15 +180,16 @@ class Index implements HttpGetActionInterface
         $this->checkoutSession = $checkoutSession;
         $this->httpRequest = $httpRequest;
         $this->resultRedirectFactory = $resultRedirectFactory;
-        $this->authenticator = $authenticator;
         $this->fbeHelper = $fbeHelper;
         $this->orderHelper = $orderHelper;
+        $this->productRepository = $productRepository;
+        $this->configurableType = $configurableType;
+        $this->productOptionInterfaceFactory = $productOptionInterfaceFactory;
+        $this->configurableItemOptionValueFactory = $configurableItemOptionValueFactory;
     }
 
     /**
-     * Execute action based on httpRequest.
-     *
-     * IMPORTANT: Signatures must be URL-Encoded after being Base64 Encoded, or verification will fail.
+     * Execute action based on request.
      *
      * @return Redirect
      * @throws LocalizedException
@@ -169,122 +197,196 @@ class Index implements HttpGetActionInterface
     public function execute()
     {
         $ebid = $this->httpRequest->getParam('ebid');
-        $products = explode(',', $this->httpRequest->getParam('products'));
+        $productsParam = $this->httpRequest->getParam('products');
         $coupon = $this->httpRequest->getParam('coupon');
-        $redirect = $this->httpRequest->getParam('redirect');
-        $signature = $this->httpRequest->getParam('signature');
+        $redirectPath = $this->httpRequest->getParam('redirect');
 
-        $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($ebid);
+        $storeId = (int)$this->orderHelper->getStoreIdByExternalBusinessId($ebid);
+        $products = explode(',', $productsParam);
 
-        // Verify signature
-        if (!$this->authenticator->verifySignature($ebid, $signature)) {
-            $e = new LocalizedException(__('RSA Signature Validation Failed'));
-            $this->fbeHelper->logExceptionImmediatelyToMeta(
-                $e,
-                [
-                    'store_id' => $storeId,
-                    'event' => 'meta_checkout_url',
-                    'event_type' => 'rsa_signature_validation_error',
-                    'extra_data' => [
-                        'request_uri' => $this->httpRequest->getRequestUri(),
-                        'request_signature' => $signature,
-                        'ebid' => $ebid
-                    ]
-                ]
-            );
-            throw $e;
+        $quote = $this->createQuote($storeId);
+        $cartId = $this->getMaskedCartId($quote);
+
+        foreach ($products as $productItem) {
+            $this->addProductToCart($productItem, $cartId, $storeId);
         }
 
-        // Create cart
-        /**
-         * @var QuoteIdMask $quoteIdMask
-         */
-        $quoteIdMask = $this->quoteIdMaskFactory->create();
-        /**
-         * @var Quote $quote
-         */
-        $quote = $this->quoteFactory->create();
-        $quote->setStoreId($storeId);
-        $quote->setBillingAddress($this->quoteAddressFactory->create());
-        $quote->setShippingAddress($this->quoteAddressFactory->create());
-        $quote->setCustomerIsGuest(1);
+        if ($coupon) {
+            $this->applyCouponToCart($coupon, $cartId, $storeId);
+        }
 
+        $this->checkoutSession->replaceQuote($quote);
+        return $this->redirectToPath($redirectPath);
+    }
+
+    /**
+     * Create a new quote.
+     *
+     * @param int $storeId
+     * @return Quote
+     * @throws CouldNotSaveException
+     */
+    private function createQuote(int $storeId): Quote
+    {
         try {
+            $quote = $this->quoteFactory->create();
+            $quote->setStoreId($storeId);
+            $quote->setBillingAddress($this->quoteAddressFactory->create());
+            $quote->setShippingAddress($this->quoteAddressFactory->create());
+            $quote->setCustomerIsGuest(true);
             $quote->getShippingAddress()->setCollectShippingRates(true);
             $this->quoteRepository->save($quote);
-        } catch (\Exception $e) {
-            $this->fbeHelper->logExceptionImmediatelyToMeta(
-                $e,
-                [
-                    'store_id' => $storeId,
-                    'event' => 'meta_checkout_url',
-                    'event_type' => 'quote_save_exception'
-                ]
-            );
+            return $quote;
+        } catch (Exception $e) {
+            $this->logExceptionToMeta($e, $storeId, 'quote_save_exception');
             throw new CouldNotSaveException(__("The quote can't be created."));
         }
+    }
 
+    /**
+     * Get masked cart ID.
+     *
+     * @param Quote $quote
+     * @return string
+     */
+    private function getMaskedCartId(Quote $quote): string
+    {
+        $quoteIdMask = $this->quoteIdMaskFactory->create();
         $quoteIdMask->setQuoteId($quote->getId())->save();
-        $cartId = $quoteIdMask->getMaskedId();
+        return $quoteIdMask->getMaskedId();
+    }
 
-        // Add items to cart
-        foreach ($products as $product) {
-            try {
-                list($sku, $quantity) = explode(':', $product);
-                $quantity = (int)$quantity;
+    /**
+     * Add product to cart.
+     *
+     * @param string $productItem
+     * @param string $cartId
+     * @param int $storeId
+     * @return void
+     */
+    private function addProductToCart(string $productItem, string $cartId, int $storeId): void
+    {
+        try {
+            [$sku, $quantity] = explode(':', $productItem);
+            $quantity = (int)$quantity;
 
-                $cartItem = $this->cartItemInterfaceFactory->create();
-                $cartItem->setSku($sku);
-                $cartItem->setQty($quantity);
-                $cartItem->setQuoteId($cartId);
+            $product = $this->productRepository->get($sku, false, $storeId, true);
 
-                $this->guestCartItemRepository->save($cartItem);
-            } catch (\Exception $e) {
-                $this->fbeHelper->logExceptionImmediatelyToMeta(
-                    $e,
-                    [
-                        'store_id' => $storeId,
-                        'event' => 'meta_checkout_url',
-                        'event_type' => 'error_adding_item',
-                        'extra_data' => [
-                            'cart_id' => $cartId,
-                            'sku' => $sku,
-                            'quantity' => $quantity
-                        ]
-                    ]
-                );
+            [$parentSku, $configurableOptions] = $this->getConfigurableOptions($product, $storeId);
+
+            $cartItem = $this->cartItemInterfaceFactory->create();
+            $cartItem->setSku($sku);
+            $cartItem->setQty($quantity);
+            $cartItem->setQuoteId($cartId);
+
+            if ($configurableOptions) {
+                $cartItem->setSku($parentSku);
+                $productOption = $this->productOptionInterfaceFactory->create();
+                $extensionAttributes = $productOption->getExtensionAttributes();
+                $extensionAttributes->setConfigurableItemOptions($configurableOptions);
+                $productOption->setExtensionAttributes($extensionAttributes);
+                $cartItem->setProductOption($productOption);
             }
-        }
 
-        // Add coupon to cart
-        if ($coupon) {
-            try {
-                $this->guestCouponManagement->set($cartId, $coupon);
-            } catch (\Exception $e) {
-                $this->fbeHelper->logExceptionImmediatelyToMeta(
-                    $e,
-                    [
-                        'store_id' => $storeId,
-                        'event' => 'meta_checkout_url',
-                        'event_type' => 'error_adding_coupon',
-                        'extra_data' => [
-                            'cart_id' => $cartId,
-                            'coupon' => $coupon
-                        ]
-                    ]
-                );
-            }
+            $this->guestCartItemRepository->save($cartItem);
+        } catch (Exception $e) {
+            $this->logExceptionToMeta($e, $storeId, 'error_adding_item', [
+                'cart_id' => $cartId,
+                'sku' => $sku,
+                'quantity' => $quantity,
+            ]);
         }
+    }
 
-        // Redirect to indicated path or checkout
-        $this->checkoutSession->replaceQuote($quote);
+    /**
+     * Apply coupon to cart.
+     *
+     * @param string $coupon
+     * @param string $cartId
+     * @param int $storeId
+     * @return void
+     */
+    private function applyCouponToCart(string $coupon, string $cartId, int $storeId): void
+    {
+        try {
+            $this->guestCouponManagement->set($cartId, $coupon);
+        } catch (Exception $e) {
+            $this->logExceptionToMeta($e, $storeId, 'error_adding_coupon', [
+                'cart_id' => $cartId,
+                'coupon' => $coupon,
+            ]);
+        }
+    }
+
+    /**
+     * Redirect to path.
+     *
+     * @param string|null $redirectPath
+     * @return Redirect
+     */
+    private function redirectToPath(?string $redirectPath): Redirect
+    {
         $resultRedirect = $this->resultRedirectFactory->create();
-        if ($redirect) {
-            $resultRedirect->setPath($redirect);
-        } else {
-            $resultRedirect->setPath('checkout');
+        $resultRedirect->setPath($redirectPath ?: 'checkout');
+        return $resultRedirect;
+    }
+
+    /**
+     * Get configurable options for a product.
+     *
+     * @param ProductInterface $product
+     * @param int $storeId
+     * @return array
+     */
+    private function getConfigurableOptions(ProductInterface $product, int $storeId): array
+    {
+        $parentIds = $this->configurableType->getParentIdsByChild($product->getId());
+        if (empty($parentIds)) {
+            return [null, null];
         }
 
-        return $resultRedirect;
+        $parentId = $parentIds[0];
+        $parentProduct = $this->productRepository->getById($parentId, false, $storeId);
+        $configurableAttributes = $this->configurableType->getConfigurableAttributes($parentProduct);
+        $configurableOptions = [];
+
+        foreach ($configurableAttributes as $attribute) {
+            $attributeId = (int)$attribute->getAttributeId();
+            $productAttribute = $attribute->getProductAttribute();
+            $attributeValue = $product->getData($productAttribute->getAttributeCode());
+            if ($attributeValue === null) {
+                continue;
+            }
+            $optionId = $productAttribute->getSource()->getOptionId($attributeValue);
+
+            $optionValue = $this->configurableItemOptionValueFactory->create();
+            $optionValue->setOptionId($attributeId);
+            $optionValue->setOptionValue($optionId);
+            $configurableOptions[] = $optionValue;
+        }
+
+        return [$parentProduct->getSku(), $configurableOptions];
+    }
+
+    /**
+     * Log exception to Meta.
+     *
+     * @param Exception $e
+     * @param int $storeId
+     * @param string $eventType
+     * @param array $extraData
+     * @return void
+     */
+    private function logExceptionToMeta(Exception $e, int $storeId, string $eventType, array $extraData = []): void
+    {
+        $this->fbeHelper->logExceptionImmediatelyToMeta(
+            $e,
+            [
+                'store_id' => $storeId,
+                'event' => 'meta_checkout_url',
+                'event_type' => $eventType,
+                'extra_data' => $extraData,
+            ]
+        );
     }
 }
