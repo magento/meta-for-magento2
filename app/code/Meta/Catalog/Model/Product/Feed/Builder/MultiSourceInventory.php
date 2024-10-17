@@ -256,9 +256,9 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
     /**
      * Get available product qty
      *
-     * @return int
+     * @return float
      */
-    public function getInventory(): int
+    public function getInventory(): float
     {
         if (!$this->product) {
             return 0;
