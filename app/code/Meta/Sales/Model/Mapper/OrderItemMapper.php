@@ -218,6 +218,9 @@ class OrderItemMapper
                 $attributeId = (int)$attribute->getAttributeId();
                 $productAttribute = $attribute->getProductAttribute();
                 $attributeValue = $product->getData($productAttribute->getAttributeCode());
+                if ($attributeValue === null) {
+                    continue;
+                }
                 $optionId = $productAttribute->getSource()->getOptionId($attributeValue);
                 $optionText = $productAttribute->getSource()->getOptionText($attributeValue);
                 $superAttributes[$attributeId] = $optionId;
