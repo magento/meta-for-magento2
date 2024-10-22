@@ -205,12 +205,12 @@ class GraphAPIAdapter
                 $logResponse = preg_replace(
                     '/access_token=([a-z0-9A-Z]+)(?=[a-zA-Z0-9]{4,})/',
                     'access_token=XXXXXXX',
-                    $logResponse
+                    $logResponse ?? ''
                 );
                 $logResponse = preg_replace(
                     '/access_token\":\"([a-z0-9A-Z]+)(?=[a-zA-Z0-9]{4,})/',
                     'access_token":"XXXXXXX',
-                    $logResponse
+                    $logResponse ?? ''
                 );
 
                 $this->logger->debug(
