@@ -5,6 +5,7 @@
  */
 
 $trackerUrl = $block->getTrackerUrl();
+$contentData = $block->getContentData();
 
 if ($block->getFacebookPixelID()) {
     ?>
@@ -29,16 +30,13 @@ if ($block->getFacebookPixelID()) {
                     'track' => 'track',
                     'event' => 'ViewContent',
                     'payload' => [
-                    'content_type' => $block->getContentType(),
-                    'content_ids' => $block->getContentIDs(),
-                    'content_name' => $escaper->escapeUrl($block->getContentName()) ?? '',
-                    'contents' => [
-                    'id' => $block->getContentIDs() ?? '',
-                    'quantity' => 1
-                    ],
-                    'content_category' => $block->getContentCategory() ?? '',
-                    'value' => $block->getValue() ?? '',
-                    'currency' => $block->getCurrency() ?? ''
+                        'content_type' => $block->getContentType(),
+                        'content_ids' => json_encode($contentData['content_ids']),
+                        'content_name' => $escaper->escapeUrl($block->getContentName()) ?? '',
+                        'contents' => json_encode($contentData['contents']),
+                        'content_category' => $block->getContentCategory() ?? '',
+                        'value' => $block->getValue() ?? '',
+                        'currency' => $block->getCurrency() ?? ''
                     ]
                     ]) ?>
         }

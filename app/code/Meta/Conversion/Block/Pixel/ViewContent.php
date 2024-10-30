@@ -23,6 +23,8 @@ namespace Meta\Conversion\Block\Pixel;
 use Exception;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\MagentoDataHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -87,18 +89,51 @@ class ViewContent extends Common
     }
 
     /**
-     * Return content ids
-     *
-     * @return string
+     * Returns content data including content_ids
+     * @return array[]
      */
-    public function getContentIDs()
+    public function getContentData(): array
     {
+        $contents = [];
         $contentIds = [];
+        foreach ($this->getProducts() as $product) {
+            $contentId = $this->getContentId($product);
+            $contents[] = ['id' => $contentId, 'quantity' => 1];
+            $contentIds[] = $contentId;
+        }
+
+        return ['contents' => $contents, 'content_ids' => $contentIds];
+    }
+
+    /**
+     * Return array of products
+     * If current product is configurable or grouped, array would contain child products as well
+     *
+     * @return array
+     */
+    private function getProducts(): array
+    {
+        $products = [];
         $product = $this->getCurrentProduct();
         if ($product && $product->getId()) {
-            $contentIds[] = $this->getContentId($product);
+            $products[] = $product;
         }
-        return $this->arrayToCommaSeparatedStringValues($contentIds);
+
+        if ($product->getTypeId() == Grouped::TYPE_CODE) {
+            foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
+                /** @var Product $childProduct */
+                $products[] = $childProduct;
+            }
+        }
+
+        if ($product->getTypeId() == Configurable::TYPE_CODE) {
+            foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
+                /** @var Product $childProduct */
+                $products[] = $childProduct;
+            }
+        }
+
+        return $products;
     }
 
     /**
