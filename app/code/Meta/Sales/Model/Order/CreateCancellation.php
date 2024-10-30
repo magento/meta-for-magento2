@@ -163,7 +163,10 @@ class CreateCancellation
                 $magentoOrder = $this->orderRepository->get($magentoOrderId);
                 return $magentoOrder;
             } catch (\Exception $e) {
-                $this->logger->debug($e);
+                $this->logger->debug(
+                    $e->getMessage(),
+                    ['exception' => $e, 'trace' => $e->getTraceAsString()]
+                );
             }
         }
         // In the case of any failure or missing order, simply bail and return null.

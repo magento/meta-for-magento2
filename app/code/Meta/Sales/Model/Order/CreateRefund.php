@@ -218,7 +218,10 @@ class CreateRefund
             $magentoOrder->setTaxRefunded($this->localeFormat->getNumber(-$tax));
             $this->creditMemoService->refund($creditMemo, true, false);
         } catch (\Exception $exception) {
-            $this->logger->debug($exception);
+            $this->logger->debug(
+                $exception->getMessage(),
+                ['exception' => $exception, 'trace' => $exception->getTraceAsString()]
+            );
         }
 
         $magentoOrder->setStatus(Order::STATE_CLOSED);
