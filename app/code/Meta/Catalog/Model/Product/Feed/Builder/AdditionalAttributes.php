@@ -137,6 +137,9 @@ class AdditionalAttributes
 
         if (is_string($attribute_data)) {
             $text = $product->getAttributeText($attribute);
+            if (is_array($text)) {
+                return implode(',', $text);
+            }
             return $text ?: $attribute_data;
         }
         return $attribute_data;
