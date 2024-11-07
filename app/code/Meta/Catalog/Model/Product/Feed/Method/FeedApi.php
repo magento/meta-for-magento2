@@ -274,6 +274,9 @@ class FeedApi
                 }
                 foreach ($products as $product) {
                     try {
+                        if (!$product->isVisibleInSiteVisibility() && !$product->getParentId()) {
+                            continue;
+                        }
                         $entry = array_values($this->builder->buildProductEntry($product));
                         $this->fileHandler->filePutcsv($resource, $entry);
                         $total++;
