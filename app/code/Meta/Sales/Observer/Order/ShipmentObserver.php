@@ -123,13 +123,12 @@ class ShipmentObserver implements ObserverInterface
     protected function getShipment(Observer $observer)
     {
         $event = $observer->getEvent()->getName();
-
-        /**
-         * @var Shipment $shipment
-         */
+        
         if ($event == Shipper::MAGENTO_EVENT_SHIPMENT_SAVE_AFTER) {
+            /** @var Shipment $shipment */
             $shipment = $observer->getEvent()->getShipment();
         } elseif ($event == Shipper::MAGENTO_EVENT_TRACKING_SAVE_AFTER) {
+            /** @var Shipment $shipment */
             $shipment = $observer->getEvent()->getTrack()->getShipment();
         } else {
             $shipment = null;

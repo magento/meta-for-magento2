@@ -25,7 +25,7 @@ class ShippingHelper extends AbstractHelper
     private $logger;
 
     /**
-     * @var string[string] Supported carrier names by carrier code.
+     * @var array
      */
     private $supportedShippingCarriers = [];
 

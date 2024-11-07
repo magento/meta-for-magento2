@@ -26,6 +26,7 @@ use Magento\Store\Model\ScopeInterface;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use FacebookAds\Api;
+use FacebookAds\Object\ServerSide\Event;
 use FacebookAds\Object\ServerSide\EventRequestAsync;
 use GuzzleHttp\Exception\RequestException;
 

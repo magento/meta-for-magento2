@@ -134,7 +134,7 @@ class InitiateCheckout implements TrackerInterface
             $categoryNames[] = $category->getName();
         }
         
-        return implode(',', $categoryNames); /** @phpstan-ignore-line */
+        return implode(',', $categoryNames);
     }
 
     /**

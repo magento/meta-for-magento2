@@ -31,7 +31,7 @@ class FacebookCatalogDeletePlugin
 {
 
     /**
-     * @var FacebokoCatalogUpdate
+     * @var FacebookCatalogUpdate
      */
     private $catalogUpdateResourceModel;
 

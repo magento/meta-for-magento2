@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Conversion\Block\Pixel;
 
 use Exception;
+use Magento\Catalog\Block\Product\View;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -205,6 +206,7 @@ class ViewContent extends Common
     public function getCurrentProduct()
     {
         try {
+            /** @var View $block */
             $block = $this->getLayout()->getBlock('product.info');
             return $block ? $block->getProduct() : $this->catalogHelper->getProduct();
         } catch (Exception $e) {

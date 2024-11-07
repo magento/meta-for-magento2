@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Block\Adminhtml\Order\View\Tab;
 
+use Magento\Sales\Block\Adminhtml\Order\View\Tab\Info;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
@@ -68,7 +69,10 @@ class Facebook extends Template implements TabInterface
      */
     public function getOrder()
     {
-        return $this->getLayout()->getBlock('order_tab_info')->getOrder();
+        /** @var Info $orderTabInfo */
+        $orderTabInfo = $this->getLayout()->getBlock('order_tab_info');
+        
+        return $orderTabInfo->getOrder();
     }
 
     /**

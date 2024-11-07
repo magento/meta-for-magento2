@@ -65,6 +65,8 @@ class ModifyMetaCronjobExecution implements DataPatchInterface, PatchRevertableI
         );
 
         $this->moduleDataSetup->getConnection()->endSetup();
+
+        return $this;
     }
 
     /**

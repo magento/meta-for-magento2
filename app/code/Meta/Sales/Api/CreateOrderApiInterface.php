@@ -45,7 +45,7 @@ interface CreateOrderApiInterface
      * @param  CreateOrderApiProductItemInterface[]   $productItems
      * @param  CreateOrderApiShipmentDetailsInterface $shipmentDetails
      * @param  AddressInterface                       $billingAddress
-     * @param  string|null                            $channel
+     * @param  string                                 $channel
      * @param  bool                                   $buyerRemarketingOptIn
      * @param  bool                                   $createInvoice
      * @return \Magento\Sales\Api\Data\OrderInterface

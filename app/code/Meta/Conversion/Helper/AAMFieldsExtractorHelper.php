@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Helper;
 
+use FacebookAds\Object\ServerSide\UserData;
 use Magento\Customer\Model\Customer;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -205,7 +206,7 @@ class AAMFieldsExtractorHelper
         if (empty($userDataArray)) {
             return $event;
         }
-
+        /** @var UserData $userData */
         $userData = $event->getUserData();
         if (array_key_exists(AAMSettingsFields::EMAIL, $userDataArray)
         ) {
