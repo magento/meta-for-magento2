@@ -117,9 +117,9 @@ class Inventory extends InventoryRequirements implements InventoryInterface
     /**
      * Get available product qty
      *
-     * @return int
+     * @return int|float
      */
-    public function getInventory(): int
+    public function getInventory()
     {
         if (!($this->product && $this->productStock)) {
             return 0;
@@ -130,6 +130,6 @@ class Inventory extends InventoryRequirements implements InventoryInterface
         }
 
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
-        return (int)max($this->productStock->getQty() - $outOfStockThreshold, 0);
+        return max($this->productStock->getQty() - $outOfStockThreshold, 0);
     }
 }
