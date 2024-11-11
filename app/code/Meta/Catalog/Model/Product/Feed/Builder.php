@@ -402,7 +402,7 @@ class Builder
         $description = html_entity_decode(preg_replace(
             '/<\s*style.+?<\s*\/\s*style.*?>/',
             '',
-            $description
+            $description ?? ''
         ));
         // phpcs:ignore
         $description = html_entity_decode(preg_replace('/<[^<]+?>/', '', $description));
@@ -439,7 +439,7 @@ class Builder
         $description = html_entity_decode(preg_replace(
             '/<\s*style.+?<\s*\/\s*style.*?>/',
             '',
-            $description
+            $description ?? ''
         ));
 
         return $this->trimAttribute(

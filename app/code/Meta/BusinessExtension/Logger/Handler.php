@@ -59,11 +59,9 @@ class Handler extends Base
     }
 
     /**
-     * Overriding the write function to put logs onto message queue to be persisted to Meta async and logging locally
-     *
-     * @param array $record
-     */
-    protected function write(array $record): void
+     * @inheritDoc
+     * */
+    protected function write($record): void
     {
         $logTypeIsSet = isset($record['context']['log_type']);
         if ($logTypeIsSet && $record['context']['log_type'] === FBEHelper::PERSIST_META_LOG_IMMEDIATELY) {

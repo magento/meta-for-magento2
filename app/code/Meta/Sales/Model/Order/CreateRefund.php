@@ -216,7 +216,7 @@ class CreateRefund
             // to do this -- TODO, revisit this code.
             $magentoOrder->setBaseTotalPaid($orderTotal);
             $magentoOrder->setTaxRefunded($this->localeFormat->getNumber(-$tax));
-            $this->creditMemoService->refund($creditMemo, true, false);
+            $this->creditMemoService->refund($creditMemo, true);
         } catch (\Exception $exception) {
             $this->logger->debug(
                 $exception->getMessage(),

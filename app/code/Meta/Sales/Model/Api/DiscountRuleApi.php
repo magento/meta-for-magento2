@@ -74,7 +74,7 @@ class DiscountRuleApi implements DiscountRuleApiInterface
      *
      * @param string $externalBusinessId
      * @param RuleInterface $rule
-     * @return int
+     * @return string
      * @throws LocalizedException
      */
     public function createRule(string $externalBusinessId, RuleInterface $rule): string

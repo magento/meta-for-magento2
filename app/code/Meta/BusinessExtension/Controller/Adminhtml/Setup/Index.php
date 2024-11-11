@@ -34,6 +34,12 @@ class Index extends Action implements HttpGetActionInterface
     private $resultPageFactory;
 
     /**
+     * Needed to prevent secret url generation on the fbeadmin page.
+     * @var array
+     */
+    protected $_publicActions = ['index'];
+
+    /**
      * Constructor
      *
      * @param Context     $context

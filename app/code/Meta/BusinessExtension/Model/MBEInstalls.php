@@ -172,7 +172,9 @@ class MBEInstalls
                 $storeId
             );
             $this->fbeHelper->fetchAndSaveAAMSettings($pixelId, $storeId);
-            $this->fbeHelper->log("Saved fbe_installs pixel_id --- {$pixelId} for storeId: {$storeId}");
+            $this->fbeHelper->log(
+                "Saved fbe_installs pixel_id --- " . json_encode($pixelId) . " for storeId: {$storeId}"
+            );
         } else {
             $this->systemConfig->saveConfig(
                 SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID,

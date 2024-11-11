@@ -146,6 +146,7 @@ class ServerEventFactory
      */
     private function addCustomData($event, $data)
     {
+        /** @var CustomData $custom_data */
         $custom_data = $event->getCustomData();
 
         foreach ($this->customDataMapping as $field => $setter) {

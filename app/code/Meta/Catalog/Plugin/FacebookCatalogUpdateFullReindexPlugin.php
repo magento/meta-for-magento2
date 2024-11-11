@@ -110,14 +110,15 @@ class FacebookCatalogUpdateFullReindexPlugin
      */
     public function getChangelogBatchWalkerInstance()
     {
-        if (class_exists(\Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class)) { // @phpstan-ignore-line
-            $changeLogWalkerFactory = $this->objectManager->create(
-                \Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class // @phpstan-ignore-line
-            );
+        $changeLogWalkerFactory = $this->objectManager->create(
+            \Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class // @phpstan-ignore-line
+        );
+        if (get_class($changeLogWalkerFactory) == "ChangeLogBatchWalkerFactory") {
             return $changeLogWalkerFactory->create(
                 \Magento\Framework\Mview\View\ChangeLogBatchWalker::class // @phpstan-ignore-line
             );
         }
+
         $changelogWalkerFactory = $this->objectManager->create(
             \Magento\Framework\Mview\View\ChangelogBatchWalkerFactory::class // @phpstan-ignore-line
         );

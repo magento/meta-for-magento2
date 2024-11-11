@@ -163,10 +163,11 @@ class Config
      *
      * @var string|null
      */
-    private ?string $version = '1.3.4-dev';
+    private ?string $version = '1.3.5-dev';
 
     /**
-     * @method                                       __construct
+     * Config class constructor
+     *
      * @param                                        StoreManagerInterface    $storeManager
      * @param                                        ScopeConfigInterface     $scopeConfig
      * @param                                        ResourceConfig           $resourceConfig
@@ -279,7 +280,6 @@ class Config
     /**
      * Is single store mode
      *
-     * @method isSingleStoreMode
      * @return bool
      */
     public function isSingleStoreMode(): bool
@@ -413,7 +413,7 @@ class Config
      * Get fulfillment address
      *
      * @param  int $scopeId
-     * @param  int $scope
+     * @param  string $scope
      * @return array
      */
     public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): array
@@ -622,7 +622,7 @@ class Config
      * Get pixel id
      *
      * @param  int $scopeId
-     * @param  int $scope
+     * @param  string $scope
      * @return mixed
      */
     public function getPixelId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -714,7 +714,7 @@ class Config
      * Get commerce partner integration ID
      *
      * @param  int $scopeId
-     * @param  int $scope
+     * @param  string $scope
      * @return mixed|null
      */
     public function getCommercePartnerIntegrationId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -789,7 +789,7 @@ class Config
      * Get shipping methods label map
      *
      * @param  int|null $storeId
-     * @return array|null
+     * @return array
      */
     public function getShippingMethodsLabelMap($storeId = null): array
     {

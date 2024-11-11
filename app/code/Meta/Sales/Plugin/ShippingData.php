@@ -38,7 +38,7 @@ class ShippingData
     /**
      * @var int
      */
-    private int $storeId;
+    private int $storeId = 0;
 
     public const ATTR_ENABLED = 'enabled';
     public const ATTR_TITLE = 'title';

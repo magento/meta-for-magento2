@@ -178,7 +178,7 @@ class Purchase extends Common
         if ($order) {
             $items = $order->getAllVisibleItems();
             foreach ($items as $item) {
-                /** @var Product $product */
+                /** @var Product $item */
                 $productName[] = $item->getName();
             }
         }

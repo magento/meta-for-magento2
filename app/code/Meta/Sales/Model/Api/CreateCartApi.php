@@ -108,9 +108,7 @@ class CreateCartApi implements CreateCartApiInterface
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
 
-        /**
-         * @var $quoteIdMask \Magento\Quote\Model\QuoteIdMask
-         */
+        /** @var QuoteIdMask $quoteIdMask */
         $quoteIdMask = $this->quoteIdMaskFactory->create();
 
         /**

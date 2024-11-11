@@ -141,7 +141,7 @@ class CommerceHelper
      * Get facebook order by facebook order id
      *
      * @param string $facebookOrderId
-     * @return void
+     * @return FacebookOrderInterface
      */
     private function getFacebookOrder(string $facebookOrderId): FacebookOrderInterface
     {
@@ -377,7 +377,7 @@ class CommerceHelper
                     // Get cancellation details for each order (assuming a method exists in GraphAPIAdapter)
                     $cancellationDetails = $this->graphAPIAdapter->getCancellations($facebookOrderId)[0];
                     // Process cancellations (you would need to create a method to handle this)
-                    $wasOrderCancelled = $this->createCancellation->execute($orderData, $cancellationDetails, $storeId);
+                    $wasOrderCancelled = $this->createCancellation->execute($orderData, $cancellationDetails);
                     if ($wasOrderCancelled) {
                         $cancelledOrdersDetails[$facebookOrderId] = $cancellationDetails;
                     }
