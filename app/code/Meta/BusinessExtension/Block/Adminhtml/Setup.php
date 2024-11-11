@@ -24,12 +24,17 @@ use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\UrlInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * @api
@@ -37,6 +42,9 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
  */
 class Setup extends Template
 {
+    public const COUNTRY_CONFIG_PATH = 'general/country/default';
+    public const TIMEZONE_CONFIG_PATH = 'general/locale/timezone';
+
     /**
      * @var ApiKeyService
      */
@@ -62,6 +70,11 @@ class Setup extends Template
     public StoreRepositoryInterface $storeRepo;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private StoreManagerInterface $storeManager;
+
+    /**
      * @var CommerceExtensionHelper
      */
     private CommerceExtensionHelper $commerceExtensionHelper;
@@ -72,14 +85,21 @@ class Setup extends Template
     private AdobeCloudConfigInterface $adobeConfig;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private ScopeConfigInterface $scopeConfig;
+
+    /**
      * @param Context                   $context
      * @param RequestInterface          $request
      * @param FBEHelper                 $fbeHelper
      * @param SystemConfig              $systemConfig
      * @param StoreRepositoryInterface  $storeRepo
+     * @param StoreManagerInterface     $storeManager
      * @param CommerceExtensionHelper   $commerceExtensionHelper
      * @param ApiKeyService             $apiKeyService
      * @param AdobeCloudConfigInterface $adobeConfig
+     * @param ScopeConfigInterface      $scopeConfig
      * @param array                     $data
      */
     public function __construct(
@@ -88,9 +108,11 @@ class Setup extends Template
         FBEHelper                 $fbeHelper,
         SystemConfig              $systemConfig,
         StoreRepositoryInterface  $storeRepo,
+        StoreManagerInterface     $storeManager,
         CommerceExtensionHelper   $commerceExtensionHelper,
         ApiKeyService             $apiKeyService,
         AdobeCloudConfigInterface $adobeConfig,
+        ScopeConfigInterface      $scopeConfig,
         array                     $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
@@ -98,9 +120,11 @@ class Setup extends Template
         $this->request = $request;
         $this->systemConfig = $systemConfig;
         $this->storeRepo = $storeRepo;
+        $this->storeManager = $storeManager;
         $this->commerceExtensionHelper = $commerceExtensionHelper;
         $this->apiKeyService = $apiKeyService;
         $this->adobeConfig = $adobeConfig;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -121,7 +145,7 @@ class Setup extends Template
             try {
                 $this->storeRepo->getById($requestStoreId);
                 return $requestStoreId;
-            } catch (NoSuchEntityException $_ex) {
+            } catch (NoSuchEntityException) {
                 $this->fbeHelper->log("Store with requestStoreId $requestStoreId not found");
             }
         }
@@ -287,10 +311,9 @@ class Setup extends Template
     /**
      * Get currency code
      *
-     * @return mixed
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return null|string
      */
-    public function getCurrencyCode()
+    public function getCurrencyCode(): ?string
     {
         return $this->fbeHelper->getStoreCurrencyCode();
     }
@@ -320,10 +343,10 @@ class Setup extends Template
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param  int $storeId
-     * @return string
+     * @param int $storeId
+     * @return bool
      */
-    public function hasCommerceExtensionIFramePermissionError($storeId)
+    public function hasCommerceExtensionIFramePermissionError(int $storeId): bool
     {
         return $this->commerceExtensionHelper->hasCommerceExtensionPermissionError($storeId);
     }
@@ -341,7 +364,7 @@ class Setup extends Template
     /**
      * Get stores that are selectable (not Admin).
      *
-     * @return \Magento\Store\Api\Data\StoreInterface[]
+     * @return StoreInterface[]
      * */
     public function getSelectableStores()
     {
@@ -461,5 +484,52 @@ class Setup extends Template
     public function getUpdateMBEConfigAjaxRoute()
     {
         return $this->fbeHelper->getUrl('fbeadmin/ajax/MBEUpdateInstalledConfig');
+    }
+
+    /**
+     * Get Store's Timezone
+     *
+     * @return string
+     */
+    public function getStoreTimezone(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::TIMEZONE_CONFIG_PATH,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Get Store's Country Code
+     *
+     * @return string
+     */
+    public function getStoreCountryCode(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::COUNTRY_CONFIG_PATH,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Get Store's Base Url
+     *
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getStoreBaseUrl(): string
+    {
+        return $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
+    }
+
+    /**
+     * Get the extension version
+     *
+     * @return string
+     */
+    public function getExtensionVersion(): string
+    {
+        return $this->systemConfig->getModuleVersion();
     }
 }

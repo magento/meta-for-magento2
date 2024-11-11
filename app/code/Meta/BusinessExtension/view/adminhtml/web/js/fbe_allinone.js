@@ -34,7 +34,10 @@ const ajaxify = function (url) {
 const getAndEncodeExternalClientMetadata = function () {
     const metaData = {
         customer_token: window.facebookBusinessExtensionConfig.customApiKey,
-        commerce_partner_seller_platform_type: window.facebookBusinessExtensionConfig.commerce_partner_seller_platform_type
+        commerce_partner_seller_platform_type: window.facebookBusinessExtensionConfig.commerce_partner_seller_platform_type,
+        shop_domain: window.facebookBusinessExtensionConfig.shopDomain,
+        country_code: window.facebookBusinessExtensionConfig.countryCode,
+        client_version: window.facebookBusinessExtensionConfig.extensionVersion
     };
     return encodeURIComponent(JSON.stringify(metaData));
 }

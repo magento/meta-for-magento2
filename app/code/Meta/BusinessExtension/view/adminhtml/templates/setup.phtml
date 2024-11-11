@@ -63,7 +63,10 @@
             setPixelId: '<?= $escaper->escapeHtml($block->getPixelAjaxRoute()) ?>',
             setProfilesData: '<?= $escaper->escapeHtml($block->getProfilesAjaxRoute()) ?>',
             storeId: '<?= $escaper->escapeHtml($block->getSelectedStoreId()) ?>',
-            timeZone: 'America/Los_Angeles'
+            timeZone: '<?= $escaper->escapeHtml($block->getStoreTimezone()) ?>',
+            countryCode: '<?= $escaper->escapeHtml($block->getStoreCountryCode()) ?>',
+            shopDomain: '<?= $escaper->escapeHtml($block->getStoreBaseUrl()) ?>',
+            extensionVersion: '<?= $escaper->escapeHtml($block->getExtensionVersion()) ?>',
         }
     </script>
     <?php if ($block->isCommerceExtensionEnabled() && $block->isFBEInstalled($block->getSelectedStoreId())): ?>

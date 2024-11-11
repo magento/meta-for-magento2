@@ -3,8 +3,10 @@
 namespace Meta\BusinessExtension\Test\Unit\Block\Adminhtml;
 
 use Magento\Backend\Block\Template\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 use Meta\BusinessExtension\Block\Adminhtml\Setup;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
@@ -35,6 +37,10 @@ class SetupTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $storeManager = $this->getMockBuilder(StoreManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $requestInterface = $this->getMockBuilder(RequestInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -47,12 +53,16 @@ class SetupTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $apiKeyService->method('upsertApiKey')
-            ->willReturn($apiKey);
-
         $adobeCloudConfigInterface = $this->getMockBuilder(AdobeCloudConfigInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $scopeConfig = $this->getMockBuilder(ScopeConfigInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $apiKeyService->method('upsertApiKey')
+            ->willReturn($apiKey);
 
         $setup = new Setup(
             $context,
@@ -60,9 +70,11 @@ class SetupTest extends TestCase
             $fbeHelper,
             $systemConfig,
             $storeRepo,
+            $storeManager,
             $commerceExtensionHelper,
             $apiKeyService,
             $adobeCloudConfigInterface,
+            $scopeConfig,
             []
         );
 
