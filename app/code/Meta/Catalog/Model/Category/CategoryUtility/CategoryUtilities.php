@@ -34,6 +34,8 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
+use Magento\Framework\EntityManager\MetadataPool;
+use Magento\Catalog\Api\Data\CategoryInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -94,6 +96,11 @@ class CategoryUtilities
     private ResourceConnection $resourceConnection;
 
     /**
+     * @var MetadataPool
+     */
+    private MetadataPool $metadataPool;
+
+    /**
      * Constructor
      * @param ProductCollectionFactory $productCollectionFactory
      * @param CategoryCollectionFactory $categoryCollection
@@ -104,6 +111,7 @@ class CategoryUtilities
      * @param CategoryImageService $imageService
      * @param EavConfig $eavConfig
      * @param ResourceConnection $resourceConnection
+     * @param MetadataPool $metadataPool
      */
     public function __construct(
         ProductCollectionFactory    $productCollectionFactory,
@@ -114,7 +122,8 @@ class CategoryUtilities
         ProductIdentifier           $productIdentifier,
         CategoryImageService        $imageService,
         EavConfig                   $eavConfig,
-        ResourceConnection          $resourceConnection
+        ResourceConnection          $resourceConnection,
+        MetadataPool                $metadataPool
     ) {
         $this->categoryCollection = $categoryCollection;
         $this->categoryRepository = $categoryRepository;
@@ -125,6 +134,7 @@ class CategoryUtilities
         $this->imageService = $imageService;
         $this->eavConfig = $eavConfig;
         $this->resourceConnection = $resourceConnection;
+        $this->metadataPool = $metadataPool;
     }
     /**
      * Fetch products for product category
@@ -382,13 +392,16 @@ class CategoryUtilities
                 $categoryEntityVarcharTable = $this->resourceConnection->getTableName(
                     'catalog_category_entity_varchar'
                 );
+                
+                $categoryLinkField = $this->metadataPool->getMetadata(CategoryInterface::class)->getLinkField();
+
                 if ($category->getData(SystemConfig::META_PRODUCT_SET_ID) == null) {
                     $this->resourceConnection->getConnection()->insert(
                         $categoryEntityVarcharTable,
                         [
                             'attribute_id' => $productSetAttributeId,
                             'store_id' => $storeId,
-                            'entity_id' => $category->getId(),
+                            $categoryLinkField => $category->getId(),
                             'value' => $setId
                         ]
                     );
@@ -398,13 +411,13 @@ class CategoryUtilities
                         [
                             'attribute_id' => $productSetAttributeId,
                             'store_id' => $storeId,
-                            'entity_id' => $category->getId(),
+                            $categoryLinkField => $category->getId(),
                             'value' => $setId
                         ],
                         [
                             'attribute_id = ?' => $productSetAttributeId,
                             'store_id = ?' => $storeId,
-                            'entity_id = ?' => $category->getId(),
+                            sprintf('%s = ?', $categoryLinkField) => $category->getId()
                         ]
                     );
                 }
