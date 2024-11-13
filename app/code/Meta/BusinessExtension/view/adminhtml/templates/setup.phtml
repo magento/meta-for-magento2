@@ -1,8 +1,11 @@
 <?php
 /**
  * @var Meta\BusinessExtension\Block\Adminhtml\Setup $block
- * @var $escaper \Magento\Framework\Escaper
+ * @var $escaper Escaper
  */
+
+use Magento\Framework\Escaper;
+
 ?>
 
 <script>
@@ -35,23 +38,23 @@
             cleanConfigCacheUrl: '<?= $escaper->escapeHtml($block->getCleanCacheAjaxRoute()) ?>',
             commerce_partner_seller_platform_type:
                 '<?= $escaper->escapeHtml($block->getCommercePartnerSellerPlatformType()) ?>',
+            currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>',
             repairRepairCommercePartnerIntegrationUrl: '<?=
                 $escaper->escapeHtml($block->getRepairRepairCommercePartnerIntegrationAjaxRoute())
-            ?>',
-            currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>',
+                ?>',
             customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>',
             debug: true,
             deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>',
             updateInstalledMBEConfig: '<?= $escaper->escapeHtml($block->getUpdateMBEConfigAjaxRoute()) ?>',
             externalBusinessId: '<?=
                 $escaper->escapeHtml($block->getExternalBusinessId($block->getSelectedStoreId()))
-            ?>',
+                ?>',
             fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>',
             fbeInstallsSaveUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>',
             fbeLoginUrl: '<?= $escaper->escapeHtml($block->getSplashPageURL()) ?>',
             installed: '<?=
                 $escaper->escapeHtml($block->isFBEInstalled($block->getSelectedStoreId())) ? 'true' : 'false'
-            ?>',
+                ?>',
             isCommerceExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
             pixelId: '<?= $escaper->escapeHtml($block->fetchPixelId($block->getSelectedStoreId())) ?>',
             popupOrigin: '<?= $escaper->escapeHtml($block->getPopupOrigin()) ?>',

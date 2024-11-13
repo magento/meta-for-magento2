@@ -18,7 +18,7 @@ const jQuery = (function (jQuery) {
         return jQuery;
     } else {
         console.error('window.jQuery is not valid or loaded, please check your magento 2 installation!');
-        // if jQuery is not there, we return a dummy jQuery obejct with ajax,
+        // if jQuery is not there, we return a dummy jQuery object with ajax,
         // so it will not break our following code
         return {
             ajax: function () {
@@ -61,7 +61,8 @@ jQuery(document).ready(function () {
             return {installed: this.props.installed};
         },
 
-        bindMessageEvents: function bindMessageEvents() {
+        bindMessageEvents: function bindMessageEvents()
+        {
             const _this = this;
 
             window.addEventListener('message', function (event) {
@@ -76,7 +77,8 @@ jQuery(document).ready(function () {
                 }
             }, false);
         },
-        handleMessage: function handleMessage(message) {
+        handleMessage: function handleMessage(message)
+        {
             const _this = this;
 
             // "FBE Iframe" uses the 'action' field in its messages.
@@ -122,7 +124,8 @@ jQuery(document).ready(function () {
                 document.getElementById('fbe-iframe').height = height;
             }
         },
-        savePixelId: function savePixelId(pixelId) {
+        savePixelId: function savePixelId(pixelId)
+        {
             const _this = this;
             if (!pixelId) {
                 console.error('Meta Business Extension Error: got no pixel_id');
@@ -136,9 +139,10 @@ jQuery(document).ready(function () {
                     pixelId: pixelId,
                     storeId: window.facebookBusinessExtensionConfig.storeId,
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     const response = data;
-                    let msg = '';
+                    let msg;
                     if (response.success) {
                         msg = "The Meta Pixel with ID: " + response.pixelId + " is now installed on your website.";
                     } else {
@@ -151,7 +155,8 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        saveAccessToken: function saveAccessToken(accessToken) {
+        saveAccessToken: function saveAccessToken(accessToken)
+        {
             const _this = this;
             if (!accessToken) {
                 console.error('Meta Business Extension Error: got no access token');
@@ -164,7 +169,8 @@ jQuery(document).ready(function () {
                 data: ajaxParam({
                     accessToken: accessToken,
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     _this.consoleLog('Access token saved successfully');
                 },
                 error: function () {
@@ -172,7 +178,8 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        saveProfilesData: function saveProfilesData(profiles) {
+        saveProfilesData: function saveProfilesData(profiles)
+        {
             const _this = this;
             if (!profiles) {
                 console.error('Meta Business Extension Error: got no profiles data');
@@ -185,7 +192,8 @@ jQuery(document).ready(function () {
                 data: ajaxParam({
                     profiles: JSON.stringify(profiles),
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     _this.consoleLog('set profiles data ' + data.profiles);
                 },
                 error: function () {
@@ -193,7 +201,8 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        saveAAMSettings: function saveAAMSettings(pixelId) {
+        saveAAMSettings: function saveAAMSettings(pixelId)
+        {
             const _this = this;
             jQuery.ajax({
                 'type': 'post',
@@ -202,7 +211,8 @@ jQuery(document).ready(function () {
                 data: ajaxParam({
                     pixelId: pixelId,
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     if (data.success) {
                         _this.consoleLog('AAM settings successfully saved ' + data.settings);
                     } else {
@@ -214,7 +224,8 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        saveInstalledFeatures: function saveInstalledFeatures(installedFeatures) {
+        saveInstalledFeatures: function saveInstalledFeatures(installedFeatures)
+        {
             const _this = this;
             if (!installedFeatures) {
                 console.error('Meta Business Extension Error: got no installed_features data');
@@ -227,7 +238,8 @@ jQuery(document).ready(function () {
                 data: ajaxParam({
                     installed_features: JSON.stringify(installedFeatures),
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     if (data.success) {
                         _this.consoleLog('Saved installed_features data', data);
                     } else {
@@ -239,14 +251,16 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        cleanConfigCache: function cleanConfigCache() {
+        cleanConfigCache: function cleanConfigCache()
+        {
             const _this = this;
             jQuery.ajax({
                 type: 'post',
                 url: ajaxify(window.facebookBusinessExtensionConfig.cleanConfigCacheUrl),
                 async: false,
                 data: ajaxParam({}),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     if (data.success) {
                         _this.consoleLog('Config cache successfully cleaned');
                     }
@@ -256,7 +270,8 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        saveConfig: function saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId) {
+        saveConfig: function saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId)
+        {
             const _this = this;
             jQuery.ajax({
                 type: 'post',
@@ -270,7 +285,8 @@ jQuery(document).ready(function () {
                     commercePartnerIntegrationId: commercePartnerIntegrationId,
                     storeId: window.facebookBusinessExtensionConfig.storeId,
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     if (data.success) {
                         _this.consoleLog('Config successfully saved');
                     }
@@ -280,7 +296,8 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        postFBEOnboardingSync: function postFBEOnboardingSync() {
+        postFBEOnboardingSync: function postFBEOnboardingSync()
+        {
             const _this = this;
             jQuery.ajax({
                 type: 'post',
@@ -289,7 +306,8 @@ jQuery(document).ready(function () {
                 data: ajaxParam({
                     storeId: window.facebookBusinessExtensionConfig.storeId,
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
                     if (data.success) {
                         _this.consoleLog('Post FBE Onboarding sync completed');
                     }
@@ -299,7 +317,8 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        deleteFBAssets: function deleteFBAssets() {
+        deleteFBAssets: function deleteFBAssets()
+        {
             const _this = this;
             jQuery.ajax({
                 type: 'delete',
@@ -307,8 +326,9 @@ jQuery(document).ready(function () {
                 data: ajaxParam({
                     storeId: window.facebookBusinessExtensionConfig.storeId,
                 }),
-                success: function onSuccess(data, _textStatus, _jqXHR) {
-                    let msg = '';
+                success: function onSuccess(data, _textStatus, _jqXHR)
+                {
+                    let msg;
                     if (data.success) {
                         msg = data.message;
                     } else {
@@ -323,15 +343,18 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        componentDidMount: function componentDidMount() {
+        componentDidMount: function componentDidMount()
+        {
             this.bindMessageEvents();
         },
-        consoleLog: function consoleLog(message) {
+        consoleLog: function consoleLog(message)
+        {
             if (window.facebookBusinessExtensionConfig.debug) {
                 console.log(message);
             }
         },
-        queryParams: function queryParams() {
+        queryParams: function queryParams()
+        {
             return 'app_id=' + window.facebookBusinessExtensionConfig.appId +
                 '&timezone=' + window.facebookBusinessExtensionConfig.timeZone +
                 '&external_business_id=' + window.facebookBusinessExtensionConfig.externalBusinessId +
@@ -343,7 +366,8 @@ jQuery(document).ready(function () {
                 '&external_client_metadata=' + getAndEncodeExternalClientMetadata();
 
         },
-        render: function render() {
+        render: function render()
+        {
             const _this = this;
             const isNewSplashPage = window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled;
             try {
@@ -3731,7 +3755,7 @@ jQuery(document).ready(function () {
                     controls: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
                     coords: null,
                     crossOrigin: null,
-                    data: null, // For `<object />` acts as `src`.
+                    data: null, // For `<object></object>` acts as `src`.
                     dateTime: MUST_USE_ATTRIBUTE,
                     'default': HAS_BOOLEAN_VALUE,
                     defer: HAS_BOOLEAN_VALUE,
@@ -9790,7 +9814,7 @@ jQuery(document).ready(function () {
             ReactElement.createFactory = function (type) {
                 var factory = ReactElement.createElement.bind(null, type);
                 // Expose the type on the factory and the prototype so that it can be
-                // easily accessed on elements. E.g. `<Foo />.type === Foo`.
+                // easily accessed on elements. E.g. `<Foo></Foo>.type === Foo`.
                 // This should not be named `constructor` since this may not be the function
                 // that created the element, and it may not even be a constructor.
                 // Legacy hook TODO: Warn if this is accessed
@@ -12896,7 +12920,7 @@ jQuery(document).ready(function () {
              *     render: function() {
              *       return (
              *         <div onClick={this.handleClick}>
-             *           <CustomComponent ref="custom" />
+             *           <CustomComponent ref="custom"></CustomComponent>
              *         </div>
              *       );
              *     },
