@@ -362,6 +362,26 @@ class Setup extends Template
     }
 
     /**
+     * Get client token
+     *
+     * @return string
+     */
+    public function getClientToken()
+    {
+        return '52dcd04d6c7ed113121b5eb4be23b4a7';
+    }
+
+    /**
+     * Get access token
+     *
+     * @return string
+     */
+    public function getAccessClientToken()
+    {
+        return $this->getAppId().'|'.$this->getClientToken();
+    }
+
+    /**
      * Get stores that are selectable (not Admin).
      *
      * @return StoreInterface[]

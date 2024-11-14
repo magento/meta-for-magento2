@@ -32,11 +32,13 @@ const ajaxify = function (url) {
 
 const getAndEncodeExternalClientMetadata = function () {
     const metaData = {
+        admin_url: window.facebookBusinessExtensionConfig.adminUrl,
         customer_token: window.facebookBusinessExtensionConfig.customApiKey,
         commerce_partner_seller_platform_type: window.facebookBusinessExtensionConfig.commerce_partner_seller_platform_type,
         shop_domain: window.facebookBusinessExtensionConfig.shopDomain,
         country_code: window.facebookBusinessExtensionConfig.countryCode,
-        client_version: window.facebookBusinessExtensionConfig.extensionVersion
+        client_version: window.facebookBusinessExtensionConfig.extensionVersion,
+        platform_store_id: window.facebookBusinessExtensionConfig.storeId,
     };
     return encodeURIComponent(JSON.stringify(metaData));
 }
@@ -355,6 +357,7 @@ jQuery(document).ready(function () {
         queryParams: function queryParams()
         {
             return 'app_id=' + window.facebookBusinessExtensionConfig.appId +
+                '&access_client_token=' + window.facebookBusinessExtensionConfig.accessClientToken +
                 '&timezone=' + window.facebookBusinessExtensionConfig.timeZone +
                 '&external_business_id=' + window.facebookBusinessExtensionConfig.externalBusinessId +
                 '&installed=' + this.state.installed +
