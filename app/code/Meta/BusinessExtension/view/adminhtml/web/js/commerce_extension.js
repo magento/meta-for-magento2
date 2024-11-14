@@ -22,13 +22,15 @@ require(['jquery'], function (jQuery) {
         return params;
     };
 
-    function parseURL(url) {
+    function parseURL(url)
+    {
         const parser = document.createElement('a');
         parser.href = url;
         return parser;
     }
 
-    function urlFromSameDomain(url1, url2) {
+    function urlFromSameDomain(url1, url2)
+    {
         const u1 = parseURL(url1);
         const u2 = parseURL(url2);
         const u1host = u1.host.replace('web.', 'www.');
@@ -36,7 +38,8 @@ require(['jquery'], function (jQuery) {
         return u1.protocol === u2.protocol && u1host === u2host;
     }
 
-    function deleteFBAssetsAndReloadPage() {
+    function deleteFBAssetsAndReloadPage()
+    {
         const _this = this;
         jQuery.ajax({
             type: 'delete',
@@ -44,7 +47,8 @@ require(['jquery'], function (jQuery) {
             data: ajaxParam({
                 storeId: window.facebookBusinessExtensionConfig.storeId,
             }),
-            success: function onSuccess(data, _textStatus, _jqXHR) {
+            success: function onSuccess(data, _textStatus, _jqXHR)
+            {
                 let msg = '';
                 if (data.success) {
                     msg = data.message;
@@ -59,7 +63,8 @@ require(['jquery'], function (jQuery) {
         });
     }
 
-    function updateMBEConfigAndReloadPage(triggerPostOnboarding) {
+    function updateMBEConfigAndReloadPage(triggerPostOnboarding)
+    {
         jQuery.ajax({
             type: 'post',
             url: ajaxify(window.facebookBusinessExtensionConfig.updateInstalledMBEConfig),
@@ -67,8 +72,9 @@ require(['jquery'], function (jQuery) {
                 storeId: window.facebookBusinessExtensionConfig.storeId,
                 triggerPostOnboarding: triggerPostOnboarding
             }),
-            success: function onSuccess(data, _textStatus, _jqXHR) {
-                let msg = '';
+            success: function onSuccess(data, _textStatus, _jqXHR)
+            {
+                let msg;
                 if (data.success) {
                     msg = data.message;
                     console.log("Update success");
@@ -83,12 +89,14 @@ require(['jquery'], function (jQuery) {
         });
     }
 
-    function cleanConfigCacheAndReloadPage() {
+    function cleanConfigCacheAndReloadPage()
+    {
         jQuery.ajax({
             type: 'post',
             url: ajaxify(window.facebookBusinessExtensionConfig.cleanConfigCacheUrl),
             data: ajaxParam({}),
-            success: function onSuccess(data, _textStatus, _jqXHR) {
+            success: function onSuccess(data, _textStatus, _jqXHR)
+            {
                 if (data.success) {
                     window.location.reload();
                 }
@@ -99,7 +107,8 @@ require(['jquery'], function (jQuery) {
         });
     }
 
-    function handleCommerceExtensionDeletion(message) {
+    function handleCommerceExtensionDeletion(message)
+    {
         const success = message.success;
         if (success) {
             const messageEvent = message.event;
@@ -110,7 +119,8 @@ require(['jquery'], function (jQuery) {
         }
     }
 
-    function handleResizeEvent(message) {
+    function handleResizeEvent(message)
+    {
         if (message.event !== 'CommerceExtension::RESIZE') {
             return;
         }
@@ -119,7 +129,8 @@ require(['jquery'], function (jQuery) {
         document.getElementById('commerce-extension-iframe').height = height;
     }
 
-    function handleUpdateMBEConfigEvent(message) {
+    function handleUpdateMBEConfigEvent(message)
+    {
         if (message.event === 'CommerceExtension::UPDATE_AND_COMPLETE') {
             updateMBEConfigAndReloadPage(true);
         }
@@ -130,7 +141,8 @@ require(['jquery'], function (jQuery) {
     }
 
 
-    function listenForCommerceExtensionMessage(event) {
+    function listenForCommerceExtensionMessage(event)
+    {
         const origin = event.origin || event.originalEvent.origin;
         const commerceExtensionOrigin = document.getElementById("commerce-extension-iframe").src;
         if (urlFromSameDomain(origin, new URL(commerceExtensionOrigin).origin)) {
@@ -143,14 +155,16 @@ require(['jquery'], function (jQuery) {
         }
     }
 
-    function repairCommercePartnerIntegration() {
+    function repairCommercePartnerIntegration()
+    {
         jQuery.ajax({
             type: 'post',
             url: ajaxify(window.facebookBusinessExtensionConfig.repairRepairCommercePartnerIntegrationUrl),
             data: ajaxParam({
                 storeId: window.facebookBusinessExtensionConfig.storeId,
             }),
-            success: function onSuccess(_data) {
+            success: function onSuccess(_data)
+            {
             },
             error: function () {
                 console.error('There was error repairing the Meta Commerce Partner Integration');
