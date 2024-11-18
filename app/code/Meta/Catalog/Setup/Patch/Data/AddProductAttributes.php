@@ -109,7 +109,8 @@ class AddProductAttributes implements DataPatchInterface, PatchRevertableInterfa
         foreach (array_keys($productAttributes) as $attributeCode) {
             $eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
         }
-
+        //delete the patch entry from patch_list table
+        $this->moduleDataSetup->deleteTableRow('patch_list', 'patch_name', __CLASS__);
         $this->moduleDataSetup->getConnection()->endSetup();
     }
 }
