@@ -74,6 +74,12 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/meta/:externalBusinessId/generateDiscountCoupon" method="POST">
+        <service class="Meta\Sales\Api\DiscountCouponCodeApiInterface" method="generateCouponCode"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
     <route url="/V1/meta/:externalBusinessId/deleteDiscount" method="POST">
         <service class="Meta\Sales\Api\DiscountDeleteApiInterface" method="deleteDiscount"/>
         <resources>

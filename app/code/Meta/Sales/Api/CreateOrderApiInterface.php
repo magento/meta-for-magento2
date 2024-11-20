@@ -35,20 +35,20 @@ interface CreateOrderApiInterface
     /**
      * Create order
      *
-     * @param string $cartId
-     * @param string $orderId
-     * @param float $orderTotal
-     * @param float $taxTotal
-     * @param string $email
-     * @param string $firstName
-     * @param string $lastName
-     * @param CreateOrderApiProductItemInterface[] $productItems
-     * @param CreateOrderApiShipmentDetailsInterface $shipmentDetails
-     * @param AddressInterface $billingAddress
-     * @param string|null $channel
-     * @param bool $buyerRemarketingOptIn
-     * @param bool $createInvoice
-     * @return OrderInterface
+     * @param  string                                 $cartId
+     * @param  string                                 $orderId
+     * @param  float                                  $orderTotal
+     * @param  float                                  $taxTotal
+     * @param  string                                 $email
+     * @param  string                                 $firstName
+     * @param  string                                 $lastName
+     * @param  CreateOrderApiProductItemInterface[]   $productItems
+     * @param  CreateOrderApiShipmentDetailsInterface $shipmentDetails
+     * @param  AddressInterface                       $billingAddress
+     * @param  string                                 $channel
+     * @param  bool                                   $buyerRemarketingOptIn
+     * @param  bool                                   $createInvoice
+     * @return \Magento\Sales\Api\Data\OrderInterface
      */
     public function createOrder(
         string                                 $cartId,

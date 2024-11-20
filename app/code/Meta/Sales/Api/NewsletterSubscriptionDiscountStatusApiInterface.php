@@ -26,8 +26,8 @@ interface NewsletterSubscriptionDiscountStatusApiInterface
      *
      * / Split existence check into a separate API
      *
-     * @param string $externalBusinessId
-     * @param string $email
+     * @param  string $externalBusinessId
+     * @param  string $email
      * @return bool
      */
     public function checkSubscriptionStatus(string $externalBusinessId, string $email): bool;

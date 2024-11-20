@@ -10,7 +10,7 @@
         <?php foreach ($block->getSelectableStores() as $store): ?>
             <option
                     value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
-                <?php if ($store['store_id'] === $block->getSelectedStoreId()): ?>
+                <?php if ((int)$store['store_id'] === $block->getSelectedStoreId()): ?>
                     data-selected="true"
                     selected="selected"
                 <?php endif; ?>

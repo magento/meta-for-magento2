@@ -38,7 +38,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * Setter
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return void
      */
     public function setExternalBusinessId(string $externalBusinessId): void
@@ -59,7 +59,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * IsOrderSyncEnabled Setter
      *
-     * @param bool $val
+     * @param  bool $val
      * @return void
      */
     public function setIsOrderSyncEnabled(bool $val): void
@@ -80,7 +80,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * CatalogSyncEnabled Setter
      *
-     * @param bool $val
+     * @param  bool $val
      * @return void
      */
     public function setIsCatalogSyncEnabled(bool $val): void
@@ -101,12 +101,33 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * IsPromotionsSyncEnabled Setter
      *
-     * @param bool $val
+     * @param  bool $val
      * @return void
      */
     public function setIsPromotionsSyncEnabled(bool $val): void
     {
         $this->setData('isPromotionsSyncEnabled', $val);
+    }
+
+    /**
+     * IsActiveExtension Getter
+     *
+     * @return bool
+     */
+    public function isActiveExtension(): bool
+    {
+        return $this->_getData('isActiveExtension');
+    }
+
+    /**
+     * IsActiveExtension Setter
+     *
+     * @param  bool $val
+     * @return void
+     */
+    public function setIsActiveExtension(bool $val): void
+    {
+        $this->setData('isActiveExtension', $val);
     }
 
     /**
@@ -122,7 +143,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * ExternalBusinessId Setter
      *
-     * @param ?string $val
+     * @param  ?string $val
      * @return void
      */
     public function setProductIdentifierAttr(?string $val): void
@@ -143,7 +164,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * ExternalBusinessId Setter
      *
-     * @param ?string $val
+     * @param  ?string $val
      * @return void
      */
     public function setOutOfStockThreshold(?string $val): void
@@ -164,7 +185,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * ExternalBusinessId Setter
      *
-     * @param ?string $val
+     * @param  ?string $val
      * @return void
      */
     public function setFeedId(?string $val): void
@@ -185,7 +206,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * ExternalBusinessId Setter
      *
-     * @param ?string $val
+     * @param  ?string $val
      * @return void
      */
     public function setInstalledMetaExtensionVersion(?string $val): void
@@ -206,7 +227,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * GraphApiVersion Setter
      *
-     * @param ?string $val
+     * @param  ?string $val
      * @return void
      */
     public function setGraphApiVersion(?string $val): void
@@ -227,7 +248,7 @@ class CoreConfig extends DataObject implements CoreConfigInterface
     /**
      * MagentoVersion Setter
      *
-     * @param ?string $val
+     * @param  ?string $val
      * @return void
      */
     public function setMagentoVersion(?string $val): void

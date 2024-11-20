@@ -22,7 +22,7 @@ namespace Meta\Catalog\Model\Product\Feed\Builder;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Catalog\Model\ResourceModel\Eav\AttributeFactory;
 use Magento\Catalog\Setup\CategorySetup;
 use Meta\BusinessExtension\Helper\FBEHelper;
 
@@ -35,18 +35,18 @@ class AdditionalAttributes
     private $fbeHelper;
 
     /**
-     * @var Attribute
+     * @var AttributeFactory
      */
     private $attributeFactory;
 
     /**
      * Constructor
      *
-     * @param Attribute $attributeFactory
+     * @param AttributeFactory $attributeFactory
      * @param FBEHelper $fbeHelper
      */
     public function __construct(
-        Attribute       $attributeFactory,
+        AttributeFactory $attributeFactory,
         FBEHelper       $fbeHelper
     ) {
         $this->fbeHelper = $fbeHelper;
@@ -137,6 +137,9 @@ class AdditionalAttributes
 
         if (is_string($attribute_data)) {
             $text = $product->getAttributeText($attribute);
+            if (is_array($text)) {
+                return implode(',', $text);
+            }
             return $text ?: $attribute_data;
         }
         return $attribute_data;
@@ -183,7 +186,7 @@ class AdditionalAttributes
     private function getAttributeList(callable $attributeFilterFn): array
     {
         $attributes = [];
-        $attributeList = $this->attributeFactory->getCollection();
+        $attributeList = $this->attributeFactory->create()->getCollection();
         if ($attributeList) {
             if ($attributeFilterFn) {
                 $attributeFilterFn($attributeList);

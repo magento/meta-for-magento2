@@ -52,7 +52,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     /**
      * Set magento order id
      *
-     * @param int $orderId
+     * @param  int $orderId
      * @return $this|FacebookOrder
      */
     public function setMagentoOrderId($orderId)
@@ -74,7 +74,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     /**
      * Set facebook order id
      *
-     * @param mixed $orderId
+     * @param  mixed $orderId
      * @return $this|FacebookOrder
      */
     public function setFacebookOrderId($orderId)
@@ -96,7 +96,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     /**
      * Set channel
      *
-     * @param mixed $channel
+     * @param  mixed $channel
      * @return $this|FacebookOrder
      */
     public function setChannel($channel)
@@ -118,8 +118,8 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     /**
      * Update synced shipment metadata
      *
-     * @param mixed $magentoShipmentId
-     * @param array $trackingInfo
+     * @param  mixed $magentoShipmentId
+     * @param  array $trackingInfo
      * @return $this
      */
     public function updateSyncedShipment($magentoShipmentId, $trackingInfo)
@@ -144,7 +144,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     /**
      * Set extra data
      *
-     * @param array $extraData
+     * @param  array $extraData
      * @return $this|FacebookOrder
      */
     public function setExtraData(array $extraData)
@@ -156,9 +156,9 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     /**
      * Determine if the given shipment's tracking is not yet synced
      *
-     * @param Order $order
-     * @param mixed $magentoShipmentId
-     * @param array $trackingInfo
+     * @param  Order $order
+     * @param  mixed $magentoShipmentId
+     * @param  array $trackingInfo
      * @return bool
      */
     public function isSyncedShipmentOutOfSync($order, $magentoShipmentId, $trackingInfo): bool
@@ -175,7 +175,7 @@ class FacebookOrder extends AbstractModel implements FacebookOrderInterface
     /**
      * Encoding the given tracking info for storage as metadata on a synced Shipment
      *
-     * @param array $trackingInfo
+     * @param  array $trackingInfo
      * @return string
      */
     private function encodeTrackingInfo($trackingInfo): string

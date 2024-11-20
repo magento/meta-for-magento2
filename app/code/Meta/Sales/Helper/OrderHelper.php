@@ -27,6 +27,7 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
+use Magento\Store\Model\StoreManagerInterface;
 
 class OrderHelper
 {
@@ -46,20 +47,28 @@ class OrderHelper
     private CollectionFactory $collectionFactory;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private StoreManagerInterface $storeManager;
+
+    /**
      * Constructor
      *
      * @param OrderExtensionFactory $orderExtensionFactory
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      * @param CollectionFactory $collectionFactory
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         OrderExtensionFactory         $orderExtensionFactory,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
-        CollectionFactory             $collectionFactory
+        CollectionFactory             $collectionFactory,
+        StoreManagerInterface         $storeManager
     ) {
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->facebookOrderFactory = $facebookOrderFactory;
         $this->collectionFactory = $collectionFactory;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -70,7 +79,9 @@ class OrderHelper
      */
     public function loadFacebookOrderFromMagentoId($magentoOrderId): FacebookOrderInterface
     {
-        /** @var FacebookOrderInterface $facebookOrder */
+        /**
+         * @var FacebookOrderInterface $facebookOrder
+         */
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($magentoOrderId, 'magento_order_id');
 
@@ -111,7 +122,7 @@ class OrderHelper
     /**
      * Get storeId from externalBusinessId
      *
-     * @param  string $externalBusinessId
+     * @param string $externalBusinessId
      * @return string
      * @throws LocalizedException
      */
@@ -119,9 +130,11 @@ class OrderHelper
     {
         $installedConfigs = $this->getMBEInstalledConfigsByExternalBusinessId($externalBusinessId);
         if (empty($installedConfigs)) {
-            throw new LocalizedException(__(
-                'No store id was found for external_business_id: '.$externalBusinessId
-            ));
+            throw new LocalizedException(
+                __(
+                    'No store id was found for external_business_id: ' . $externalBusinessId
+                )
+            );
         }
         return $installedConfigs[0]->getScopeId();
     }
@@ -147,6 +160,22 @@ class OrderHelper
             return $collection->getItems();
         } catch (\Exception $e) {
             return [];
+        }
+    }
+
+    /**
+     * Get website ID from store ID
+     *
+     * @param int $storeId
+     * @return int
+     */
+    public function getWebsiteIdFromStoreId(int $storeId): int
+    {
+        try {
+            $store = $this->storeManager->getStore($storeId);
+            return (int)$store->getWebsiteId();
+        } catch (\Exception $e) {
+            throw new LocalizedException(__("Unable to find website for store ID: %1", $storeId));
         }
     }
 }

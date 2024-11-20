@@ -26,8 +26,8 @@ interface DiscountRuleApiInterface
     /**
      * Create a cart rule
      *
-     * @param string $externalBusinessId
-     * @param RuleInterface $rule
+     * @param  string        $externalBusinessId
+     * @param  RuleInterface $rule
      * @return string
      */
     public function createRule(string $externalBusinessId, RuleInterface $rule): string;

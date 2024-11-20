@@ -1,6 +1,7 @@
 <?php
 /**
  * @var \Meta\Sales\Block\Adminhtml\Order\View\Tab\Facebook $block
+ * @var $escaper \Magento\Framework\Escaper
  */
 
 $optInFlag = $block->isEmailRemarketingAllowedForOrder() ? 'Yes' : 'No';
@@ -9,20 +10,20 @@ $optInFlag = $block->isEmailRemarketingAllowedForOrder() ? 'Yes' : 'No';
 
 <section class="admin__page-section order-facebook">
     <div class="admin__page-section-title">
-        <span class="title"><?= $block->escapeHtml(__('Facebook & Instagram Details')) ?></span>
+        <span class="title"><?= $escaper->escapeHtml(__('Facebook & Instagram Details')) ?></span>
     </div>
     <div class="admin__page-section-content">
         <div class="admin__page-section-item order-facebook-details">
             <address class="admin__page-section-item-content">
-                <p><b>Magento Order ID</b>: <?= $block->escapeHtml($block->getOrder()->getIncrementId()) ?></p>
-                <p><b>Meta Order ID</b>: <?= $block->escapeHtml(
+                <p><b>Magento Order ID</b>: <?= $escaper->escapeHtml($block->getOrder()->getIncrementId()) ?></p>
+                <p><b>Meta Order ID</b>: <?= $escaper->escapeHtml(
                     $block->getOrder()->getExtensionAttributes()->getFacebookOrderId()
                 ) ?></p>
-                <p><b>Channel</b>: <?= $block->escapeHtml(
+                <p><b>Channel</b>: <?= $escaper->escapeHtml(
                     $block->getOrder()->getExtensionAttributes()->getChannel()
                 ) ?></p>
-                <p><b>Email Marketing Allowed</b>: <?= $block->escapeHtml($optInFlag) ?></p>
-                <p><b><a href="<?= $block->escapeUrl(
+                <p><b>Email Marketing Allowed</b>: <?= $escaper->escapeHtml($optInFlag) ?></p>
+                <p><b><a href="<?= $escaper->escapeUrl(
                     $block->getOrderFacebookUrl()
                 ) ?>" target="_blank">View in Commerce Manager</a></b></p>
             </address>

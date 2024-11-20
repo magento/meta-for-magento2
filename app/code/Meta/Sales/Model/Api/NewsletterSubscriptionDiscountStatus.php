@@ -50,10 +50,10 @@ class NewsletterSubscriptionDiscountStatus implements NewsletterSubscriptionDisc
     /**
      * NewsletterSubscriptionDiscountStatus constructor.
      *
-     * @param SubscriberFactory $subscriberFactory
-     * @param OrderHelper $orderHelper
+     * @param SubscriberFactory     $subscriberFactory
+     * @param OrderHelper           $orderHelper
      * @param StoreManagerInterface $storeManager
-     * @param Authenticator $authenticator
+     * @param Authenticator         $authenticator
      */
     public function __construct(
         SubscriberFactory $subscriberFactory,
@@ -70,8 +70,8 @@ class NewsletterSubscriptionDiscountStatus implements NewsletterSubscriptionDisc
     /**
      * Check the email subscription status of a Magento buyer's email
      *
-     * @param string $externalBusinessId
-     * @param string $email
+     * @param  string $externalBusinessId
+     * @param  string $email
      * @return bool
      */
     public function checkSubscriptionStatus(string $externalBusinessId, string $email): bool

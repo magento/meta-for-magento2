@@ -63,6 +63,13 @@ class PaymentMethod extends AbstractMethod
     protected $_canRefund = true;
 
     /**
+     * Allow refunds
+     *
+     * @var bool
+     */
+    protected $_canRefundInvoicePartial = true;
+
+    /**
      * Allow voids
      *
      * @var bool

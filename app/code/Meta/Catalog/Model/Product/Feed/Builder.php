@@ -87,6 +87,7 @@ class Builder
 
     private const ATTR_UNSUPPORTED_PRODUCT_DATA = 'unsupported_product_data';
     private const ATTR_FEATURES = 'features';
+    private const CUSTOM_ATTR_PREFIX = 'custom_attribute_';
 
     private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
         '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
@@ -401,7 +402,7 @@ class Builder
         $description = html_entity_decode(preg_replace(
             '/<\s*style.+?<\s*\/\s*style.*?>/',
             '',
-            $description
+            $description ?? ''
         ));
         // phpcs:ignore
         $description = html_entity_decode(preg_replace('/<[^<]+?>/', '', $description));
@@ -438,7 +439,7 @@ class Builder
         $description = html_entity_decode(preg_replace(
             '/<\s*style.+?<\s*\/\s*style.*?>/',
             '',
-            $description
+            $description ?? ''
         ));
 
         return $this->trimAttribute(
@@ -476,7 +477,7 @@ class Builder
     private function getBrand(Product $product)
     {
         $brand = isset($this->attrMap[self::ATTR_BRAND])
-            ? $product->getData($this->attrMap[self::ATTR_BRAND])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_BRAND])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
         if (!$brand || $brand == '') {
             $brand = $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
@@ -585,7 +586,11 @@ class Builder
      */
     private function getStatus(Product $product)
     {
-        if ($product->getVisibility() == Visibility::VISIBILITY_NOT_VISIBLE) {
+        $parentProductVisibility = $product->getParentProductVisibility();
+
+        // if product is not visible, check for parent product visibility
+        if ($product->getVisibility() == Visibility::VISIBILITY_NOT_VISIBLE
+            && ($parentProductVisibility === null || $parentProductVisibility == Visibility::VISIBILITY_NOT_VISIBLE)) {
             return 'archived';
         }
 
@@ -608,7 +613,7 @@ class Builder
     {
         $ageGroup = '';
         if (isset($this->attrMap[self::ATTR_AGE_GROUP])) {
-            $ageGroup = $product->getData($this->attrMap[self::ATTR_AGE_GROUP]);
+            $ageGroup = $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_AGE_GROUP]);
         }
         if (empty($ageGroup)) {
             $ageGroup = $this->additionalAttributes->getCorrectText($product, self::ATTR_AGE_GROUP);
@@ -627,7 +632,7 @@ class Builder
     private function getGender(Product $product)
     {
         $gender = isset($this->attrMap[self::ATTR_GENDER])
-            ? $product->getData($this->attrMap[self::ATTR_GENDER])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_GENDER])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
         if (!$gender || $gender == '') {
             $gender = $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
@@ -669,7 +674,7 @@ class Builder
     private function getMaterial(Product $product)
     {
         $material = isset($this->attrMap[self::ATTR_MATERIAL])
-            ? $product->getData($this->attrMap[self::ATTR_MATERIAL])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_MATERIAL])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
         if (!$material && $material == '') {
             $material = $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
@@ -689,7 +694,7 @@ class Builder
     private function getPattern(Product $product)
     {
         $pattern = isset($this->attrMap[self::ATTR_PATTERN])
-            ? $product->getData($this->attrMap[self::ATTR_PATTERN])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_PATTERN])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
         if (!$pattern && $pattern == '') {
             $pattern = $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
@@ -731,7 +736,7 @@ class Builder
      */
     public function buildProductEntry(Product $product)
     {
-        $this->attrMap = $this->mappingConfig->getAttributeMapping();
+        $this->attrMap = $this->mappingConfig->getAttributeMapping($product->getStoreId());
         $product->setCustomerGroupId(self::NOT_LOGGED_IN_ID);
 
         $inventory = $this->getInventory($product);
@@ -792,10 +797,11 @@ class Builder
 
             $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
             foreach ($customAttributes as $customAttribute) {
-                if (in_array($customAttribute, array_keys($entry))) {
+                $customAttributeKey = self::CUSTOM_ATTR_PREFIX . $customAttribute;
+                if (in_array($customAttributeKey, array_keys($entry))) {
                     continue;
                 }
-                $entry[$customAttribute] =
+                $entry[$customAttributeKey] =
                     $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
             }
         }
@@ -957,10 +963,11 @@ class Builder
 
             $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
             foreach ($customAttributes as $customAttribute) {
-                if (in_array($customAttribute, $headerFields)) {
+                $customAttributeKey = self::CUSTOM_ATTR_PREFIX . $customAttribute;
+                if (in_array($customAttributeKey, $headerFields)) {
                     continue;
                 }
-                $headerFields[] = $customAttribute;
+                $headerFields[] = $customAttributeKey;
             }
         }
 

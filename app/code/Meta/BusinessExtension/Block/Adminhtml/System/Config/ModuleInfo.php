@@ -43,10 +43,10 @@ class ModuleInfo extends Field
     private $apiKeyService;
 
     /**
-     * @param Context $context
-     * @param SystemConfig $systemConfig
+     * @param Context       $context
+     * @param SystemConfig  $systemConfig
      * @param ApiKeyService $apiKeyService
-     * @param array $data
+     * @param array         $data
      */
     public function __construct(
         Context       $context,
@@ -62,7 +62,7 @@ class ModuleInfo extends Field
     /**
      * Remove scope label
      *
-     * @param AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -74,8 +74,8 @@ class ModuleInfo extends Field
     /**
      * Return element html
      *
-     * @param AbstractElement $element
-     * @return string
+     * @param                                         AbstractElement $element
+     * @return                                        string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -96,11 +96,50 @@ class ModuleInfo extends Field
     /**
      * Retrieve Store Id
      *
-     * @return mixed
+     * @return int|null
      */
-    private function getStoreId()
+    public function getStoreId(): ?int
     {
-        return $this->getRequest()->getParam('store');
+        $storeIdFromParam = $this->getRequest()->getParam('store');
+        return $this->systemConfig->castStoreIdAsInt($storeIdFromParam) ??
+            $this->systemConfig->getDefaultStoreId();
+    }
+
+    /**
+     * Retrieve Pixel ID
+     *
+     * @return string
+     */
+    public function getPixelId()
+    {
+        return $this->systemConfig->getPixelId($this->getStoreId());
+    }
+
+    /**
+     * Get Pixel Automatic Matching status
+     *
+     * @return string
+     */
+    public function getAutomaticMatchingStatus(): string
+    {
+        $settingsAsString = $this->systemConfig->getPixelAamSettings($this->getStoreId());
+        if ($settingsAsString) {
+            $settingsAsArray = json_decode($settingsAsString, true);
+            if ($settingsAsArray && isset($settingsAsArray['enableAutomaticMatching'])) {
+                return $settingsAsArray['enableAutomaticMatching'] ? __('Enabled') : __('Disabled');
+            }
+        }
+        return __('N/A');
+    }
+
+    /**
+     * Get AAM help center article link
+     *
+     * @return string
+     */
+    public function getAutomaticMatchingHelpCenterArticleLink(): string
+    {
+        return 'https://www.facebook.com/business/help/611774685654668';
     }
 
     /**
@@ -178,7 +217,7 @@ class ModuleInfo extends Field
      *
      * @return bool
      */
-    public function getIsFBEInstalled()
+    public function isFBEInstalled(): bool
     {
         return $this->systemConfig->isFBEInstalled($this->getStoreId());
     }
@@ -188,7 +227,7 @@ class ModuleInfo extends Field
      *
      * @return bool
      */
-    public function getIsDebugMode()
+    public function isDebugMode()
     {
         return $this->systemConfig->isDebugMode();
     }
@@ -211,5 +250,22 @@ class ModuleInfo extends Field
     public function getExternalBusinessID()
     {
         return $this->systemConfig->getExternalBusinessId($this->getStoreId());
+    }
+
+    /**
+     * Should show store level configs in the extension config page
+     *
+     * @return bool
+     */
+    public function shouldShowStoreLevelConfig(): bool
+    {
+        // Single store mode will always see the default store
+        if ($this->systemConfig->isSingleStoreMode()) {
+            return true;
+        } else {
+            // The store ID is specified in the path param, show store level config
+            $storeIdFromParam = $this->getRequest()->getParam('store');
+            return $storeIdFromParam !== null;
+        }
     }
 }

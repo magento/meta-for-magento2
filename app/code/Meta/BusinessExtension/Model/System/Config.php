@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Model\System;
 
+use Exception;
 use Magento\Config\Model\ResourceModel\Config as ResourceConfig;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\CacheInterface;
@@ -139,11 +140,6 @@ class Config
     private ResourceConfig $resourceConfig;
 
     /**
-     * @var TypeListInterface
-     */
-    private TypeListInterface $cacheTypeList;
-
-    /**
      * @var CacheInterface
      */
     private CacheInterface $cache;
@@ -163,14 +159,14 @@ class Config
      *
      * @var string|null
      */
-    private ?string $version = '1.3.1-dev';
+    private ?string $version = '1.3.5-dev';
 
     /**
-     * @method __construct
+     * Config class constructor
+     *
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param ResourceConfig $resourceConfig
-     * @param TypeListInterface $cacheTypeList
      * @param CacheInterface $cache
      * @param ComposerInformation $composerInformation
      * @param FacebookInstalledFeature $fbeInstalledFeatureResource
@@ -180,7 +176,6 @@ class Config
         StoreManagerInterface    $storeManager,
         ScopeConfigInterface     $scopeConfig,
         ResourceConfig           $resourceConfig,
-        TypeListInterface        $cacheTypeList,
         CacheInterface           $cache,
         ComposerInformation      $composerInformation,
         FacebookInstalledFeature $fbeInstalledFeatureResource
@@ -188,7 +183,6 @@ class Config
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;
-        $this->cacheTypeList = $cacheTypeList;
         $this->cache = $cache;
         $this->composerInformation = $composerInformation;
         $this->fbeInstalledFeatureResource = $fbeInstalledFeatureResource;
@@ -279,7 +273,6 @@ class Config
     /**
      * Is single store mode
      *
-     * @method isSingleStoreMode
      * @return bool
      */
     public function isSingleStoreMode(): bool
@@ -344,12 +337,15 @@ class Config
     /**
      * Get store id
      *
-     * @return int
-     * @throws NoSuchEntityException
+     * @return null|int
      */
-    public function getStoreId()
+    public function getDefaultStoreId(): ?int
     {
-        return $this->storeManager->getStore()->getId();
+        $defaultStoreView = $this->storeManager->getDefaultStoreView();
+        if ($defaultStoreView !== null) {
+            return $this->castStoreIdAsInt($defaultStoreView->getId());
+        }
+        return null;
     }
 
     /**
@@ -410,7 +406,7 @@ class Config
      * Get fulfillment address
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return array
      */
     public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): array
@@ -462,7 +458,7 @@ class Config
             // In the "Single Store" case, getting the config of a non-existent path can throw.
             // This corresponds to "missing Shipstation Extension"
             $value = $this->getConfig(self::XML_PATH_AUCTANE_API_ACTIVE);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
         return $value === '1';
@@ -492,11 +488,18 @@ class Config
     public function getConfig($configPath, $scopeId = null, $scope = null)
     {
         if (!$scope && $this->isSingleStoreMode()) {
-            return $this->scopeConfig->getValue($configPath);
+            $singleStoreResult = $this->scopeConfig->getValue($configPath);
+            if ($singleStoreResult !== null) {
+                return $singleStoreResult;
+            }
         }
         try {
-            $value = $this->scopeConfig->getValue($configPath, $scope ?: ScopeInterface::SCOPE_STORE, $scopeId === null
-                ? $this->storeManager->getStore()->getId() : $scopeId);
+            $value = $this->scopeConfig->getValue(
+                $configPath,
+                $scope ?: ScopeInterface::SCOPE_STORE,
+                $scopeId === null
+                    ? $this->storeManager->getStore()->getId() : $scopeId
+            );
         } catch (NoSuchEntityException $e) {
             return null;
         }
@@ -596,7 +599,7 @@ class Config
      * Get external business id
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return mixed
      */
     public function getExternalBusinessId($scopeId = null, $scope = null)
@@ -612,7 +615,7 @@ class Config
      * Get pixel id
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return mixed
      */
     public function getPixelId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -704,7 +707,7 @@ class Config
      * Get commerce partner integration ID
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return mixed|null
      */
     public function getCommercePartnerIntegrationId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -779,7 +782,7 @@ class Config
      * Get shipping methods label map
      *
      * @param int|null $storeId
-     * @return array|null
+     * @return array
      */
     public function getShippingMethodsLabelMap($storeId = null): array
     {
@@ -835,10 +838,13 @@ class Config
     public function getAllFBEInstalledStores()
     {
         $stores = $this->storeManager->getStores();
-        return array_filter($stores, function ($store) {
-            $scopeId = $store->getId();
-            return $this->isPostOnboardingState($scopeId);
-        });
+        return array_filter(
+            $stores,
+            function ($store) {
+                $scopeId = $store->getId();
+                return $this->isPostOnboardingState($scopeId);
+            }
+        );
     }
 
     /**
@@ -847,13 +853,17 @@ class Config
     public function getAllOnsiteFBEInstalledStores()
     {
         $stores = $this->storeManager->getStores();
-        return array_filter($stores, function ($store) {
-            $scopeId = $store->getId();
-            return $this->isPostOnboardingState($scopeId) &&
-                $this->isActiveExtension($scopeId) &&
-                // A slight nuance. You can be installed, but not "onsite" -- unless you have valid commerce account.
-                $this->getCommerceAccountId($scopeId);
-        });
+        return array_filter(
+            $stores,
+            function ($store) {
+                $scopeId = $store->getId();
+                return $this->isPostOnboardingState($scopeId) &&
+                    $this->isActiveExtension($scopeId) &&
+                    // A slight nuance. You can be installed, but not "onsite"
+                    // -- unless you have valid commerce account.
+                    $this->getCommerceAccountId($scopeId);
+            }
+        );
     }
 
     /**
@@ -1103,5 +1113,20 @@ class Config
             $storeId
         );
         $this->cleanCache();
+    }
+
+    /**
+     * Cast Store id from ?string to ?int
+     *
+     * @param string|int|null $storeIdString
+     * @return int|null
+     */
+    public function castStoreIdAsInt($storeIdString): ?int
+    {
+        if (is_numeric($storeIdString)) {
+            return (int)$storeIdString;
+        } else {
+            return null;
+        }
     }
 }

@@ -44,7 +44,7 @@ class OrderGet
      * @param LoggerInterface $logger
      */
     public function __construct(
-        OrderHelper $orderHelper,
+        OrderHelper     $orderHelper,
         LoggerInterface $logger
     ) {
         $this->orderHelper = $orderHelper;
@@ -64,7 +64,9 @@ class OrderGet
     {
         try {
             foreach ($orderCollection->getItems() as $order) {
-                /** @var OrderInterface $order */
+                /**
+                 * @var OrderInterface $order
+                 */
                 $this->orderHelper->setFacebookOrderExtensionAttributes($order);
             }
         } catch (Exception $e) {

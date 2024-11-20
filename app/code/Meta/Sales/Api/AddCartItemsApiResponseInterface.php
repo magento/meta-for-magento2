@@ -35,7 +35,7 @@ interface AddCartItemsApiResponseInterface
     /**
      * Get array of SKU/exception message for items that failed to be added
      *
-     * @return array
+     * @return \Meta\Sales\Model\Api\AddCartItemsApiExceptionResponse[]
      */
     public function getExceptions(): array;
 }

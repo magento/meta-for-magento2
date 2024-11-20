@@ -18,26 +18,27 @@ declare(strict_types=1);
  * limitations under the License.
  */
 
- namespace Meta\Sales\Model\Api;
+namespace Meta\Sales\Model\Api;
 
- use Meta\Sales\Api\AddCartItemsApiResponseInterface;
+use Meta\Sales\Api\AddCartItemsApiResponseInterface;
+use Meta\Sales\Api\AddCartItemsApiExceptionResponseInterface;
 
-class AddCartItemsApiResponse implements AddCartitemsApiResponseInterface
+class AddCartItemsApiResponse implements AddCartItemsApiResponseInterface
 {
     /**
-     * @var \Magento\Quote\Api\Data\CartItemInterfaceCartItemInterface[]
+     * @var \Magento\Quote\Api\Data\CartItemInterface[]
      */
     private $itemsAdded = [];
 
     /**
-     * @var array
+     * @var AddCartItemsApiExceptionResponseInterface[]
      */
     private $exceptions = [];
 
     /**
-     * Getter
+     * Getter for items added
      *
-     * @return \Magento\Quote\Api\Data\CartItemInterfaceCartItemInterface[]
+     * @return \Magento\Quote\Api\Data\CartItemInterface[]
      */
     public function getItemsAdded(): array
     {
@@ -45,9 +46,9 @@ class AddCartItemsApiResponse implements AddCartitemsApiResponseInterface
     }
 
     /**
-     * Setter
+     * Setter for items added
      *
-     * @param \Magento\Quote\Api\Data\CartItemInterface[] $items
+     * @param  \Magento\Quote\Api\Data\CartItemInterface[] $items
      * @return void
      */
     public function setItemsAdded(array $items): void
@@ -56,9 +57,9 @@ class AddCartItemsApiResponse implements AddCartitemsApiResponseInterface
     }
 
     /**
-     * Getter
+     * Getter for exceptions
      *
-     * @return array
+     * @return AddCartItemsApiExceptionResponseInterface[]
      */
     public function getExceptions(): array
     {
@@ -66,9 +67,9 @@ class AddCartItemsApiResponse implements AddCartitemsApiResponseInterface
     }
 
     /**
-     * Setter
+     * Setter for exceptions
      *
-     * @param array $exceptions
+     * @param  AddCartItemsApiExceptionResponseInterface[] $exceptions
      * @return void
      */
     public function setExceptions(array $exceptions): void

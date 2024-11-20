@@ -22,16 +22,19 @@ namespace Meta\BusinessExtension\Block\Adminhtml;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
-use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\UrlInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
-use Magento\Store\Model\ResourceModel\Website\CollectionFactory as WebsiteCollectionFactory;
-use Meta\BusinessExtension\Helper\FBEHelper;
+use Magento\Store\Model\StoreManagerInterface;
+use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 use Meta\BusinessExtension\Helper\CommerceExtensionHelper;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\Api\CustomApiKey\ApiKeyService;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * @api
@@ -39,39 +42,42 @@ use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
  */
 class Setup extends Template
 {
+    public const COUNTRY_CONFIG_PATH = 'general/country/default';
+    public const TIMEZONE_CONFIG_PATH = 'general/locale/timezone';
+
     /**
      * @var ApiKeyService
      */
-    private $apiKeyService;
+    private ApiKeyService $apiKeyService;
     /**
      * @var FBEHelper
      */
-    private $fbeHelper;
+    private FBEHelper $fbeHelper;
 
     /**
      * @var RequestInterface
      */
-    private $request;
+    private RequestInterface $request;
 
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * @var StoreRepositoryInterface
      */
-    public $storeRepo;
+    public StoreRepositoryInterface $storeRepo;
 
     /**
-     * @var WebsiteCollectionFactory
+     * @var StoreManagerInterface
      */
-    private $websiteCollectionFactory;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var CommerceExtensionHelper
      */
-    private $commerceExtensionHelper;
+    private CommerceExtensionHelper $commerceExtensionHelper;
 
     /**
      * @var AdobeCloudConfigInterface
@@ -79,15 +85,21 @@ class Setup extends Template
     private AdobeCloudConfigInterface $adobeConfig;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private ScopeConfigInterface $scopeConfig;
+
+    /**
      * @param Context $context
      * @param RequestInterface $request
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param StoreRepositoryInterface $storeRepo
-     * @param WebsiteCollectionFactory $websiteCollectionFactory
+     * @param StoreManagerInterface $storeManager
      * @param CommerceExtensionHelper $commerceExtensionHelper
      * @param ApiKeyService $apiKeyService
      * @param AdobeCloudConfigInterface $adobeConfig
+     * @param ScopeConfigInterface $scopeConfig
      * @param array $data
      */
     public function __construct(
@@ -96,10 +108,11 @@ class Setup extends Template
         FBEHelper                 $fbeHelper,
         SystemConfig              $systemConfig,
         StoreRepositoryInterface  $storeRepo,
-        WebsiteCollectionFactory  $websiteCollectionFactory,
+        StoreManagerInterface     $storeManager,
         CommerceExtensionHelper   $commerceExtensionHelper,
         ApiKeyService             $apiKeyService,
         AdobeCloudConfigInterface $adobeConfig,
+        ScopeConfigInterface      $scopeConfig,
         array                     $data = []
     ) {
         $this->fbeHelper = $fbeHelper;
@@ -107,18 +120,19 @@ class Setup extends Template
         $this->request = $request;
         $this->systemConfig = $systemConfig;
         $this->storeRepo = $storeRepo;
-        $this->websiteCollectionFactory = $websiteCollectionFactory;
+        $this->storeManager = $storeManager;
         $this->commerceExtensionHelper = $commerceExtensionHelper;
         $this->apiKeyService = $apiKeyService;
         $this->adobeConfig = $adobeConfig;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
      * ID of the selected Store.
      *
-     * @return string|null
+     * @return int|null
      */
-    public function getSelectedStoreId()
+    public function getSelectedStoreId(): ?int
     {
         $stores = $this->getSelectableStores();
         if (empty($stores)) {
@@ -126,25 +140,18 @@ class Setup extends Template
         }
 
         // If there is a store matching query param, return it.
-        $requestStoreId = $this->request->getParam('store_id');
-        try {
-            $this->storeRepo->getById($requestStoreId);
-            return $requestStoreId;
-        } catch (NoSuchEntityException $e) {
-            // Store not found, fallback to default store selection logic.
-            $requestStoreId = null;
-        }
-
-        // Missing or invalid query param, look for a default.
-        foreach ($stores as $store) {
-            if ($store->isDefault() && $store->getWebsiteId() === $this->getFirstWebsiteId()) {
-                return $store['store_id'];
+        $requestStoreId = $this->systemConfig->castStoreIdAsInt($this->request->getParam('store_id'));
+        if ($requestStoreId !== null) {
+            try {
+                $this->storeRepo->getById($requestStoreId);
+                return $requestStoreId;
+            } catch (NoSuchEntityException $ex) {
+                $this->fbeHelper->log("Store with requestStoreId $requestStoreId not found");
             }
         }
 
-        // No default found, return the first store.
-        $firstStore = array_shift($stores);
-        return $firstStore['store_id'];
+        // Missing or invalid query param, look for the default
+        return $this->systemConfig->getDefaultStoreId();
     }
 
     /**
@@ -247,7 +254,7 @@ class Setup extends Template
 
         $this->fbeHelper->log("Store id---" . $storeId);
         $generatedExternalId = uniqid('fbe_magento_' . $storeId . '_');
-        $this->systemConfig->saveExternalBusinessIdForStore($generatedExternalId, (int)$storeId);
+        $this->systemConfig->saveExternalBusinessIdForStore($generatedExternalId, $storeId);
         return $generatedExternalId;
     }
 
@@ -304,10 +311,9 @@ class Setup extends Template
     /**
      * Get currency code
      *
-     * @return mixed
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return null|string
      */
-    public function getCurrencyCode()
+    public function getCurrencyCode(): ?string
     {
         return $this->fbeHelper->getStoreCurrencyCode();
     }
@@ -338,9 +344,9 @@ class Setup extends Template
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
      * @param int $storeId
-     * @return string
+     * @return bool
      */
-    public function hasCommerceExtensionIFramePermissionError($storeId)
+    public function hasCommerceExtensionIFramePermissionError(int $storeId): bool
     {
         return $this->commerceExtensionHelper->hasCommerceExtensionPermissionError($storeId);
     }
@@ -356,10 +362,30 @@ class Setup extends Template
     }
 
     /**
+     * Get client token
+     *
+     * @return string
+     */
+    public function getClientToken()
+    {
+        return '52dcd04d6c7ed113121b5eb4be23b4a7';
+    }
+
+    /**
+     * Get access token
+     *
+     * @return string
+     */
+    public function getAccessClientToken()
+    {
+        return $this->getAppId().'|'.$this->getClientToken();
+    }
+
+    /**
      * Get stores that are selectable (not Admin).
      *
-     * @return \Magento\Store\Api\Data\StoreInterface[]
-     */
+     * @return StoreInterface[]
+     * */
     public function getSelectableStores()
     {
         $stores = $this->storeRepo->getList();
@@ -369,21 +395,6 @@ class Setup extends Template
             fn($key) => $key !== 'admin',
             ARRAY_FILTER_USE_KEY,
         );
-    }
-
-    /**
-     * Get first website id
-     *
-     * @return int|null
-     */
-    public function getFirstWebsiteId()
-    {
-        $collection = $this->websiteCollectionFactory->create();
-        $collection->addFieldToSelect('website_id')
-            ->addFieldToFilter('code', ['neq' => 'admin']);
-        $collection->getSelect()->order('website_id ASC')->limit(1);
-
-        return $collection->getFirstItem()->getWebsiteId();
     }
 
     /**
@@ -439,7 +450,7 @@ class Setup extends Template
     /**
      * Get default store_id
      *
-     * @return string
+     * @return int
      */
     public function getDefaultStoreViewId()
     {
@@ -494,5 +505,52 @@ class Setup extends Template
     public function getUpdateMBEConfigAjaxRoute()
     {
         return $this->fbeHelper->getUrl('fbeadmin/ajax/MBEUpdateInstalledConfig');
+    }
+
+    /**
+     * Get Store's Timezone
+     *
+     * @return string
+     */
+    public function getStoreTimezone(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::TIMEZONE_CONFIG_PATH,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Get Store's Country Code
+     *
+     * @return string
+     */
+    public function getStoreCountryCode(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::COUNTRY_CONFIG_PATH,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Get Store's Base Url
+     *
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getStoreBaseUrl(): string
+    {
+        return $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
+    }
+
+    /**
+     * Get the extension version
+     *
+     * @return string
+     */
+    public function getExtensionVersion(): string
+    {
+        return $this->systemConfig->getModuleVersion();
     }
 }

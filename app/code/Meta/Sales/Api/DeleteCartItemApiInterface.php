@@ -28,9 +28,9 @@ interface DeleteCartItemApiInterface
     /**
      * Delete item from Magento cart
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param string $itemId
+     * @param  string $externalBusinessId
+     * @param  string $cartId
+     * @param  string $itemId
      * @return bool
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException

@@ -42,7 +42,7 @@ class PersistMetaTelemetryLogsHandler
      * PersistMetaTelemetryLogsHandler constructor
      *
      * @param GraphAPIAdapter $graphAPIAdapter
-     * @param SystemConfig $systemConfig
+     * @param SystemConfig    $systemConfig
      */
     public function __construct(
         GraphAPIAdapter $graphAPIAdapter,
@@ -55,7 +55,7 @@ class PersistMetaTelemetryLogsHandler
     /**
      * Consumer handler to persist telemetry logs from message queue to Meta
      *
-     * @param string $messages
+     * @param  string $messages
      * @throws GuzzleException
      */
     public function persistMetaTelemetryLogs(string $messages)

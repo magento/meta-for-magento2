@@ -40,7 +40,7 @@ class DiscountDeleteApi implements \Meta\Sales\Api\DiscountDeleteApiInterface
      * DiscountDeleteApi constructor.
      *
      * @param ResourceConnection $resourceConnection
-     * @param Authenticator $authenticator
+     * @param Authenticator      $authenticator
      */
     public function __construct(ResourceConnection $resourceConnection, Authenticator $authenticator)
     {
@@ -51,8 +51,8 @@ class DiscountDeleteApi implements \Meta\Sales\Api\DiscountDeleteApiInterface
     /**
      * Delete expired/used coupon codes
      *
-     * @param string $externalBusinessId
-     * @param string[] $couponCodes
+     * @param  string   $externalBusinessId
+     * @param  string[] $couponCodes
      * @return string[]
      * @throws LocalizedException
      */

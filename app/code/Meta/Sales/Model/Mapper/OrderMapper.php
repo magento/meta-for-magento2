@@ -38,6 +38,7 @@ use Meta\Sales\Helper\ShippingHelper;
 
 /**
  * Map facebook order data to magento order
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class OrderMapper
@@ -146,11 +147,15 @@ class OrderMapper
             ->setAddressType(Order\Address::TYPE_SHIPPING)
             ->setSameAsBilling(true);
 
-        /** @var Payment $payment */
+        /**
+         * @var Payment $payment
+         */
         $payment = $this->paymentFactory->create();
         $payment->setMethod('facebook');
 
-        /** @var Order $order */
+        /**
+         * @var Order $order
+         */
         $order = $this->orderFactory->create();
         $order
             ->setState(Order::STATE_NEW)
@@ -321,11 +326,13 @@ class OrderMapper
             'street' => $street,
             'city' => $data['shipping_address']['city'],
             'email' => $data['buyer_details']['email'],
-            'telephone' => 'N/A', // is required by magento
+            'telephone' => $data['buyer_details']['phone_number'] ?? 'N/A',
             'country_id' => $data['shipping_address']['country'] // maps 1:1
         ];
 
-        /** @var Order\Address $billingAddress */
+        /**
+         * @var Order\Address $billingAddress
+         */
         $billingAddress = $this->orderAddressFactory->create(['data' => $addressData]);
 
         $billingAddress->setAddressType(Order\Address::TYPE_BILLING);

@@ -54,9 +54,9 @@ class SyncOrders
 
     /**
      * @param StoreManagerInterface $storeManager
-     * @param SystemConfig $systemConfig
-     * @param CommerceHelper $commerceHelper
-     * @param FBEHelper $fbeHelper
+     * @param SystemConfig          $systemConfig
+     * @param CommerceHelper        $commerceHelper
+     * @param FBEHelper             $fbeHelper
      */
     public function __construct(
         StoreManagerInterface $storeManager,
@@ -73,14 +73,15 @@ class SyncOrders
     /**
      * Sync orders from facebook for a store
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return void
      * @throws GuzzleException
      */
     private function pullOrdersForStore(int $storeId)
     {
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 

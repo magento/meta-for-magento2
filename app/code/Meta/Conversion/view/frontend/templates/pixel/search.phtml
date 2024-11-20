@@ -1,5 +1,8 @@
 <?php
-/** @var \Meta\Conversion\Block\Pixel\Search $block */
+/**
+ * @var \Meta\Conversion\Block\Pixel\Search $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
 
 $trackerUrl = $block->getTrackerUrl();
 
@@ -10,22 +13,24 @@ if ($block->getFacebookPixelID()) {
         {
             "*": {
                 "Meta_Conversion/js/metaPixelTracker" : {
-                    "url" : "<?= $block->escapeHtml($trackerUrl); ?>",
-                    "payload": <?= /* @noEscape */ json_encode([
-                        "eventName" => $block->escapeHtml($block->getEventToObserveName()),
-                        "searchQuery" => $block->escapeHtml($block->getSearchQuery())
+                    "url" : "<?= $escaper->escapeHtml($trackerUrl); ?>",
+                    "payload": <?= /* @noEscape */
+                    json_encode([
+                    "eventName" => $escaper->escapeHtml($block->getEventToObserveName()),
+                    "searchQuery" => $escaper->escapeHtml($block->getSearchQuery())
                     ]) ?>,
-                    "browserEventData": <?= /* @noEscape */ json_encode([
-                        'fbAgentVersion' => $block->escapeHtml($block->getFacebookAgentVersion()),
-                        'fbPixelId' => $block->escapeHtml($block->getFacebookPixelID()),
-                        'source' => $block->escapeHtml($block->getSource()),
-                        'pluginVersion' => $block->escapeHtml($block->getPluginVersion()),
-                        'track' => 'track',
-                        'event' => 'Search',
-                        'payload' => ['search_string' => $block->escapeHtml($block->getSearchQuery())]
+                    "browserEventData": <?= /* @noEscape */
+                    json_encode([
+                    'fbAgentVersion' => $escaper->escapeHtml($block->getFacebookAgentVersion()),
+                    'fbPixelId' => $escaper->escapeHtml($block->getFacebookPixelID()),
+                    'source' => $escaper->escapeHtml($block->getSource()),
+                    'pluginVersion' => $escaper->escapeHtml($block->getPluginVersion()),
+                    'track' => 'track',
+                    'event' => 'Search',
+                    'payload' => ['search_string' => $escaper->escapeHtml($block->getSearchQuery())]
                     ]) ?>
-                }
-            }
         }
+    }
+}
     </script>
 <?php } ?>

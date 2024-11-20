@@ -132,6 +132,19 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
+            // Sampling rate of 1/100 calls
+            if (random_int(1, 100) <= 1) {
+                $this->fbeHelper->logExceptionImmediatelytoMeta(
+                    $e,
+                    [
+                        'store_id' => $this->product->getStoreId(),
+                        'event' => 'catalog_sync',
+                        'event_type' => 'multi_source_inventory_sync_is_in_stock_error',
+                        'product_id' => $this->product->getSku(),
+                        'stock_id' => $stockId
+                    ]
+                );
+            }
             return false;
         }
     }
@@ -151,6 +164,19 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
                 $stockId
             );
         } catch (\Exception $e) {
+            // Sampling rate of 1/100 calls
+            if (random_int(1, 100) <= 1) {
+                $this->fbeHelper->logExceptionImmediatelytoMeta(
+                    $e,
+                    [
+                        'store_id' => $this->product->getStoreId(),
+                        'event' => 'catalog_sync',
+                        'event_type' => 'multi_source_inventory_sync_get_stock_qty_error',
+                        'product_id' => $this->product->getSku(),
+                        'stock_id' => $stockId
+                    ]
+                );
+            }
             return 0;
         }
     }
@@ -168,16 +194,19 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
             $stockItemConfiguration = $this->getStockItemConfiguration->execute($this->product->getSku(), $stockId);
             return $stockItemConfiguration->isManageStock();
         } catch (\Throwable $e) {
-            $this->fbeHelper->logExceptionImmediatelytoMeta(
-                $e,
-                [
-                    'store_id' => $this->product->getStoreId(),
-                    'event' => 'catalog_sync',
-                    'event_type' => 'multi_source_inventory_sync_error'
-                ]
-            );
+            // Sampling rate of 1/100 calls
+            if (random_int(1, 100) <= 1) {
+                $this->fbeHelper->logExceptionImmediatelytoMeta(
+                    $e,
+                    [
+                        'store_id' => $this->product->getStoreId(),
+                        'event' => 'catalog_sync',
+                        'event_type' => 'multi_source_inventory_sync_is_stock_managed_error',
+                        'product_id' => $this->product->getSku()
+                    ]
+                );
+            }
             try {
-
                 // fallback to single inventory mechanism in case of error
                 $criteria = $this->stockItemCriteriaInterfaceFactory->create();
                 $criteria->setProductsFilter($this->product->getId());
@@ -227,9 +256,9 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
     /**
      * Get available product qty
      *
-     * @return int
+     * @return int|float
      */
-    public function getInventory(): int
+    public function getInventory()
     {
         if (!$this->product) {
             return 0;
@@ -240,7 +269,7 @@ class MultiSourceInventory extends InventoryRequirements implements InventoryInt
         }
 
         $outOfStockThreshold = $this->systemConfig->getOutOfStockThreshold($this->product->getStoreId());
-        $quantityAvailableForCatalog = (int)$this->stockQty - $outOfStockThreshold;
+        $quantityAvailableForCatalog = $this->stockQty - $outOfStockThreshold;
         return $quantityAvailableForCatalog > 0 ? $quantityAvailableForCatalog : 0;
     }
 }

@@ -13,6 +13,7 @@
                     <resource id="Meta_Sales::update_cart_item" title="Update Cart Item" sortOrder="104"/>
 
                     <resource id="Meta_Sales::create_rule" title="Create Cart Rule" sortOrder="102"/>
+                    <resource id="Meta_Sales::generate_coupon_code" title="Generate Coupon Code" sortOrder="102"/>
                     <resource id="Meta_Sales::check_status" title="Check Subscription Status" sortOrder="103"/>
                     <resource id="Meta_Sales::subscribe_for_coupon" title="Subscribe for Coupon" sortOrder="103"/>
                     <resource id="Meta_Sales::delete_discount" title="Delete Expired/Used Coupon Codes" sortOrder="104"/>

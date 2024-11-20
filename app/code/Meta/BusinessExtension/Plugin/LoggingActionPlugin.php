@@ -30,9 +30,9 @@ class LoggingActionPlugin extends LoggingPluginBase
     /**
      * Logs the impression, before the ActionInterface executes.
      *
-     * @param ActionInterface $subject
-     * @param callable $progress
-     * @param array $args
+     * @param  ActionInterface $subject
+     * @param  callable        $progress
+     * @param  array           $args
      * @return ResponseInterface
      * @throws Throwable
      */

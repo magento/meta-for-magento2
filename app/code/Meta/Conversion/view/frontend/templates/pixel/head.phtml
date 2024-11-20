@@ -1,30 +1,45 @@
-<?php /** @var \Meta\Conversion\Block\Pixel\Head $block */ ?>
+<?php
+
+use Magento\Framework\Escaper;
+use Meta\Conversion\Block\Pixel\Head;
+
+/**
+ * @var Head $block
+ * @var Escaper $escaper
+ */
+
+$userDataUrl = $block->getUserDataUrl();
+$trackerUrl = $block->getTrackerUrl();
+?>
 <?php /** @var \Magento\Framework\Escaper $escaper */ ?>
 <?php if ($block->getFacebookPixelID()) { ?>
 <!-- Meta Business Extension for Magento 2 -->
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','//connect.facebook.net/en_US/fbevents.js');
-    <?php
-    $dataProcessingOptionsCode = $block->getDataProcessingOptionsJSCode();
-    if (strlen($dataProcessingOptionsCode) > 0) {
-        echo $escaper->escapeJs($dataProcessingOptionsCode . "\n");
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Meta_Conversion/js/initPixel" : {
+            "pixelId": "<?= $escaper->escapeHtml($block->getFacebookPixelID()); ?>",
+            "automaticMatchingFlag": <?= /* @noEscape */ $block->getAutomaticMatchingFlag() ? 'true' : 'false'; ?>,
+            "userDataUrl" : "<?= $escaper->escapeUrl($userDataUrl); ?>",
+            "agent": "<?= $escaper->escapeHtml($block->getFacebookAgentVersion()); ?>"
+        },
+        "Meta_Conversion/js/metaPixelTracker" : {
+            "url" : "<?= $escaper->escapeUrl($trackerUrl); ?>",
+            "payload": <?= /* @noEscape */ json_encode([
+                "eventName" => $block->getEventToObserveName(),
+            ]) ?>,
+            "browserEventData": <?= /* @noEscape */ json_encode([
+                'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                'fbPixelId' => $block->getFacebookPixelID(),
+                'source' => $block->getSource(),
+                'pluginVersion' => $block->getPluginVersion(),
+                'track' => 'track',
+                'event' => 'PageView',
+                'payload' => []
+            ]) ?>
+        }
     }
-    ?>
-fbq(
-  'init',
-  '<?= /* @noEscape */ $block->getFacebookPixelID() ?>',
-    <?= /* @noEscape */ $block->getPixelInitCode() ?>,
-  {agent: '<?= /* @noEscape */ $block->getFacebookAgentVersion() ?>' }
-);
-fbq('track', 'PageView', {
-  source: "<?= /* @noEscape */ $block->getSource() ?>",
-  pluginVersion: "<?= /* @noEscape */ $block->getPluginVersion() ?>"
-});
+}
 </script>
 <!-- End Meta Pixel Code -->
 <?php } else { ?>

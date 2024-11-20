@@ -54,9 +54,9 @@ class FbeInstallsSave implements HttpPostActionInterface
      * Construct
      *
      * @param RequestInterface $request
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
-     * @param MBEInstalls $saveFBEInstallsResponse
+     * @param JsonFactory      $resultJsonFactory
+     * @param FBEHelper        $fbeHelper
+     * @param MBEInstalls      $saveFBEInstallsResponse
      */
     public function __construct(
         RequestInterface $request,
@@ -92,8 +92,10 @@ class FbeInstallsSave implements HttpPostActionInterface
                 ]
             );
             throw new LocalizedException(
-                __('The was an error while saving FbeInstalls config.' .
-                ' Please contact admin for more details.')
+                __(
+                    'The was an error while saving FbeInstalls config.' .
+                    ' Please contact admin for more details.'
+                )
             );
         }
     }

@@ -31,7 +31,7 @@ interface AddCartCouponApiResponseInterface
      * Get status of trying to add coupon to Magento cart
      *
      * @SuppressWarnings(PHPMD.BooleanGetMethodName)
-     * @return bool
+     * @return                                       bool
      */
     public function getStatus(): bool;
 

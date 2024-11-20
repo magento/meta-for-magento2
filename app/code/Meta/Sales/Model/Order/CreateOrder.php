@@ -38,6 +38,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Create order from facebook api data
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
@@ -174,7 +175,9 @@ class CreateOrder
             'email_remarketing_option' => $data['buyer_details']['email_remarketing_option'],
         ];
 
-        /** @var FacebookOrderInterface $facebookOrder */
+        /**
+         * @var FacebookOrderInterface $facebookOrder
+         */
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->setFacebookOrderId($facebookOrderId)
             ->setMagentoOrderId($order->getId())
@@ -190,10 +193,13 @@ class CreateOrder
             ->setEmailRemarketingOption($emailRemarketingOption);
         $order->setExtensionAttributes($extensionAttributes);
 
-        $this->eventManager->dispatch('facebook_order_create_after', [
-            'order' => $order,
-            'facebook_order' => $facebookOrder,
-        ]);
+        $this->eventManager->dispatch(
+            'facebook_order_create_after',
+            [
+                'order' => $order,
+                'facebook_order' => $facebookOrder,
+            ]
+        );
 
         return $order;
     }

@@ -23,6 +23,7 @@ namespace Meta\Catalog\Test\Unit\Model\Product\Feed\Builder;
 require_once __DIR__ . "/../../../../../../Model/Product/Feed/Builder/InventoryInterface.php";
 require_once __DIR__ . "/../../../../../../Model/Product/Feed/Builder/MultiSourceInventory.php";
 require_once __DIR__ . "/../../../../../../../BusinessExtension/Model/System/Config.php";
+require_once __DIR__ . "/../../../../../../../BusinessExtension/Helper/FBEHelper.php";
 
 
 use Magento\Catalog\Model\Product;
@@ -35,9 +36,14 @@ use Magento\InventorySalesApi\Api\IsProductSalableInterface;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Magento\Store\Model\Store;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Catalog\Model\Product\Feed\Builder\InventoryInterface;
 use Meta\Catalog\Model\Product\Feed\Builder\MultiSourceInventory;
 use PHPUnit\Framework\TestCase;
+
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 
 class MultiSourceInventoryTest extends TestCase
 {
@@ -67,6 +73,11 @@ class MultiSourceInventoryTest extends TestCase
     private $getProductSalableQtyInterface;
 
     /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
      * Used to set the values before running a test
      *
      * @return void
@@ -77,6 +88,7 @@ class MultiSourceInventoryTest extends TestCase
         $this->isProductSalableInterface = $this->createStub(IsProductSalableInterface::class);
         $this->stockByWebsiteIdResolver = $this->createStub(StockByWebsiteIdResolverInterface::class);
         $this->getProductSalableQtyInterface = $this->createStub(GetProductSalableQtyInterface::class);
+        $this->fbeHelper = $this->createStub(FBEHelper::class);
 
         $getStockItemConfiguration = $this->createStub(GetStockItemConfigurationInterface::class);
         $stockItemRepository = $this->createStub(StockItemRepositoryInterface::class);
@@ -84,13 +96,16 @@ class MultiSourceInventoryTest extends TestCase
 
         $this->inventory = $this->getMockBuilder(MultiSourceInventory::class)
             ->enableOriginalConstructor()
-            ->setConstructorArgs([$this->isProductSalableInterface,
+            ->setConstructorArgs([
+                $this->isProductSalableInterface,
                 $this->getProductSalableQtyInterface,
                 $this->systemConfig,
                 $this->stockByWebsiteIdResolver,
                 $getStockItemConfiguration,
                 $stockItemRepository,
-                $stockItemCriteriaInterfaceFactory])
+                $stockItemCriteriaInterfaceFactory,
+                $this->fbeHelper
+            ])
             ->onlyMethods(['isInStock', 'getStockQty', 'isStockManagedForProduct'])
             ->getMock();
     }

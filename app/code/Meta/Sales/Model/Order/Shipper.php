@@ -121,7 +121,9 @@ class Shipper
                 'carrier' => 'OTHER',
             ];
         } else {
-            /** @var Track $track */
+            /**
+             * @var Track $track
+             */
             $track = $tracks[0];
 
             $trackingInfo = [
@@ -141,7 +143,9 @@ class Shipper
 
         $itemsToShipBySku = [];
         $itemsToShipById = [];
-        /** @var Item $shipmentItem */
+        /**
+         * @var Item $shipmentItem
+         */
         foreach ($shipment->getAllItems() as $shipmentItem) {
             $orderItem = $shipmentItem->getOrderItem();
             $itemsToShipBySku[] = [
@@ -224,14 +228,20 @@ class Shipper
             'city' => __('City'),
             'postal_code' => __('Zip/Postal Code')
         ];
-        $missingFields = array_filter($requiredFields, function ($field) use ($address) {
-            return empty($address[$field]);
-        }, ARRAY_FILTER_USE_KEY);
+        $missingFields = array_filter(
+            $requiredFields,
+            function ($field) use ($address) {
+                return empty($address[$field]);
+            },
+            ARRAY_FILTER_USE_KEY
+        );
         if (!empty($missingFields)) {
-            throw new LocalizedException(__(
-                'Please provide the required fields: %1 in the Fulfillment Address section.',
-                implode(', ', array_values($missingFields))
-            ));
+            throw new LocalizedException(
+                __(
+                    'Please provide the required fields: %1 in the Fulfillment Address section.',
+                    implode(', ', array_values($missingFields))
+                )
+            );
         }
     }
 
@@ -294,7 +304,9 @@ class Shipper
             return;
         }
 
-        /** @var Track $track */
+        /**
+         * @var Track $track
+         */
         $track = $tracks[0];
 
         $trackingInfo = [

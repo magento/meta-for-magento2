@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Test\Unit\Helper;
 
-use Magento\Store\Model\StoreManagerInterface;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Request\Http;
 use Meta\Conversion\Helper\AAMFieldsExtractorHelper;
 use Meta\BusinessExtension\Helper\FBEHelper;
@@ -53,6 +53,11 @@ class ServerSideHelperTest extends TestCase
     private $systemConfig;
 
     /**
+     * @var MockObject
+     */
+    private $customerSession;
+
+    /**
      * Used to reset or change values after running a test
      *
      * @return void
@@ -69,14 +74,15 @@ class ServerSideHelperTest extends TestCase
     public function setUp(): void
     {
         $this->fbeHelper = $this->createMock(FBEHelper::class);
-        $this->aamFieldsExtractorHelper =
-        $this->createMock(AAMFieldsExtractorHelper::class);
+        $this->aamFieldsExtractorHelper = $this->createMock(AAMFieldsExtractorHelper::class);
         $this->systemConfig = $this->createMock(SystemConfig::class);
         $this->systemConfig->method('getAccessToken')->willReturn('abc');
+        $this->customerSession = $this->createMock(CustomerSession::class);
         $this->serverSideHelper = new ServerSideHelper(
             $this->fbeHelper,
             $this->aamFieldsExtractorHelper,
             $this->systemConfig,
+            $this->customerSession
         );
     }
 

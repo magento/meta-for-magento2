@@ -42,7 +42,7 @@ interface CreateOrderApiShipmentDetailsInterface
     /**
      * Set shipping address
      *
-     * @param \Magento\Quote\Api\Data\AddressInterface $shippingAddress
+     * @param  \Magento\Quote\Api\Data\AddressInterface $shippingAddress
      * @return CreateOrderApiShipmentDetailsInterface
      */
     public function setShippingAddress(
@@ -59,7 +59,7 @@ interface CreateOrderApiShipmentDetailsInterface
     /**
      * Set shipping method
      *
-     * @param string $shippingMethod
+     * @param  string $shippingMethod
      * @return CreateOrderApiShipmentDetailsInterface
      */
     public function setShippingMethod(string $shippingMethod): CreateOrderApiShipmentDetailsInterface;
@@ -74,7 +74,7 @@ interface CreateOrderApiShipmentDetailsInterface
     /**
      * Set shipping total
      *
-     * @param float $shippingTotal
+     * @param  float $shippingTotal
      * @return CreateOrderApiShipmentDetailsInterface
      */
     public function setShippingTotal(float $shippingTotal): CreateOrderApiShipmentDetailsInterface;
@@ -89,7 +89,7 @@ interface CreateOrderApiShipmentDetailsInterface
     /**
      * Set shipping subtotal
      *
-     * @param float $shippingSubTotal
+     * @param  float $shippingSubTotal
      * @return CreateOrderApiShipmentDetailsInterface
      */
     public function setShippingSubTotal(float $shippingSubTotal): CreateOrderApiShipmentDetailsInterface;
@@ -104,7 +104,7 @@ interface CreateOrderApiShipmentDetailsInterface
     /**
      * Set shipping tax
      *
-     * @param float $tax
+     * @param  float $tax
      * @return CreateOrderApiShipmentDetailsInterface
      */
     public function setTax(float $tax): CreateOrderApiShipmentDetailsInterface;
@@ -119,7 +119,7 @@ interface CreateOrderApiShipmentDetailsInterface
     /**
      * Set tax rate
      *
-     * @param float $taxRate
+     * @param  float $taxRate
      * @return CreateOrderApiShipmentDetailsInterface
      */
     public function setTaxRate(float $taxRate): CreateOrderApiShipmentDetailsInterface;

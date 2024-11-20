@@ -50,10 +50,10 @@ class UpdateCartItemApi implements UpdateCartItemApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator             $authenticator
-     * @param OrderHelper               $orderHelper
-     * @param GuestCartItemRepository   $guestCartItemRepository
-     * @param FBEHelper                 $fbeHelper
+     * @param Authenticator           $authenticator
+     * @param OrderHelper             $orderHelper
+     * @param GuestCartItemRepository $guestCartItemRepository
+     * @param FBEHelper               $fbeHelper
      */
     public function __construct(
         Authenticator               $authenticator,
@@ -70,13 +70,10 @@ class UpdateCartItemApi implements UpdateCartItemApiInterface
     /**
      * Update Magento cart item
      *
-     * @param string $externalBusinessId
-     * @param \Magento\Quote\Api\Data\CartItemInterface $cartItem
+     * @param  string                                    $externalBusinessId
+     * @param  \Magento\Quote\Api\Data\CartItemInterface $cartItem
      * @return \Magento\Quote\Api\Data\CartItemInterface
-     * @throws \Magento\Framework\Exception\UnauthorizedTokenException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Exception
      */
     public function updateCartItem(string $externalBusinessId, CartItemInterface $cartItem): CartItemInterface
     {

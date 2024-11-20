@@ -7,4 +7,7 @@
         <attribute code="email_remarketing_option" type="string"/>
         <attribute code="synced_shipments" type="mixed[]"/>
     </extension_attributes>
+    <extension_attributes for="Magento\Quote\Api\Data\TotalsInterface">
+        <attribute code="bxgy_discount_applied" type="boolean" />
+    </extension_attributes>
 </config>

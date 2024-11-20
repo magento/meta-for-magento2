@@ -51,9 +51,9 @@ class RepairCommercePartnerIntegration implements HttpPostActionInterface
     private $request;
 
     /**
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
-     * @param MBEInstalls $mbeInstalls
+     * @param JsonFactory      $resultJsonFactory
+     * @param FBEHelper        $fbeHelper
+     * @param MBEInstalls      $mbeInstalls
      * @param RequestInterface $request
      */
     public function __construct(
@@ -90,8 +90,10 @@ class RepairCommercePartnerIntegration implements HttpPostActionInterface
                 ]
             );
             throw new LocalizedException(
-                __('The was an error while trying to repair Meta Commerce Partner Integration.' .
-                    ' Please contact admin for more details.')
+                __(
+                    'The was an error while trying to repair Meta Commerce Partner Integration.' .
+                    ' Please contact admin for more details.'
+                )
             );
         }
     }

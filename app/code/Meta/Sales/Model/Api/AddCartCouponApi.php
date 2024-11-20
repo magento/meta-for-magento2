@@ -69,12 +69,12 @@ class AddCartCouponApi implements AddCartCouponApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator             $authenticator
-     * @param OrderHelper               $orderHelper
-     * @param GuestCouponManagement     $guestCouponManagement
-     * @param CouponFactory             $couponFactory
-     * @param RuleRepositoryInterface   $ruleRepository
-     * @param FBEHelper                 $fbeHelper
+     * @param Authenticator           $authenticator
+     * @param OrderHelper             $orderHelper
+     * @param GuestCouponManagement   $guestCouponManagement
+     * @param CouponFactory           $couponFactory
+     * @param RuleRepositoryInterface $ruleRepository
+     * @param FBEHelper               $fbeHelper
      */
     public function __construct(
         Authenticator               $authenticator,
@@ -95,9 +95,9 @@ class AddCartCouponApi implements AddCartCouponApiInterface
     /**
      * Add coupon to Magento cart
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param string $couponCode
+     * @param  string $externalBusinessId
+     * @param  string $cartId
+     * @param  string $couponCode
      * @return \Meta\Sales\Api\AddCartCouponApiResponseInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
@@ -119,10 +119,12 @@ class AddCartCouponApi implements AddCartCouponApiInterface
             return $response;
         } catch (NoSuchEntityException $e) {
             if (strpos($e->getMessage(), 'cartId') !== false) {
-                $le = new LocalizedException(__(
-                    "No such entity with cartId = %1",
-                    $cartId
-                ));
+                $le = new LocalizedException(
+                    __(
+                        "No such entity with cartId = %1",
+                        $cartId
+                    )
+                );
             } else {
                 $le = $e;
             }
@@ -159,9 +161,9 @@ class AddCartCouponApi implements AddCartCouponApiInterface
     /**
      * Get Rule for particular couponCode
      *
-     * @param string $storeId
-     * @param string $cartId
-     * @param string $couponCode
+     * @param  string $storeId
+     * @param  string $cartId
+     * @param  string $couponCode
      * @return \Magento\SalesRule\Api\Data\RuleInterface|null
      */
     public function getCouponRule(string $storeId, string $cartId, string $couponCode): ?RuleInterface

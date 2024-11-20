@@ -30,9 +30,9 @@ interface AddCartCouponApiInterface
     /**
      * Add coupon to Magento cart
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param string $couponCode
+     * @param  string $externalBusinessId
+     * @param  string $cartId
+     * @param  string $couponCode
      * @return \Meta\Sales\Api\AddCartCouponApiResponseInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException

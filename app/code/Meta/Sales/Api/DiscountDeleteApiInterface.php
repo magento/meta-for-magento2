@@ -24,8 +24,8 @@ interface DiscountDeleteApiInterface
     /**
      * Delete expired/used coupon codes
      *
-     * @param string $externalBusinessId
-     * @param string[] $couponIds
+     * @param  string   $externalBusinessId
+     * @param  string[] $couponIds
      * @return string[]
      */
     public function deleteDiscount(string $externalBusinessId, array $couponIds): array;

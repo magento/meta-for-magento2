@@ -42,7 +42,7 @@ class CoreConfigFactory
     /**
      * Create class instance with specified parameters
      *
-     * @param array $data
+     * @param  array $data
      * @return CoreConfig
      */
     public function create(array $data = []): CoreConfig

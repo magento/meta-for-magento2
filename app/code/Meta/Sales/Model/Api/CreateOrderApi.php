@@ -56,6 +56,7 @@ use Throwable;
 
 /**
  * Create Magento order using a cart ID
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  * @SuppressWarnings(PHPMD.TooManyFields)
@@ -202,7 +203,9 @@ class CreateOrderApi implements CreateOrderApiInterface
      */
     private function getFacebookOrder(string $facebookOrderId): FacebookOrderInterface
     {
-        /** @var FacebookOrder $facebookOrder */
+        /**
+         * @var FacebookOrder $facebookOrder
+         */
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($facebookOrderId, 'facebook_order_id');
 
@@ -225,7 +228,9 @@ class CreateOrderApi implements CreateOrderApiInterface
 
         // Set the tax per item
         $items = [];
-        /** @var Quote\Item $quoteItem */
+        /**
+         * @var Quote\Item $quoteItem
+         */
         foreach ($quote->getAllItems() as $quoteItem) {
             $quoteItem->setData("meta_tax", $tax_map[$quoteItem->getSku()]["meta_tax"]);
             $quoteItem->setData("meta_tax_rate", $tax_map[$quoteItem->getSku()]["meta_tax_rate"]);
@@ -270,6 +275,7 @@ class CreateOrderApi implements CreateOrderApiInterface
      * @param AddressInterface $address
      * @param AddressInterface $metaAddressInfo
      * @return void
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     private function populateAddress(
         AddressInterface $address,
@@ -493,7 +499,9 @@ class CreateOrderApi implements CreateOrderApiInterface
 
         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
         $quoteId = (int)$quoteIdMask->getQuoteId();
-        /** @var Quote $quote */
+        /**
+         * @var Quote $quote
+         */
         $quote = $this->quoteRepository->get($quoteId);
         $storeId = $quote->getStoreId();
 
@@ -553,17 +561,22 @@ class CreateOrderApi implements CreateOrderApiInterface
 
             $this->eventManager->dispatch('checkout_submit_all_after', ['order' => $magentoOrder, 'quote' => $quote]);
 
-            $this->eventManager->dispatch('facebook_order_create_after', [
-                'order' => $magentoOrder,
-                'facebook_order' => $facebookOrder,
-            ]);
+            $this->eventManager->dispatch(
+                'facebook_order_create_after',
+                [
+                    'order' => $magentoOrder,
+                    'facebook_order' => $facebookOrder,
+                ]
+            );
             return $magentoOrder;
         } catch (NoSuchEntityException $e) {
             if (strpos($e->getMessage(), 'cartId') !== false) {
-                $le = new LocalizedException(__(
-                    "No such entity with cartId = %1",
-                    $cartId
-                ));
+                $le = new LocalizedException(
+                    __(
+                        "No such entity with cartId = %1",
+                        $cartId
+                    )
+                );
             } else {
                 $le = $e;
             }
@@ -632,10 +645,12 @@ class CreateOrderApi implements CreateOrderApiInterface
 
         foreach (['subtotal', 'shipping', 'tax', 'grand_total'] as $code) {
             if ($metaTotals[$code] != $magentoTotals[$code]) {
-                $le = new LocalizedException(__(
-                    $code . ' of ' . $metaTotals[$code] . ' in the Meta order does not match ' .
-                    $code . ' of ' . $magentoTotals[$code] . ' in the Magento order'
-                ));
+                $le = new LocalizedException(
+                    __(
+                        $code . ' of ' . $metaTotals[$code] . ' in the Meta order does not match ' .
+                        $code . ' of ' . $magentoTotals[$code] . ' in the Magento order'
+                    )
+                );
 
                 $this->fbeHelper->logExceptionImmediatelyToMeta(
                     $le,

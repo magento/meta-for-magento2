@@ -207,7 +207,7 @@ class Tools
         $finalPrice = $product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue();
         if ($finalPrice > 0 && $product->getPriceInfo()->getPrice('regular_price')->getAmount()->getValue() > $finalPrice) {
             $price = $this->systemConfig->isPriceInclTax()
-                ? $this->catalogHelper->getTaxPrice($product, $finalPrice, true)
+                ?$this->catalogHelper->getTaxPrice($product, $finalPrice, true)
                 : $finalPrice;
             return $this->formatPrice($price, $product->getStoreId());
         }

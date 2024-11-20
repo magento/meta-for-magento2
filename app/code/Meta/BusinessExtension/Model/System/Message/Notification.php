@@ -43,8 +43,8 @@ class Notification implements MessageInterface
     private $request;
 
     /**
-     * @param SystemConfig $systemConfig
-     * @param UrlInterface $urlBuilder
+     * @param SystemConfig     $systemConfig
+     * @param UrlInterface     $urlBuilder
      * @param RequestInterface $request
      */
     public function __construct(
@@ -72,7 +72,8 @@ class Notification implements MessageInterface
     {
         $storeId = $this->request->getParam('store');
         if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->getAccessToken($storeId))) {
+            && $this->systemConfig->getAccessToken($storeId))
+        ) {
             return false;
         }
 
@@ -100,7 +101,7 @@ class Notification implements MessageInterface
     /**
      * Check if shipping mapping configured.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     private function isShippingMappingConfigured($storeId)

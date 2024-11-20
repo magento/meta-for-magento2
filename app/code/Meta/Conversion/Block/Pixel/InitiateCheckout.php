@@ -180,11 +180,12 @@ class InitiateCheckout extends Common
     public function getContentCategory(): string
     {
         $items = $this->getQuote()->getAllVisibleItems();
+        $contentCategory = '';
         foreach ($items as $item) {
             $product = $item->getProduct();
             $contentCategory =  $this->magentoDataHelper->getCategoriesForProduct($product);
         }
-        return $contentCategory;/** @phpstan-ignore-line */
+        return $contentCategory;
     }
 
     /**
@@ -194,10 +195,6 @@ class InitiateCheckout extends Common
      */
     public function getContentTypeQuote(): string
     {
-        $items = $this->getQuote()->getAllVisibleItems();
-        foreach ($items as $item) {
-            $product = $item->getProduct();
-        }
-        return $this->magentoDataHelper->getContentType($product);/** @phpstan-ignore-line */
+        return 'product';
     }
 }

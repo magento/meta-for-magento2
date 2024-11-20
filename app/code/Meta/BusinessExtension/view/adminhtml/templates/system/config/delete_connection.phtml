@@ -1,4 +1,9 @@
-<?php /* @var $block \Meta\BusinessExtension\Block\Adminhtml\System\Config\DeleteConnection */ ?>
+<?php
+/**
+ * @var $block \Meta\BusinessExtension\Block\Adminhtml\System\Config\DeleteConnection
+ * @var $escaper \Magento\Framework\Escaper
+ */
+?>
 
 <script>
     require([
@@ -21,7 +26,7 @@
                 return;
             }
             const params = {};
-            new Ajax.Request('<?= $block->escapeUrl($block->getAjaxUrl()) ?>', {
+            new Ajax.Request('<?= $escaper->escapeUrl($block->getAjaxUrl()) ?>', {
                 parameters: params,
                 loaderArea: false,
                 asynchronous: true,
@@ -48,7 +53,7 @@
                     jQuery('#fb_delete_connection_result_response').text(resultResponse);
                     responseToggle.show();
 
-                    new Ajax.Request('<?= $block->escapeUrl($block->getCleanCacheAjaxUrl()) ?>', {
+                    new Ajax.Request('<?= $escaper->escapeUrl($block->getCleanCacheAjaxUrl()) ?>', {
                         asynchronous: true
                     });
                 }
@@ -61,10 +66,10 @@
 <?= $block->getButtonHtml() ?>
 <span id="fb_delete_connection_result">
     <img class="fb-delete-connection-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src=
-        "<?= $block->escapeUrl($block->getViewFileUrl('images/process_spinner.gif')) ?>"
+    "<?= $escaper->escapeUrl($block->getViewFileUrl('images/process_spinner.gif')) ?>"
     />
-    <img class="fb-delete-connection-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src=
-        "<?= $block->escapeUrl($block->getViewFileUrl('images/rule_component_apply.gif')) ?>"
+    <img class="fb-delete-connection-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px" src=
+    "<?= $escaper->escapeUrl($block->getViewFileUrl('images/rule_component_apply.gif')) ?>"
     />
     <span id="fb_delete_connection_result_text"></span>
     <span id="fb_delete_connection_result_response_toggle"

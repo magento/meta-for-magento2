@@ -44,9 +44,9 @@ abstract class AbstractAjax extends Action implements HttpPostActionInterface
     /**
      * Construct
      *
-     * @param Context $context
+     * @param Context     $context
      * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
+     * @param FBEHelper   $fbeHelper
      */
     public function __construct(
         Context $context,
@@ -86,8 +86,10 @@ abstract class AbstractAjax extends Action implements HttpPostActionInterface
             } catch (Exception $e) {
                 $this->fbeHelper->logCritical($e->getMessage());
                 throw new LocalizedException(
-                    __('There was error while processing your request.' .
-                    ' Please contact admin for more details.')
+                    __(
+                        'There was error while processing your request.' .
+                        ' Please contact admin for more details.'
+                    )
                 );
             }
         }

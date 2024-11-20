@@ -75,6 +75,9 @@ class FbdeleteassetTest extends TestCase
         $this->fbeInstalledFeatureResource = $this->createMock(FacebookInstalledFeature::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
         $eventManager = $this->createMock(EventManager::class);
+        $mbeInstalls = $this->createMock(\Meta\BusinessExtension\Model\MBEInstalls::class);
+        $logger = $this->createMock(\Psr\Log\LoggerInterface::class);
+
         $this->fbdeleteasset = new Fbdeleteasset(
             $context,
             $resultJsonFactory,
@@ -82,7 +85,9 @@ class FbdeleteassetTest extends TestCase
             $this->systemConfig,
             $this->request,
             $this->fbeInstalledFeatureResource,
-            $eventManager
+            $eventManager,
+            $mbeInstalls,
+            $logger
         );
     }
 

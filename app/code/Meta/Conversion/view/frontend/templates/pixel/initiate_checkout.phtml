@@ -1,6 +1,8 @@
 <?php
-/** @var \Meta\Conversion\Block\Pixel\InitiateCheckout $block */
-
+/**
+ * @var \Meta\Conversion\Block\Pixel\InitiateCheckout $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
 $trackerUrl = $block->getTrackerUrl();
 if ($block->getFacebookPixelID()) {
     ?>
@@ -9,30 +11,32 @@ if ($block->getFacebookPixelID()) {
         {
             "*": {
                 "Meta_Conversion/js/metaPixelTracker" : {
-                    "url" : "<?= $block->escapeUrl($trackerUrl); ?>",
-                    "payload": <?= /* @noEscape */ json_encode([
-                        "eventName" => $block->getEventToObserveName(),
-                        "quoteId" => $block->getQuote()->getId()
-        ]) ?>,
-                "browserEventData": <?= /* @noEscape */ json_encode([
-                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                        'fbPixelId' => $block->getFacebookPixelID(),
-                        'source' => $block->getSource(),
-                        'pluginVersion' => $block->getPluginVersion(),
-                        'track' => 'trackCustom',
-                        'event' => 'InitiateCheckout',
-                        'payload' => [
-                            'content_type' => $block->getContentTypeQuote(),
-                            'content_ids' => $block->getContentIDs(),
-                            'num_items' => $block->getNumItems(),
-                            'contents' => $block->getContents(),
-                            'content_category' => $block->getContentCategory(),
-                            'value' => $block->getValue() ?? '',
-                            'currency' => $block->getCurrency() ?? ''
-                        ]
-        ]) ?>
-                }
-            }
+                    "url" : "<?= $escaper->escapeUrl($trackerUrl); ?>",
+                    "payload": <?= /* @noEscape */
+                    json_encode([
+                    "eventName" => $block->getEventToObserveName(),
+                    "quoteId" => $block->getQuote()->getId()
+                    ]) ?>,
+                "browserEventData": <?= /* @noEscape */
+                json_encode([
+                'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                'fbPixelId' => $block->getFacebookPixelID(),
+                'source' => $block->getSource(),
+                'pluginVersion' => $block->getPluginVersion(),
+                'track' => 'trackCustom',
+                'event' => 'InitiateCheckout',
+                'payload' => [
+                'content_type' => $block->getContentTypeQuote(),
+                'content_ids' => $block->getContentIDs(),
+                'num_items' => $block->getNumItems(),
+                'contents' => $block->getContents(),
+                'content_category' => $block->getContentCategory(),
+                'value' => $block->getValue() ?? '',
+                'currency' => $block->getCurrency() ?? ''
+                ]
+                ]) ?>
         }
+    }
+}
     </script>
 <?php } ?>

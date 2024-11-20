@@ -21,33 +21,46 @@ define([
         }).join('');
     }
 
-    return function (config) {
-        const browserEventData = config.browserEventData,
-          eventId = generateUUID();
+    function trackPixelEvent(config) {
+        const pixelId = config.browserEventData.fbPixelId,
+            agent = config.browserEventData.fbAgentVersion,
+            track = config.browserEventData.track,
+            event = config.browserEventData.event,
+            pixelEventPayload = config.browserEventData.payload,
+            eventId = config.payload.eventId,
+            trackServerEventUrl = config.url,
+            serverEventPayload = config.payload;
 
-        config.payload.eventId = eventId;
-
-        let browserPayload = config.browserEventData.payload;
-
-        browserPayload.source = browserEventData.source;
-
-        browserPayload.pluginVersion = browserEventData.pluginVersion;
-
-        fbq('set', 'agent', browserEventData.fbAgentVersion, browserEventData.fbPixelId);
-        fbq(browserEventData.track, browserEventData.event, browserPayload, {
+        fbq('set', 'agent', agent, pixelId);
+        fbq(track, event, pixelEventPayload, {
             eventID: eventId
         });
-
+        // trigger server-side CAPI event
         $.ajax({
             showLoader: true,
-            url: config.url,
+            url: trackServerEventUrl,
             type: 'POST',
-            data: config.payload,
+            data: serverEventPayload,
             dataType: 'json',
             global: false,
             error: function (error) {
                 console.log(error);
             }
         });
+    }
+
+    return function (config) {
+        config.payload.eventId = generateUUID();
+        config.browserEventData.payload.source = config.browserEventData.source;
+        config.browserEventData.payload.pluginVersion = config.browserEventData.pluginVersion;
+
+        if (window.metaPixelInitFlag) {
+            trackPixelEvent(config);
+        } else {
+            // wait until pixel is initialized
+            window.addEventListener('metaPixelInitialized', () => {
+                trackPixelEvent(config);
+            }, {once: true});
+        }
     };
 });

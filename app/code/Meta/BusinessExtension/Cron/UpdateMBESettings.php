@@ -45,8 +45,8 @@ class UpdateMBESettings
     /**
      * Construct
      *
-     * @param FBEHelper $fbeHelper
-     * @param MBEInstalls $mbeInstalls
+     * @param FBEHelper         $fbeHelper
+     * @param MBEInstalls       $mbeInstalls
      * @param CollectionFactory $collectionFactory
      */
     public function __construct(

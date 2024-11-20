@@ -44,9 +44,9 @@ class DeleteConnection extends Field
      * @param array $data
      */
     public function __construct(
-        Context $context,
+        Context      $context,
         SystemConfig $systemConfig,
-        array $data = []
+        array        $data = []
     ) {
         $this->systemConfig = $systemConfig;
         parent::__construct($context, $data);
@@ -55,7 +55,7 @@ class DeleteConnection extends Field
     /**
      * Remove scope label
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -73,7 +73,7 @@ class DeleteConnection extends Field
     {
         return $this->getUrl(
             'fbeadmin/ajax/fbdeleteasset',
-            ['storeId' => $this->getRequest()->getParam('store')]
+            ['storeId' => $this->getStoreId()]
         );
     }
 
@@ -107,7 +107,9 @@ class DeleteConnection extends Field
      */
     public function getButtonHtml()
     {
-        /** @var Button $button */
+        /**
+         * @var Button $button
+         */
         $button = $this->getLayout()->createBlock(Button::class);
         return $button->setData(['id' => 'fb_delete_connection_btn', 'label' => __('Delete Connection')])
             ->toHtml();
@@ -120,6 +122,10 @@ class DeleteConnection extends Field
      */
     protected function getStoreId()
     {
-        return $this->getRequest()->getParam('store');
+        $storeId = $this->getRequest()->getParam('store');
+        if ($storeId === null && $this->systemConfig->isSingleStoreMode()) {
+            $storeId = $this->systemConfig->getDefaultStoreId();
+        }
+        return $storeId;
     }
 }

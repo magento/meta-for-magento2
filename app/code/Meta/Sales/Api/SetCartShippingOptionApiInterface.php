@@ -31,9 +31,9 @@ interface SetCartShippingOptionApiInterface
     /**
      * Set Magento cart shipping option
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
-     * @param \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
+     * @param  string                                                  $externalBusinessId
+     * @param  string                                                  $cartId
+     * @param  \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
      * @return \Magento\Checkout\Api\Data\PaymentDetailsInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */

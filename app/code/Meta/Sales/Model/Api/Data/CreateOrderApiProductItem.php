@@ -40,7 +40,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the name of the product item.
      *
-     * @param string $name
+     * @param  string $name
      * @return CreateOrderApiProductItemInterface
      */
     public function setName(string $name): CreateOrderApiProductItemInterface
@@ -61,7 +61,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the SKU of the product item.
      *
-     * @param string $sku
+     * @param  string $sku
      * @return CreateOrderApiProductItemInterface
      */
     public function setSku(string $sku): CreateOrderApiProductItemInterface
@@ -82,7 +82,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the per unit base price of the product item.
      *
-     * @param float $perUnitBasePrice
+     * @param  float $perUnitBasePrice
      * @return CreateOrderApiProductItemInterface
      */
     public function setPerUnitBasePrice(float $perUnitBasePrice): CreateOrderApiProductItemInterface
@@ -103,7 +103,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the net price of the product item.
      *
-     * @param float $netPrice
+     * @param  float $netPrice
      * @return CreateOrderApiProductItemInterface
      */
     public function setNetPrice(float $netPrice): CreateOrderApiProductItemInterface
@@ -124,7 +124,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the subtotal price of the product item.
      *
-     * @param float $subTotalPrice
+     * @param  float $subTotalPrice
      * @return CreateOrderApiProductItemInterface
      */
     public function setSubTotalPrice(float $subTotalPrice): CreateOrderApiProductItemInterface
@@ -145,7 +145,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the tax amount of the product item.
      *
-     * @param float $tax
+     * @param  float $tax
      * @return CreateOrderApiProductItemInterface
      */
     public function setTax(float $tax): CreateOrderApiProductItemInterface
@@ -166,7 +166,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the tax rate of the product item.
      *
-     * @param float $taxRate
+     * @param  float $taxRate
      * @return CreateOrderApiProductItemInterface
      */
     public function setTaxRate(float $taxRate): CreateOrderApiProductItemInterface
@@ -187,7 +187,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the quantity of the product item.
      *
-     * @param int $quantity
+     * @param  int $quantity
      * @return CreateOrderApiProductItemInterface
      */
     public function setQuantity(int $quantity): CreateOrderApiProductItemInterface
@@ -208,7 +208,7 @@ class CreateOrderApiProductItem extends DataObject implements CreateOrderApiProd
     /**
      * Sets the discount applied to the product item.
      *
-     * @param CreateOrderApiDiscountInterface $discount
+     * @param  CreateOrderApiDiscountInterface $discount
      * @return CreateOrderApiProductItemInterface
      */
     public function setDiscount(CreateOrderApiDiscountInterface $discount): CreateOrderApiProductItemInterface

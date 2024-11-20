@@ -50,9 +50,9 @@ class VersionUpgradeNotification implements MessageInterface
 
     /**
      * @param MetaIssueNotification $metaIssueNotification
-     * @param Escaper $escaper
-     * @param UrlInterface $urlBuilder
-     * @param RequestInterface $request
+     * @param Escaper               $escaper
+     * @param UrlInterface          $urlBuilder
+     * @param RequestInterface      $request
      */
     public function __construct(
         MetaIssueNotification      $metaIssueNotification,

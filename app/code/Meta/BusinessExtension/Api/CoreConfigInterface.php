@@ -85,6 +85,21 @@ interface CoreConfigInterface
     public function setIsPromotionsSyncEnabled(bool $val): void;
 
     /**
+     * IsActiveExtension Getter
+     *
+     * @return bool
+     */
+    public function isActiveExtension(): bool;
+
+    /**
+     * IsActiveExtension Setter
+     *
+     * @param bool $val
+     * @return void
+     */
+    public function setIsActiveExtension(bool $val): void;
+
+    /**
      * ProductIdentifierAttr Getter
      *
      * @return ?string

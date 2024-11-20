@@ -33,7 +33,7 @@ class ManualDataSyncEmpty extends Field
     /**
      * Remove scope label
      *
-     * @param AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -45,8 +45,8 @@ class ManualDataSyncEmpty extends Field
     /**
      * Return element html
      *
-     * @param AbstractElement $element
-     * @return string
+     * @param                                         AbstractElement $element
+     * @return                                        string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getElementHtml(AbstractElement $element)

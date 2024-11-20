@@ -46,8 +46,10 @@ class MetaIssueNotification extends AbstractDb
      */
     public function deleteByNotificationId(string $notificationId): int
     {
-        $connection = $this->getConnection();
-        return $connection->delete(self::TABLE_NAME, ['notification_id = ?' => $notificationId]);
+        $connection = $this->_resources->getConnection();
+
+        $metaIssueNotificationTable = $this->_resources->getTableName(self::TABLE_NAME);
+        return $connection->delete($metaIssueNotificationTable, ['notification_id = ?' => $notificationId]);
     }
 
     /**
@@ -57,13 +59,15 @@ class MetaIssueNotification extends AbstractDb
      */
     public function saveVersionNotification(MetaIssueNotificationInterface $notification)
     {
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
         $version_notification = [
             'notification_id' => MetaIssueNotification::VERSION_NOTIFICATION_ID,
             'message' => $notification->getMessage(),
             'severity' => $notification->getSeverity(),
         ];
-        $connection->insertOnDuplicate(self::TABLE_NAME, $version_notification);
+
+        $metaIssueNotificationTable = $this->_resources->getTableName(self::TABLE_NAME);
+        $connection->insertOnDuplicate($metaIssueNotificationTable, $version_notification);
     }
 
     /**
@@ -71,9 +75,11 @@ class MetaIssueNotification extends AbstractDb
      */
     public function loadVersionNotification()
     {
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
+
+        $metaIssueNotificationTable = $this->_resources->getTableName(self::TABLE_NAME);
         $select = $connection->select()
-            ->from(self::TABLE_NAME)
+            ->from($metaIssueNotificationTable)
             ->where('notification_id = ?', MetaIssueNotification::VERSION_NOTIFICATION_ID);
         return $connection->fetchRow($select);
     }

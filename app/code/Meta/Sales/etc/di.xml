@@ -26,6 +26,8 @@
     <preference for="Meta\Sales\Api\DeleteCartItemApiInterface" type="Meta\Sales\Model\Api\DeleteCartItemApi"/>
     <preference for="Meta\Sales\Api\HealthCheckApiInterface" type="Meta\Sales\Model\Api\HealthCheckApi"/>
 
+    <preference for="Meta\Sales\Api\DiscountCouponCodeApiInterface" type="Meta\Sales\Model\Api\DiscountCouponCodeApi"/>
+
     <preference for="Meta\Sales\Api\DiscountRuleApiInterface" type="Meta\Sales\Model\Api\DiscountRuleApi"/>
     <preference for="Meta\Sales\Api\DiscountDeleteApiInterface" type="Meta\Sales\Model\Api\DiscountDeleteApi"/>
     <preference for="Meta\Sales\Api\NewsletterSubscriptionDiscountApiInterface"

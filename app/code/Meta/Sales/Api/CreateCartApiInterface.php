@@ -28,7 +28,7 @@ interface CreateCartApiInterface
     /**
      * Create Magento cart
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */

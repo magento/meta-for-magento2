@@ -26,8 +26,10 @@ use Magento\Framework\Event\ManagerInterface as EventManager;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Framework\App\Action\HttpDeleteActionInterface;
 use Magento\Framework\App\RequestInterface;
+use Meta\BusinessExtension\Model\MBEInstalls;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
+use Psr\Log\LoggerInterface;
 
 class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
 {
@@ -63,13 +65,25 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
     private EventManager $eventManager;
 
     /**
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param RequestInterface $request
+     * @var MBEInstalls
+     */
+    private MBEInstalls $mbeInstalls;
+
+    /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
+     * @param Context                  $context
+     * @param JsonFactory              $resultJsonFactory
+     * @param FBEHelper                $fbeHelper
+     * @param SystemConfig             $systemConfig
+     * @param RequestInterface         $request
      * @param FacebookInstalledFeature $fbeInstalledFeatureResource
-     * @param EventManager $eventManager
+     * @param EventManager             $eventManager
+     * @param MBEInstalls              $mbeInstalls
+     * @param LoggerInterface          $logger
      */
     public function __construct(
         Context $context,
@@ -78,7 +92,9 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
         SystemConfig $systemConfig,
         RequestInterface $request,
         FacebookInstalledFeature $fbeInstalledFeatureResource,
-        EventManager $eventManager
+        EventManager $eventManager,
+        MBEInstalls $mbeInstalls,
+        LoggerInterface $logger
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
         $this->fbeHelper = $fbeHelper;
@@ -86,6 +102,8 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
         $this->request = $request;
         $this->fbeInstalledFeatureResource = $fbeInstalledFeatureResource;
         $this->eventManager = $eventManager;
+        $this->mbeInstalls = $mbeInstalls;
+        $this->logger = $logger;
     }
 
     /**
@@ -106,7 +124,8 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
             ];
         }
         try {
-            $this->deleteConfigKeys($storeId)
+            $this->deleteInstalledFBE($storeId)
+                ->deleteConfigKeys($storeId)
                 ->deleteInstalledFeatures($storeId);
 
             $this->eventManager->dispatch('facebook_delete_assets_after', ['store_id' => $storeId]);
@@ -137,7 +156,7 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
     /**
      * Delete config keys
      *
-     * @param string|int|null $storeId Store ID to delete from.
+     * @param  string|int|null $storeId Store ID to delete from.
      * @return Fbdeleteasset
      */
     private function deleteConfigKeys($storeId)
@@ -169,12 +188,30 @@ class Fbdeleteasset extends AbstractAjax implements HttpDeleteActionInterface
     /**
      * Delete installed features
      *
-     * @param string|int|null $storeId Store ID to delete from.
+     * @param  string|int|null $storeId Store ID to delete from.
      * @return Fbdeleteasset
      */
     private function deleteInstalledFeatures($storeId)
     {
         $this->fbeInstalledFeatureResource->deleteAll($storeId);
+        return $this;
+    }
+
+    /**
+     * Delete Meta side FBE installation
+     *
+     * @param  string|int|null $storeId Store ID to delete from.
+     * @return Fbdeleteasset
+     */
+    private function deleteInstalledFBE($storeId)
+    {
+        try {
+            $this->mbeInstalls->deleteMBESettings($storeId);
+        } catch (\Exception $e) {
+            $this->logger->warning(
+                "Failed to delete MBE installation for ".$storeId.". The installation may not exist"
+            );
+        }
         return $this;
     }
 }

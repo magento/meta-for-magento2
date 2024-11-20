@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Helper;
 
+use FacebookAds\Object\ServerSide\UserData;
 use Magento\Customer\Model\Customer;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -192,19 +193,20 @@ class AAMFieldsExtractorHelper
      * Set user data
      *
      * @param Event $event
-     * @param array $userDataArray
-     * @return mixed
+     * @param array|null $userDataArray
+     * @param Customer|null $customer
+     * @return Event
      * @SuppressWarnings(PHPMD)
      * Unable to refactor because UserData object from Facebook SDK does not have generic setter function
      */
-    public function setUserData($event, $userDataArray = null)
+    public function setUserData($event, $userDataArray = null, $customer = null)
     {
-        $userDataArray = $this->getNormalizedUserData(null, $userDataArray);
+        $userDataArray = $this->getNormalizedUserData($customer, $userDataArray);
 
         if (empty($userDataArray)) {
             return $event;
         }
-
+        /** @var UserData $userData */
         $userData = $event->getUserData();
         if (array_key_exists(AAMSettingsFields::EMAIL, $userDataArray)
         ) {

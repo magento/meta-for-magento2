@@ -88,14 +88,19 @@ class OrderCreateAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        /** @var Order $order */
+        /**
+         * @var Order $order
+         */
         $order = $observer->getEvent()->getOrder();
-        /** @var FacebookOrder $facebookOrder */
+        /**
+         * @var FacebookOrder $facebookOrder
+         */
         $facebookOrder = $observer->getEvent()->getFacebookOrder();
         $storeId = $order->getStoreId();
 
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))) {
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 

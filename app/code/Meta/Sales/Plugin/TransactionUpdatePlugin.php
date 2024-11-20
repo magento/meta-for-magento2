@@ -35,7 +35,7 @@ class TransactionUpdatePlugin
     private FacebookOrderInterfaceFactory $facebookOrderFactory;
 
     /**
-     * @param Logger $logger
+     * @param Logger                        $logger
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
      */
     public function __construct(
@@ -51,15 +51,14 @@ class TransactionUpdatePlugin
      *
      * Taxjar plugin with marketplace exemption
      *
-     * @param mixed $subject
-     * @param mixed $result
-     * @param mixed $order
-     * @return string
+     * @param                                         mixed $_subject
+     * @param                                         mixed $result
+     * @param                                         mixed $order
+     * @return                                        string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterGetProvider(mixed $subject, $result, $order): string
+    public function afterGetProvider($_subject, $result, $order): string
     {
-        // Logging $subject to prevent Magento's internal tests from failing due to unused var. $_ doesn't work.
-        $this->logger->debug($subject);
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->load($order->getId(), 'magento_order_id');
         if ($facebookOrder->getFacebookOrderId()) {

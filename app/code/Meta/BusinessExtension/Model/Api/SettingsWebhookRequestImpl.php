@@ -39,7 +39,7 @@ class SettingsWebhookRequestImpl extends DataObject implements SettingsWebhookRe
     /**
      * Setter
      *
-     * @param string $externalBusinessId
+     * @param  string $externalBusinessId
      * @return void
      */
     public function setExternalBusinessId(string $externalBusinessId): void
@@ -60,7 +60,7 @@ class SettingsWebhookRequestImpl extends DataObject implements SettingsWebhookRe
     /**
      * Notification Setter
      *
-     * @param \Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface $notification
+     * @param  \Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface $notification
      * @return void
      */
     public function setNotification(MetaIssueNotificationInterface $notification): void
@@ -71,7 +71,7 @@ class SettingsWebhookRequestImpl extends DataObject implements SettingsWebhookRe
     /**
      * GraphApiVersion Setter
      *
-     * @param null|string $graphApiVersion
+     * @param  null|string $graphApiVersion
      * @return void
      */
     public function setGraphAPIVersion(?string $graphApiVersion): void

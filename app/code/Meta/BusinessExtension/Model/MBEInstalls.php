@@ -22,6 +22,7 @@ namespace Meta\BusinessExtension\Model;
 
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Meta\BusinessExtension\Helper\CatalogConfigUpdateHelper;
@@ -83,14 +84,14 @@ class MBEInstalls
     /**
      * Construct
      *
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphApiAdapter
-     * @param FacebookInstalledFeature $installedFeatureResource
+     * @param FBEHelper                 $fbeHelper
+     * @param SystemConfig              $systemConfig
+     * @param GraphAPIAdapter           $graphApiAdapter
+     * @param FacebookInstalledFeature  $installedFeatureResource
      * @param CatalogConfigUpdateHelper $catalogConfigUpdateHelper
-     * @param ApiKeyService $apiKeyService
-     * @param StoreManagerInterface $storeManager
-     * @param LoggerInterface $logger
+     * @param ApiKeyService             $apiKeyService
+     * @param StoreManagerInterface     $storeManager
+     * @param LoggerInterface           $logger
      * @param AdobeCloudConfigInterface $adobeConfig
      */
     public function __construct(
@@ -118,8 +119,8 @@ class MBEInstalls
     /**
      * Process fbe_installs response
      *
-     * @param array $response
-     * @param int $storeId
+     * @param  array $response
+     * @param  int   $storeId
      * @return bool
      * @throws GuzzleException
      * @throws LocalizedException
@@ -151,6 +152,7 @@ class MBEInstalls
         $this->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId);
         $this->saveMerchantSettingsId($data['commerce_merchant_settings_id'] ?? '', $storeId);
         $this->saveInstalledFeatures($data['installed_features'] ?? '', $storeId);
+        $this->setInstalledFlag($storeId);
         $this->systemConfig->cleanCache();
         return true;
     }
@@ -159,7 +161,7 @@ class MBEInstalls
      * Save pixelId and update AAMSettings
      *
      * @param array $pixelId
-     * @param int $storeId
+     * @param int   $storeId
      */
     private function savePixelId($pixelId, $storeId)
     {
@@ -170,7 +172,9 @@ class MBEInstalls
                 $storeId
             );
             $this->fbeHelper->fetchAndSaveAAMSettings($pixelId, $storeId);
-            $this->fbeHelper->log("Saved fbe_installs pixel_id --- {$pixelId} for storeId: {$storeId}");
+            $this->fbeHelper->log(
+                "Saved fbe_installs pixel_id --- " . json_encode($pixelId) . " for storeId: {$storeId}"
+            );
         } else {
             $this->systemConfig->saveConfig(
                 SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID,
@@ -184,7 +188,7 @@ class MBEInstalls
      * Save profiles
      *
      * @param array $profiles
-     * @param int $storeId
+     * @param int   $storeId
      */
     private function saveProfiles($profiles, $storeId)
     {
@@ -202,8 +206,8 @@ class MBEInstalls
     /**
      * Save pages
      *
-     * @param array $pages
-     * @param int $storeId
+     * @param  array $pages
+     * @param  int   $storeId
      * @throws GuzzleException
      * @throws LocalizedException
      */
@@ -252,8 +256,8 @@ class MBEInstalls
     /**
      * Save commerce partner integration id
      *
-     * @param int $commercePartnerIntegrationId
-     * @param int $storeId
+     * @param  int $commercePartnerIntegrationId
+     * @param  int $storeId
      * @return $this
      */
     public function saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId)
@@ -264,8 +268,10 @@ class MBEInstalls
                 $commercePartnerIntegrationId,
                 $storeId
             );
-            $this->fbeHelper->log("Saved fbe_installs commerce_partner_integration_id ---" .
-                "{$commercePartnerIntegrationId} for storeID: {$storeId}");
+            $this->fbeHelper->log(
+                "Saved fbe_installs commerce_partner_integration_id ---" .
+                "{$commercePartnerIntegrationId} for storeID: {$storeId}"
+            );
         }
         return $this;
     }
@@ -294,7 +300,7 @@ class MBEInstalls
      * Save installed features
      *
      * @param array $data
-     * @param int $storeId
+     * @param int   $storeId
      */
     private function saveInstalledFeatures($data, $storeId)
     {
@@ -307,9 +313,24 @@ class MBEInstalls
     }
 
     /**
+     * Update install flag to true and save
+     *
+     * @param  int $storeId
+     */
+    public function setInstalledFlag($storeId)
+    {
+        // set installed to true
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
+            true,
+            $storeId,
+        );
+    }
+
+    /**
      * Update MBE settings through the 'fbe_installs' API
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return void
      */
     public function updateMBESettings($storeId)
@@ -326,11 +347,29 @@ class MBEInstalls
     }
 
     /**
+     * Delete MBE settings through the 'fbe_installs' API
+     *
+     * @param  int $storeId
+     * @return void
+     */
+    public function deleteMBESettings($storeId)
+    {
+        $accessToken = $this->systemConfig->getAccessToken($storeId);
+        $businessId = $this->systemConfig->getExternalBusinessId($storeId);
+        if (!$accessToken || !$businessId) {
+            $this->fbeHelper->log("AccessToken or BusinessID not found for storeID: {$storeId}");
+            return;
+        }
+        $this->graphApiAdapter->deleteFBEInstalls($accessToken, $businessId);
+        $this->fbeHelper->log("Delete MBE Settings for storeId: {$storeId}");
+    }
+
+    /**
      * Call Repair CommercePartnerIntegration endpoint
      *
      * Keep Meta side CommercePartnerIntegration updated with latest info from Magento
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      * @throws \Exception
      */
@@ -340,7 +379,7 @@ class MBEInstalls
             $accessToken = $this->systemConfig->getAccessToken($storeId);
             $externalBusinessId = $this->systemConfig->getExternalBusinessId($storeId);
             $customToken = $this->apiKeyService->getCustomApiKey();
-            $domain = $this->storeManager->getStore($storeId)->getBaseUrl();
+            $domain = $this->storeManager->getStore($storeId)->getBaseUrl(UrlInterface::URL_TYPE_WEB);
             $seller_platform_type = $this->adobeConfig->getCommercePartnerSellerPlatformType();
             $extensionVersion = $this->systemConfig->getModuleVersion();
 
@@ -367,8 +406,10 @@ class MBEInstalls
                         'store_id' => $storeId,
                         'event' => 'inconsistent_cpi',
                     ];
-                    $e = new \Exception("Commerce Partner Integration ID inconsistent between Meta and Magento. 
-                    Existing ID: $existingIntegrationId and New ID: $integrationId");
+                    $e = new \Exception(
+                        "Commerce Partner Integration ID inconsistent between Meta and Magento. 
+                    Existing ID: $existingIntegrationId and New ID: $integrationId"
+                    );
                     $this->fbeHelper->logExceptionImmediatelyToMeta($e, $context);
                 }
                 $this->saveCommercePartnerIntegrationId($integrationId, $storeId);

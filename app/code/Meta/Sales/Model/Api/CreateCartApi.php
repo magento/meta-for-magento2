@@ -70,22 +70,22 @@ class CreateCartApi implements CreateCartApiInterface
     private FBEHelper $fbeHelper;
 
     /**
-     * @param Authenticator             $authenticator
-     * @param OrderHelper               $orderHelper
-     * @param QuoteIdMaskFactory        $quoteIdMaskFactory
-     * @param QuoteFactory              $quoteFactory
-     * @param AddressFactory            $quoteAddressFactory
-     * @param CartRepositoryInterface   $quoteRepository
-     * @param FBEHelper                 $fbeHelper
+     * @param Authenticator $authenticator
+     * @param OrderHelper $orderHelper
+     * @param QuoteIdMaskFactory $quoteIdMaskFactory
+     * @param QuoteFactory $quoteFactory
+     * @param AddressFactory $quoteAddressFactory
+     * @param CartRepositoryInterface $quoteRepository
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
-        Authenticator               $authenticator,
-        OrderHelper                 $orderHelper,
-        QuoteIdMaskFactory          $quoteIdMaskFactory,
-        QuoteFactory                $quoteFactory,
-        AddressFactory              $quoteAddressFactory,
-        CartRepositoryInterface     $quoteRepository,
-        FBEHelper                   $fbeHelper
+        Authenticator           $authenticator,
+        OrderHelper             $orderHelper,
+        QuoteIdMaskFactory      $quoteIdMaskFactory,
+        QuoteFactory            $quoteFactory,
+        AddressFactory          $quoteAddressFactory,
+        CartRepositoryInterface $quoteRepository,
+        FBEHelper               $fbeHelper
     ) {
         $this->authenticator = $authenticator;
         $this->orderHelper = $orderHelper;
@@ -108,10 +108,12 @@ class CreateCartApi implements CreateCartApiInterface
         $this->authenticator->authenticateRequest();
         $storeId = $this->orderHelper->getStoreIdByExternalBusinessId($externalBusinessId);
 
-        /** @var $quoteIdMask \Magento\Quote\Model\QuoteIdMask */
+        /** @var QuoteIdMask $quoteIdMask */
         $quoteIdMask = $this->quoteIdMaskFactory->create();
 
-        /** @var Quote $quote */
+        /**
+         * @var Quote $quote
+         */
         $quote = $this->quoteFactory->create();
         $quote->setStoreId($storeId);
         $quote->setBillingAddress($this->quoteAddressFactory->create());

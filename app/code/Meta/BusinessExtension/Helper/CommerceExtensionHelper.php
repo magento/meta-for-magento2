@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Helper;
 
 use GuzzleHttp\Exception\GuzzleException;
+use Meta\BusinessExtension\Logger\Logger;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class CommerceExtensionHelper
@@ -28,7 +29,7 @@ class CommerceExtensionHelper
     /**
      * @var SystemConfig
      */
-    private $systemConfig;
+    private SystemConfig $systemConfig;
 
     /**
      * @var GraphAPIAdapter
@@ -43,12 +44,12 @@ class CommerceExtensionHelper
     /**
      * FBEHelper constructor
      *
-     * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
+     * @param SystemConfig             $systemConfig
+     * @param GraphAPIAdapter          $graphAPIAdapter
      */
     public function __construct(
-        SystemConfig    $systemConfig,
-        GraphAPIAdapter $graphAPIAdapter
+        SystemConfig             $systemConfig,
+        GraphAPIAdapter          $graphAPIAdapter
     ) {
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
@@ -86,7 +87,7 @@ class CommerceExtensionHelper
     /**
      * Whether to enable the new Commerce Extension UI
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function isCommerceExtensionEnabled($storeId)
@@ -98,7 +99,7 @@ class CommerceExtensionHelper
     /**
      * Whether there is an error blocking usage of the Commerce Extension.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return bool
      */
     public function hasCommerceExtensionPermissionError($storeId)
@@ -110,7 +111,7 @@ class CommerceExtensionHelper
     /**
      * Get a URL to use to render the CommerceExtension IFrame for an onboarded Store.
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return string
      */
     public function getCommerceExtensionIFrameURL($storeId)

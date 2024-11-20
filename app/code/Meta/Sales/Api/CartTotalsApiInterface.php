@@ -30,8 +30,8 @@ interface CartTotalsApiInterface
     /**
      * Get Magento cart totals
      *
-     * @param string $externalBusinessId
-     * @param string $cartId
+     * @param  string $externalBusinessId
+     * @param  string $cartId
      * @return \Magento\Quote\Api\Data\TotalsInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\LocalizedException

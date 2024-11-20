@@ -45,9 +45,11 @@ class FacebookInstalledFeature extends AbstractDb
      */
     public function doesFeatureTypeExist($featureType, $storeId)
     {
-        $connection = $this->getConnection();
+        $connection = $this->_resources->getConnection();
+
+        $facebookInstalledFeaturesTable = $this->_resources->getTableName(self::TABLE_NAME);
         $select = $connection->select()
-            ->from(self::TABLE_NAME)
+            ->from($facebookInstalledFeaturesTable)
             ->where('feature_type = ?', $featureType)
             ->where('store_id = ?', $storeId);
         return $connection->fetchRow($select) !== false;
@@ -61,10 +63,12 @@ class FacebookInstalledFeature extends AbstractDb
      */
     public function deleteAll($storeId)
     {
-        $connection = $this->getConnection();
-        return $connection->delete(self::TABLE_NAME, ['store_id = ?' => $storeId]);
+        $connection = $this->_resources->getConnection();
+
+        $facebookInstalledFeaturesTable = $this->_resources->getTableName(self::TABLE_NAME);
+        return $connection->delete($facebookInstalledFeaturesTable, ['store_id = ?' => $storeId]);
     }
-    
+
     /**
      * Save response data from 'installed_features' to table
      *
@@ -84,9 +88,11 @@ class FacebookInstalledFeature extends AbstractDb
             },
             array_values($features)
         );
-        
-        $connection = $this->getConnection();
-        $connection->insertOnDuplicate(self::TABLE_NAME, $finalFeatures);
+
+        $connection = $this->_resources->getConnection();
+
+        $facebookInstalledFeaturesTable = $this->_resources->getTableName(self::TABLE_NAME);
+        $connection->insertOnDuplicate($facebookInstalledFeaturesTable, $finalFeatures);
     }
 
     /**

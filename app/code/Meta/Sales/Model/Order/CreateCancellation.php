@@ -69,11 +69,11 @@ class CreateCancellation
     /**
      * CreateCancellation constructor
      *
-     * @param OrderRepositoryInterface $orderRepository
+     * @param OrderRepositoryInterface      $orderRepository
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param TransactionFactory $transactionFactory
-     * @param FBEHelper $fbeHelper
-     * @param LoggerInterface $logger
+     * @param TransactionFactory            $transactionFactory
+     * @param FBEHelper                     $fbeHelper
+     * @param LoggerInterface               $logger
      */
     public function __construct(
         OrderRepositoryInterface      $orderRepository,
@@ -92,8 +92,8 @@ class CreateCancellation
     /**
      * Execute cancellation process
      *
-     * @param array $facebookOrderData
-     * @param array $facebookCancellationData
+     * @param  array $facebookOrderData
+     * @param  array $facebookCancellationData
      * @return bool
      * @throws LocalizedException
      */
@@ -131,7 +131,7 @@ class CreateCancellation
     /**
      * Check if the order is partially canceled
      *
-     * @param Order $order
+     * @param  Order $order
      * @return bool
      */
     private function isOrderPartiallyCanceled(Order $order): bool
@@ -147,7 +147,7 @@ class CreateCancellation
     /**
      * Retrieve or create a Magento order based on the Facebook Order ID
      *
-     * @param array $data
+     * @param  array $data
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
@@ -163,7 +163,10 @@ class CreateCancellation
                 $magentoOrder = $this->orderRepository->get($magentoOrderId);
                 return $magentoOrder;
             } catch (\Exception $e) {
-                $this->logger->debug($e);
+                $this->logger->debug(
+                    $e->getMessage(),
+                    ['exception' => $e, 'trace' => $e->getTraceAsString()]
+                );
             }
         }
         // In the case of any failure or missing order, simply bail and return null.
@@ -173,8 +176,8 @@ class CreateCancellation
     /**
      * Determines if the entire order should be cancelled
      *
-     * @param Order $order
-     * @param array $cancelItems
+     * @param  Order $order
+     * @param  array $cancelItems
      * @return bool
      */
     private function shouldCancelEntireOrder(Order $order, array $cancelItems): bool
@@ -222,10 +225,12 @@ class CreateCancellation
                     $orderItem->getHiddenTaxAmount() * $orderItem->getQtyCanceled() / $orderItem->getQtyOrdered()
                 );
             } else {
-                $this->fbeHelper->log(sprintf(
-                    "Severe issue. Item with SKU: %s was not found in Magento for cancellation",
-                    $retailerId
-                ));
+                $this->fbeHelper->log(
+                    sprintf(
+                        "Severe issue. Item with SKU: %s was not found in Magento for cancellation",
+                        $retailerId
+                    )
+                );
             }
         }
     }

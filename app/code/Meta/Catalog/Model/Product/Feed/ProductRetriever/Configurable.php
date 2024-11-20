@@ -144,6 +144,7 @@ class Configurable implements ProductRetrieverInterface
             $search = $this
                 ->searchCriteriaBuilder
                 ->addFilter('entity_id', array_keys($configurableCollection->getItems()), 'in')
+                ->addFilter('store_id', $storeId)
                 ->create();
 
             $products = $this->productRepo->getList($search)->getItems();
