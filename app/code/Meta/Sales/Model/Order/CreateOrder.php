@@ -33,13 +33,14 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Sales\Api\Data\FacebookOrderInterface;
 use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
 use Meta\Sales\Model\Config\Source\DefaultOrderStatus;
-use Meta\Sales\Model\FacebookOrder;
 use Meta\Sales\Model\Mapper\OrderMapper;
 use Psr\Log\LoggerInterface;
 
 /**
  * Create order from facebook api data
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class CreateOrder
 {
@@ -150,20 +151,13 @@ class CreateOrder
      *
      * @param array $data
      * @param int $storeId
-     * @param bool $isRefundOrCancel
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
      */
-    public function execute(array $data, int $storeId, bool $isRefundOrCancel = false): Order
+    public function execute(array $data, int $storeId): Order
     {
         $facebookOrderId = $data['id'];
-        $facebookOrder = $this->getFacebookOrder($facebookOrderId);
-
-        if ($facebookOrder->getId()) {
-            $facebookOrder->getMagentoOrderId();
-            return $this->orderRepository->get($facebookOrder->getMagentoOrderId());
-        }
 
         $this->logger->debug(json_encode($data));
 
@@ -173,24 +167,17 @@ class CreateOrder
         $channel = ucfirst($data['channel']);
 
         $this->orderManagement->place($order);
-
-        $defaultStatus = $this->systemConfig->getDefaultOrderStatus($storeId);
-        if ($defaultStatus === DefaultOrderStatus::ORDER_STATUS_PROCESSING || $isRefundOrCancel) {
-            $order->setState(Order::STATE_PROCESSING)
-                ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
-
-            // create invoice
-            $invoice = $this->invoiceManagement->prepareInvoice($order);
-            $invoice->register();
-            $order = $invoice->getOrder();
-            $transactionSave = $this->transactionFactory->create();
-            $transactionSave->addObject($invoice)->addObject($order)->save();
-        }
+        $payment = $order->getPayment();
+        $payment->setMethod('facebook');
+        $payment->setParentTransactionId($facebookOrderId);
 
         $extraData = [
             'email_remarketing_option' => $data['buyer_details']['email_remarketing_option'],
         ];
 
+        /**
+         * @var FacebookOrderInterface $facebookOrder
+         */
         $facebookOrder = $this->facebookOrderFactory->create();
         $facebookOrder->setFacebookOrderId($facebookOrderId)
             ->setMagentoOrderId($order->getId())
@@ -198,26 +185,22 @@ class CreateOrder
             ->setExtraData($extraData);
         $facebookOrder->save();
 
-        $this->eventManager->dispatch('facebook_order_create_after', [
-            'order' => $order,
-            'facebook_order' => $facebookOrder,
-        ]);
+        // set order extension attributes
+        $emailRemarketingOption = ($extraData['email_remarketing_option'] ?? false) === true;
+        $extensionAttributes = $order->getExtensionAttributes();
+        $extensionAttributes->setFacebookOrderId($facebookOrder->getFacebookOrderId())
+            ->setChannel($facebookOrder->getChannel())
+            ->setEmailRemarketingOption($emailRemarketingOption);
+        $order->setExtensionAttributes($extensionAttributes);
+
+        $this->eventManager->dispatch(
+            'facebook_order_create_after',
+            [
+                'order' => $order,
+                'facebook_order' => $facebookOrder,
+            ]
+        );
 
         return $order;
-    }
-
-    /**
-     * Get facebook order by facebook order id
-     *
-     * @param string $facebookOrderId
-     * @return void
-     */
-    private function getFacebookOrder(string $facebookOrderId): FacebookOrderInterface
-    {
-        /** @var FacebookOrder $facebookOrder */
-        $facebookOrder = $this->facebookOrderFactory->create();
-        $facebookOrder->load($facebookOrderId, 'facebook_order_id');
-
-        return $facebookOrder;
     }
 }

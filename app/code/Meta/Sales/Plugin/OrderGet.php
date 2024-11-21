@@ -20,59 +20,58 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Plugin;
 
-use Meta\Sales\Api\Data\FacebookOrderInterfaceFactory;
-use Magento\Sales\Api\Data\OrderExtensionFactory;
+use Exception;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
+use Meta\Sales\Helper\OrderHelper;
+use Psr\Log\LoggerInterface;
 
 class OrderGet
 {
     /**
-     * @var OrderExtensionFactory
+     * @var OrderHelper
      */
-    private $orderExtensionFactory;
+    private OrderHelper $orderHelper;
 
     /**
-     * @var FacebookOrderInterfaceFactory
+     * @var LoggerInterface
      */
-    private $facebookOrderFactory;
+    private LoggerInterface $logger;
 
     /**
-     * @param OrderExtensionFactory $orderExtensionFactory
-     * @param FacebookOrderInterfaceFactory $facebookOrderFactory
+     * @param OrderHelper $orderHelper
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        OrderExtensionFactory $orderExtensionFactory,
-        FacebookOrderInterfaceFactory $facebookOrderFactory
+        OrderHelper     $orderHelper,
+        LoggerInterface $logger
     ) {
-        $this->orderExtensionFactory = $orderExtensionFactory;
-        $this->facebookOrderFactory = $facebookOrderFactory;
+        $this->orderHelper = $orderHelper;
+        $this->logger = $logger;
     }
 
     /**
-     * After get order plugin
+     * After get order collection plugin
      *
      * @param OrderRepositoryInterface $subject
-     * @param OrderInterface $order
-     * @return OrderInterface
+     * @param OrderCollection $orderCollection
+     * @return OrderCollection
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter) $subject
      */
-    public function afterGet(OrderRepositoryInterface $subject, OrderInterface $order)
+    public function afterGetList(OrderRepositoryInterface $subject, OrderCollection $orderCollection)
     {
-        $facebookOrder = $this->facebookOrderFactory->create();
-        $facebookOrder->load($order->getId(), 'magento_order_id');
-
-        $emailRemarketingOption = ($facebookOrder->getExtraData()['email_remarketing_option'] ?? false) === true;
-
-        if ($facebookOrder->getId()) {
-            $extensionAttributes = $order->getExtensionAttributes() ?: $this->orderExtensionFactory->create();
-            $extensionAttributes->setFacebookOrderId($facebookOrder->getFacebookOrderId())
-                ->setChannel($facebookOrder->getChannel())
-                ->setEmailRemarketingOption($emailRemarketingOption);
-            $order->setExtensionAttributes($extensionAttributes);
+        try {
+            foreach ($orderCollection->getItems() as $order) {
+                /**
+                 * @var OrderInterface $order
+                 */
+                $this->orderHelper->setFacebookOrderExtensionAttributes($order);
+            }
+        } catch (Exception $e) {
+            $this->logger->critical($e);
         }
-
-        return $order;
+        return $orderCollection;
     }
 }

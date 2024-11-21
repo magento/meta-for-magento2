@@ -30,7 +30,7 @@ class DeleteLegacyData implements DataPatchInterface
      */
     public static function getDependencies(): array
     {
-        return  [];
+        return [];
     }
 
     /**
@@ -44,11 +44,26 @@ class DeleteLegacyData implements DataPatchInterface
     }
 
     /**
-     * Delete unnecessary data from the legacy version of the extension
+     * Apply patch
      *
      * @return void
      */
     public function apply(): void
+    {
+        $connection = $this->moduleDataSetup->getConnection();
+        $connection->startSetup();
+
+        $this->deleteLegacyData();
+
+        $connection->endSetup();
+    }
+
+    /**
+     * Delete unnecessary data from the legacy version of the extension
+     *
+     * @return void
+     */
+    private function deleteLegacyData(): void
     {
         $productAttributesToDelete = [
             'facebook_age_group',
@@ -98,21 +113,23 @@ class DeleteLegacyData implements DataPatchInterface
 
         $connection = $this->moduleDataSetup->getConnection();
 
-        $connection->startSetup();
-
         // drop legacy facebook_business_extension_config table
         $connection->dropTable('facebook_business_extension_config');
 
         // delete legacy product attributes
-        $eavAttributeTable = $connection->getTableName('eav_attribute');
+        $eavAttributeTable = $this->moduleDataSetup->getTable('eav_attribute');
         foreach ($productAttributesToDelete as $attributeCode) {
-            $connection->delete($eavAttributeTable, ['attribute_code = ?' => $attributeCode]);
+            $connection->delete(
+                $eavAttributeTable,
+                ['attribute_code = ?' => $attributeCode]
+            );
         }
 
         // delete legacy attribute group
-        $eavAttributeGroupTable = $connection->getTableName('eav_attribute_group');
-        $connection->delete($eavAttributeGroupTable, ['attribute_group_name = ?' => 'Facebook Attribute Group']);
-
-        $connection->endSetup();
+        $eavAttributeGroupTable = $this->moduleDataSetup->getTable('eav_attribute_group');
+        $connection->delete(
+            $eavAttributeGroupTable,
+            ['attribute_group_name = ?' => 'Facebook Attribute Group']
+        );
     }
 }

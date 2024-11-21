@@ -20,24 +20,18 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
 
-use Magento\Security\Model\AdminSessionsManager;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Event\ManagerInterface as EventManager;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\Fbdeleteasset;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 
 class FbdeleteassetTest extends TestCase
 {
-    /**
-     * @var MockObject
-     */
-    private $fbeHelper;
-
     /**
      * @var Fbdeleteasset
      */
@@ -74,21 +68,26 @@ class FbdeleteassetTest extends TestCase
      */
     public function setUp(): void
     {
+        $context = $this->createMock(Context::class);
         $resultJsonFactory = $this->createMock(JsonFactory::class);
-        $this->fbeHelper = $this->createMock(FBEHelper::class);
-        $sessionManager = $this->createMock(AdminSessionsManager::class);
+        $fbeHelper = $this->createMock(FBEHelper::class);
         $this->systemConfig = $this->createMock(SystemConfig::class);
         $this->fbeInstalledFeatureResource = $this->createMock(FacebookInstalledFeature::class);
         $this->request = $this->createMock(\Magento\Framework\App\RequestInterface::class);
         $eventManager = $this->createMock(EventManager::class);
+        $mbeInstalls = $this->createMock(\Meta\BusinessExtension\Model\MBEInstalls::class);
+        $logger = $this->createMock(\Psr\Log\LoggerInterface::class);
+
         $this->fbdeleteasset = new Fbdeleteasset(
+            $context,
             $resultJsonFactory,
-            $this->fbeHelper,
-            $sessionManager,
+            $fbeHelper,
             $this->systemConfig,
             $this->request,
             $this->fbeInstalledFeatureResource,
-            $eventManager
+            $eventManager,
+            $mbeInstalls,
+            $logger
         );
     }
 

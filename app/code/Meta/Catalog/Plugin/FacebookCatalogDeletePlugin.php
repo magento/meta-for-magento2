@@ -31,7 +31,7 @@ class FacebookCatalogDeletePlugin
 {
 
     /**
-     * @var FacebokoCatalogUpdate
+     * @var FacebookCatalogUpdate
      */
     private $catalogUpdateResourceModel;
 
@@ -94,7 +94,7 @@ class FacebookCatalogDeletePlugin
             $this->catalogUpdateResourceModel->deleteUpdateProductEntries($identifier);
             $this->catalogUpdateResourceModel->save($catalogDelete);
         } catch (\Exception $e) {
-            $this->fbeHelper->log('Unable to save product deletion to Facebook catalog update table.');
+            $this->fbeHelper->log('Unable to save product deletion to Meta catalog update table.');
             $this->fbeHelper->logException($e);
         }
         return $result;

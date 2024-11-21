@@ -47,10 +47,10 @@ class PullOrders extends AbstractAjax
     private CommerceHelper $commerceHelper;
 
     /**
-     * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param SystemConfig $systemConfig
-     * @param FBEHelper $fbeHelper
+     * @param Context        $context
+     * @param JsonFactory    $resultJsonFactory
+     * @param SystemConfig   $systemConfig
+     * @param FBEHelper      $fbeHelper
      * @param CommerceHelper $commerceHelper
      */
     public function __construct(
@@ -83,7 +83,7 @@ class PullOrders extends AbstractAjax
             $storeId = $storeParam;
         }
 
-        if (!$this->systemConfig->isActiveOrderSync($storeId)) {
+        if (!$this->systemConfig->isOrderSyncEnabled($storeId)) {
             $response['success'] = false;
             $response['error_message'] = __('Enable order sync before pulling orders.');
             return $response;

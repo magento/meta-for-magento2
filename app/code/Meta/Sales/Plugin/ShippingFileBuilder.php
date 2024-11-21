@@ -43,7 +43,7 @@ class ShippingFileBuilder
     /**
      * Creates file with shipping profiles that we can send to Meta
      *
-     * @param array $shippingProfiles
+     * @param  array $shippingProfiles
      * @return string
      * @throws FileSystemException
      */
@@ -78,7 +78,8 @@ class ShippingFileBuilder
             ShippingData::ATTR_HANDLING_FEE,
             ShippingData::ATTR_HANDLING_FEE_TYPE,
             ShippingData::ATTR_SHIPPING_FEE_TYPE,
-            ShippingData::ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT
+            ShippingData::ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT,
+            ShippingData::EXTERNAL_REFERENCE_ID
         ];
     }
 }

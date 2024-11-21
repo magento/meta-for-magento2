@@ -3,14 +3,14 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Meta_BusinessExtension::facebook"
-             title="Meta"
+             title="Facebook and Instagram"
              translate="title"
              module="Meta_BusinessExtension"
              sortOrder="50"
              dependsOnModule="Meta_BusinessExtension"
              resource="Meta_BusinessExtension::facebook"/>
         <add id="Meta_BusinessExtension::facebook_business_extension"
-             title="Setup"
+             title="Overview"
              translate="title"
              module="Meta_BusinessExtension"
              parent="Meta_BusinessExtension::facebook"

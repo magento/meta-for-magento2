@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Model\System;
 
+use Exception;
 use Magento\Config\Model\ResourceModel\Config as ResourceConfig;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\CacheInterface;
@@ -41,6 +42,7 @@ class Config
     private const VERSION_CACHE_KEY = 'meta-business-extension-version';
     private const EXTENSION_PACKAGE_NAME = 'meta/meta-for-magento2';
 
+    private const XML_PATH_AUCTANE_API_ACTIVE = 'carriers/shipstation/active';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE = 'facebook/business_extension/active';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED = 'facebook/business_extension/installed';
 
@@ -56,16 +58,23 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID = 'facebook/business_extension/page_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID = 'facebook/business_extension/catalog_id';
 
+    public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_GRAPH_API_VERSION =
+        'facebook/business_extension/graph_api_version';
+
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_PARTNER_INTEGRATION_ID =
         'facebook/business_extension/commerce_partner_integration_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID =
         'facebook/business_extension/commerce_account_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID = 'facebook/business_extension/feed_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_OFFERS_FEED_ID = 'facebook/business_extension/offers_feed_id';
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_STORE = 'facebook/business_extension/store';
     public const XML_PATH_FACEBOOK_ENABLE_CATALOG_SYNC = 'facebook/catalog_management/enable_catalog_sync';
+
+    public const XML_PATH_FACEBOOK_PRODUCTS_FETCH_BATCH_SIZE = 'facebook/catalog_management/products_fetch_batch_size';
+
     private const XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER = 'facebook/catalog_management/product_identifier';
     private const XML_PATH_FACEBOOK_PRICE_INCL_TAX = 'facebook/catalog_management/price_incl_tax';
+    private const XML_PATH_FACEBOOK_ENABLE_SYNC_ALL_CATEGORIES =
+        'facebook/catalog_management/enable_sync_all_categories';
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_STANDARD = 'facebook/shipping_methods/standard';
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_EXPEDITED = 'facebook/shipping_methods/expedited';
     private const XML_PATH_FACEBOOK_SHIPPING_METHODS_RUSH = 'facebook/shipping_methods/rush';
@@ -85,8 +94,6 @@ class Config
     public const XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE = 'facebook/orders_sync/active';
     public const XML_PATH_FACEBOOK_ORDERS_SYNC_DEFAULT_ORDER_STATUS = 'facebook/orders_sync/default_order_status';
     public const XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER = 'facebook/orders_sync/auto_subscribe_to_newsletter';
-    private const XML_PATH_FACEBOOK_ORDER_SHIP_EVENT = 'facebook/orders_sync/order_ship_event';
-
     private const XML_PATH_FACEBOOK_USE_DEFAULT_FULFILLMENT_LOCATION =
         'facebook/orders_sync/default_fulfillment_location';
     private const XML_PATH_FACEBOOK_FULFILLMENT_LOCATION_STREET_LINE_1 = 'facebook/orders_sync/street_line1';
@@ -105,19 +112,17 @@ class Config
         'facebook/conversion_management/enable_server_test';
     private const XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE =
         'facebook/conversion_management/server_test_code';
-
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG =
-        'facebook/business_extension/onsite';
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_MEMORY_PROFILING =
+        'facebook/business_extension/enable_memory_profiling';
 
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS =
-        'facebook/business_extension/disable_unsupported_products';
+        'facebook/catalog_management/disable_unsupported_products';
 
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_UI_FLAG =
-        'facebook/business_extension/commerce_extension';
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_EXCEPTION_LOGGING =
-        'facebook/business_extension/meta_exception_logging_enabled';
-    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_TELEMETRY_LOGGING =
-        'facebook/business_extension/meta_telemetry_logging_enabled';
+    private const XML_PATH_FACEBOOK_DISABLE_ADDITIONAL_ATTRIBUTES_SYNC =
+        'facebook/catalog_management/disable_additional_attributes_sync';
+
+    private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL =
+        'facebook/internal/extension_base_url';
 
     /**
      * @var StoreManagerInterface
@@ -133,11 +138,6 @@ class Config
      * @var ResourceConfig
      */
     private ResourceConfig $resourceConfig;
-
-    /**
-     * @var TypeListInterface
-     */
-    private TypeListInterface $cacheTypeList;
 
     /**
      * @var CacheInterface
@@ -159,32 +159,30 @@ class Config
      *
      * @var string|null
      */
-    private ?string $version = null;
+    private ?string $version = '1.3.5-dev';
 
     /**
-     * @method __construct
+     * Config class constructor
+     *
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param ResourceConfig $resourceConfig
-     * @param TypeListInterface $cacheTypeList
      * @param CacheInterface $cache
      * @param ComposerInformation $composerInformation
      * @param FacebookInstalledFeature $fbeInstalledFeatureResource
      * @SuppressWarnings(PHPMD.ExcessivePublicCount)
      */
     public function __construct(
-        StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
-        ResourceConfig $resourceConfig,
-        TypeListInterface $cacheTypeList,
-        CacheInterface $cache,
-        ComposerInformation $composerInformation,
+        StoreManagerInterface    $storeManager,
+        ScopeConfigInterface     $scopeConfig,
+        ResourceConfig           $resourceConfig,
+        CacheInterface           $cache,
+        ComposerInformation      $composerInformation,
         FacebookInstalledFeature $fbeInstalledFeatureResource
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfig = $resourceConfig;
-        $this->cacheTypeList = $cacheTypeList;
         $this->cache = $cache;
         $this->composerInformation = $composerInformation;
         $this->fbeInstalledFeatureResource = $fbeInstalledFeatureResource;
@@ -207,17 +205,21 @@ class Config
      */
     public function getModuleVersion(): string
     {
-        $this->version = (string) ($this->version ?: $this->cache->load(self::VERSION_CACHE_KEY));
-        if (!$this->version) {
-            $installedPackages = $this->composerInformation->getInstalledMagentoPackages();
-            $extensionVersion = $installedPackages[self::EXTENSION_PACKAGE_NAME]['version'] ?? null;
-            if (!empty($extensionVersion)) {
-                $this->version = $extensionVersion;
-            } else {
-                $this->version = 'dev';
-            }
-            $this->cache->save($this->version, self::VERSION_CACHE_KEY, [AppConfig::CACHE_TAG]);
+        $cachedVersion = $this->cache->load(self::VERSION_CACHE_KEY);
+        if ($cachedVersion) {
+            // Once we've calculated the version for this session, default to the cached value.
+            return $cachedVersion;
         }
+        $installedPackages = $this->composerInformation->getInstalledMagentoPackages();
+        // We are now setting the "DEV" version locally as well as via composer to facilitate logging.
+        // If there is ever a conflict, we should prefer Composer's value.
+        $officialExtensionVersion = $installedPackages[self::EXTENSION_PACKAGE_NAME]['version'] ?? null;
+        if ($officialExtensionVersion) {
+            $this->version = $officialExtensionVersion;
+        } else {
+            $this->version = (string)($this->version ?: 'dev');
+        }
+        $this->cache->save($this->version, self::VERSION_CACHE_KEY, [AppConfig::CACHE_TAG]);
         return $this->version;
     }
 
@@ -271,7 +273,6 @@ class Config
     /**
      * Is single store mode
      *
-     * @method isSingleStoreMode
      * @return bool
      */
     public function isSingleStoreMode(): bool
@@ -308,35 +309,19 @@ class Config
     }
 
     /**
-     * Is commerce extension UI update enabled
+     * The base URL for rendering the Commerce Extension Splash page.
      *
      * @param int|null $scopeId
      * @param string $scope
-     * @return bool
+     * @return string
      */
-    public function isCommerceExtensionEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
+    public function getCommerceExtensionBaseURL($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): string
     {
-        return (bool)$this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_UI_FLAG,
+        return $this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_COMMERCE_EXTENSION_BASE_URL,
             $scopeId,
             $scope
-        );
-    }
-
-    /**
-     * Is onsite checkout enabled
-     *
-     * @param int|null $scopeId
-     * @param string $scope
-     * @return bool
-     */
-    public function isOnsiteCheckoutEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
-    {
-        return (bool)$this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG,
-            $scopeId,
-            $scope
-        );
+        ) ?? 'https://www.commercepartnerhub.com/';
     }
 
     /**
@@ -352,12 +337,15 @@ class Config
     /**
      * Get store id
      *
-     * @return int
-     * @throws NoSuchEntityException
+     * @return null|int
      */
-    public function getStoreId()
+    public function getDefaultStoreId(): ?int
     {
-        return $this->storeManager->getStore()->getId();
+        $defaultStoreView = $this->storeManager->getDefaultStoreView();
+        if ($defaultStoreView !== null) {
+            return $this->castStoreIdAsInt($defaultStoreView->getId());
+        }
+        return null;
     }
 
     /**
@@ -377,15 +365,16 @@ class Config
     }
 
     /**
-     * Is active order sync
+     * Is order sync enabled
      *
      * @param int $scopeId
      * @param int $scope
      * @return bool
      */
-    public function isActiveOrderSync($scopeId = null, $scope = null): bool
+    public function isOrderSyncEnabled($scopeId = null, $scope = null): bool
     {
-        return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, $scopeId, $scope);
+        return $this->getConfig(self::XML_PATH_FACEBOOK_ORDERS_SYNC_ACTIVE, $scopeId, $scope) &&
+            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
     }
 
     /**
@@ -417,7 +406,7 @@ class Config
      * Get fulfillment address
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return array
      */
     public function getFulfillmentAddress($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): array
@@ -459,6 +448,23 @@ class Config
     }
 
     /**
+     * Check if Auctane API is installed
+     *
+     * @return bool
+     */
+    public function isAuctaneApiInstalled(): bool
+    {
+        try {
+            // In the "Single Store" case, getting the config of a non-existent path can throw.
+            // This corresponds to "missing Shipstation Extension"
+            $value = $this->getConfig(self::XML_PATH_AUCTANE_API_ACTIVE);
+        } catch (Exception $e) {
+            return false;
+        }
+        return $value === '1';
+    }
+
+    /**
      * Is auto newsletter subscription on
      *
      * @param int $scopeId
@@ -468,19 +474,6 @@ class Config
     public function isAutoNewsletterSubscriptionOn($scopeId = null, $scope = null): bool
     {
         return (bool)$this->getConfig(self::XML_PATH_FACEBOOK_AUTO_SUBSCRIBE_TO_NEWSLETTER, $scopeId, $scope);
-    }
-
-    /**
-     * Get order ship event
-     *
-     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
-     * @param int|null $scopeId
-     * @param int $scope
-     * @return string
-     */
-    public function getOrderShipEvent($scopeId = null, $scope = null)
-    {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_ORDER_SHIP_EVENT, $scopeId, $scope);
     }
 
     /**
@@ -495,11 +488,18 @@ class Config
     public function getConfig($configPath, $scopeId = null, $scope = null)
     {
         if (!$scope && $this->isSingleStoreMode()) {
-            return $this->scopeConfig->getValue($configPath);
+            $singleStoreResult = $this->scopeConfig->getValue($configPath);
+            if ($singleStoreResult !== null) {
+                return $singleStoreResult;
+            }
         }
         try {
-            $value = $this->scopeConfig->getValue($configPath, $scope ?: ScopeInterface::SCOPE_STORE, $scopeId === null
-                ? $this->storeManager->getStore()->getId() : $scopeId);
+            $value = $this->scopeConfig->getValue(
+                $configPath,
+                $scope ?: ScopeInterface::SCOPE_STORE,
+                $scopeId === null
+                    ? $this->storeManager->getStore()->getId() : $scopeId
+            );
         } catch (NoSuchEntityException $e) {
             return null;
         }
@@ -548,7 +548,7 @@ class Config
      */
     public function cleanCache()
     {
-        $this->cacheTypeList->cleanType(\Magento\Framework\App\Cache\Type\Config::TYPE_IDENTIFIER);
+        $this->scopeConfig->clean();
         return $this;
     }
 
@@ -599,7 +599,7 @@ class Config
      * Get external business id
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return mixed
      */
     public function getExternalBusinessId($scopeId = null, $scope = null)
@@ -615,7 +615,7 @@ class Config
      * Get pixel id
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return mixed
      */
     public function getPixelId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -676,6 +676,18 @@ class Config
     }
 
     /**
+     * Get graph API version
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return mixed
+     */
+    public function getGraphAPIVersion($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_GRAPH_API_VERSION, $scopeId, $scope);
+    }
+
+    /**
      * Get commerce account id
      *
      * @param int $scopeId
@@ -695,7 +707,7 @@ class Config
      * Get commerce partner integration ID
      *
      * @param int $scopeId
-     * @param int $scope
+     * @param string $scope
      * @return mixed|null
      */
     public function getCommercePartnerIntegrationId($scopeId = null, $scope = ScopeInterface::SCOPE_STORES)
@@ -770,7 +782,7 @@ class Config
      * Get shipping methods label map
      *
      * @param int|null $storeId
-     * @return array|null
+     * @return array
      */
     public function getShippingMethodsLabelMap($storeId = null): array
     {
@@ -804,8 +816,54 @@ class Config
     public function isPromotionsSyncEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_PROMOTIONS_SYNC, $scopeId, $scope) &&
-            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope) &&
-            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_ONSITE_CHECKOUT_FLAG, $scopeId, $scope);
+            $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, $scopeId, $scope);
+    }
+
+    /**
+     * Check if extension is in post-onboarding onsite checkout state
+     *
+     * @param int $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    private function isPostOnboardingState($scopeId = null, $scope = ScopeInterface::SCOPE_STORES): bool
+    {
+        return $this->isActiveExtension($scopeId, $scope) &&
+            $this->isFBEInstalled($scopeId, $scope);
+    }
+
+    /**
+     * Return only the set of stores which have FBE installed (working token, etc...)
+     */
+    public function getAllFBEInstalledStores()
+    {
+        $stores = $this->storeManager->getStores();
+        return array_filter(
+            $stores,
+            function ($store) {
+                $scopeId = $store->getId();
+                return $this->isPostOnboardingState($scopeId);
+            }
+        );
+    }
+
+    /**
+     * Return only the set of stores which have FBE installed (working token, etc...)
+     */
+    public function getAllOnsiteFBEInstalledStores()
+    {
+        $stores = $this->storeManager->getStores();
+        return array_filter(
+            $stores,
+            function ($store) {
+                $scopeId = $store->getId();
+                return $this->isPostOnboardingState($scopeId) &&
+                    $this->isActiveExtension($scopeId) &&
+                    // A slight nuance. You can be installed, but not "onsite"
+                    // -- unless you have valid commerce account.
+                    $this->getCommerceAccountId($scopeId);
+            }
+        );
     }
 
     /**
@@ -842,6 +900,18 @@ class Config
     public function getProductIdentifierAttr($scopeId = null, $scope = null)
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_PRODUCT_IDENTIFIER, $scopeId, $scope);
+    }
+
+    /**
+     * Is all categories sync enabled or not
+     *
+     * @param int $scopeId
+     * @param int $scope
+     * @return mixed
+     */
+    public function isAllCategoriesSyncEnabled($scopeId = null, $scope = null)
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_ENABLE_SYNC_ALL_CATEGORIES, $scopeId, $scope);
     }
 
     /**
@@ -889,38 +959,6 @@ class Config
     }
 
     /**
-     * Check if persisting exception logs to Meta is enabled
-     *
-     * @param int|null $scopeId
-     * @param string|null $scope
-     * @return string|null
-     */
-    public function isMetaExceptionLoggingEnabled(int $scopeId = null, string $scope = null): ?string
-    {
-        return $this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_EXCEPTION_LOGGING,
-            $scopeId,
-            $scope
-        );
-    }
-
-    /**
-     * Check if persisting telemetry logs to Meta is enabled
-     *
-     * @param int|null $scopeId
-     * @param string|null $scope
-     * @return string|null
-     */
-    public function isMetaTelemetryLoggingEnabled(int $scopeId = null, string $scope = null): ?string
-    {
-        return $this->getConfig(
-            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_META_TELEMETRY_LOGGING,
-            $scopeId,
-            $scope
-        );
-    }
-
-    /**
      * Get store weight unit
      *
      * @param int|null $scopeId
@@ -933,16 +971,69 @@ class Config
     }
 
     /**
-     * Check if unsupported products are disabled
+     * Check if additional attributes sync is disabled
      *
-     * @param int $scopeId
-     * @param string $scope
+     * @param int|null $scopeId
+     * @param string|null $scope
      * @return bool
      */
-    public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null) : bool
+    public function isAdditionalAttributesSyncDisabled(int $scopeId = null, string $scope = null): bool
+    {
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_DISABLE_ADDITIONAL_ATTRIBUTES_SYNC,
+            $scopeId,
+            $scope
+        );
+    }
+
+    /**
+     * Check if unsupported products are disabled
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return bool
+     */
+    public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null): bool
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS,
+            $scopeId,
+            $scope
+        );
+    }
+
+    /**
+     * Get Products Fetch Batch Size
+     *
+     * @param int $default
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return int
+     */
+    public function getProductsFetchBatchSize(int $default = 200, int $scopeId = null, string $scope = null): int
+    {
+        $batch_size = (int)$this->getConfig(
+            self::XML_PATH_FACEBOOK_PRODUCTS_FETCH_BATCH_SIZE,
+            $scopeId,
+            $scope
+        );
+        if ($batch_size == null || $batch_size == 0) {
+            return $default;
+        }
+        return $batch_size;
+    }
+
+    /**
+     * Check if Memory Profiling is enabled
+     *
+     * @param int|null $scopeId
+     * @param string|null $scope
+     * @return bool
+     */
+    public function isMemoryProfilingEnabled(int $scopeId = null, string $scope = null): bool
+    {
+        return (bool)$this->getConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_MEMORY_PROFILING,
             $scopeId,
             $scope
         );
@@ -1006,5 +1097,36 @@ class Config
     public function isFBEShopInstalled($storeId = null)
     {
         return $this->isFeatureInstalled('fb_shop', $storeId);
+    }
+
+    /**
+     * Save the External Business ID
+     *
+     * @param string $externalBusinessId
+     * @param int $storeId
+     */
+    public function saveExternalBusinessIdForStore(string $externalBusinessId, int $storeId): void
+    {
+        $this->saveConfig(
+            self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_EXTERNAL_BUSINESS_ID,
+            $externalBusinessId,
+            $storeId
+        );
+        $this->cleanCache();
+    }
+
+    /**
+     * Cast Store id from ?string to ?int
+     *
+     * @param string|int|null $storeIdString
+     * @return int|null
+     */
+    public function castStoreIdAsInt($storeIdString): ?int
+    {
+        if (is_numeric($storeIdString)) {
+            return (int)$storeIdString;
+        } else {
+            return null;
+        }
     }
 }

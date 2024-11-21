@@ -1,5 +1,8 @@
 <?php
-/** @var \Meta\Conversion\Block\Pixel\ViewCategory $block */
+/**
+ * @var \Meta\Conversion\Block\Pixel\ViewCategory $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
 
 $trackerUrl = $block->getTrackerUrl();
 
@@ -10,22 +13,24 @@ if ($block->getFacebookPixelID()) {
         {
             "*": {
                 "Meta_Conversion/js/metaPixelTracker" : {
-                    "url" : "<?= $block->escapeJs($trackerUrl); ?>",
-                    "payload": <?= json_encode([
-                        "eventName" => $block->getEventToObserveName(),
-                        "categoryId" => $block->getCategoryId(),
+                    "url" : "<?= $escaper->escapeHtml($trackerUrl); ?>",
+                    "payload": <?= /* @noEscape */
+                    json_encode([
+                    "eventName" => $escaper->escapeHtml($block->getEventToObserveName()),
+                    "categoryId" => $escaper->escapeHtml($block->getCategoryId()),
                     ]) ?>,
-                    "browserEventData": <?= json_encode([
-                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                        'fbPixelId' => $block->getFacebookPixelID(),
-                        'source' => $block->getSource(),
-                        'pluginVersion' => $block->getPluginVersion(),
-                        'track' => 'trackCustom',
-                        'event' => 'ViewCategory',
-                        'payload' => ['category_name' => $block->getCategoryName() ]
+                    "browserEventData": <?= /* @noEscape */
+                    json_encode([
+                    'fbAgentVersion' => $escaper->escapeHtml($block->getFacebookAgentVersion()),
+                    'fbPixelId' => $escaper->escapeHtml($block->getFacebookPixelID()),
+                    'source' => $escaper->escapeHtml($block->getSource()),
+                    'pluginVersion' => $escaper->escapeHtml($block->getPluginVersion()),
+                    'track' => 'trackCustom',
+                    'event' => 'ViewCategory',
+                    'payload' => ['category_name' => $escaper->escapeHtml($block->getCategoryName())]
                     ]) ?>
-                }
-            }
         }
+    }
+}
     </script>
 <?php } ?>

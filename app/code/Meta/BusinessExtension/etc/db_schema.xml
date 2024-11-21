@@ -4,7 +4,7 @@
     <table name="facebook_installed_features" resource="default" engine="innodb" comment="Facebook Installed Features">
         <column xsi:type="int" name="row_id"  nullable="false" identity="true" comment="Row ID"/>
         <column xsi:type="varchar" name="feature_instance_id" length="20" nullable="false" comment="Feature Instance ID"/>
-        <column xsi:type="varchar" name="feature_type"  length="255" nullable="false"  comment="Feature Type"/>
+        <column xsi:type="varchar" name="feature_type" length="255" nullable="false" comment="Feature Type"/>
         <column xsi:type="text" name="connected_assets" comment="Connected Assets"/>
         <column xsi:type="text" name="additional_info" comment="Additional Info"/>
         <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="Store ID"/>
@@ -14,9 +14,25 @@
         <constraint xsi:type="unique" referenceId="FEATURE_INSTANCE_ID_UNIQUE">
             <column name="feature_instance_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="FACEBOOK_INSTALLED_FEATURES_MAGENTO_STORE_ID" table="facebook_installed_features" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="FACEBOOK_INSTALLED_FEATURES_MAGENTO_STORE_ID"
+                    table="facebook_installed_features" column="store_id" referenceTable="store"
+                    referenceColumn="store_id" onDelete="CASCADE"/>
         <index referenceId="FACEBOOK_INSTALLED_FEATURES_STORE_ID" indexType="btree">
             <column name="store_id"/>
         </index>
+    </table>
+    <table name="meta_issue_notifications" resource="default" engine="innodb"
+           comment="Meta Issue Notifications">
+        <column xsi:type="int" name="row_id" nullable="false" identity="true" comment="Row ID"/>
+        <column xsi:type="varchar" name="notification_id" length="20" nullable="false"
+                comment="Notification ID"/>
+        <column xsi:type="text" name="message" comment="Notification Message"/>
+        <column xsi:type="smallint" name="severity" unsigned="true" nullable="false" comment="Severity"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="row_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="NOTIFICATION_ID_UNIQUE">
+            <column name="notification_id"/>
+        </constraint>
     </table>
 </schema>

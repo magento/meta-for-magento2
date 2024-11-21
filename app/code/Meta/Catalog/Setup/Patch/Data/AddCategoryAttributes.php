@@ -7,10 +7,12 @@ namespace Meta\Catalog\Setup\Patch\Data;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Eav\Setup\EavSetup;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Meta\Catalog\Setup\MetaCatalogAttributes;
+use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 
-class AddCategoryAttributes implements DataPatchInterface
+class AddCategoryAttributes implements DataPatchInterface, PatchRevertableInterface
 {
     /**
      * @var ModuleDataSetupInterface
@@ -96,6 +98,8 @@ class AddCategoryAttributes implements DataPatchInterface
         foreach (array_keys($categoryAttributes) as $attributeCode) {
             $eavSetup->removeAttribute(Category::ENTITY, $attributeCode);
         }
+        //delete the patch entry from patch_list table
+        $this->moduleDataSetup->deleteTableRow('patch_list', 'patch_name', __CLASS__);
 
         $this->moduleDataSetup->getConnection()->endSetup();
     }

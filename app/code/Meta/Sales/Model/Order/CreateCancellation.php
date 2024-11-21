@@ -38,12 +38,7 @@ class CreateCancellation
     /**
      * Constant for the cancellation note to be added to the order
      */
-    public const CANCELLATION_NOTE = 'Cancelled from Meta Commerce Manager';
-
-    /**
-     * @var CreateOrder
-     */
-    private $createOrder;
+    public const CANCELLATION_NOTE = 'Order Canceled from Meta.';
 
     /**
      * @var OrderRepositoryInterface
@@ -74,25 +69,22 @@ class CreateCancellation
     /**
      * CreateCancellation constructor
      *
-     * @param OrderRepositoryInterface $orderRepository
+     * @param OrderRepositoryInterface      $orderRepository
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param TransactionFactory $transactionFactory
-     * @param CreateOrder $createOrder
-     * @param FBEHelper $fbeHelper
-     * @param LoggerInterface $logger
+     * @param TransactionFactory            $transactionFactory
+     * @param FBEHelper                     $fbeHelper
+     * @param LoggerInterface               $logger
      */
     public function __construct(
         OrderRepositoryInterface      $orderRepository,
         FacebookOrderInterfaceFactory $facebookOrderFactory,
         TransactionFactory            $transactionFactory,
-        CreateOrder                   $createOrder,
         FBEHelper                     $fbeHelper,
         LoggerInterface               $logger
     ) {
         $this->orderRepository = $orderRepository;
         $this->facebookOrderFactory = $facebookOrderFactory;
         $this->transactionFactory = $transactionFactory;
-        $this->createOrder = $createOrder;
         $this->fbeHelper = $fbeHelper;
         $this->logger = $logger;
     }
@@ -100,16 +92,19 @@ class CreateCancellation
     /**
      * Execute cancellation process
      *
-     * @param array $facebookOrderData
-     * @param array $facebookCancellationData
-     * @param int $storeId
+     * @param  array $facebookOrderData
+     * @param  array $facebookCancellationData
+     * @return bool
      * @throws LocalizedException
      */
-    public function execute(array $facebookOrderData, array $facebookCancellationData, int $storeId): void
+    public function execute(array $facebookOrderData, array $facebookCancellationData): bool
     {
-        $magentoOrder = $this->getOrCreateOrder($facebookOrderData, $storeId);
+        $magentoOrder = $this->getOrder($facebookOrderData);
+        if (!$magentoOrder) {
+            return false;
+        }
         if ($this->isOrderPartiallyCanceled($magentoOrder)) {
-            return;
+            return false;
         }
         $cancelItems = $facebookCancellationData['items']['data'] ?? [];
         $shouldCancelOrder = $this->shouldCancelEntireOrder($magentoOrder, $cancelItems);
@@ -119,25 +114,24 @@ class CreateCancellation
             $magentoOrder->setStatus(Order::STATE_CANCELED);
         }
         if (isset($facebookCancellationData['cancel_reason'])) {
-            $concatenatedString = "";
+            $concatenatedString = '';
             if (isset($facebookCancellationData['cancel_reason']['reason_code'])) {
-                $concatenatedString .= 'Code: ' . $facebookCancellationData['cancel_reason']['reason_code'] . '. ';
+                $concatenatedString .= ' Reason: ' . $facebookCancellationData['cancel_reason']['reason_code'];
             }
             if (isset($facebookCancellationData['cancel_reason']['reason_description'])) {
-                $concatenatedString .= 'Description: ' .
+                $concatenatedString .= ' Description: ' .
                     $facebookCancellationData['cancel_reason']['reason_description'];
             }
-            if (!empty($concatenatedString)) {
-                $magentoOrder->addCommentToStatusHistory('Cancellation Details: ' . $concatenatedString);
-            }
+            $magentoOrder->addCommentToStatusHistory(self::CANCELLATION_NOTE . $concatenatedString);
         }
         $this->orderRepository->save($magentoOrder);
+        return true;
     }
 
     /**
      * Check if the order is partially canceled
      *
-     * @param Order $order
+     * @param  Order $order
      * @return bool
      */
     private function isOrderPartiallyCanceled(Order $order): bool
@@ -153,28 +147,37 @@ class CreateCancellation
     /**
      * Retrieve or create a Magento order based on the Facebook Order ID
      *
-     * @param array $data
-     * @param int $storeId
+     * @param  array $data
      * @return Order
      * @throws GuzzleException
      * @throws LocalizedException
      */
-    private function getOrCreateOrder(array $data, int $storeId): ?Order
+    private function getOrder(array $data): ?Order
     {
+        // Magento's "load" function will gracefully accept an invalid ID
         $facebookOrder = $this->facebookOrderFactory->create()->load($data['id'], 'facebook_order_id');
         $magentoOrderId = $facebookOrder->getMagentoOrderId();
         if ($magentoOrderId) {
-            return $this->orderRepository->get($magentoOrderId);
+            try {
+                // Magento's "get" function will throw an Exception for invalid IDs
+                $magentoOrder = $this->orderRepository->get($magentoOrderId);
+                return $magentoOrder;
+            } catch (\Exception $e) {
+                $this->logger->debug(
+                    $e->getMessage(),
+                    ['exception' => $e, 'trace' => $e->getTraceAsString()]
+                );
+            }
         }
-        // Assume a method exists in your CreateOrder class to create an order based on Facebook order data
-        return $this->createOrder->execute($data, $storeId, true);
+        // In the case of any failure or missing order, simply bail and return null.
+        return null;
     }
 
     /**
      * Determines if the entire order should be cancelled
      *
-     * @param Order $order
-     * @param array $cancelItems
+     * @param  Order $order
+     * @param  array $cancelItems
      * @return bool
      */
     private function shouldCancelEntireOrder(Order $order, array $cancelItems): bool
@@ -222,10 +225,12 @@ class CreateCancellation
                     $orderItem->getHiddenTaxAmount() * $orderItem->getQtyCanceled() / $orderItem->getQtyOrdered()
                 );
             } else {
-                $this->fbeHelper->log(sprintf(
-                    "Severe issue. Item with SKU: %s was not found in Magento for cancellation",
-                    $retailerId
-                ));
+                $this->fbeHelper->log(
+                    sprintf(
+                        "Severe issue. Item with SKU: %s was not found in Magento for cancellation",
+                        $retailerId
+                    )
+                );
             }
         }
     }

@@ -33,6 +33,12 @@ use Magento\Framework\Locale\FormatInterface;
 use Magento\Sales\Model\Order\Invoice;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Create refund from facebook api data
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ */
 class CreateRefund
 {
     public const CREDIT_MEMO_NOTE = "Refunded from Meta Commerce Manager";
@@ -89,16 +95,17 @@ class CreateRefund
 
     /**
      * RefundProcessor constructor.
-     * @param CreditmemoFactory $creditMemoFactory
-     * @param OrderRepositoryInterface $orderRepository
-     * @param CreateOrder $createOrder
-     * @param CreditmemoService $creditMemoService
+     *
+     * @param CreditmemoFactory             $creditMemoFactory
+     * @param OrderRepositoryInterface      $orderRepository
+     * @param CreateOrder                   $createOrder
+     * @param CreditmemoService             $creditMemoService
      * @param FacebookOrderInterfaceFactory $facebookOrderFactory
-     * @param Invoice $invoice
-     * @param InvoiceManagementInterface $invoiceManagement
-     * @param TransactionFactory $transactionFactory
-     * @param FormatInterface $localeFormat
-     * @param LoggerInterface $logger
+     * @param Invoice                       $invoice
+     * @param InvoiceManagementInterface    $invoiceManagement
+     * @param TransactionFactory            $transactionFactory
+     * @param FormatInterface               $localeFormat
+     * @param LoggerInterface               $logger
      */
     public function __construct(
         CreditmemoFactory             $creditMemoFactory,
@@ -127,9 +134,9 @@ class CreateRefund
     /**
      * Processes the refund data from Facebook and creates a credit memo in Magento.
      *
-     * @param array $facebookOrderData
-     * @param array $facebookRefundData
-     * @param int $storeId
+     * @param  array $facebookOrderData
+     * @param  array $facebookRefundData
+     * @param  int   $storeId
      * @throws LocalizedException
      */
     public function execute(array $facebookOrderData, array $facebookRefundData, int $storeId)
@@ -209,9 +216,12 @@ class CreateRefund
             // to do this -- TODO, revisit this code.
             $magentoOrder->setBaseTotalPaid($orderTotal);
             $magentoOrder->setTaxRefunded($this->localeFormat->getNumber(-$tax));
-            $this->creditMemoService->refund($creditMemo, true, false);
+            $this->creditMemoService->refund($creditMemo, true);
         } catch (\Exception $exception) {
-            $this->logger->debug($exception);
+            $this->logger->debug(
+                $exception->getMessage(),
+                ['exception' => $exception, 'trace' => $exception->getTraceAsString()]
+            );
         }
 
         $magentoOrder->setStatus(Order::STATE_CLOSED);
@@ -221,8 +231,8 @@ class CreateRefund
     /**
      * Retrieve or create a Magento order based on Facebook Order ID.
      *
-     * @param array $data
-     * @param int $storeId
+     * @param  array $data
+     * @param  int   $storeId
      * @return Order
      * @throws LocalizedException
      * @throws GuzzleException
@@ -235,13 +245,13 @@ class CreateRefund
             $magentoOrder = $this->orderRepository->get($magentoOrderId);
             return $magentoOrder;
         }
-        return $this->createOrder->execute($data, $storeId, true);
+        return $this->createOrder->execute($data, $storeId);
     }
 
     /**
      * Retrieve or create a Magento order based on Facebook Order ID.
      *
-     * @param Order $order
+     * @param  Order $order
      * @return Invoice
      * @throws LocalizedException
      */

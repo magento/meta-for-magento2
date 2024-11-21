@@ -4,5 +4,8 @@
         <job name="facebook_automation_update_mbe_settings" instance="Meta\BusinessExtension\Cron\UpdateMBESettings" method="execute">
             <schedule>0 * * * *</schedule>
         </job>
+        <job name="enabled_module_logging" instance="Meta\BusinessExtension\Cron\EnabledModuleLogging" method="execute">
+            <schedule>0 0 * * 2</schedule>
+        </job>
     </group>
 </config>

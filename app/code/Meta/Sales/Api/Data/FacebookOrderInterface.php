@@ -32,7 +32,7 @@ interface FacebookOrderInterface
     /**
      * Set Magento order id
      *
-     * @param int $orderId
+     * @param  int $orderId
      * @return $this
      */
     public function setMagentoOrderId($orderId);
@@ -47,7 +47,7 @@ interface FacebookOrderInterface
     /**
      * Set facebook order id
      *
-     * @param int $orderId
+     * @param  int $orderId
      * @return $this
      */
     public function setFacebookOrderId($orderId);
@@ -62,10 +62,26 @@ interface FacebookOrderInterface
     /**
      * Set channel
      *
-     * @param mixed $channel
+     * @param  mixed $channel
      * @return $this
      */
     public function setChannel($channel);
+
+    /**
+     * Get synced shipment metadata
+     *
+     * @return array
+     */
+    public function getSyncedShipments();
+
+    /**
+     * Update synced shipment metadata
+     *
+     * @param  mixed $magentoShipmentId
+     * @param  array $trackingInfo
+     * @return $this
+     */
+    public function updateSyncedShipment($magentoShipmentId, $trackingInfo);
 
     /**
      * Get extra data
@@ -77,7 +93,7 @@ interface FacebookOrderInterface
     /**
      * Set extra data
      *
-     * @param array $extraData
+     * @param  array $extraData
      * @return $this
      */
     public function setExtraData(array $extraData);

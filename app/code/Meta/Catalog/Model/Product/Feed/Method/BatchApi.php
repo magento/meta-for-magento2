@@ -112,6 +112,7 @@ class BatchApi
      * Build request for individual product
      *
      * @param string $productIdentifier
+     * @return array
      */
     public function buildDeleteProductRequest(string $productIdentifier): array
     {

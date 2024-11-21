@@ -43,7 +43,7 @@ class AccessToken implements CommentInterface
     /**
      * Get comment text
      *
-     * @param string $elementValue
+     * @param  string $elementValue
      * @return string
      */
     public function getCommentText($elementValue)

@@ -3307,7 +3307,7 @@
                     controls: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
                     coords: null,
                     crossOrigin: null,
-                    data: null, // For `<object />` acts as `src`.
+                    data: null, // For `<object></object>` acts as `src`.
                     dateTime: MUST_USE_ATTRIBUTE,
                     'default': HAS_BOOLEAN_VALUE,
                     defer: HAS_BOOLEAN_VALUE,
@@ -9366,7 +9366,7 @@
             ReactElement.createFactory = function (type) {
                 var factory = ReactElement.createElement.bind(null, type);
                 // Expose the type on the factory and the prototype so that it can be
-                // easily accessed on elements. E.g. `<Foo />.type === Foo`.
+                // easily accessed on elements. E.g. `<Foo></Foo>.type === Foo`.
                 // This should not be named `constructor` since this may not be the function
                 // that created the element, and it may not even be a constructor.
                 // Legacy hook TODO: Warn if this is accessed
@@ -12472,7 +12472,7 @@
              *     render: function() {
              *       return (
              *         <div onClick={this.handleClick}>
-             *           <CustomComponent ref="custom" />
+             *           <CustomComponent ref="custom"></CustomComponent>
              *         </div>
              *       );
              *     },

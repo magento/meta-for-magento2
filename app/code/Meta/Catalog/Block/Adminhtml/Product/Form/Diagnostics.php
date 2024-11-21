@@ -123,16 +123,32 @@ class Diagnostics extends Text
         }
 
         try {
-            $retailerId = $this->productIdentifier->getMagentoProductRetailerId($this->product);
-            $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $retailerId);
+            try {
+                $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $this->product->getSku());
+            } catch (\Exception $e) {
+                $product = $this->graphApiAdapter->getProductByRetailerId($catalogId, $this->product->getId());
+            }
+
             $fbProductId = $product['data'][0]['id'] ?? false;
             if ($fbProductId) {
                 $productErrors = $this->graphApiAdapter->getProductErrors($fbProductId)['errors'] ?? [];
                 // remove duplicates
                 return array_unique($productErrors, SORT_REGULAR);
             }
-        } catch (\Exception $e) {
-            $this->fbeHelper->logCritical($e->getMessage());
+        } catch (\Throwable $e) {
+            $this->fbeHelper->logExceptionImmediatelyToMeta(
+                $e,
+                [
+                    'store_id' => $this->storeId,
+                    'event' => 'product_edit_page',
+                    'event_type' => 'meta_product_diagnostics_fetch_error',
+                    'catalog_id' => $catalogId,
+                    'extra_data' => [
+                        'sku' => $this->product->getSku(),
+                        'item_id' => $this->product->getId()
+                    ]
+                ]
+            );
         }
         return [];
     }
@@ -150,7 +166,7 @@ class Diagnostics extends Text
             return '';
         }
 
-        $diagnosticsHtml = '<p style="font-weight: bold;">Facebook diagnostic report:</p><ul>';
+        $diagnosticsHtml = '<p style="font-weight: bold;">Meta diagnostic report:</p><ul>';
         foreach ($diagnosticsReport as $errorItem) {
             $diagnosticsHtml .= '<li class="message message-warning list-item" style="list-style-type: none;">' .
                 $this->_escaper->escapeHtml($errorItem['title']) . ': ' .

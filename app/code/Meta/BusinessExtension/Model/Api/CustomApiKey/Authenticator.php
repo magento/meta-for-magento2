@@ -22,7 +22,9 @@ namespace Meta\BusinessExtension\Model\Api\CustomApiKey;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
-use Meta\BusinessExtension\Api\CustomApiKey\UnauthorizedTokenException;
+use Magento\Framework\Exception\LocalizedException;
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 
 class Authenticator
 {
@@ -31,49 +33,152 @@ class Authenticator
      */
     protected $scopeConfig;
 
-    /** @var Http */
+    /**
+     * @var Http
+     */
     private Http $httpRequest;
+
+    /**
+     * @var SystemConfig
+     */
+    private SystemConfig $systemConfig;
+
+    /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
 
     /**
      * Authenticator constructor
      *
      * @param ScopeConfigInterface $scopeConfig
      * @param Http $httpRequest
+     * @param SystemConfig $systemConfig
+     * @param FBEHelper $fbeHelper
      */
-    public function __construct(ScopeConfigInterface $scopeConfig, Http $httpRequest)
-    {
+    public function __construct(
+        ScopeConfigInterface $scopeConfig,
+        Http                 $httpRequest,
+        SystemConfig         $systemConfig,
+        FBEHelper            $fbeHelper
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->httpRequest = $httpRequest;
+        $this->systemConfig = $systemConfig;
+        $this->fbeHelper = $fbeHelper;
     }
 
     /**
-     * Authenticate a given token against the stored API key
+     * Authenticate an API request (validate the token and RSA signature)
      *
-     * @param string $token
-     * @throws UnauthorizedTokenException
+     * @param string|null $storeId
      * @return void
+     * @throws LocalizedException
      */
-    public function authenticate(string $token): void
+    public function authenticateRequest(?string $storeId = null): void
     {
-        $storedToken = $this->scopeConfig->getValue('meta_extension/general/api_key');
-        if ($storedToken === null || $storedToken !== $token) {
-            throw new UnauthorizedTokenException();
-        }
+        $this->authenticateToken();
+        $this->authenticateSignature($storeId);
     }
 
+    /**
+     * Authenticate an API request (validate the token only)
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    public function authenticateRequestDangerouslySkipSignatureValidation(): void
+    {
+        $this->authenticateToken();
+    }
 
     /**
-     * Authenticate a given token against the stored API key
+     * Authenticate token against the stored API key
+     *
      * @return void
-     * @throws UnauthorizedTokenException
+     * @throws LocalizedException
      */
-    public function authenticateRequest(): void
+    private function authenticateToken(): void
     {
         $receivedToken = $this->httpRequest->getHeader('Meta-extension-token');
         if ($receivedToken) {
-            $this->authenticate($receivedToken);
+            $storedToken = $this->scopeConfig->getValue('meta_extension/general/api_key');
+            if ($storedToken === null || $storedToken !== $receivedToken) {
+                throw new LocalizedException(__('Unauthorized Token'));
+            }
         } else {
-            throw new UnauthorizedTokenException();
+            throw new LocalizedException(__('Missing Meta Extension Token'));
         }
+    }
+
+    /**
+     * Authenticate RSA Signature for API Request
+     *
+     * @param string|null $storeId
+     * @return void
+     * @throws LocalizedException
+     */
+    private function authenticateSignature(?string $storeId = null): void
+    {
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $publicKey = file_get_contents(__DIR__ . '/PublicKey.pem');
+        $publicKeyResource = openssl_get_publickey($publicKey);
+        if ($publicKeyResource == false) {
+            throw new LocalizedException(__('Invalid Public Key'));
+        }
+
+        $signature = $this->httpRequest->getHeader('Rsa-Signature');
+        if ($signature == false) {
+            throw new LocalizedException(__('Missing RSA Signature'));
+        }
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $decodedSignature = base64_decode($signature);
+
+        $requestUri = $this->httpRequest->getRequestUri();
+        $requestBody = $this->httpRequest->getContent();
+        $originalMessage = $requestUri . $requestBody;
+
+        $verification = openssl_verify($originalMessage, $decodedSignature, $publicKeyResource, OPENSSL_ALGO_SHA256);
+
+        if (!$verification) {
+            $ex = new LocalizedException(__('RSA Signature Validation Failed'));
+            if ($storeId !== null) {
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $ex,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'authentication_error',
+                        'event_type' => 'rsa_signature_validation_error',
+                        'extra_data' => [
+                            'request_uri' => $requestUri,
+                            'request_body' => $requestBody,
+                            'request_signature' => $signature
+                        ]
+                    ]
+                );
+            }
+            throw $ex;
+        }
+    }
+
+    /**
+     * Verify the RSA signature for an arbitrary data string.
+     *
+     * @param string $data
+     * @param string $signature
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function verifySignature(string $data, string $signature): bool
+    {
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $publicKey = file_get_contents(__DIR__ . '/PublicKey.pem');
+        $publicKeyResource = openssl_get_publickey($publicKey);
+        if ($publicKeyResource === false) {
+            throw new LocalizedException(__('Invalid Public Key'));
+        }
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
+        $decodedSignature = base64_decode($signature);
+        return openssl_verify($data, $decodedSignature, $publicKeyResource, OPENSSL_ALGO_SHA256) === 1;
     }
 }

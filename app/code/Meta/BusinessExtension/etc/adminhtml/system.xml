@@ -3,15 +3,15 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="facebook" translate="label" sortOrder="1000">
-            <label>Meta</label>
+            <label>Facebook and Instagram</label>
         </tab>
-        <section id="facebook_business_extension" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0"
+        <section id="facebook_business_extension" translate="label" sortOrder="5" showInDefault="1" showInWebsite="0"
                  showInStore="1">
             <class>separator-top</class>
-            <label>Business Extension</label>
+            <label>Extension Settings</label>
             <tab>facebook</tab>
             <resource>Meta_BusinessExtension::system_config</resource>
-            <group id="business_extension" translate="label" type="text" sortOrder="10" showInDefault="1"
+            <group id="business_extension" translate="label" type="text" sortOrder="5" showInDefault="1"
                    showInWebsite="0" showInStore="1">
                 <label>Setup</label>
                 <fieldset_css>meta-section-config</fieldset_css>
@@ -22,14 +22,15 @@
                     <config_path>facebook/business_extension/active</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="onsite" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
-                    <config_path>facebook/business_extension/onsite</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
-                </field>
                 <field id="commerce_extension" type="select" sortOrder="20" showInDefault="1" showInWebsite="0"
                        showInStore="1">
                     <config_path>facebook/business_extension/commerce_extension</config_path>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
+                </field>
+                <field id="commerce_extension_splash" type="select" sortOrder="20" showInDefault="1" showInWebsite="0"
+                       showInStore="1">
+                    <config_path>facebook/business_extension/commerce_extension_splash</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
@@ -39,15 +40,9 @@
                     <config_path>facebook/business_extension/pixel_id</config_path>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
-                <field id="meta_exception_logging_enabled" type="select" sortOrder="40" showInDefault="1"
+                <field id="installed" type="select" sortOrder="50" showInDefault="1"
                        showInWebsite="0" showInStore="1">
-                    <config_path>facebook/business_extension/meta_exception_logging_enabled</config_path>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
-                </field>
-                <field id="meta_telemetry_logging_enabled" type="select" sortOrder="50" showInDefault="1"
-                       showInWebsite="0" showInStore="1">
-                    <config_path>facebook/business_extension/meta_telemetry_logging_enabled</config_path>
+                    <config_path>facebook/business_extension/installed</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\Field\Hidden</frontend_model>
                 </field>
@@ -59,25 +54,53 @@
                     </depends>
                     <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\ModuleInfo</frontend_model>
                 </field>
-                <field id="api_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Custom Magento + Meta Connector Token</label>
-                    <config_path>meta_extension/general/api_key</config_path>
-                    <comment>This token will be used by Meta's services to access Meta-specific information on your
-                        Magento Host
-                    </comment>
+
+                <field id="delete_connection" translate="label comment" type="select" sortOrder="20" showInDefault="0"
+                       showInWebsite="0" showInStore="1">
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/active">1</field>
+                    </depends>
+                    <label>Delete Meta Connection</label>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\DeleteConnection</frontend_model>
                 </field>
             </group>
-            <group id="debug" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0"
-                   showInStore="1">
-                <label>Debug</label>
+            <group id="business_settings" translate="label" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
                 <fieldset_css>meta-section-config</fieldset_css>
+                <label>Business Settings</label>
+                <comment>Set your preferred business settings for Facebook and Instagram.
+                </comment>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
+            </group>
+            <group id="manual_data_sync" translate="label" type="text" sortOrder="15" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <fieldset_css>meta-section-config</fieldset_css>
+                <label>Manual Data Sync</label>
+                <comment>By default, most Meta services run every 15-60 minutes. Use the following actions to trigger
+                    an immediate data-sync for that service.
+                </comment>
+                <depends>
+                    <field id="facebook_business_extension/business_extension/active">1</field>
+                </depends>
+                <field id="manual_data_sync_empty" translate="label" type="note" sortOrder="16" showInDefault="1"
+                       showInWebsite="0" showInStore="1">
+                    <depends>
+                        <field id="facebook_business_extension/business_extension/installed">0</field>
+                    </depends>
+                    <frontend_model>Meta\BusinessExtension\Block\Adminhtml\System\Config\ManualDataSyncEmpty</frontend_model>
+                </field>
+            </group>
+            <group id="testing" translate="label" type="text" sortOrder="200" showInDefault="1"
+                   showInWebsite="0" showInStore="1">
+                <label>Developer Testing Mode</label>
                 <depends>
                     <field id="facebook_business_extension/business_extension/active">1</field>
                 </depends>
                 <field id="debug_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="0" showInStore="1">
-                    <label>Enable Debug Mode</label>
+                    <label>Extension Debug Mode</label>
                     <config_path>facebook/debug/debug_mode</config_path>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

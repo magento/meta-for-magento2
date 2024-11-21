@@ -54,9 +54,9 @@ class SyncRefundsAndCancellations
 
     /**
      * @param StoreManagerInterface $storeManager
-     * @param SystemConfig $systemConfig
-     * @param CommerceHelper $commerceHelper
-     * @param FBEHelper $fbeHelper
+     * @param SystemConfig          $systemConfig
+     * @param CommerceHelper        $commerceHelper
+     * @param FBEHelper             $fbeHelper
      */
     public function __construct(
         StoreManagerInterface $storeManager,
@@ -73,14 +73,15 @@ class SyncRefundsAndCancellations
     /**
      * Sync refunds and cancellations from Facebook for a store
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return void
      * @throws GuzzleException
      */
     private function pullRefundsAndCancellationsForStore(int $storeId)
     {
-        if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->isActiveOrderSync($storeId))) {
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 
@@ -95,7 +96,7 @@ class SyncRefundsAndCancellations
      */
     public function execute()
     {
-        foreach ($this->storeManager->getStores() as $store) {
+        foreach ($this->systemConfig->getAllOnsiteFBEInstalledStores() as $store) {
             try {
                 $this->pullRefundsAndCancellationsForStore((int)$store->getId());
             } catch (Exception $e) {

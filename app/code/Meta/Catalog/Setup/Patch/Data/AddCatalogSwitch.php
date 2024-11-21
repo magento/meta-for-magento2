@@ -15,6 +15,7 @@ class AddCatalogSwitch implements DataPatchInterface
      * @var ModuleDataSetupInterface
      */
     private ModuleDataSetupInterface $moduleDataSetup;
+
     /**
      * @var SystemConfig
      */
@@ -28,7 +29,7 @@ class AddCatalogSwitch implements DataPatchInterface
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
-        SystemConfig $systemConfig
+        SystemConfig             $systemConfig
     ) {
         $this->moduleDataSetup = $moduleDataSetup;
         $this->systemConfig = $systemConfig;
@@ -82,7 +83,7 @@ class AddCatalogSwitch implements DataPatchInterface
     private function updateStoreCatalogIntegration($storeId): void
     {
         $connection = $this->moduleDataSetup->getConnection();
-        $coreConfigTable = $connection->getTableName(self::CORE_CONFIG_TABLE);
+        $coreConfigTable = $this->moduleDataSetup->getTable(self::CORE_CONFIG_TABLE);
 
         $isDailyFeedSyncEnabled = $this->fetchValue(
             $storeId,
@@ -154,15 +155,18 @@ class AddCatalogSwitch implements DataPatchInterface
     private function fetchValue($storeId, $configPath)
     {
         $connection = $this->moduleDataSetup->getConnection();
+
         $scopeCondition = $connection->prepareSqlCondition('scope_id', [
             'eq' => $storeId,
         ]);
         $pathCondition = $connection->prepareSqlCondition('path', [
             'eq' => $configPath,
         ]);
+
+        $coreConfigTable = $this->moduleDataSetup->getTable(self::CORE_CONFIG_TABLE);
         $query = $connection
             ->select()
-            ->from($connection->getTableName(self::CORE_CONFIG_TABLE))
+            ->from($coreConfigTable)
             ->where($scopeCondition)
             ->where($pathCondition);
 

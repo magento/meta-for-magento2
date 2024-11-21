@@ -290,7 +290,7 @@ class SaveController
      * @param mixed $group
      * @return array
      */
-    private function _processNestedGroups(mixed $group): array
+    private function _processNestedGroups($group): array
     {
         $data = [];
 

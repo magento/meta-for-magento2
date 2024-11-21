@@ -33,8 +33,10 @@ use Meta\Catalog\Model\Product\Feed\Builder\Tools as BuilderTools;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Catalog\Model\Product\Feed\Builder\UnsupportedProducts;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -84,6 +86,8 @@ class Builder
     private const ATTR_OTHER_ID = 'sku';
 
     private const ATTR_UNSUPPORTED_PRODUCT_DATA = 'unsupported_product_data';
+    private const ATTR_FEATURES = 'features';
+    private const CUSTOM_ATTR_PREFIX = 'custom_attribute_';
 
     private const ALLOWED_TAGS_FOR_RICH_TEXT_DESCRIPTION = ['<form>', '<fieldset>', '<div>', '<span>',
         '<header>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>',
@@ -139,11 +143,6 @@ class Builder
     private $uploadMethod;
 
     /**
-     * @var bool
-     */
-    private $inventoryOnly = false;
-
-    /**
      * @var SystemConfig
      */
     private $systemConfig;
@@ -154,9 +153,9 @@ class Builder
     private MappingConfig $mappingConfig;
 
     /**
-     * @var Mapper
+     * @var UnsupportedProducts
      */
-    private Mapper $mapper;
+    private UnsupportedProducts $unsupportedProducts;
 
     /**
      * @var AdditionalAttributes
@@ -175,7 +174,7 @@ class Builder
      * @param BuilderTools $builderTools
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param FBEHelper $fbeHelper
-     * @param Mapper $mapper
+     * @param UnsupportedProducts $unsupportedProducts
      * @param MappingConfig $mappingConfig
      * @param ProductIdentifier $productIdentifier
      * @param SystemConfig $systemConfig
@@ -185,7 +184,7 @@ class Builder
         BuilderTools              $builderTools,
         CategoryCollectionFactory $categoryCollectionFactory,
         FBEHelper                 $fbeHelper,
-        Mapper                    $mapper,
+        UnsupportedProducts       $unsupportedProducts,
         MappingConfig             $mappingConfig,
         ProductIdentifier         $productIdentifier,
         SystemConfig              $systemConfig
@@ -195,7 +194,7 @@ class Builder
         $this->builderTools = $builderTools;
         $this->productIdentifier = $productIdentifier;
         $this->systemConfig = $systemConfig;
-        $this->mapper = $mapper;
+        $this->unsupportedProducts = $unsupportedProducts;
         $this->mappingConfig = $mappingConfig;
         $this->additionalAttributes = $additionalAttributes;
     }
@@ -221,18 +220,6 @@ class Builder
     public function setUploadMethod($uploadMethod)
     {
         $this->uploadMethod = $uploadMethod;
-        return $this;
-    }
-
-    /**
-     * Set inventory only
-     *
-     * @param bool $inventoryOnly
-     * @return $this
-     */
-    public function setInventoryOnly($inventoryOnly)
-    {
-        $this->inventoryOnly = $inventoryOnly;
         return $this;
     }
 
@@ -409,6 +396,14 @@ class Builder
 
         // phpcs:ignore
         $description = html_entity_decode($description);
+
+        // remove style tag and its content from description
+        // phpcs:ignore
+        $description = html_entity_decode(preg_replace(
+            '/<\s*style.+?<\s*\/\s*style.*?>/',
+            '',
+            $description ?? ''
+        ));
         // phpcs:ignore
         $description = html_entity_decode(preg_replace('/<[^<]+?>/', '', $description));
         return $this->builderTools->lowercaseIfAllCaps($description);
@@ -435,6 +430,17 @@ class Builder
         if (!$description) {
             return '';
         }
+
+        // phpcs:ignore
+        $description = html_entity_decode($description);
+
+        // remove style tag and its content from description
+        // phpcs:ignore
+        $description = html_entity_decode(preg_replace(
+            '/<\s*style.+?<\s*\/\s*style.*?>/',
+            '',
+            $description ?? ''
+        ));
 
         return $this->trimAttribute(
             self::ATTR_RICH_DESCRIPTION,
@@ -471,7 +477,7 @@ class Builder
     private function getBrand(Product $product)
     {
         $brand = isset($this->attrMap[self::ATTR_BRAND])
-            ? $product->getData($this->attrMap[self::ATTR_BRAND])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_BRAND])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
         if (!$brand || $brand == '') {
             $brand = $this->additionalAttributes->getCorrectText($product, self::ATTR_BRAND);
@@ -580,6 +586,14 @@ class Builder
      */
     private function getStatus(Product $product)
     {
+        $parentProductVisibility = $product->getParentProductVisibility();
+
+        // if product is not visible, check for parent product visibility
+        if ($product->getVisibility() == Visibility::VISIBILITY_NOT_VISIBLE
+            && ($parentProductVisibility === null || $parentProductVisibility == Visibility::VISIBILITY_NOT_VISIBLE)) {
+            return 'archived';
+        }
+
         $status = isset($this->attrMap[self::ATTR_STATUS])
             ? $product->getData($this->attrMap[self::ATTR_STATUS]) : $product->getStatus();
         if (!$status || $status == '') {
@@ -599,7 +613,7 @@ class Builder
     {
         $ageGroup = '';
         if (isset($this->attrMap[self::ATTR_AGE_GROUP])) {
-            $ageGroup = $product->getData($this->attrMap[self::ATTR_AGE_GROUP]);
+            $ageGroup = $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_AGE_GROUP]);
         }
         if (empty($ageGroup)) {
             $ageGroup = $this->additionalAttributes->getCorrectText($product, self::ATTR_AGE_GROUP);
@@ -618,7 +632,7 @@ class Builder
     private function getGender(Product $product)
     {
         $gender = isset($this->attrMap[self::ATTR_GENDER])
-            ? $product->getData($this->attrMap[self::ATTR_GENDER])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_GENDER])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
         if (!$gender || $gender == '') {
             $gender = $this->additionalAttributes->getCorrectText($product, self::ATTR_GENDER);
@@ -660,7 +674,7 @@ class Builder
     private function getMaterial(Product $product)
     {
         $material = isset($this->attrMap[self::ATTR_MATERIAL])
-            ? $product->getData($this->attrMap[self::ATTR_MATERIAL])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_MATERIAL])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
         if (!$material && $material == '') {
             $material = $this->additionalAttributes->getCorrectText($product, self::ATTR_MATERIAL);
@@ -680,7 +694,7 @@ class Builder
     private function getPattern(Product $product)
     {
         $pattern = isset($this->attrMap[self::ATTR_PATTERN])
-            ? $product->getData($this->attrMap[self::ATTR_PATTERN])
+            ? $this->additionalAttributes->getCorrectText($product, $this->attrMap[self::ATTR_PATTERN])
             : $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
         if (!$pattern && $pattern == '') {
             $pattern = $this->additionalAttributes->getCorrectText($product, self::ATTR_PATTERN);
@@ -714,96 +728,6 @@ class Builder
     }
 
     /**
-     * Retrieves customizable options
-     *
-     * @param Product $product
-     * @return ?array
-     */
-    private function getCustomizableOptions(Product $product) : ?array
-    {
-        try {
-            $options = $product->getOptions();
-
-            if ($options == null) {
-                return null;
-            }
-
-            return array_map(function ($option) {
-                return $this->mapper->mapProductCustomOption($option);
-            }, $options);
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
-            return null;
-        }
-    }
-
-    /**
-     * Retrieves digital options
-     *
-     * @param Product $product
-     * @return ?array
-     */
-    private function getDigitalOptions(Product $product) : ?array
-    {
-        try {
-            $downloadable_product_links = $product->getExtensionAttributes()->getDownloadableProductLinks();
-            $downloadable_product_samples = $product->getExtensionAttributes()->getDownloadableProductSamples();
-
-            if ($downloadable_product_links == null && $downloadable_product_samples == null) {
-                return null;
-            }
-
-            return [
-               'links' => array_map(function ($link) {
-                   return $this->mapper->mapDownloadableProductLink($link);
-               }, $downloadable_product_links),
-               'samples' => array_map(function ($sample) {
-                   return $this->mapper->mapDownloadableProductSample($sample);
-               }, $downloadable_product_samples),
-            ];
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
-            return null;
-        }
-    }
-
-    /**
-     * Retrieves bundle options
-     *
-     * @param Product $product
-     * @return ?array
-     */
-    private function getBundleOptions(Product $product): ?array
-    {
-        try {
-            $bundle_product_options = $product->getExtensionAttributes()->getBundleProductOptions();
-            $product_links = $product->getProductLinks();
-
-            if ($bundle_product_options == null && $product_links == null) {
-                return null;
-            }
-
-            return [
-                'bundle' => $bundle_product_options == null
-                    ? null
-                    : array_map(function ($option) {
-                        return $this->mapper->mapBundleOption($option);
-                    }, $bundle_product_options),
-                // Groups
-                'associated' => $product_links == null
-                    ? null
-                    : (array)$this->mapper->mapProductLinks($product_links, Grouped::LINK_TYPE),
-                'upsell' => $product_links == null
-                    ? null
-                    : (array)$this->mapper->mapProductLinks($product_links, Related::DATA_SCOPE_UPSELL),
-            ];
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
-            return null;
-        }
-    }
-
-    /**
      * Build product entry
      *
      * @param Product $product
@@ -812,7 +736,7 @@ class Builder
      */
     public function buildProductEntry(Product $product)
     {
-        $this->attrMap = $this->mappingConfig->getAttributeMapping();
+        $this->attrMap = $this->mappingConfig->getAttributeMapping($product->getStoreId());
         $product->setCustomerGroupId(self::NOT_LOGGED_IN_ID);
 
         $inventory = $this->getInventory($product);
@@ -825,14 +749,6 @@ class Builder
             self::ATTR_OTHER_ID,
             $this->productIdentifier->getProductIDOtherThanRetailerId($product)
         );
-
-        if ($this->inventoryOnly) {
-            return [
-                self::ATTR_RETAILER_ID => $retailerId,
-                self::ATTR_AVAILABILITY => $inventory->getAvailability(),
-                self::ATTR_INVENTORY => $inventory->getInventory(),
-            ];
-        }
 
         $title = $product->getName();
         $productTitle = $this->trimAttribute(self::ATTR_NAME, $title);
@@ -865,27 +781,38 @@ class Builder
             self::ATTR_MATERIAL => $this->getMaterial($product),
             self::ATTR_PATTERN => $this->getPattern($product),
             self::ATTR_SHIPPING_WEIGHT => $this->getWeight($product),
-            self::ATTR_METADATA => json_encode($this->additionalAttributes->getAdditionalMetadata($product)),
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $entry[self::ATTR_UNIT_PRICE] = $this->getUnitPrice($product);
         }
 
-        $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
-        foreach ($customAttributes as $customAttribute) {
-            if (in_array($customAttribute, array_keys($entry))) {
-                continue;
+        // Features is needed for customizable & unsupported products both
+        $features = $this->unsupportedProducts->getFeatures($product);
+        $entry[self::ATTR_FEATURES] = count($features) > 0 ? json_encode($features) : null;
+
+        // Add Additional metadata fields if not disabled
+        if (!$this->systemConfig->isAdditionalAttributesSyncDisabled()) {
+            $entry[self::ATTR_METADATA] = json_encode($this->additionalAttributes->getAdditionalMetadata($product));
+
+            $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
+            foreach ($customAttributes as $customAttribute) {
+                $customAttributeKey = self::CUSTOM_ATTR_PREFIX . $customAttribute;
+                if (in_array($customAttributeKey, array_keys($entry))) {
+                    continue;
+                }
+                $entry[$customAttributeKey] =
+                    $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
             }
-            $entry[$customAttribute] = $this->additionalAttributes->getCustomAttributeText($product, $customAttribute);
         }
 
+        // Add Unsupported product data if not disabled
         if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
             $entry[self::ATTR_UNSUPPORTED_PRODUCT_DATA] = json_encode([
                 'type_hint' => $product->getTypeId(),
-                'customizable_options' => $this->getCustomizableOptions($product),
-                'digital_options' => $this->getDigitalOptions($product),
-                'bundle_options' => $this->getBundleOptions($product),
+                'customizable_options' => $this->unsupportedProducts->getCustomizableOptions($product),
+                'digital_options' => $this->unsupportedProducts->getDigitalOptions($product),
+                'bundle_options' => $this->unsupportedProducts->getBundleOptions($product),
             ]);
         }
 
@@ -1023,27 +950,31 @@ class Builder
             self::ATTR_MATERIAL,
             self::ATTR_PATTERN,
             self::ATTR_SHIPPING_WEIGHT,
-            self::ATTR_METADATA,
         ];
 
         if ($this->uploadMethod === FeedUploadMethod::UPLOAD_METHOD_FEED_API) {
             $headerFields[] = self::ATTR_UNIT_PRICE;
         }
 
-        $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
-        foreach ($customAttributes as $customAttribute) {
-            if (in_array($customAttribute, $headerFields)) {
-                continue;
+        $headerFields[] = self::ATTR_FEATURES;
+
+        if (!$this->systemConfig->isAdditionalAttributesSyncDisabled()) {
+            $headerFields[] = self::ATTR_METADATA;
+
+            $customAttributes = $this->additionalAttributes->getUserDefinedAttributesList();
+            foreach ($customAttributes as $customAttribute) {
+                $customAttributeKey = self::CUSTOM_ATTR_PREFIX . $customAttribute;
+                if (in_array($customAttributeKey, $headerFields)) {
+                    continue;
+                }
+                $headerFields[] = $customAttributeKey;
             }
-            $headerFields[] = $customAttribute;
         }
 
         if (!$this->systemConfig->isUnsupportedProductsDisabled()) {
-            $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
-        }
-
-        if ($this->inventoryOnly) {
-            return [self::ATTR_RETAILER_ID, self::ATTR_AVAILABILITY, self::ATTR_INVENTORY];
+            if (!in_array(self::ATTR_UNSUPPORTED_PRODUCT_DATA, $headerFields)) {
+                $headerFields[] = self::ATTR_UNSUPPORTED_PRODUCT_DATA;
+            }
         }
 
         return $headerFields;
@@ -1052,7 +983,7 @@ class Builder
     /**
      * Get base url media
      *
-     * @return mixed
+     * @return string
      */
     public function getBaseUrlMedia()
     {

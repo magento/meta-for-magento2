@@ -1,5 +1,13 @@
 <?php
-/** @var \Meta\Conversion\Block\Pixel\AddToCart $block */
+
+use Magento\Framework\Escaper;
+use Meta\Conversion\Block\Pixel\AddToCart;
+
+/**
+ * @var AddToCart $block
+ * @var Escaper $escaper
+ */
+
 $trackerUrl = $block->getTrackerUrl();
 ?>
 <?php if ($block->getFacebookPixelID()): ?>
@@ -7,15 +15,14 @@ $trackerUrl = $block->getTrackerUrl();
     <script>
         window.addToCartData =
             <?= /* @noEscape */ json_encode([
-                "url" => $block->escapeUrl($trackerUrl),
-                "eventName" => $block->getEventToObserveName(),
+                'url' => $escaper->escapeUrl($trackerUrl),
+                'eventName' => $block->getEventToObserveName(),
                 'fbAgentVersion' => $block->getFacebookAgentVersion(),
                 'fbPixelId' => $block->getFacebookPixelID(),
                 'source' => $block->getSource(),
                 'pluginVersion' => $block->getPluginVersion(),
                 'track' => 'track',
                 'event' => 'AddToCart'
-
             ]); ?>
     </script>
     <script>
@@ -24,32 +31,37 @@ $trackerUrl = $block->getTrackerUrl();
             'Meta_Conversion/js/metaPixelTracker'
         ], function ($, metaPixelTracker) {
 
-            var product_info_url = '<?= /* @noEscape */ $block->getProductInfoUrl() ?>';
+            const product_info_url = '<?= /* @noEscape */ $block->getProductInfoUrl() ?>';
 
             $(document).on('ajax:addToCart', function (event, data) {
+                let simpleProductId;
+                // Get id of last added product
+                const productId = data.productIds[data.productIds.length - 1];
                     // check product data from swatch widget
-                    var swatchData = $('[data-role=swatch-options]').data('mage-SwatchRenderer');
-                    if (swatchData) {
-                        var simpleProductId = swatchData.getProductId();
+                    const swatchData = $('[data-role=swatch-options]').data('mage-SwatchRenderer');
+                    if (swatchData && swatchData.getProductId()) {
+                        simpleProductId = swatchData.getProductId();
                     } else {
                         // In case product is added from category page get options using added product's id
-                        // Get id of last added product
-                        var productId = data.productIds[data.productIds.length - 1];
-                        var categorySwatchData = $('[data-role=swatch-option-'+productId+']')
+                        const categorySwatchData = $('[data-role=swatch-option-' + productId + ']')
                             .data('mage-SwatchRenderer');
-                        if (categorySwatchData) {
-                            var simpleProductId = categorySwatchData.getProductId();
+                        if (categorySwatchData && categorySwatchData.getProductId()) {
+                            simpleProductId = categorySwatchData.getProductId();
                         } else {
                             // else check product data from configurable options
-                            var configurableProduct = data.form.data().mageConfigurable;
-                            if(configurableProduct) {
-                                var simpleProductId = configurableProduct.simpleProduct;
+                            const configurableProduct = data.form.data().mageConfigurable;
+                            if (configurableProduct) {
+                                simpleProductId = configurableProduct.simpleProduct;
                             }
                         }
                     }
                     // otherwise use the product sku
-                    var product_sku = data.sku;
-                    var form_key = jQuery("[name='form_key']").val();
+                    const product_sku = data.sku;
+                    // use last added product id if swatch data is not available
+                    if (!simpleProductId) {
+                        simpleProductId = productId;
+                    }
+                    const form_key = jQuery("[name='form_key']").val();
                     $.ajax({
                         url: product_info_url,
                         data: {
@@ -59,12 +71,13 @@ $trackerUrl = $block->getTrackerUrl();
                         },
                         type: 'get',
                         dataType: 'json',
+                        async: !data.response.backUrl,
                         success: function (res) {
-                            var addToCartConfigPixel = {
-                                "url" : window.addToCartData.url,
+                            const addToCartConfigPixel = {
+                                "url": window.addToCartData.url,
                                 "payload": {
-                                    "eventName" : window.addToCartData.eventName,
-                                    "productId" : res.productId
+                                    "eventName": window.addToCartData.eventName,
+                                    "productId": res.productId
                                 },
                                 "browserEventData": {
                                     'fbAgentVersion': window.addToCartData.fbAgentVersion,

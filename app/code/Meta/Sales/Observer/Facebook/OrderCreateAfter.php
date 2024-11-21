@@ -67,11 +67,11 @@ class OrderCreateAfter implements ObserverInterface
      * @param Subscriber $subscriber
      */
     public function __construct(
-        SystemConfig $systemConfig,
-        LoggerInterface $logger,
-        FBEHelper $fbeHelper,
+        SystemConfig        $systemConfig,
+        LoggerInterface     $logger,
+        FBEHelper           $fbeHelper,
         SubscriptionManager $subscriptionManager,
-        Subscriber $subscriber
+        Subscriber          $subscriber
     ) {
         $this->systemConfig = $systemConfig;
         $this->logger = $logger;
@@ -88,15 +88,19 @@ class OrderCreateAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        /** @var Order $order */
+        /**
+         * @var Order $order
+         */
         $order = $observer->getEvent()->getOrder();
-        /** @var FacebookOrder $facebookOrder */
+        /**
+         * @var FacebookOrder $facebookOrder
+         */
         $facebookOrder = $observer->getEvent()->getFacebookOrder();
         $storeId = $order->getStoreId();
 
-        if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->isActiveOrderSync($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 

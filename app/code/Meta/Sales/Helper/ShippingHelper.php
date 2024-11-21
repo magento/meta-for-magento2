@@ -10,6 +10,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Sales\Model\Order\Shipment\Track;
 use Psr\Log\LoggerInterface;
+use Magento\Directory\Model\Region;
 
 class ShippingHelper extends AbstractHelper
 {
@@ -24,23 +25,23 @@ class ShippingHelper extends AbstractHelper
     private $logger;
 
     /**
-     * @var string[string] Supported carrier names by carrier code.
+     * @var array
      */
     private $supportedShippingCarriers = [];
 
     /**
      * Constructor
      *
-     * @param Context $context
-     * @param RegionFactory $regionFactory
+     * @param Context         $context
+     * @param RegionFactory   $regionFactory
      * @param LoggerInterface $logger
-     * @param array $supportedShippingCarriers
+     * @param array           $supportedShippingCarriers
      */
     public function __construct(
-        Context $context,
-        RegionFactory $regionFactory,
+        Context         $context,
+        RegionFactory   $regionFactory,
         LoggerInterface $logger,
-        array $supportedShippingCarriers = []
+        array           $supportedShippingCarriers = []
     ) {
         parent::__construct($context);
         $this->regionFactory = $regionFactory;
@@ -64,7 +65,7 @@ class ShippingHelper extends AbstractHelper
     /**
      * Gets the region name from state code
      *
-     * @param int $stateId - State code
+     * @param  int $stateId - State code
      * @return string
      */
     public function getRegionName($stateId)
@@ -79,6 +80,20 @@ class ShippingHelper extends AbstractHelper
     }
 
     /**
+     * Gets the region name from state code
+     *
+     * @param  null|string $stateCode   - State code
+     * @param  null|string $countryCode - Country code
+     * @return Region
+     */
+    public function getRegionFromCode(?string $stateCode, ?string $countryCode): Region
+    {
+        $region = $this->regionFactory->create();
+        $region = $region->loadByCode($stateCode, $countryCode);
+        return $region;
+    }
+
+    /**
      * A map for popular US carriers with long titles
      *
      * @return array
@@ -86,8 +101,8 @@ class ShippingHelper extends AbstractHelper
     private function getSupplementaryCarriersMap()
     {
         return [
-            'UPS'   => 'United Parcel Service',
-            'USPS'  => 'United States Postal Service',
+            'UPS' => 'United Parcel Service',
+            'USPS' => 'United States Postal Service',
             'FEDEX' => 'Federal Express',
         ];
     }
@@ -95,8 +110,8 @@ class ShippingHelper extends AbstractHelper
     /**
      * Find code by title
      *
-     * @param string $carrierTitle
-     * @param array $carriersMap
+     * @param  string $carrierTitle
+     * @param  array  $carriersMap
      * @return string|false
      */
     private function findCodeByTitle($carrierTitle, array $carriersMap)
@@ -112,7 +127,7 @@ class ShippingHelper extends AbstractHelper
     /**
      * Get canonical carrier Code
      *
-     * @param Track $track
+     * @param  Track $track
      * @return string
      */
     private function getCanonicalCarrierCode($track)
@@ -139,7 +154,7 @@ class ShippingHelper extends AbstractHelper
     /**
      * Get carrier code for facebook
      *
-     * @param Track $track
+     * @param  Track $track
      * @return string
      */
     public function getCarrierCodeForFacebook($track)

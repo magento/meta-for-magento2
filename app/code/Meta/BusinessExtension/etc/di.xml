@@ -5,9 +5,15 @@
                 type="Meta\BusinessExtension\Model\Api\SettingsWebhookListenerImpl"/>
     <preference for="Meta\BusinessExtension\Api\SettingsWebhookRequestInterface"
                 type="Meta\BusinessExtension\Model\Api\SettingsWebhookRequestImpl"/>
+    <preference for="Meta\BusinessExtension\Api\CoreConfigInterface"
+                type="Meta\BusinessExtension\Model\Api\CoreConfig"/>
+    <preference for="Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface"
+                type="Meta\BusinessExtension\Model\MetaIssueNotification"/>
+    <preference for="Meta\BusinessExtension\Api\AdobeCloudConfigInterface"
+                type="Meta\BusinessExtension\Model\Api\AdobeCloudConfig"/>
     <virtualType name="Meta\BusinessExtension\Model\Logger\ApiDebugger" type="Magento\Framework\Logger\Handler\Base">
         <arguments>
-            <argument name="fileName" xsi:type="string">/var/log/facebook/api.log</argument>
+            <argument name="fileName" xsi:type="string">/var/log/meta/api.log</argument>
         </arguments>
     </virtualType>
     <virtualType name="Meta\BusinessExtension\Model\Logger\ApiLogger" type="Magento\Framework\Logger\Monolog">
@@ -30,12 +36,12 @@
     <type name="Magento\Framework\MessageQueue\MergerFactory">
         <arguments>
             <argument name="mergers" xsi:type="array">
-                <item name="persist.meta.telemetry.logs.consumer" xsi:type="string">Meta\BusinessExtension\Model\PersistMetaTelemetryLogsMerger</item>
+                <item name="persist.meta.telemetry.logs.consumer" xsi:type="string">
+                    Meta\BusinessExtension\Model\PersistMetaTelemetryLogsMerger
+                </item>
             </argument>
         </arguments>
     </type>
-    <preference for="Magento\Framework\App\Config\Storage\WriterInterface"
-                type="Magento\Framework\App\Config\Storage\Writer"/>
     <type name="Meta\BusinessExtension\Controller\Adminhtml\ApiKey\Index">
         <arguments>
             <argument name="configWriter" xsi:type="object">Magento\Framework\App\Config\Storage\WriterInterface;

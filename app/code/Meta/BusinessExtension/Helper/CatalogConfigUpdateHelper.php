@@ -41,7 +41,7 @@ class CatalogConfigUpdateHelper
     private EventManager $eventManager;
 
     /**
-     * @param FBEHelper $fbeHelper
+     * @param FBEHelper    $fbeHelper
      * @param SystemConfig $systemConfig
      * @param EventManager $eventManager
      */
@@ -60,22 +60,26 @@ class CatalogConfigUpdateHelper
      * Function enables Meta Commerce Sync and do full catalog sync.
      * Do not call it apart from catalog update webhook event, it may cause stale state for catalog integration.
      *
-     * @param int $storeId
-     * @param string $catalogId
-     * @param string $commercePartnerIntegrationId
-     * @param string $pixelId
+     * @param  int    $storeId
+     * @param  string $catalogId
+     * @param  string $commercePartnerIntegrationId
+     * @param  string $pixelId
+     * @param  bool   $triggerFullSync
      * @return void
      */
     public function updateCatalogConfiguration(
         int $storeId,
         string $catalogId,
         string $commercePartnerIntegrationId,
-        string $pixelId
+        string $pixelId,
+        bool $triggerFullSync = true
     ): void {
         $oldCatalogId = $this->systemConfig->getCatalogId($storeId);
         try {
+            $isCatalogUpdated = $oldCatalogId != $catalogId;
+
             // if Catalog id is updated, only then we update the config
-            if ($oldCatalogId != $catalogId) {
+            if ($isCatalogUpdated) {
                 // updates catalog id
                 $this->systemConfig->saveConfig(
                     SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID,
@@ -105,8 +109,10 @@ class CatalogConfigUpdateHelper
                 // for e.g. clears all the product set ids for categories for old catalog
                 $this->eventManager->dispatch('facebook_update_catalog_configuration', ['store_id' => $storeId]);
 
-                $this->fbeHelper->log('Catalog configuration updated and stale product set ids cleared --- '
-                    . $commercePartnerIntegrationId);
+                $this->fbeHelper->log(
+                    'Catalog configuration updated and stale product set ids cleared --- '
+                    . $commercePartnerIntegrationId
+                );
 
             }
 
@@ -115,7 +121,9 @@ class CatalogConfigUpdateHelper
             // Dispatch the facebook_update_catalog_configuration_after event,
             // so observers in other Meta modules can subscribe and trigger their syncs,
             // such as full catalog sync, and shipping profiles sync
-            $this->eventManager->dispatch('facebook_update_catalog_configuration_after', ['store_id' => $storeId]);
+            if ($triggerFullSync || $isCatalogUpdated) {
+                $this->eventManager->dispatch('facebook_update_catalog_configuration_after', ['store_id' => $storeId]);
+            }
         } catch (\Throwable $e) {
             $context = [
                 'store_id' => $storeId,

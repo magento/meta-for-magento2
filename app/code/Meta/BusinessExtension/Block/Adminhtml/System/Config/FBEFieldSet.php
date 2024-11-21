@@ -43,12 +43,12 @@ class FBEFieldSet extends Fieldset
     /**
      * Constructor
      *
-     * @param  Context $context
-     * @param  Session $authSession
-     * @param  Js $jsHelper
-     * @param  SystemConfig $systemConfig
+     * @param  Context               $context
+     * @param  Session               $authSession
+     * @param  Js                    $jsHelper
+     * @param  SystemConfig          $systemConfig
      * @param  StoreManagerInterface $storeManager
-     * @param  array $data
+     * @param  array                 $data
      * @return string
      */
     public function __construct(

@@ -24,6 +24,7 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Product\Feed\ProductRetrieverInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
@@ -66,6 +67,11 @@ class Configurable implements ProductRetrieverInterface
     private $metaProductRepo;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
@@ -73,28 +79,31 @@ class Configurable implements ProductRetrieverInterface
      * @param ProductRepository $metaProductRepo
      * @param ProductRepositoryInterface $productRepo
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
-        FBEHelper $fbeHelper,
-        CollectionFactory $productCollectionFactory,
-        ProductRepository $metaProductRepo,
+        FBEHelper                  $fbeHelper,
+        CollectionFactory          $productCollectionFactory,
+        ProductRepository          $metaProductRepo,
         ProductRepositoryInterface $productRepo,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder      $searchCriteriaBuilder,
+        SystemConfig               $systemConfig
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->metaProductRepo = $metaProductRepo;
         $this->productRepo = $productRepo;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->systemConfig = $systemConfig;
     }
 
     /**
      * Set store id
      *
      * @param int $storeId
-     * @return ProductRetrieverInterface|void
+     * @return ProductRetrieverInterface
      */
-    public function setStoreId($storeId)
+    public function setStoreId($storeId): ProductRetrieverInterface
     {
         $this->storeId = $storeId;
         return $this;
@@ -112,7 +121,6 @@ class Configurable implements ProductRetrieverInterface
 
         $configurableCollection = $this->productCollectionFactory->create();
         $configurableCollection->addAttributeToSelect('*')
-            ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
             ->addAttributeToFilter([
                 [
                     'attribute' => 'send_to_facebook',
@@ -129,12 +137,18 @@ class Configurable implements ProductRetrieverInterface
 
         $configurableCollection->getSelect()->limit($limit, $offset);
 
-        $search = $this
-            ->searchCriteriaBuilder
-            ->addFilter('entity_id', array_keys($configurableCollection->getItems()), 'in')
-            ->create();
+        if ($this->systemConfig->isAdditionalAttributesSyncDisabled()) {
+            $products = $configurableCollection->getItems();
+        } else {
+            // in case of unsupported product we need complete data for products which is return by product repo api.
+            $search = $this
+                ->searchCriteriaBuilder
+                ->addFilter('entity_id', array_keys($configurableCollection->getItems()), 'in')
+                ->addFilter('store_id', $storeId)
+                ->create();
 
-        $products = $this->productRepo->getList($search)->getItems();
+            $products = $this->productRepo->getList($search)->getItems();
+        }
 
         $simpleProducts = [];
 

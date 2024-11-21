@@ -1,0 +1,33 @@
+<?php
+/**
+ * @var Meta\BusinessExtension\Block\Adminhtml\Setup $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
+?>
+
+<?php if (!empty($block->getSelectableStores())): ?>
+    <select id="store">
+        <?php foreach ($block->getSelectableStores() as $store): ?>
+            <option
+                    value="<?= $escaper->escapeHtmlAttr($store['store_id']) ?>"
+                <?php if ((int)$store['store_id'] === $block->getSelectedStoreId()): ?>
+                    data-selected="true"
+                    selected="selected"
+                <?php endif; ?>
+            ><?= $escaper->escapeHtml(__($store['name'])) ?></option>
+        <?php endforeach; ?>
+    </select>
+
+    <script>
+        require([
+            'jquery',
+        ], function ($) {
+            $('#store').on('change', function () {
+                const url = new URL(location.href);
+                url.searchParams.set('store_id', jQuery(this).val());
+
+                location.assign(url.search);
+            });
+        });
+    </script>
+<?php endif; ?>

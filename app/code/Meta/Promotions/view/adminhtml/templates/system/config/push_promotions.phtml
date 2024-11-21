@@ -1,4 +1,9 @@
-<?php /* @var $block \Meta\Promotions\Block\Adminhtml\System\Config\PushPromotions */ ?>
+<?php
+/**
+ * @var $block \Meta\Promotions\Block\Adminhtml\System\Config\PushPromotions
+ * @var $escaper \Magento\Framework\Escaper
+ */
+?>
 
 <script>
     require([
@@ -15,7 +20,7 @@
 
         jQuery('#fb_push_promotions_btn').click(function () {
             const params = {};
-            new Ajax.Request('<?= $block->escapeUrl($block->getAjaxUrl()) ?>', {
+            new Ajax.Request('<?= $escaper->escapeUrl($block->getAjaxUrl()) ?>', {
                 parameters: params,
                 loaderArea: false,
                 asynchronous: true,
@@ -51,10 +56,10 @@
 <?= $block->getButtonHtml() ?>
 <span id="fb_push_promotions_result">
     <img class="fb-push-promotions-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src=
-        "<?= $block->escapeUrl($block->getViewFileUrl('images/process_spinner.gif')) ?>"
+    "<?= $escaper->escapeUrl($block->getViewFileUrl('images/process_spinner.gif')) ?>"
     />
-    <img class="fb-push-promotions-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px"  src=
-        "<?= $block->escapeUrl($block->getViewFileUrl('images/rule_component_apply.gif')) ?>"
+    <img class="fb-push-promotions-finished" hidden="hidden" alt="Finished" style="margin:-3px 5px" src=
+    "<?= $escaper->escapeUrl($block->getViewFileUrl('images/rule_component_apply.gif')) ?>"
     />
     <span id="fb_push_promotions_result_text"></span>
     <span id="fb_push_promotions_result_response_toggle"
@@ -75,7 +80,7 @@
 </p>
 
 <?php if ($block->getCommerceAccountId()): ?>
-    <p><a target="_blank" href="<?= $block->escapeUrl($block->getCommerceManagerPromotionsUrl()) ?> ">
-        <?= __(/* @noEscape */'View promotions in Commerce Manager') ?></a>
+    <p><a target="_blank" href="<?= $escaper->escapeUrl($block->getCommerceManagerPromotionsUrl()) ?> ">
+            <?= __(/* @noEscape */ 'View promotions in Commerce Manager') ?></a>
     </p>
 <?php endif; ?>

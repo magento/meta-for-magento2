@@ -38,7 +38,7 @@ class PaymentMethod extends AbstractMethod
      *
      * @var bool
      */
-    protected $_isOffline = true;
+    protected $_isOffline = false;
 
     /**
      * Disallow this method in Magento checkout
@@ -47,4 +47,46 @@ class PaymentMethod extends AbstractMethod
      * @var bool
      */
     protected $_canUseCheckout = false;
+
+    /**
+     * Disallow this method in Magento admin
+     *
+     * @var bool
+     */
+    protected $_canUseInternal = false;
+
+    /**
+     * Allow refunds
+     *
+     * @var bool
+     */
+    protected $_canRefund = true;
+
+    /**
+     * Allow refunds
+     *
+     * @var bool
+     */
+    protected $_canRefundInvoicePartial = true;
+
+    /**
+     * Allow voids
+     *
+     * @var bool
+     */
+    protected $_canVoid = true;
+
+    /**
+     * Allow the authorize action
+     *
+     * @var bool
+     */
+    protected $_canAuthorize = true;
+
+    /**
+     * Allow the capture action
+     *
+     * @var bool
+     */
+    protected $_canCapture = true;
 }

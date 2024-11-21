@@ -1,5 +1,8 @@
 <?php
-/** @var \Meta\Conversion\Block\Pixel\Purchase $block */
+/**
+ * @var \Meta\Conversion\Block\Pixel\Purchase $block
+ * @var $escaper \Magento\Framework\Escaper
+ */
 
 $trackerUrl = $block->getTrackerUrl();
 if ($block->getFacebookPixelID()) {
@@ -9,31 +12,33 @@ if ($block->getFacebookPixelID()) {
         {
             "*": {
                 "Meta_Conversion/js/metaPixelTracker" : {
-                    "url" : "<?= $block->escapeUrl($trackerUrl); ?>",
-                    "payload": <?= /* @noEscape */ json_encode([
-                        "eventName" => $block->getEventToObserveName(),
-                        "lastOrder" => $block->getLastOrderRealOrderEntityId()
-        ]) ?>,
-               "browserEventData": <?= /* @noEscape */ json_encode([
-                        'fbAgentVersion' => $block->getFacebookAgentVersion(),
-                        'fbPixelId' => $block->getFacebookPixelID(),
-                        'source' => $block->getSource(),
-                        'pluginVersion' => $block->getPluginVersion(),
-                        'track' => 'trackCustom',
-                        'event' => 'Purchase',
-                        'payload' => [
-                            'content_type' => $block->getContentType(),
-                            'content_ids' => $block->getContentIDs(),
-                            'num_items' => $block->getNumItems(),
-                            'contents' => $block->getContents(),
-                            'content_name' => $block->getContentName(),
-                            'value' => $block->getValue(),
-                            'currency' =>strtolower($block->getCurrency()),
-                            "order_id" => $block->getLastOrderRealOrderEntityId()
-                        ]
-        ]) ?>
-                }
-            }
+                    "url" : "<?= $escaper->escapeUrl($trackerUrl); ?>",
+                    "payload": <?= /* @noEscape */
+                    json_encode([
+                    "eventName" => $block->getEventToObserveName(),
+                    "lastOrder" => $block->getLastOrderRealOrderEntityId()
+                    ]) ?>,
+               "browserEventData": <?= /* @noEscape */
+                json_encode([
+                'fbAgentVersion' => $block->getFacebookAgentVersion(),
+                'fbPixelId' => $block->getFacebookPixelID(),
+                'source' => $block->getSource(),
+                'pluginVersion' => $block->getPluginVersion(),
+                'track' => 'trackCustom',
+                'event' => 'Purchase',
+                'payload' => [
+                'content_type' => $block->getContentType(),
+                'content_ids' => $block->getContentIDs(),
+                'num_items' => $block->getNumItems(),
+                'contents' => $block->getContents(),
+                'content_name' => $block->getContentName(),
+                'value' => $block->getValue(),
+                'currency' => strtolower($block->getCurrency()),
+                "order_id" => $block->getLastOrderRealOrderEntityId()
+                ]
+                ]) ?>
         }
+    }
+}
     </script>
 <?php } ?>

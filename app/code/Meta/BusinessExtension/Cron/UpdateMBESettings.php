@@ -20,11 +20,10 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Cron;
 
-use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
-use Meta\BusinessExtension\Model\SaveFBEInstallsResponse;
+use Meta\BusinessExtension\Model\MBEInstalls;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 
@@ -34,22 +33,10 @@ class UpdateMBESettings
      * @var FBEHelper
      */
     private $fbeHelper;
-
     /**
-     * @var SystemConfig
+     * @var MBEInstalls
      */
-    private $systemConfig;
-
-    /**
-     * @var GraphAPIAdapter
-     */
-    private $graphAPIAdapter;
-
-    /**
-     * @var SaveFBEInstallsResponse
-     */
-    private $saveFBEInstallsResponse;
-
+    private $mbeInstalls;
     /**
      * @var CollectionFactory
      */
@@ -58,23 +45,17 @@ class UpdateMBESettings
     /**
      * Construct
      *
-     * @param FBEHelper $fbeHelper
-     * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
-     * @param SaveFBEInstallsResponse $saveFBEInstallsResponse
+     * @param FBEHelper         $fbeHelper
+     * @param MBEInstalls       $mbeInstalls
      * @param CollectionFactory $collectionFactory
      */
     public function __construct(
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
-        GraphAPIAdapter $graphAPIAdapter,
-        SaveFBEInstallsResponse $saveFBEInstallsResponse,
-        CollectionFactory $collectionFactory
+        FBEHelper               $fbeHelper,
+        MBEInstalls             $mbeInstalls,
+        CollectionFactory       $collectionFactory
     ) {
         $this->fbeHelper = $fbeHelper;
-        $this->systemConfig = $systemConfig;
-        $this->graphAPIAdapter = $graphAPIAdapter;
-        $this->saveFBEInstallsResponse = $saveFBEInstallsResponse;
+        $this->mbeInstalls = $mbeInstalls;
         $this->collectionFactory = $collectionFactory;
     }
 
@@ -85,53 +66,31 @@ class UpdateMBESettings
     {
         $installedConfigs = $this->getMBEInstalledConfigs();
         foreach ($installedConfigs as $config) {
-            $this->updateMBESettings($config->getScopeId());
-        }
-    }
-
-    /**
-     * Trigger polling to update MBE Settings by webhook
-     *
-     * @param int $storeId
-     * @return void
-     */
-    public function updateMBESettingsByStoreId(int $storeId)
-    {
-        try {
-            $this->updateMBESettings($storeId);
-        } catch (\Exception $e) {
-            $this->fbeHelper->logException($e);
-        }
-    }
-
-    /**
-     * Update MBE settings through the 'fbe_installs' API
-     *
-     * @param int $storeId
-     * @return void
-     * @throws GuzzleException
-     */
-    private function updateMBESettings($storeId)
-    {
-        try {
-            $accessToken = $this->systemConfig->getAccessToken($storeId);
-            $businessId = $this->systemConfig->getExternalBusinessId($storeId);
-            if (!$accessToken || !$businessId) {
-                $this->fbeHelper->log("AccessToken or BusinessID not found for storeID: {$storeId}");
-                return;
+            $storeId = $config->getScopeId();
+            try {
+                $this->mbeInstalls->updateMBESettings($storeId);
+            } catch (\Exception $e) {
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'update_mbe_settings_cron',
+                        'event_type' => 'update_mbe_settings'
+                    ]
+                );
             }
-            $response = $this->graphAPIAdapter->getFBEInstalls($accessToken, $businessId);
-            $this->saveFBEInstallsResponse->save($response['data'], $storeId);
-            $this->fbeHelper->log("Updated MBE Settings for storeId: {$storeId}");
-        } catch (\Exception $e) {
-            $this->fbeHelper->logExceptionImmediatelyToMeta(
-                $e,
-                [
-                    'store_id' => $storeId,
-                    'event' => 'update_mbe_settings_cron',
-                    'event_type' => 'update_mbe_settings'
-                ]
-            );
+            try {
+                $this->mbeInstalls->repairCommercePartnerIntegration($storeId);
+            } catch (\Exception $e) {
+                $this->fbeHelper->logExceptionImmediatelyToMeta(
+                    $e,
+                    [
+                        'store_id' => $storeId,
+                        'event' => 'update_mbe_settings_cron_repair_cpi',
+                        'event_type' => 'update_mbe_settings'
+                    ]
+                );
+            }
         }
     }
 

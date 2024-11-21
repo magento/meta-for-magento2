@@ -108,7 +108,8 @@ class FeedApi
         $fileStream->writeCsv($this->builder->getHeaderFields(), "\t");
 
         $total = 0;
-        $offers = $this->promotionRetriever->retrieve();
+        $websiteId = $this->systemConfig->getStoreManager()->getStore($this->storeId)->getWebsiteId();
+        $offers = $this->promotionRetriever->retrieve($websiteId);
         foreach ($offers as $offer) {
             try {
                 $offer->loadCouponCode();

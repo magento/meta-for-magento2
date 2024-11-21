@@ -20,40 +20,91 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Observer\Order;
 
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
-use Meta\BusinessExtension\Helper\GraphAPIAdapter;
+use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
+use Meta\Sales\Helper\OrderHelper;
 use Meta\Sales\Model\Order\CreateCancellation;
+use Meta\Sales\Helper\CommerceHelper;
+
+use Meta\Sales\Observer\MetaObserverTrait;
 
 class Cancel implements ObserverInterface
 {
+    use MetaObserverTrait;
+
     /**
      * @var SystemConfig
      */
     private SystemConfig $systemConfig;
 
     /**
-     * @var GraphAPIAdapter
+     * @var OrderHelper
      */
-    private GraphAPIAdapter $graphAPIAdapter;
+    private OrderHelper $orderHelper;
+
+    /**
+     * @var CommerceHelper
+     */
+    private CommerceHelper $commerceHelper;
+
+    /**
+     * @var FBEHelper
+     */
+    private FBEHelper $fbeHelper;
 
     /**
      * Constructor
      *
      * @param SystemConfig $systemConfig
-     * @param GraphAPIAdapter $graphAPIAdapter
+     * @param OrderHelper $orderHelper
+     * @param CommerceHelper $commerceHelper
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
-        SystemConfig    $systemConfig,
-        GraphAPIAdapter $graphAPIAdapter
+        SystemConfig   $systemConfig,
+        OrderHelper    $orderHelper,
+        CommerceHelper $commerceHelper,
+        FBEHelper      $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
-        $this->graphAPIAdapter = $graphAPIAdapter;
+        $this->orderHelper = $orderHelper;
+        $this->commerceHelper = $commerceHelper;
+        $this->fbeHelper = $fbeHelper;
+    }
+
+    /**
+     * Get Exception Event
+     *
+     * @return string
+     */
+    protected function getExceptionEvent()
+    {
+        return 'refund_observer_exception';
+    }
+
+    /**
+     * Get Store ID
+     *
+     * @param Observer $observer
+     * @return string
+     */
+    protected function getStoreId(Observer $observer)
+    {
+        return $observer->getEvent()->getOrder()->getStoreId();
+    }
+
+    /**
+     * Get Facebook Event Helper
+     *
+     * @return FBEHelper
+     */
+    protected function getFBEHelper()
+    {
+        return $this->fbeHelper;
     }
 
     /**
@@ -63,62 +114,37 @@ class Cancel implements ObserverInterface
      * @return void
      * @throws GuzzleException
      */
-    public function execute(Observer $observer)
+    protected function executeImpl(Observer $observer)
     {
-        /** @var Order $order */
+        /**
+         * @var Order $order
+         */
         $order = $observer->getEvent()->getOrder();
-        $storeId = $order->getStoreId();
+        $storeId = $this->getStoreId($observer);
 
-        if (!($this->systemConfig->isActiveExtension($storeId)
-            && $this->systemConfig->isActiveOrderSync($storeId)
-            && $this->systemConfig->isOnsiteCheckoutEnabled($storeId))) {
+        if (!($this->systemConfig->isOrderSyncEnabled($storeId)
+            && $this->systemConfig->isActiveExtension($storeId))
+        ) {
             return;
         }
 
-        $statusHistory = $order->getStatusHistoryCollection();
-        foreach ($statusHistory as $historyItem) {
-            if ($historyItem->getComment() &&
-                strpos($historyItem->getComment(), CreateCancellation::CANCELLATION_NOTE) !== false
-            ) {
+        $historyItems = $order->getStatusHistoryCollection();
+        foreach ($historyItems as $historyItem) {
+            $comment = $historyItem->getComment();
+            if ($comment && strpos($comment, CreateCancellation::CANCELLATION_NOTE) !== false) {
                 // No-op if order was originally canceled on Facebook -- avoid infinite cancel loop.
                 return;
             }
         }
 
+        $this->orderHelper->setFacebookOrderExtensionAttributes($order);
         $facebookOrderId = $order->getExtensionAttributes()->getFacebookOrderId();
         if (!$facebookOrderId) {
             return;
         }
 
-        $this->cancelOrder((int)$storeId, $facebookOrderId);
+        $this->commerceHelper->cancelOrder((int)$storeId, $facebookOrderId);
 
-        $order->addCommentToStatusHistory("Cancelled order on Facebook.");
-    }
-
-    /**
-     * Perform cancel of a facebook order via api
-     *
-     * @param int $storeId
-     * @param string $fbOrderId
-     * @return void
-     * @throws GuzzleException
-     * @throws Exception
-     */
-    private function cancelOrder(int $storeId, string $fbOrderId)
-    {
-        $this->graphAPIAdapter
-            ->setDebugMode($this->systemConfig->isDebugMode($storeId))
-            ->setAccessToken($this->systemConfig->getAccessToken($storeId));
-        try {
-            $this->graphAPIAdapter->cancelOrder($fbOrderId);
-        } catch (GuzzleException $e) {
-            $response = $e->getResponse();
-            $body = json_decode((string)$response->getBody());
-            throw new LocalizedException(__(
-                'Error code: "%1"; Error message: "%2"',
-                (string)$body->error->code,
-                (string)($body->error->error_user_msg ?? $body->error->message)
-            ));
-        }
+        $order->addCommentToStatusHistory('Order Canceled on Meta');
     }
 }

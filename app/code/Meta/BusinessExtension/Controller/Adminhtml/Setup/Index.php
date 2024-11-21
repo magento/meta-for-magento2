@@ -28,17 +28,23 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 
 class Index extends Action implements HttpGetActionInterface
 {
-  /**
-   * @var PageFactory
-   */
+    /**
+     * @var PageFactory
+     */
     private $resultPageFactory;
 
-  /**
-   * Constructor
-   *
-   * @param Context $context
-   * @param PageFactory $resultPageFactory
-   */
+    /**
+     * Needed to prevent secret url generation on the fbeadmin page.
+     * @var array
+     */
+    protected $_publicActions = ['index'];
+
+    /**
+     * Constructor
+     *
+     * @param Context     $context
+     * @param PageFactory $resultPageFactory
+     */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory
@@ -47,16 +53,15 @@ class Index extends Action implements HttpGetActionInterface
         $this->resultPageFactory = $resultPageFactory;
     }
 
-  /**
-   * Load the page defined in view/adminhtml/layout/fbeadmin_setup_index.xml
-   *
-   * @return Page
-   */
+    /**
+     * Load the page defined in view/adminhtml/layout/fbeadmin_setup_index.xml
+     *
+     * @return Page
+     */
     public function execute()
     {
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Meta_BusinessExtension::facebook_business_extension');
-        $resultPage->getConfig()->getTitle()->prepend(__('Meta Business Extension'));
         return $resultPage;
     }
 }

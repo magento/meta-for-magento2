@@ -20,6 +20,9 @@ declare(strict_types=1);
 
 namespace Meta\Promotions\Model\Promotion\Feed;
 
+use Magento\SalesRule\Api\Data\CouponInterface;
+use Magento\SalesRule\Model\Coupon;
+use Magento\SalesRule\Model\ResourceModel\Coupon\CollectionFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\SalesRule\Model\ResourceModel\Rule\CollectionFactory as RuleCollection;
@@ -53,6 +56,7 @@ class Builder
     private const ATTR_USE_AUTO_GENERATION = 'use_auto_generation';
     private const ATTR_USES_PER_COUPON = 'uses_per_coupon';
     private const ATTR_PRIMARY_COUPON = 'primary_coupon';
+    private const ATTR_COUPONS = 'coupons';
     private const ATTR_SIMPLE_FREE_SHIPPING = 'simple_free_shipping';
     private const ATTR_STORE_LABELS = 'store_labels';
     private const ATTR_WEBSITE_IDS = 'website_ids';
@@ -84,23 +88,31 @@ class Builder
     private $ruleFactory;
 
     /**
+     * @var CollectionFactory
+     */
+    protected $couponFactory;
+
+    /**
      * Constructor
      *
      * @param FBEHelper $fbeHelper
      * @param SystemConfig $systemConfig
      * @param RuleCollection $ruleCollection
      * @param RuleFactory $ruleFactory
+     * @param CollectionFactory $couponFactory
      */
     public function __construct(
-        FBEHelper      $fbeHelper,
-        SystemConfig   $systemConfig,
-        RuleCollection $ruleCollection,
-        RuleFactory    $ruleFactory
+        FBEHelper         $fbeHelper,
+        SystemConfig      $systemConfig,
+        RuleCollection    $ruleCollection,
+        RuleFactory       $ruleFactory,
+        CollectionFactory $couponFactory
     ) {
         $this->fbeHelper = $fbeHelper;
         $this->systemConfig = $systemConfig;
         $this->ruleCollection = $ruleCollection;
         $this->ruleFactory = $ruleFactory;
+        $this->couponFactory = $couponFactory;
     }
 
     /**
@@ -158,6 +170,7 @@ class Builder
             self::ATTR_USE_AUTO_GENERATION => $useAutoGeneration,
             self::ATTR_USES_PER_COUPON => $rule->getUsesPerCoupon(),
             self::ATTR_PRIMARY_COUPON => $rule->getCouponCode(),
+            self::ATTR_COUPONS => $this->getFirst10CouponsSerialized($rule),
             self::ATTR_SIMPLE_FREE_SHIPPING => $this->getSimpleFreeShippingAsString($rule),
             self::ATTR_STORE_LABELS => json_encode($rule->getStoreLabels()),
             self::ATTR_WEBSITE_IDS => json_encode($rule->getWebsiteIds()),
@@ -217,6 +230,61 @@ class Builder
     }
 
     /**
+     * Get coupon creation type string
+     *
+     * @param Coupon $coupon
+     * @return string
+     */
+    private function getCouponCreationTypeAsString(Coupon $coupon): string
+    {
+        $type = $coupon->getType();
+        switch ($type) {
+            case CouponInterface::TYPE_MANUAL:
+                return 'type_manual';
+            case CouponInterface::TYPE_GENERATED:
+                return 'type_generated';
+            default:
+                return 'type_unknown';
+        }
+    }
+
+    /**
+     * Get first 10 coupons
+     *
+     * @param Rule $rule
+     * @return string
+     */
+    private function getFirst10CouponsSerialized(Rule $rule): string
+    {
+        // Query for all generated coupons
+        $coupons = $this->couponFactory->create()->addRuleToFilter($rule)->addGeneratedCouponsFilter()->getItems();
+
+        // Only take the first 10 (for perf reasons)
+        $coupons = array_slice($coupons, 0, 10);
+
+        // Add the discount's primary coupon to the front of the list
+        array_unshift($coupons, $rule->getPrimaryCoupon());
+
+        $coupons = array_map(
+            function (Coupon $coupon): array {
+                return [
+                    'id' => $coupon->getCouponId(),
+                    'code' => $coupon->getCode(),
+                    'usage_limit' => $coupon->getUsageLimit(),
+                    'usage_per_customer' => $coupon->getUsagePerCustomer(),
+                    'times_used' => $coupon->getTimesUsed(),
+                    'is_primary' => $this->boolFlagToString((int)$coupon->getIsPrimary()),
+                    'created_at' => $coupon->getCreatedAt(),
+                    'type' => $this->getCouponCreationTypeAsString($coupon),
+                    'extension_attributes' => $coupon->getExtensionAttributes()
+                ];
+            },
+            $coupons
+        );
+        return json_encode($coupons);
+    }
+
+    /**
      * Get header fields
      *
      * @return array
@@ -248,6 +316,7 @@ class Builder
             self::ATTR_USE_AUTO_GENERATION,
             self::ATTR_USES_PER_COUPON,
             self::ATTR_PRIMARY_COUPON,
+            self::ATTR_COUPONS,
             self::ATTR_SIMPLE_FREE_SHIPPING,
             self::ATTR_STORE_LABELS,
             self::ATTR_WEBSITE_IDS,

@@ -23,7 +23,7 @@
 
                 <!-- required checkout fields-->
                 <item name="google_product_category" xsi:type="string">Google Product Category</item>
-                <item name="fb_product_category" xsi:type="string">FB Product Category</item>
+                <item name="fb_product_category" xsi:type="string">Meta Product Category</item>
                 <item name="size" xsi:type="string">Size</item>
 
                 <!-- optional fields-->

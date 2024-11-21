@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Meta\Catalog\Model\Product\Feed;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Meta\Catalog\Model\Product\Feed\Method\BatchApi as MethodBatchApi;
 use Meta\Catalog\Model\Product\Feed\Method\FeedApi as MethodFeedApi;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -61,13 +62,14 @@ class Uploader
     /**
      * Upload Magento catalog to Facebook
      *
-     * @param int|null $storeId
+     * @param int $storeId
+     * @param string $flowName
+     * @param string $traceId
      * @return array
-     * @throws LocalizedException
-     * @throws Exception
+     * @throws \Throwable
      */
-    public function uploadFullCatalog($storeId = null)
+    public function uploadFullCatalog($storeId, string $flowName, string $traceId)
     {
-        return $this->methodFeedApi->execute($storeId);
+        return $this->methodFeedApi->execute($storeId, $flowName, $traceId);
     }
 }

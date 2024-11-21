@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\Sales\Block\Adminhtml\Order\View\Tab;
 
+use Magento\Sales\Block\Adminhtml\Order\View\Tab\Info;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
@@ -45,10 +46,10 @@ class Facebook extends Template implements TabInterface
     private $adminHelper;
 
     /**
-     * @param Context $context
+     * @param Context      $context
      * @param SystemConfig $systemConfig
-     * @param Admin $adminHelper
-     * @param array $data
+     * @param Admin        $adminHelper
+     * @param array        $data
      */
     public function __construct(
         Context $context,
@@ -68,7 +69,10 @@ class Facebook extends Template implements TabInterface
      */
     public function getOrder()
     {
-        return $this->getLayout()->getBlock('order_tab_info')->getOrder();
+        /** @var Info $orderTabInfo */
+        $orderTabInfo = $this->getLayout()->getBlock('order_tab_info');
+        
+        return $orderTabInfo->getOrder();
     }
 
     /**
@@ -76,7 +80,7 @@ class Facebook extends Template implements TabInterface
      */
     public function canShowTab()
     {
-        return $this->systemConfig->isOnsiteCheckoutEnabled();
+        return $this->getFacebookOrderId() !== null;
     }
 
     /**
@@ -92,7 +96,7 @@ class Facebook extends Template implements TabInterface
      */
     public function getTabLabel()
     {
-        return __('Meta');
+        return __('Facebook & Instagram');
     }
 
     /**
@@ -100,7 +104,7 @@ class Facebook extends Template implements TabInterface
      */
     public function getTabTitle()
     {
-        return __('Meta');
+        return __('Facebook & Instagram');
     }
 
     /**
@@ -111,16 +115,6 @@ class Facebook extends Template implements TabInterface
     public function getFacebookOrderId()
     {
         return $this->getOrder()->getExtensionAttributes()->getFacebookOrderId();
-    }
-
-    /**
-     * Check if order is Facebook order
-     *
-     * @return bool
-     */
-    public function isFacebookOrder()
-    {
-        return $this->getFacebookOrderId() !== null;
     }
 
     /**

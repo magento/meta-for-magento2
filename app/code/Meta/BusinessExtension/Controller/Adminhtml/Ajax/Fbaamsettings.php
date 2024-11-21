@@ -34,9 +34,9 @@ class Fbaamsettings extends AbstractAjax
     /**
      * Construct
      *
-     * @param Context $context
+     * @param Context     $context
      * @param JsonFactory $resultJsonFactory
-     * @param FBEHelper $fbeHelper
+     * @param FBEHelper   $fbeHelper
      */
     public function __construct(
         Context $context,

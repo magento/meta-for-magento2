@@ -38,7 +38,7 @@ class ShippingData
     /**
      * @var int
      */
-    private int $storeId;
+    private int $storeId = 0;
 
     public const ATTR_ENABLED = 'enabled';
     public const ATTR_TITLE = 'title';
@@ -49,8 +49,10 @@ class ShippingData
     public const ATTR_SHIPPING_FEE_TYPE = 'shipping_fee_type';
     public const ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT = 'free_shipping_minimum_order_amount';
 
+    public const EXTERNAL_REFERENCE_ID = 'external_reference_id';
+
     /**
-     * @param CollectionFactory $tableRateCollection
+     * @param CollectionFactory    $tableRateCollection
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
@@ -64,7 +66,7 @@ class ShippingData
     /**
      * Setter for store ID
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return $this
      */
     public function setStoreId($storeId)
@@ -76,7 +78,7 @@ class ShippingData
     /**
      * Returns shipping profiles based on the AbstractModel carrier passed in
      *
-     * @param string $shippingProfileType
+     * @param  string $shippingProfileType
      * @return array
      */
     public function buildShippingProfile(string $shippingProfileType): array
@@ -97,13 +99,15 @@ class ShippingData
             $allowedCountries = "*";
         }
         if ($shippingProfileType === ShippingProfileTypes::TABLE_RATE) {
-            $shippingMethods = $this->getShippingMethodsInfoForTableRates();
+            $selectedCondition = $this->getFieldFromModel(ShippingProfileTypes::TABLE_RATE, 'condition_name');
+            $shippingMethods = $this->getShippingMethodsInfoForTableRates($selectedCondition);
         } else {
             $shippingMethods = $this->buildShippingMethodsInfo($allowedCountries, $price);
         }
         $freeShippingThreshold = $this->getFieldFromModel($shippingProfileType, 'free_shipping_subtotal');
         $handlingFee = $this->getFieldFromModel($shippingProfileType, 'handling_fee');
         $handlingFeeType = $this->getFieldFromModel($shippingProfileType, 'handling_type');
+        $externalReferenceId = $this->getExternalReferenceID($shippingProfileType);
         return [
             self::ATTR_ENABLED => $isEnabled,
             self::ATTR_TITLE => $title,
@@ -113,27 +117,48 @@ class ShippingData
             self::ATTR_HANDLING_FEE_TYPE => $handlingFeeType,
             self::ATTR_SHIPPING_FEE_TYPE => $shippingType,
             self::ATTR_FREE_SHIPPING_MIN_ORDER_AMOUNT => $freeShippingThreshold,
+            self::EXTERNAL_REFERENCE_ID => $externalReferenceId
         ];
     }
 
     /**
      * Get field from abstract carrier DB
      *
-     * @param string $shippingProfileType
-     * @param string $field
+     * @param  string $shippingProfileType
+     * @param  string $field
      * @return mixed
      */
-    private function getFieldFromModel(string $shippingProfileType, string $field)
+    public function getFieldFromModel(string $shippingProfileType, string $field)
     {
         $path = 'carriers/' . $shippingProfileType . '/' . $field;
         return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $this->storeId);
     }
 
     /**
+     * Get external reference id for shipping settings which meta will use to identify the selected shipping option
+     *
+     * @param  string $shippingProfileType
+     * @return string
+     */
+    private function getExternalReferenceID(string $shippingProfileType): string
+    {
+        switch ($shippingProfileType) {
+            case ShippingProfileTypes::TABLE_RATE:
+                return ShippingMethodTypes::TABLE_RATE;
+            case ShippingProfileTypes::FLAT_RATE:
+                return ShippingMethodTypes::FLAT_RATE;
+            case ShippingProfileTypes::FREE_SHIPPING:
+                return ShippingMethodTypes::FREE_SHIPPING;
+            default:
+                return "";
+        }
+    }
+
+    /**
      * A function that builds shipping methods info for shipping profiles which are not table rates
      *
-     * @param string $allowedCountries
-     * @param float $price
+     * @param  string $allowedCountries
+     * @param  float  $price
      * @return array
      */
     private function buildShippingMethodsInfo(string $allowedCountries, float $price): array
@@ -156,9 +181,10 @@ class ShippingData
      *
      * Link: https://experienceleague.adobe.com/docs/commerce-admin/stores-sales/delivery/basic-methods/shipping-table-rate.html
      *
+     * @param  string $selectedCondition
      * @return array
      */
-    protected function getShippingMethodsInfoForTableRates(): array
+    protected function getShippingMethodsInfoForTableRates(string $selectedCondition): array
     {
         $shippingMethodsInfo = [];
         $collection = $this->tableRateCollection->create();
@@ -166,20 +192,23 @@ class ShippingData
             ->joinLeft(
                 ['region' => $collection->getTable('directory_country_region')],
                 'main_table.dest_region_id = region.region_id',
-                ['region.code AS region_code']
+                [new \Zend_Db_Expr('IFNULL(region.code, \'*\') AS region_code')]
             );
         foreach ($collection as $rate) {
+            $conditionName = $rate->getConditionName();
+            if ($conditionName !== $selectedCondition) {
+                continue;
+            }
             $rate->getName();
             // Determine the condition type (weight, price, or number of items)
             $conditionType = null;
             $conditionValue = $rate->getConditionValue();
-            $conditionName = $rate->getConditionName();
             if ($conditionName === 'package_weight') {
                 $conditionType = 'weight';
             } elseif ($conditionName === 'package_value_with_discount') {
                 $conditionType = 'price';
             } elseif ($conditionName === 'package_qty') {
-                $conditionType = 'item_qty';
+                $conditionType = 'number_of_items';
             }
             $shippingMethodsInfo[] = [
                 'price' => $rate->getPrice(),

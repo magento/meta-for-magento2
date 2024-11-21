@@ -54,13 +54,12 @@ class MappingConfig extends AbstractHelper
     /**
      * Get Meta attribute mapping
      *
+     * @param int $storeId
      * @return array
-     * @throws LocalizedException
      */
-    public function getAttributeMapping(): array
+    public function getAttributeMapping(int $storeId): array
     {
         $metaAttrMappings = [];
-        $storeId = $this->_getRequest()->getParam('store');
         try {
             $attributeMaps = $this->scopeConfig->getValue(
                 self::XML_PATH_META_CATALOG_MAPPING,

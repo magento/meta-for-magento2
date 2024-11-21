@@ -152,6 +152,7 @@ class Other implements ProductRetrieverInterface
         $search = $this
             ->searchCriteriaBuilder
             ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
+            ->addFilter('store_id', $storeId)
             ->create();
 
         return $this->productRepo->getList($search)->getItems();

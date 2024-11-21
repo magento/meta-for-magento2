@@ -86,7 +86,7 @@ class FbaamsettingsTest extends TestCase
     private function setupRequestAndSettings($pixelId, $settingsAsString)
     {
         $this->request->method('getParam')
-                        ->willReturn($pixelId);
+            ->willReturn($pixelId);
         $this->fbeHelper->method('fetchAndSaveAAMSettings')->willReturn($settingsAsString);
     }
 
