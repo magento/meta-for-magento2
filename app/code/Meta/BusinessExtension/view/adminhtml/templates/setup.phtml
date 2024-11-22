@@ -33,7 +33,7 @@ use Magento\Framework\Escaper;
         window.facebookBusinessExtensionConfig = {
             accessClientToken: '<?= $escaper->escapeHtml($block->getAccessClientToken()) ?>',
             appId: '<?= $escaper->escapeHtml($block->getAppId()) ?>',
-            adminUrl:'<?= $escaper->escapeHtml($this->getBaseUrl()) ?>',
+            adminUrl:'<?= $escaper->escapeHtml($block->removeKeyFromURL($this->getRequest()->getUriString())) ?>',
             businessName: 'Magento',
             businessVertical: 'ECOMMERCE',
             channel: <?=$block->isCommerceExtensionEnabled() ? "'COMMERCE'" : "'COMMERCE_OFFSITE'"?>,

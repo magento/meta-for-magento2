@@ -382,6 +382,18 @@ class Setup extends Template
     }
 
     /**
+     * Removes key, if present from inputted URL.
+     *
+     * @return string
+     */
+    public function removeKeyFromURL($currentUrl)
+    {
+        // Check if the URL contains 'key/{hash}' pattern and remove it
+        $updatedUrl = preg_replace('/key\/[a-zA-Z0-9]+\/?/', '', $currentUrl);
+        return $updatedUrl;
+    }
+
+    /**
      * Get stores that are selectable (not Admin).
      *
      * @return StoreInterface[]
