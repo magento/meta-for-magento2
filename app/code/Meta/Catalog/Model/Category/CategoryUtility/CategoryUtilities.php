@@ -566,4 +566,37 @@ class CategoryUtilities
             $this->systemConfig->getAllFBEInstalledStores()
         );
     }
+
+    public function convertToJsTreeFormat($category): array
+    {
+        $jsTreeFormat = [
+            'title' => $category['name'],
+            'resourceType' => 'collection',
+            'retailerID' => $category['id'],
+        ];
+
+        if (!empty($category['children_data'])) {
+            $jsTreeFormat['items'] = [];
+            foreach ($category['children_data'] as $child) {
+                $jsTreeFormat['items'][] = $this->convertToJsTreeFormat($child);
+            }
+        }
+
+        return $jsTreeFormat;
+    }
+
+    public function convertJsTreeToMetaRequestFormat($category): array {
+        $jsTreeFormat = $this->convertToJsTreeFormat($category);
+
+        return [
+            'navigation' => [
+                [
+                    'items' => $jsTreeFormat['items'],
+                    'title' => $jsTreeFormat['title'],
+                    'partner_menu_handle' => $jsTreeFormat['title'],
+                    'partner_menu_id' => $jsTreeFormat['retailerID'],
+                ]
+            ]
+        ];
+    }
 }

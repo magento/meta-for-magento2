@@ -29,6 +29,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\Catalog\Model\Category\CategoryUtility\CategoryUtilities;
+use Meta\Catalog\Model\Product\Feed\Method\NavigationFeedApi;
 
 class CategoryCollection
 {
@@ -54,23 +55,28 @@ class CategoryCollection
 
     private const BATCH_MAX = 49;
 
+    private NavigationFeedApi $navigationFeedApi;
+
     /**
      * Constructor
      * @param CategoryRepositoryInterface $categoryRepository
      * @param FBEHelper $helper
      * @param SystemConfig $systemConfig
      * @param CategoryUtilities $categoryUtilities
+     * @param NavigationFeedApi $navigationFeedApi
      */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository,
         FBEHelper                   $helper,
         SystemConfig                $systemConfig,
-        CategoryUtilities           $categoryUtilities
+        CategoryUtilities           $categoryUtilities,
+        NavigationFeedApi $navigationFeedApi,
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->fbeHelper = $helper;
         $this->systemConfig = $systemConfig;
         $this->categoryUtilities = $categoryUtilities;
+        $this->navigationFeedApi = $navigationFeedApi;
     }
 
     /**
@@ -237,7 +243,17 @@ class CategoryCollection
             $context
         );
 
+        // Push Navigation Tree to Meta after Sync Collection
+        $this->pushNavigationTreeToMeta($storeId);
+
         return $response;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function pushNavigationTreeToMeta(int $storeId): void {
+        $this->navigationFeedApi->execute( 'push_navigation_tree', $storeId);
     }
 
     /**
