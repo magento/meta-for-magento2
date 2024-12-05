@@ -22,6 +22,7 @@ namespace Meta\Catalog\Model\Product\Feed\ProductRetriever;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -114,6 +115,7 @@ class Other implements ProductRetrieverInterface
 
         $storeId = $this->storeId ?? $this->fbeHelper->getStore()->getId();
 
+        /** @var ProductCollection $collection */
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect('*')
             ->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE])
@@ -139,6 +141,7 @@ class Other implements ProductRetrieverInterface
                     'neq' => SimpleType::TYPE_SIMPLE
                 ],
             ], null, 'left')
+            ->addMediaGalleryData()
             ->addStoreFilter($storeId)
             ->setStoreId($storeId);
 

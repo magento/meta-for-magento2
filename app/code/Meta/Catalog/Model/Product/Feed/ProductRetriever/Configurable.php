@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace Meta\Catalog\Model\Product\Feed\ProductRetriever;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -119,6 +119,7 @@ class Configurable implements ProductRetrieverInterface
     {
         $storeId = $this->storeId ?? $this->fbeHelper->getStore()->getId();
 
+        /** @var ProductCollection $configurableCollection */
         $configurableCollection = $this->productCollectionFactory->create();
         $configurableCollection->addAttributeToSelect('*')
             ->addAttributeToFilter([
@@ -132,6 +133,7 @@ class Configurable implements ProductRetrieverInterface
                 ]
             ], null, 'left')
             ->addAttributeToFilter('type_id', ConfigurableType::TYPE_CODE)
+            ->addMediaGalleryData()
             ->addStoreFilter($storeId)
             ->setStoreId($storeId);
 
