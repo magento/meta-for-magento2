@@ -31,8 +31,8 @@ use Meta\Catalog\Model\Category\CategoryUtility\CategoryUtilities;
 
 class NavigationFeedApi
 {
-    private const string FEED_FILE_NAME = 'facebook_navigation%s.json';
-    private const string VAR_DIR = 'var';
+    private const FEED_FILE_NAME = 'facebook_navigation%s.json';
+    private const VAR_DIR = 'var';
 
     /**
      * @var int
@@ -131,9 +131,9 @@ class NavigationFeedApi
 
         $context = $this->categoryUtilities->getCategoryLoggerContext(
             $storeId,
-            '', /* event_type */
+            'sync_navigation_menu', /* event_type */
             $flowName,
-            'create_navigation_for_store_start',
+            'sync_navigation_for_store_start',
             [
                 'external_trace_id' => $traceId,
                 'root_category_id' => $storeRootCategoryId,
@@ -142,7 +142,7 @@ class NavigationFeedApi
 
         $this->fbeHelper->logTelemetryToMeta(
             sprintf(
-                "Create Navigation started: storeId: %d, categoryId: %s, flow: %s",
+                "Sync Navigation started: storeId: %d, categoryId: %s, flow: %s",
                 $storeId,
                 $storeRootCategoryId,
                 $flowName
@@ -171,9 +171,9 @@ class NavigationFeedApi
 
             $context = $this->categoryUtilities->getCategoryLoggerContext(
                 $storeId,
-                '', /* event_type */
+                'sync_navigation_menu', /* event_type */
                 $flowName,
-                'create_navigation_for_store_completed',
+                'sync_navigation_for_store_completed',
                 [
                     'external_trace_id' => $traceId,
                     'root_category_id' => $storeRootCategoryId,
@@ -182,7 +182,7 @@ class NavigationFeedApi
 
             $this->fbeHelper->logTelemetryToMeta(
                 sprintf(
-                    "Create Navigation started: storeId: %d, categoryId: %s, flow: %s",
+                    "Sync Navigation completed: storeId: %d, categoryId: %s, flow: %s",
                     $storeId,
                     $storeRootCategoryId,
                     $flowName
@@ -195,9 +195,9 @@ class NavigationFeedApi
                 $e,
                 $this->categoryUtilities->getCategoryLoggerContext(
                     (int)$storeId,
-                    'create_navigation_menu',
+                    'sync_navigation_menu',
                     $flowName,
-                    'create_navigation_for_store_error',
+                    'sync_navigation_for_store_error',
                     [
                         'external_trace_id' => $traceId
                     ]
