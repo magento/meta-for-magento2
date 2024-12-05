@@ -1,9 +1,7 @@
 # Facebook & Instagram for Magento
 
-[**The official extension from Meta.**](https://commercemarketplace.adobe.com/meta-meta-for-magento2.html) Seamlessly
-manage
-your
-Facebook & Instagram presence from one place.
+[**The official extension from Meta**](https://commercemarketplace.adobe.com/meta-meta-for-magento2.html). Seamlessly
+manage your Facebook & Instagram presence from one place.
 
 ## Extension Overview
 
@@ -55,6 +53,9 @@ Shops Ads.
 Complete usage guide [HERE](https://www.facebook.com/business/help/532749253576163).
 
 ### Installation
+
+> [!IMPORTANT]  
+> The extension requires Magento's MSI (Multi-Source Inventory) modules.
 
 #### Composer Installation
 
@@ -131,8 +132,8 @@ Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help
 
 Facebook & Instagram for Magento requires:
 
-* Magento version `^2.4.2`.
-* PHP 7.4 or greater.
+* Magento version `2.4.3` or greater.
+* PHP `7.4` or greater.
 * Memory limit of 1 GB or greater (2 GB or higher is preferred).
 
 ## Contributing
