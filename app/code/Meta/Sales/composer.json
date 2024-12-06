@@ -22,8 +22,7 @@
     "magento/module-shipping": "*",
     "magento/module-newsletter": "*",
     "magento/module-tax": "*",
-    "meta/module-business-extension": "*",
-    "meta/module-catalog": "*"
+    "meta/module-business-extension": "*"
   },
   "license": "Apache-2.0",
   "autoload": {
