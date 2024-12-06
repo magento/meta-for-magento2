@@ -120,18 +120,25 @@ class FacebookCatalogUpdateFullReindexPlugin
     public function getChangelogBatchWalkerInstance()
     {
         if ($this->isMagentoVersionLessThan("2.4.7")) {
-            return $this->objectManager->create(
+            $changeLogWalkerFactory = $this->objectManager->create(
                 \Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class // @phpstan-ignore-line
             );
+            return $changeLogWalkerFactory->create(
+                \Magento\Framework\Mview\View\ChangeLogBatchWalker::class // @phpstan-ignore-line
+            );
         }
-        return $this->objectManager->create(
+
+        $changelogWalkerFactory = $this->objectManager->create(
             \Magento\Framework\Mview\View\ChangelogBatchWalkerFactory::class // @phpstan-ignore-line
+        );
+        return $changelogWalkerFactory->create(
+            \Magento\Framework\Mview\View\ChangelogBatchWalker::class // @phpstan-ignore-line
         );
     }
 
     /**
      * Returns true if the version is lower than the expected version
-     * 
+     *
      * @param $version
      * @return bool
      */
