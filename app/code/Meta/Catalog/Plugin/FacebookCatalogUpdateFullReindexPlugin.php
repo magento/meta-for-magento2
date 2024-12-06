@@ -25,6 +25,7 @@ use Magento\Indexer\Model\Indexer;
 use Magento\Framework\Mview\View;
 use Magento\Indexer\Model\WorkingStateProvider;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\App\ProductMetadataInterface;
 
 class FacebookCatalogUpdateFullReindexPlugin
 {
@@ -49,20 +50,28 @@ class FacebookCatalogUpdateFullReindexPlugin
     private $objectManager;
 
     /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetadataInterface;
+
+    /**
      * FacebookCatalogUpdateOnIndexerPlugin constructor
      *
      * @param WorkingStateProvider $workingStateProvider
      * @param FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel
      * @param ObjectManagerInterface $objectManager
+     * @param ProductMetadataInterface $productMetadataInterface
      */
     public function __construct(
         WorkingStateProvider         $workingStateProvider,
         FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel,
-        ObjectManagerInterface  $objectManager
+        ObjectManagerInterface  $objectManager,
+        ProductMetadataInterface $productMetadataInterface
     ) {
         $this->workingStateProvider = $workingStateProvider;
         $this->fbCatalogUpdateResourceModel = $fbCatalogUpdateResourceModel;
         $this->objectManager = $objectManager;
+        $this->productMetadataInterface = $productMetadataInterface;
     }
 
     /**
@@ -110,21 +119,25 @@ class FacebookCatalogUpdateFullReindexPlugin
      */
     public function getChangelogBatchWalkerInstance()
     {
-        $changeLogWalkerFactory = $this->objectManager->create(
-            \Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class // @phpstan-ignore-line
-        );
-        if (get_class($changeLogWalkerFactory) == "ChangeLogBatchWalkerFactory") {
-            return $changeLogWalkerFactory->create(
-                \Magento\Framework\Mview\View\ChangeLogBatchWalker::class // @phpstan-ignore-line
+        if ($this->isMagentoVersionLessThan("2.4.7")) {
+            return $this->objectManager->create(
+                \Magento\Framework\Mview\View\ChangeLogBatchWalkerFactory::class // @phpstan-ignore-line
             );
         }
-
-        $changelogWalkerFactory = $this->objectManager->create(
+        return $this->objectManager->create(
             \Magento\Framework\Mview\View\ChangelogBatchWalkerFactory::class // @phpstan-ignore-line
         );
-        return $changelogWalkerFactory->create(
-            \Magento\Framework\Mview\View\ChangelogBatchWalker::class // @phpstan-ignore-line
-        );
+    }
+
+    /**
+     * Returns true if the version is lower than the expected version
+     * 
+     * @param $version
+     * @return bool
+     */
+    private function isMagentoVersionLessThan($version)
+    {
+        return version_compare($this->productMetadataInterface->getVersion(), $version, '<') === true;
     }
 
     /**
