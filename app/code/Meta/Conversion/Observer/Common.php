@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Meta\Conversion\Observer;
@@ -6,6 +7,7 @@ namespace Meta\Conversion\Observer;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Cookie\Helper\Cookie as CookieHelper;
 
 /**
  * Set cookie with payload data for event pixel
@@ -30,20 +32,28 @@ class Common
     private CookieManagerInterface $cookieManager;
 
     /**
+     * @var CookieHelper
+     */
+    private CookieHelper $cookieHelper;
+
+    /**
      * Constructor common
      *
      * @param CookieManagerInterface $cookieManager
      * @param CookieMetadataFactory $cookieMetadataFactory
      * @param JsonHelper $jsonHelper
+     * @param CookieHelper $cookieHelper
      */
     public function __construct(
         CookieManagerInterface $cookieManager,
         CookieMetadataFactory $cookieMetadataFactory,
-        JsonHelper $jsonHelper
+        JsonHelper $jsonHelper,
+        CookieHelper $cookieHelper
     ) {
         $this->cookieManager = $cookieManager;
         $this->cookieMetadataFactory = $cookieMetadataFactory;
         $this->jsonHelper = $jsonHelper;
+        $this->cookieHelper = $cookieHelper;
     }
 
     /**
@@ -58,6 +68,12 @@ class Common
      */
     public function setCookieForMetaPixel($cookieName, $dataForMetaPixel)
     {
+        if ($this->cookieHelper->isCookieRestrictionModeEnabled()
+            && $this->cookieHelper->isUserNotAllowSaveCookie()
+        ) {
+            return;
+        }
+
         $publicCookieMetadata = $this->cookieMetadataFactory->createPublicCookieMetadata()
             ->setDuration(3600)
             ->setPath('/')
