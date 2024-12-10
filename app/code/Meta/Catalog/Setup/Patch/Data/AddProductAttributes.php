@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Meta\Catalog\Setup\Patch\Data;
 
 use Magento\Catalog\Model\Product;
+use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Setup\Patch\PatchRevertableInterface;
+use Magento\Framework\Validator\ValidateException;
 use Meta\Catalog\Setup\MetaCatalogAttributes;
 
 class AddProductAttributes implements DataPatchInterface, PatchRevertableInterface
@@ -68,6 +71,8 @@ class AddProductAttributes implements DataPatchInterface, PatchRevertableInterfa
      * Create product attributes
      *
      * @return void
+     * @throws LocalizedException
+     * @throws ValidateException
      */
     public function apply(): void
     {
@@ -78,17 +83,18 @@ class AddProductAttributes implements DataPatchInterface, PatchRevertableInterfa
 
         $entityTypeId = $eavSetup->getEntityTypeId(Product::ENTITY);
         $attributeSetId = $eavSetup->getDefaultAttributeSetId($entityTypeId);
+        $attributeGroupId = $eavSetup->getDefaultAttributeGroupId(Product::ENTITY, $attributeSetId);
 
         foreach ($productAttributes as $attributeCode => $attributeData) {
 
             if (!$eavSetup->getAttributeId(Product::ENTITY, $attributeCode)) {
                 $eavSetup->addAttribute(Product::ENTITY, $attributeCode, $attributeData);
             }
-            // Assign attributes to default attribute set
+            // Assign attributes to default attribute set and group
             $eavSetup->addAttributeToGroup(
                 $entityTypeId,
                 $attributeSetId,
-                $attributeData['group'],
+                $attributeGroupId,
                 $attributeCode
             );
         }
@@ -108,6 +114,7 @@ class AddProductAttributes implements DataPatchInterface, PatchRevertableInterfa
 
         foreach (array_keys($productAttributes) as $attributeCode) {
             $eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
+            echo 'Removed attribute ' . $attributeCode . PHP_EOL;
         }
         //delete the patch entry from patch_list table
         $this->moduleDataSetup->deleteTableRow('patch_list', 'patch_name', __CLASS__);

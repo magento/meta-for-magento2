@@ -20,7 +20,6 @@ class MetaCatalogAttributes
     {
         return [
             'google_product_category' => [
-                'group' => 'General',
                 'type' => 'varchar',
                 'label' => 'Google Product Category',
                 'input' => 'select',
@@ -36,7 +35,6 @@ class MetaCatalogAttributes
                 'visible_on_front' => false
             ],
             'send_to_facebook' => [
-                'group' => 'General',
                 'type' => 'int',
                 'label' => 'Sync to Meta',
                 'default' => 1,
