@@ -62,7 +62,7 @@ $trackerUrl = $block->getTrackerUrl();
                     simpleProductId = productId;
                 }
                 const form_key = jQuery("[name='form_key']").val();
-                const runAsync = !data.response.backUrl;
+                const runAsync = !(data && data.response && data.response.backUrl);
                 $.ajax({
                     url: product_info_url,
                     data: {
