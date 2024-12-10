@@ -435,7 +435,7 @@ class CategoryCollection
             'method' => 'POST',
             'relative_url' => $setId,
             'body' => http_build_query([
-                'name' => $this->categoryUtilities->getCategoryPathName($category, $storeId, $isVisibleOnMeta),
+                'name' => $category->getName(),
                 'filter' => $this->categoryUtilities->getCategoryProductFilter($products),
                 'metadata' => $this->categoryUtilities->getCategoryMetaData($category),
                 'retailer_id' => $category->getId(),
