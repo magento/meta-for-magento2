@@ -25,11 +25,11 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderItemInterfaceFactory;
 use Magento\Sales\Model\Order\Item as OrderItem;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
-use Meta\Catalog\Helper\Product\Identifier as ProductIdentifier;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -46,11 +46,6 @@ class OrderItemMapper
      * @var GraphAPIAdapter
      */
     private GraphAPIAdapter $graphAPIAdapter;
-
-    /**
-     * @var ProductIdentifier
-     */
-    private ProductIdentifier $productIdentifier;
 
     /**
      * @var ProductRepository
@@ -76,7 +71,6 @@ class OrderItemMapper
      * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param LoggerInterface $logger
-     * @param ProductIdentifier $productIdentifier
      * @param ProductRepository $productRepository
      * @param ConfigurableType $configurableType
      * @param OrderItemInterfaceFactory $orderItemFactory
@@ -85,7 +79,6 @@ class OrderItemMapper
         SystemConfig              $systemConfig,
         GraphAPIAdapter           $graphAPIAdapter,
         LoggerInterface           $logger,
-        ProductIdentifier         $productIdentifier,
         ProductRepository         $productRepository,
         ConfigurableType          $configurableType,
         OrderItemInterfaceFactory $orderItemFactory
@@ -93,10 +86,26 @@ class OrderItemMapper
         $this->systemConfig = $systemConfig;
         $this->graphAPIAdapter = $graphAPIAdapter;
         $this->logger = $logger;
-        $this->productIdentifier = $productIdentifier;
         $this->productRepository = $productRepository;
         $this->configurableType = $configurableType;
         $this->orderItemFactory = $orderItemFactory;
+    }
+
+    /**
+     * Fetch product by retailer id and identifier attribute
+     *
+     * @param string|int $retailerId
+     * @return ProductInterface|bool
+     * @throws NoSuchEntityException
+     */
+    private function getProductByFacebookRetailerId($retailerId)
+    {
+        try {
+            return $this->productRepository->get($retailerId);
+        } catch (NoSuchEntityException $e) {
+            // Product not found
+            return $this->productRepository->getById($retailerId);
+        }
     }
 
     /**
@@ -109,7 +118,17 @@ class OrderItemMapper
      */
     public function map(array $item, int $storeId): OrderItem
     {
-        $product = $this->productIdentifier->getProductByFacebookRetailerId($item['retailer_id']);
+        try {
+            $product = $this->getProductByFacebookRetailerId($item['retailer_id']);
+        } catch (NoSuchEntityException $e) {
+            throw new LocalizedException(
+                __(
+                    'Failed to map order item to Magento product: %1',
+                    $e->getMessage()
+                )
+            );
+        }
+
         $productInfo = $this->getProductInfo($item['product_id'], $storeId);
 
         $quantity = $item['quantity'];

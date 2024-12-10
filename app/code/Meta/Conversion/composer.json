@@ -5,10 +5,13 @@
     "require": {
         "php": "~7.4||~8.1.0||~8.2.0||~8.3.0",
         "magento/framework": "*",
+        "magento/module-bundle": "*",
         "magento/module-catalog": "*",
         "magento/module-configurable-product": "*",
         "magento/module-checkout": "*",
         "magento/module-customer": "*",
+        "magento/module-directory": "*",
+        "magento/module-grouped-product": "*",
         "magento/module-sales": "*",
         "magento/module-store": "*",
         "magento/module-quote": "*",

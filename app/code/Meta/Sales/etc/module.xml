@@ -20,7 +20,6 @@
             <module name="Magento_Shipping"/>
             <module name="Magento_Webapi"/>
             <module name="Meta_BusinessExtension"/>
-            <module name="Meta_Catalog"/>
             <module name="Magento_OfflineShipping"/>
             <module name="Taxjar_SalesTax"/>
         </sequence>
