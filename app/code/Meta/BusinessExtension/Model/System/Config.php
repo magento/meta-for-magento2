@@ -42,7 +42,6 @@ class Config
     private const VERSION_CACHE_KEY = 'meta-business-extension-version';
     private const EXTENSION_PACKAGE_NAME = 'meta/meta-for-magento2';
 
-    private const XML_PATH_AUCTANE_API_ACTIVE = 'carriers/shipstation/active';
     private const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE = 'facebook/business_extension/active';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED = 'facebook/business_extension/installed';
 
@@ -63,6 +62,8 @@ class Config
 
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_PARTNER_INTEGRATION_ID =
         'facebook/business_extension/commerce_partner_integration_id';
+    public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE =
+        'facebook/business_extension/is_onsite_eligible';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID =
         'facebook/business_extension/commerce_account_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_FEED_ID = 'facebook/business_extension/feed_id';
@@ -448,23 +449,6 @@ class Config
     }
 
     /**
-     * Check if Auctane API is installed
-     *
-     * @return bool
-     */
-    public function isAuctaneApiInstalled(): bool
-    {
-        try {
-            // In the "Single Store" case, getting the config of a non-existent path can throw.
-            // This corresponds to "missing Shipstation Extension"
-            $value = $this->getConfig(self::XML_PATH_AUCTANE_API_ACTIVE);
-        } catch (Exception $e) {
-            return false;
-        }
-        return $value === '1';
-    }
-
-    /**
      * Is auto newsletter subscription on
      *
      * @param int $scopeId
@@ -549,25 +533,6 @@ class Config
     public function cleanCache()
     {
         $this->scopeConfig->clean();
-        return $this;
-    }
-
-    /**
-     * Disable extension for non default stores
-     *
-     * @return $this
-     */
-    public function disableExtensionForNonDefaultStores()
-    {
-        $storeManager = $this->getStoreManager();
-        if (!$storeManager->isSingleStoreMode()) {
-            $defaultStoreId = $storeManager->getDefaultStoreView()->getId();
-            foreach ($storeManager->getStores() as $store) {
-                if ($store->getId() !== $defaultStoreId) {
-                    $this->saveConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ACTIVE, 0, $store->getId());
-                }
-            }
-        }
         return $this;
     }
 
@@ -1089,14 +1054,16 @@ class Config
     }
 
     /**
-     * Check if FBE ads is Installed
+     * Check if any shop feature installed(fb_shop, page_shop, ig_shopping) and active
      *
-     * @param int $storeId
+     * @param int|null $storeId
      * @return bool
      */
-    public function isFBEShopInstalled($storeId = null)
+    public function isFBEShopInstalled(int $storeId = null): bool
     {
-        return $this->isFeatureInstalled('fb_shop', $storeId);
+        return $this->isFeatureInstalled('fb_shop', $storeId) ||
+            $this->isFeatureInstalled('ig_shopping', $storeId) ||
+            $this->isFeatureInstalled('page_shop', $storeId);
     }
 
     /**

@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Meta\Sales\Cron;
 
 use Exception;
-use Magento\Store\Model\StoreManagerInterface;
 use Meta\Sales\Helper\CommerceHelper;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use GuzzleHttp\Exception\GuzzleException;
@@ -32,10 +31,6 @@ use Meta\BusinessExtension\Helper\FBEHelper;
  */
 class SyncOrders
 {
-    /**
-     * @var StoreManagerInterface
-     */
-    private StoreManagerInterface $storeManager;
 
     /**
      * @var SystemConfig
@@ -53,35 +48,35 @@ class SyncOrders
     private FBEHelper $fbeHelper;
 
     /**
-     * @param StoreManagerInterface $storeManager
-     * @param SystemConfig          $systemConfig
-     * @param CommerceHelper        $commerceHelper
-     * @param FBEHelper             $fbeHelper
+     * @param SystemConfig $systemConfig
+     * @param CommerceHelper $commerceHelper
+     * @param FBEHelper $fbeHelper
      */
     public function __construct(
-        StoreManagerInterface $storeManager,
         SystemConfig          $systemConfig,
         CommerceHelper        $commerceHelper,
         FBEHelper             $fbeHelper
     ) {
         $this->systemConfig = $systemConfig;
         $this->commerceHelper = $commerceHelper;
-        $this->storeManager = $storeManager;
         $this->fbeHelper = $fbeHelper;
     }
 
     /**
      * Sync orders from facebook for a store
      *
-     * @param  int $storeId
+     * @param int $storeId
      * @return void
      * @throws GuzzleException
      */
-    private function pullOrdersForStore(int $storeId)
+    private function pullOrdersForStore(int $storeId): void
     {
+        // Only pull order if all the condition met:
+        // 1. Order sync enabled
+        // 2. Extension enabled(included in 1)
+        // 3. There's any shop feature installed(fb_shop, page_shop, ig_shopping) and active
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))
-        ) {
+            && $this->systemConfig->isFBEShopInstalled($storeId))) {
             return;
         }
 

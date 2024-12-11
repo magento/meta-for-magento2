@@ -79,8 +79,12 @@ class SyncRefundsAndCancellations
      */
     private function pullRefundsAndCancellationsForStore(int $storeId)
     {
+        // Only pull order if all the condition met:
+        // 1. Order sync enabled
+        // 2. Extension enabled(included in 1)
+        // 3. There's any shop feature installed(fb_shop, page_shop, ig_shopping) and active
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isActiveExtension($storeId))
+            && $this->systemConfig->isFBEShopInstalled($storeId))
         ) {
             return;
         }

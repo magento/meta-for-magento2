@@ -134,6 +134,7 @@ class MBEInstalls
         $data = $response[0];
         $catalogId = $data['catalog_id'] ?? '';
         $pixelId = $data['pixel_id'] ?? '';
+        $onsite_eligible = $data['onsite_eligible'] ?? false;
         $commercePartnerIntegrationId = $data['commerce_partner_integration_id'] ?? '';
 
         // we will update catalog config if catalog has been updated in Meta
@@ -150,6 +151,7 @@ class MBEInstalls
         $this->savePages($data['pages'] ?? '', $storeId);
         $this->saveCatalogId($catalogId, $storeId);
         $this->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId);
+        $this->saveIsOnsiteEligible($onsite_eligible, $storeId);
         $this->saveMerchantSettingsId($data['commerce_merchant_settings_id'] ?? '', $storeId);
         $this->saveInstalledFeatures($data['installed_features'] ?? '', $storeId);
         $this->setInstalledFlag($storeId);
@@ -271,6 +273,28 @@ class MBEInstalls
             $this->fbeHelper->log(
                 "Saved fbe_installs commerce_partner_integration_id ---" .
                 "{$commercePartnerIntegrationId} for storeID: {$storeId}"
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * Save Onsite Eligible for the store
+     *
+     * @param bool $onsite_eligible
+     * @param int $storeId
+     * @return $this
+     */
+    public function saveIsOnsiteEligible($onsite_eligible, $storeId)
+    {
+        if ($onsite_eligible) {
+            $this->systemConfig->saveConfig(
+                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE,
+                1,
+                $storeId
+            );
+            $this->fbeHelper->log(
+                "Mark storeID: {$storeId} as Onsite eligible"
             );
         }
         return $this;
