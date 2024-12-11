@@ -37,71 +37,72 @@ $trackerUrl = $block->getTrackerUrl();
                 let simpleProductId;
                 // Get id of last added product
                 const productId = data.productIds[data.productIds.length - 1];
-                    // check product data from swatch widget
-                    const swatchData = $('[data-role=swatch-options]').data('mage-SwatchRenderer');
-                    if (swatchData && swatchData.getProductId()) {
-                        simpleProductId = swatchData.getProductId();
+                // check product data from swatch widget
+                const swatchData = $('[data-role=swatch-options]').data('mage-SwatchRenderer');
+                if (swatchData && swatchData.getProductId()) {
+                    simpleProductId = swatchData.getProductId();
+                } else {
+                    // In case product is added from category page get options using added product's id
+                    const categorySwatchData = $('[data-role=swatch-option-' + productId + ']')
+                        .data('mage-SwatchRenderer');
+                    if (categorySwatchData && categorySwatchData.getProductId()) {
+                        simpleProductId = categorySwatchData.getProductId();
                     } else {
-                        // In case product is added from category page get options using added product's id
-                        const categorySwatchData = $('[data-role=swatch-option-' + productId + ']')
-                            .data('mage-SwatchRenderer');
-                        if (categorySwatchData && categorySwatchData.getProductId()) {
-                            simpleProductId = categorySwatchData.getProductId();
-                        } else {
-                            // else check product data from configurable options
-                            const configurableProduct = data.form.data().mageConfigurable;
-                            if (configurableProduct) {
-                                simpleProductId = configurableProduct.simpleProduct;
-                            }
+                        // else check product data from configurable options
+                        const configurableProduct = data.form.data().mageConfigurable;
+                        if (configurableProduct) {
+                            simpleProductId = configurableProduct.simpleProduct;
                         }
                     }
-                    // otherwise use the product sku
-                    const product_sku = data.sku;
-                    // use last added product id if swatch data is not available
-                    if (!simpleProductId) {
-                        simpleProductId = productId;
-                    }
-                    const form_key = jQuery("[name='form_key']").val();
-                    $.ajax({
-                        url: product_info_url,
-                        data: {
-                            product_sku: product_sku,
-                            product_id: simpleProductId,
-                            form_key: form_key
-                        },
-                        type: 'get',
-                        dataType: 'json',
-                        async: !data.response.backUrl,
-                        success: function (res) {
-                            const addToCartConfigPixel = {
-                                "url": window.addToCartData.url,
-                                "payload": {
-                                    "eventName": window.addToCartData.eventName,
-                                    "productId": res.productId
-                                },
-                                "browserEventData": {
-                                    'fbAgentVersion': window.addToCartData.fbAgentVersion,
-                                    'fbPixelId': window.addToCartData.fbPixelId,
-                                    'source': window.addToCartData.source,
-                                    'pluginVersion': window.addToCartData.pluginVersion,
-                                    'track': window.addToCartData.track,
-                                    'event': window.addToCartData.event,
-                                    'payload': {
-                                        "content_name": res.name,
-                                        "content_ids": [res.id],
-                                        "value": res.value,
-                                        "currency": res.currency,
-                                        "content_type": res.content_type,
-                                        "contents": [{
-                                            "id": res.id,
-                                            "quantity": 1
-                                        }]
-                                    }
+                }
+                // otherwise use the product sku
+                const product_sku = data.sku;
+                // use last added product id if swatch data is not available
+                if (!simpleProductId) {
+                    simpleProductId = productId;
+                }
+                const form_key = jQuery("[name='form_key']").val();
+                const runAsync = !data?.response?.backUrl;
+                $.ajax({
+                    url: product_info_url,
+                    data: {
+                        product_sku: product_sku,
+                        product_id: simpleProductId,
+                        form_key: form_key
+                    },
+                    type: 'get',
+                    dataType: 'json',
+                    async: runAsync,
+                    success: function (res) {
+                        const addToCartConfigPixel = {
+                            "url": window.addToCartData.url,
+                            "payload": {
+                                "eventName": window.addToCartData.eventName,
+                                "productId": res.productId
+                            },
+                            "browserEventData": {
+                                'fbAgentVersion': window.addToCartData.fbAgentVersion,
+                                'fbPixelId': window.addToCartData.fbPixelId,
+                                'source': window.addToCartData.source,
+                                'pluginVersion': window.addToCartData.pluginVersion,
+                                'track': window.addToCartData.track,
+                                'event': window.addToCartData.event,
+                                'payload': {
+                                    "content_name": res.name,
+                                    "content_ids": [res.id],
+                                    "value": res.value,
+                                    "currency": res.currency,
+                                    "content_type": res.content_type,
+                                    "contents": [{
+                                        "id": res.id,
+                                        "quantity": 1
+                                    }]
                                 }
-                            };
-                            metaPixelTracker(addToCartConfigPixel);
-                        }
-                    });
+                            }
+                        };
+                        metaPixelTracker(addToCartConfigPixel);
+                    }
+                });
             });
         });
     </script>
