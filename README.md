@@ -128,6 +128,8 @@ Complete usage guide [HERE](https://www.facebook.com/business/help/5327492535761
 
 Visit Facebook's [Advertiser Help Center](https://www.facebook.com/business/help/532749253576163).
 
+To report a bug, suggest a feature, or provide feedback on the developer experience, please [create a new issue](https://github.com/magento/meta-for-magento2/issues/new/choose) in this GitHub repository.
+
 ## Requirements
 
 Facebook & Instagram for Magento requires:
