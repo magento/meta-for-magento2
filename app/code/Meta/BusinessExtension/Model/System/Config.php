@@ -20,9 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Model\System;
 
-use Exception;
 use Magento\Config\Model\ResourceModel\Config as ResourceConfig;
-use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\CacheInterface;
 use Magento\Framework\App\Config as AppConfig;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -1064,6 +1062,17 @@ class Config
         return $this->isFeatureInstalled('fb_shop', $storeId) ||
             $this->isFeatureInstalled('ig_shopping', $storeId) ||
             $this->isFeatureInstalled('page_shop', $storeId);
+    }
+
+    /**
+     * Check if installed shop eligible for onsite features
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isInstalledShopOnsiteEligible(int $storeId = null): bool
+    {
+        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE, $storeId);
     }
 
     /**

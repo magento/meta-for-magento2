@@ -100,6 +100,7 @@ jQuery(document).ready(function () {
                     const profiles = message.profiles;
                     const catalogId = message.catalog_id;
                     const commercePartnerIntegrationId = message.commerce_partner_integration_id;
+                    const isOnsiteEligible = message.onsite_eligible;
                     const pageId = message.page_id;
                     const installedFeatures = message.installed_features;
 
@@ -107,7 +108,7 @@ jQuery(document).ready(function () {
                     _this.saveAccessToken(accessToken);
                     _this.saveProfilesData(profiles);
                     _this.saveAAMSettings(pixelId);
-                    _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId);
+                    _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId, isOnsiteEligible);
                     _this.saveInstalledFeatures(installedFeatures);
                     _this.cleanConfigCache();
                     _this.postFBEOnboardingSync();
@@ -271,7 +272,7 @@ jQuery(document).ready(function () {
                 }
             });
         },
-        saveConfig: function saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId)
+        saveConfig: function saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId, isOnsiteEligible)
         {
             const _this = this;
             jQuery.ajax({
@@ -284,6 +285,7 @@ jQuery(document).ready(function () {
                     pageId: pageId,
                     accessToken: accessToken,
                     commercePartnerIntegrationId: commercePartnerIntegrationId,
+                    isOnsiteEligible: isOnsiteEligible,
                     storeId: window.facebookBusinessExtensionConfig.storeId,
                 }),
                 success: function onSuccess(data, _textStatus, _jqXHR)

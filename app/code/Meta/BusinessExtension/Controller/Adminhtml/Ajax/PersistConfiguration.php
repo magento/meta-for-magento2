@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Meta\BusinessExtension\Controller\Adminhtml\Ajax;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
@@ -47,17 +48,17 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Construct
      *
-     * @param Context         $context
-     * @param JsonFactory     $resultJsonFactory
-     * @param FBEHelper       $fbeHelper
-     * @param SystemConfig    $systemConfig
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param FBEHelper $fbeHelper
+     * @param SystemConfig $systemConfig
      * @param GraphAPIAdapter $graphApiAdapter
      */
     public function __construct(
-        Context $context,
-        JsonFactory $resultJsonFactory,
-        FBEHelper $fbeHelper,
-        SystemConfig $systemConfig,
+        Context         $context,
+        JsonFactory     $resultJsonFactory,
+        FBEHelper       $fbeHelper,
+        SystemConfig    $systemConfig,
         GraphAPIAdapter $graphApiAdapter
     ) {
         parent::__construct($context, $resultJsonFactory, $fbeHelper);
@@ -81,12 +82,13 @@ class PersistConfiguration extends AbstractAjax
             $catalogId = $this->getRequest()->getParam('catalogId');
             $pageId = $this->getRequest()->getParam('pageId');
             $commercePartnerIntegrationId = $this->getRequest()->getParam('commercePartnerIntegrationId');
+            $isOnsiteEligible = $this->getRequest()->getParam('isOnsiteEligible') === 'true';
 
             $this->saveExternalBusinessId($externalBusinessId, $storeId)
                 ->saveCatalogId($catalogId, $storeId)
                 ->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId)
                 ->saveInstalledFlag($storeId)
-                ->completeOnsiteOnboarding($accessToken, $pageId, $storeId)
+                ->completeOnsiteOnboarding($accessToken, $pageId, $storeId, $isOnsiteEligible)
                 ->enableCatalogSync($commercePartnerIntegrationId, $storeId);
 
             $response['success'] = true;
@@ -110,8 +112,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Save catalog id
      *
-     * @param  int $catalogId
-     * @param  int $storeId
+     * @param int $catalogId
+     * @param int $storeId
      * @return $this
      */
     public function saveCatalogId($catalogId, $storeId)
@@ -122,7 +124,7 @@ class PersistConfiguration extends AbstractAjax
                 $catalogId,
                 $storeId
             );
-            $this->fbeHelper->log('Catalog ID saved on instance --- '. $catalogId);
+            $this->fbeHelper->log('Catalog ID saved on instance --- ' . $catalogId);
         }
         return $this;
     }
@@ -130,8 +132,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Save commerce partner integration id
      *
-     * @param  int $commercePartnerIntegrationId
-     * @param  int $storeId
+     * @param int $commercePartnerIntegrationId
+     * @param int $storeId
      * @return $this
      */
     public function saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId)
@@ -153,8 +155,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Based on commerce PI presence it enables catalog sync.
      *
-     * @param  int $commercePartnerIntegrationId
-     * @param  int $storeId
+     * @param int $commercePartnerIntegrationId
+     * @param int $storeId
      * @return $this
      */
     public function enableCatalogSync($commercePartnerIntegrationId, $storeId)
@@ -174,8 +176,8 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Save external business id
      *
-     * @param  int $externalBusinessId
-     * @param  int $storeId
+     * @param int $externalBusinessId
+     * @param int $storeId
      * @return $this
      */
     public function saveExternalBusinessId($externalBusinessId, $storeId)
@@ -186,7 +188,7 @@ class PersistConfiguration extends AbstractAjax
                 $externalBusinessId,
                 $storeId
             );
-            $this->fbeHelper->log('External business ID saved on instance --- '. $externalBusinessId);
+            $this->fbeHelper->log('External business ID saved on instance --- ' . $externalBusinessId);
         }
         return $this;
     }
@@ -194,12 +196,12 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Update install flag to true and save
      *
-     * @param  int $storeId
+     * @param int $storeId
      * @return $this
      */
     public function saveInstalledFlag($storeId)
     {
-         // set installed to true
+        // set installed to true
         $this->systemConfig->saveConfig(
             SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_INSTALLED,
             true,
@@ -211,15 +213,16 @@ class PersistConfiguration extends AbstractAjax
     /**
      * Complete onsite onboarding
      *
-     * @param  string $accessToken
-     * @param  int    $pageId
-     * @param  int    $storeId
+     * @param string $accessToken
+     * @param int $pageId
+     * @param int $storeId
+     * @param bool $isOnsiteEligible
      * @return $this
      * @throws LocalizedException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
 
-    public function completeOnsiteOnboarding($accessToken, $pageId, $storeId)
+    public function completeOnsiteOnboarding($accessToken, $pageId, $storeId, $isOnsiteEligible)
     {
         if (!$accessToken) {
             $this->fbeHelper->log('No access token available, skipping onboarding to onsite checkout');
@@ -237,7 +240,7 @@ class PersistConfiguration extends AbstractAjax
             $pageId,
             $storeId
         );
-        $this->fbeHelper->log('Page ID saved on instance --- '. $pageId);
+        $this->fbeHelper->log('Page ID saved on instance --- ' . $pageId);
 
         // retrieve page access token
         $pageAccessToken = $this->graphApiAdapter->getPageAccessToken($accessToken, $pageId);
@@ -263,6 +266,13 @@ class PersistConfiguration extends AbstractAjax
         $this->systemConfig->saveConfig(
             SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_COMMERCE_ACCOUNT_ID,
             $commerceAccountId,
+            $storeId
+        );
+
+        // save if onsite eligible
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE,
+            $isOnsiteEligible ? 1 : 0,
             $storeId
         );
 

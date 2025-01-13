@@ -263,7 +263,7 @@ class Setup extends Template
      *
      * @return mixed
      */
-    public function fetchConfigurationAjaxRoute()
+    public function persistConfigurationAjaxRoute()
     {
         return $this->fbeHelper->getUrl('fbeadmin/ajax/persistConfiguration');
     }

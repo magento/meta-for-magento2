@@ -75,8 +75,10 @@ class SyncOrders
         // 1. Order sync enabled
         // 2. Extension enabled(included in 1)
         // 3. There's any shop feature installed(fb_shop, page_shop, ig_shopping) and active
+        // 4. The installed shop is eligible for onsite features
         if (!($this->systemConfig->isOrderSyncEnabled($storeId)
-            && $this->systemConfig->isFBEShopInstalled($storeId))) {
+            && $this->systemConfig->isFBEShopInstalled($storeId)
+            && $this->systemConfig->isInstalledShopOnsiteEligible($storeId))) {
             return;
         }
 

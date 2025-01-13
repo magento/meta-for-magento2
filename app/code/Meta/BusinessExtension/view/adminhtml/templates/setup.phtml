@@ -61,7 +61,7 @@ use Magento\Framework\Escaper;
             pixelId: '<?= $escaper->escapeHtml($block->fetchPixelId($block->getSelectedStoreId())) ?>',
             popupOrigin: '<?= $escaper->escapeHtml($block->getPopupOrigin()) ?>',
             postFBEOnboardingSync: '<?= $escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) ?>',
-            saveConfig: '<?= $escaper->escapeHtml($block->fetchConfigurationAjaxRoute()) ?>',
+            saveConfig: '<?= $escaper->escapeHtml($block->persistConfigurationAjaxRoute()) ?>',
             setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>',
             setAccessToken: '<?= $escaper->escapeHtml($block->getAccessTokenAjaxRoute()) ?>',
             setInstalledFeatures: '<?= $escaper->escapeHtml($block->getInstalledFeaturesAjaxRouteUrl()) ?>',

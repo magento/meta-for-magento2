@@ -285,18 +285,23 @@ class MBEInstalls
      * @param int $storeId
      * @return $this
      */
-    public function saveIsOnsiteEligible($onsite_eligible, $storeId)
+    public function saveIsOnsiteEligible(bool $onsite_eligible, int $storeId): MBEInstalls
     {
         if ($onsite_eligible) {
-            $this->systemConfig->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE,
-                1,
-                $storeId
-            );
             $this->fbeHelper->log(
                 "Mark storeID: {$storeId} as Onsite eligible"
             );
+        } else {
+            $this->fbeHelper->log(
+                "Mark storeID: {$storeId} as Onsite ineligible"
+            );
         }
+
+        $this->systemConfig->saveConfig(
+            SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE,
+            $onsite_eligible ? 1 : 0,
+            $storeId
+        );
         return $this;
     }
 
