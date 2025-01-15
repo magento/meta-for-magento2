@@ -2,67 +2,70 @@
 /**
  * @var $block \Meta\BusinessExtension\Block\Adminhtml\System\Config\DeleteConnection
  * @var $escaper \Magento\Framework\Escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 ?>
 
-<script>
-    require([
-        'jquery',
-        'prototype'
-    ], function (jQuery) {
-        const resultBlock = jQuery('#fb_delete_connection_result');
-        const responseToggle = jQuery('#fb_delete_connection_result_response_toggle');
-        const responseTextBlock = jQuery('#fb_delete_connection_result_response');
+<?php
+    $scriptString = <<<script
+        require([
+            'jquery',
+            'prototype'
+        ], function (jQuery) {
+            const resultBlock = jQuery('#fb_delete_connection_result');
+            const responseToggle = jQuery('#fb_delete_connection_result_response_toggle');
+            const responseTextBlock = jQuery('#fb_delete_connection_result_response');
 
-        responseToggle.click(function () {
-            responseTextBlock.toggle();
-        });
-
-        jQuery('#fb_delete_connection_btn').click(function () {
-            const text = "Warning: Are you sure you want to delete the connection?\n" +
-                "If you do, your store will no longer be connected to Meta " +
-                "and you will need to reconnect your assets to restore the connection.";
-            if (!confirm(text)) {
-                return;
-            }
-            const params = {};
-            new Ajax.Request('<?= $escaper->escapeUrl($block->getAjaxUrl()) ?>', {
-                parameters: params,
-                loaderArea: false,
-                asynchronous: true,
-                onCreate: function () {
-                    resultBlock.find('.fb-delete-connection-finished').hide();
-                    resultBlock.find('.fb-delete-connection-processing').show();
-                    jQuery('#fb_delete_connection_result_text').text('');
-                    responseToggle.hide();
-                    responseTextBlock.hide();
-                },
-                onSuccess: function (response) {
-                    resultBlock.find('.fb-delete-connection-processing').hide();
-
-                    let resultText = '';
-                    let resultResponse = '';
-                    if (response.status > 200) {
-                        resultText = response.statusText;
-                    } else {
-                        resultResponse = ' (' + response.responseText + ')';
-                        resultText = 'Finished';
-                        resultBlock.find('.fb-delete-connection-finished').show();
-                    }
-                    jQuery('#fb_delete_connection_result_text').text(resultText);
-                    jQuery('#fb_delete_connection_result_response').text(resultResponse);
-                    responseToggle.show();
-
-                    new Ajax.Request('<?= $escaper->escapeUrl($block->getCleanCacheAjaxUrl()) ?>', {
-                        asynchronous: true
-                    });
-                }
+            responseToggle.click(function () {
+                responseTextBlock.toggle();
             });
+
+            jQuery('#fb_delete_connection_btn').click(function () {
+                const text = "Warning: Are you sure you want to delete the connection?" +
+                    "If you do, your store will no longer be connected to Meta " +
+                    "and you will need to reconnect your assets to restore the connection.";
+                if (!confirm(text)) {
+                    return;
+                }
+                const params = {};
+                new Ajax.Request('{$escaper->escapeUrl($block->getAjaxUrl())}', {
+                    parameters: params,
+                    loaderArea: false,
+                    asynchronous: true,
+                    onCreate: function () {
+                        resultBlock.find('.fb-delete-connection-finished').hide();
+                        resultBlock.find('.fb-delete-connection-processing').show();
+                        jQuery('#fb_delete_connection_result_text').text('');
+                        responseToggle.hide();
+                        responseTextBlock.hide();
+                    },
+                    onSuccess: function (response) {
+                        resultBlock.find('.fb-delete-connection-processing').hide();
+
+                        let resultText = '';
+                        let resultResponse = '';
+                        if (response.status > 200) {
+                            resultText = response.statusText;
+                        } else {
+                            resultResponse = ' (' + response.responseText + ')';
+                            resultText = 'Finished';
+                            resultBlock.find('.fb-delete-connection-finished').show();
+                        }
+                        jQuery('#fb_delete_connection_result_text').text(resultText);
+                        jQuery('#fb_delete_connection_result_response').text(resultResponse);
+                        responseToggle.show();
+
+                        new Ajax.Request('{$escaper->escapeUrl($block->getCleanCacheAjaxUrl())}', {
+                            asynchronous: true
+                        });
+                    }
+                });
+            });
+
         });
-
-    });
-</script>
-
+    script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
 <?= $block->getButtonHtml() ?>
 <span id="fb_delete_connection_result">
     <img class="fb-delete-connection-processing" hidden="hidden" alt="Processing" style="margin:0 5px" src=
