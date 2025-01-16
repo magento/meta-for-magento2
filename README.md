@@ -134,8 +134,8 @@ To report a bug, suggest a feature, or provide feedback on the developer experie
 
 Facebook & Instagram for Magento requires:
 
-* Magento version `2.4.3` or greater.
-* PHP `7.4` or greater.
+* Magento version `2.4.4` or greater.
+* PHP `8.1` or greater.
 * Memory limit of 1 GB or greater (2 GB or higher is preferred).
 
 ## Contributing
