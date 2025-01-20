@@ -73,7 +73,7 @@ class NavigationFeedApi
         FBEHelper                   $helper,
         Filesystem         $filesystem,
         CategoryUtilities           $categoryUtilities,
-        CategoryManagementInterface $categoryManagement,
+        CategoryManagementInterface $categoryManagement
     ) {
         $this->systemConfig = $systemConfig;
         $this->fbeHelper = $helper;
@@ -122,7 +122,7 @@ class NavigationFeedApi
      * @return bool|mixed
      * @throws Exception
      */
-    public function execute($flowName, int $storeId = null,): mixed
+    public function execute($flowName, int $storeId = null): mixed
     {
         $this->storeId = $storeId;
         $store = $this->systemConfig->getStoreManager()->getStore($storeId);
