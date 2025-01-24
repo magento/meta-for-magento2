@@ -19,6 +19,7 @@
     "magento/module-indexer": "*",
     "magento/module-catalog-inventory": "*",
     "magento/module-catalog-rule": "*",
+    "magento/module-review": "*",
     "meta/module-business-extension": "*",
     "ext-zlib": "*"
   },
