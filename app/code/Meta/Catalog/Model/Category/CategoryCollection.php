@@ -70,7 +70,7 @@ class CategoryCollection
         FBEHelper                   $helper,
         SystemConfig                $systemConfig,
         CategoryUtilities           $categoryUtilities,
-        NavigationFeedApi $navigationFeedApi,
+        NavigationFeedApi $navigationFeedApi
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->fbeHelper = $helper;
