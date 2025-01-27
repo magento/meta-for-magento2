@@ -37,7 +37,7 @@ use Throwable;
  */
 class FBEHelper
 {
-    private const URL_TYPE_WEB = 'web';
+    public const URL_TYPE_WEB = 'web';
 
     public const PERSIST_META_LOG_IMMEDIATELY = 'persist_meta_log_immediately';
     public const PERSIST_META_TELEMETRY_LOGS = 'persist_meta_telemetry_logs';
