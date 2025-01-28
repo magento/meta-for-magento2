@@ -143,7 +143,8 @@ class RatingsAndReviewsFeedApi
                     'createdAt' => $review->getCreatedAt(),
                     'country' => $countryCode,
                     'reviewer' => [
-                        'name' => $review->getNickname()
+                        'name' => $review->getNickname(),
+                        'reviewerID' => $review->getCustomerId()
                     ],
                     'product' => $this->getProductDataForReview($review->getEntityPkValue())
                 ];
@@ -154,9 +155,17 @@ class RatingsAndReviewsFeedApi
 
             $ratingsAndReviewsData['reviews'] = $reviews;
 
-            $this->generateRatingsAndReviewsFeedUploadFile($ratingsAndReviewsData);
+            $file = $this->generateRatingsAndReviewsFeedUploadFile($ratingsAndReviewsData);
 
-            // TODO make graph API call with CSV file to sync R&R data
+            $this->fbeHelper->getGraphAPIAdapter()->setDebugMode($this->systemConfig->isDebugMode($storeId))
+                ->setAccessToken($this->systemConfig->getAccessToken($storeId));
+            $commercePartnerIntegrationId = $this->systemConfig->getCommercePartnerIntegrationId($storeId);
+            $this->fbeHelper->getGraphAPIAdapter()->uploadFile(
+                $commercePartnerIntegrationId,
+                $file,
+                'PRODUCT_RATINGS_AND_REVIEWS',
+                'CREATE'
+            );
 
             return null;
         } catch (Exception $e) {
@@ -241,8 +250,9 @@ class RatingsAndReviewsFeedApi
      */
     private function getFeedFileName(): string
     {
-        $defaultStoreId = $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId();
-        $storeCode = $this->systemConfig->getStoreManager()->getStore($this->storeId)->getCode();
+        $storeManager = $this->systemConfig->getStoreManager();
+        $defaultStoreId = $storeManager->getDefaultStoreView()->getId();
+        $storeCode = $storeManager->getStore($this->storeId)->getCode();
         return sprintf(
             self::FEED_FILE_NAME,
             ($this->storeId && $this->storeId !== $defaultStoreId) ? ('_' . $storeCode) : ''
@@ -263,13 +273,14 @@ class RatingsAndReviewsFeedApi
             "store.name",
             "store.id",
             "store.storeUrls",
-            "reviewID",
+            "review_id",
             "rating",
             "title",
             "content",
-            "createdAt",
+            "created_at",
             "country",
             "reviewer.name",
+            "reviewer.reviewerID",
             "product.name",
             "product.url",
             "product.imageUrls",
@@ -281,7 +292,7 @@ class RatingsAndReviewsFeedApi
                 $ratingsAndReviewsData['aggregator'],
                 $ratingsAndReviewsData['store']['name'],
                 $ratingsAndReviewsData['store']['id'],
-                json_encode($ratingsAndReviewsData['store']['storeUrls']),
+                "['" . implode("','", $ratingsAndReviewsData['store']['storeUrls']) . "']",
                 $review['reviewID'],
                 $review['rating'],
                 $review['title'],
@@ -289,10 +300,11 @@ class RatingsAndReviewsFeedApi
                 $review['createdAt'],
                 $review['country'],
                 $review['reviewer']['name'],
+                $review['reviewer']['reviewerID'],
                 $review['product']['name'],
                 $review['product']['url'],
-                json_encode($review['product']['imageUrls']),
-                json_encode($review['product']['productIdentifiers']['skus'])
+                "['" . implode("','", $review['product']['imageUrls']) . "']",
+                "['" . implode("','", $review['product']['productIdentifiers']['skus']) . "']"
             ];
             $csvRows[] = $row;
         }
