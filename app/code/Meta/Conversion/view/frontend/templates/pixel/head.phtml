@@ -6,6 +6,7 @@ use Meta\Conversion\Block\Pixel\Head;
 /**
  * @var Head $block
  * @var Escaper $escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 
 $userDataUrl = $block->getUserDataUrl();
@@ -44,9 +45,10 @@ $trackerUrl = $block->getTrackerUrl();
 <!-- End Meta Pixel Code -->
 <?php } else { ?>
 <!-- NO Pixel ID is configured, please goto Admin -->
-<script>
-console.log(
-    'No Meta pixel is configured, please log in as a admin and then visit Stores -> Meta -> Setup -> Get Started'
-);
-</script>
+<?php
+    $scriptString = <<<script
+        console.log('No Meta pixel is configured, please log in as a admin and then visit Stores -> Meta -> Setup -> Get Started');
+    script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
 <?php } ?>
