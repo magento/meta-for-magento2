@@ -19,5 +19,8 @@
         <job name="facebook_automation_log_catalog_setup" instance="Meta\Catalog\Cron\LogCatalogSetup" method="execute">
             <schedule>0 4 * * 0</schedule>
         </job>
+        <job name="facebook_automation_ratings_and_reviews_feed_upload_cron" instance="Meta\Catalog\Cron\RatingsAndReviewsFeedUploadCron" method="execute">
+            <schedule>0 4 * * 6</schedule>
+        </job>
     </group>
 </config>

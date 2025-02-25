@@ -120,7 +120,7 @@ class RatingsAndReviewsFeedApi
             $ratingsAndReviewsData = [];
 
             // Fetch store data
-            $ratingsAndReviewsData['aggregator'] = "Magento";
+            $ratingsAndReviewsData['aggregator'] = "magento";
             $storeData = [
                 'name' => $store->getName(),
                 'id' => $this->systemConfig->getCommerceAccountId($storeId),
@@ -132,7 +132,6 @@ class RatingsAndReviewsFeedApi
             $reviewCollection = $this->reviewCollectionFactory->create()
                 ->addStoreFilter($storeId)
                 ->addStatusFilter(Review::STATUS_APPROVED);
-            $countryCode = $store->getConfig('general/country/default');
             $reviews = [];
             foreach ($reviewCollection as $review) {
                 $reviewData = [
@@ -141,7 +140,6 @@ class RatingsAndReviewsFeedApi
                     'title' => $review->getTitle(),
                     'content' => $review->getDetail(),
                     'createdAt' => $review->getCreatedAt(),
-                    'country' => $countryCode,
                     'reviewer' => [
                         'name' => $review->getNickname(),
                         'reviewerID' => $review->getCustomerId()
@@ -278,7 +276,6 @@ class RatingsAndReviewsFeedApi
             "title",
             "content",
             "created_at",
-            "country",
             "reviewer.name",
             "reviewer.reviewerID",
             "product.name",
@@ -298,7 +295,6 @@ class RatingsAndReviewsFeedApi
                 $review['title'],
                 $review['content'],
                 $review['createdAt'],
-                $review['country'],
                 $review['reviewer']['name'],
                 $review['reviewer']['reviewerID'],
                 $review['product']['name'],
