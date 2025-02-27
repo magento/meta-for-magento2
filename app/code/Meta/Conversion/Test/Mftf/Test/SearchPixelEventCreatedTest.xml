@@ -9,6 +9,7 @@
             <title value="The page has a pixel search event."/>
             <description value="The page should contain a fbq call with a search pixel event."/>
             <severity value="MAJOR"/>
+            <testCaseId value="META-2702202505"/>
             <group value="Pixel"/>
         </annotations>
         <before>

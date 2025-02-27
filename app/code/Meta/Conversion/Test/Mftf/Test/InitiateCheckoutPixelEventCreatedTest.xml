@@ -9,6 +9,7 @@
             <title value="The page has an initiate checkout pixel event."/>
             <description value="The product page should contain a fbq call with an initiate checkout pixel event."/>
             <severity value="MAJOR"/>
+            <testCaseId value="META-2702202503"/>
             <group value="Pixel"/>
         </annotations>
         <before>

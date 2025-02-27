@@ -9,6 +9,7 @@
             <title value="The page has a purchase pixel event."/>
             <description value="The product page should contain a fbq call with a purchase pixel event."/>
             <severity value="MAJOR"/>
+            <testCaseId value="META-2702202504"/>
             <group value="Pixel"/>
         </annotations>
         <before>
