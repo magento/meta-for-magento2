@@ -29,12 +29,12 @@ class Uploader
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    public $systemConfig;
 
     /**
      * @var MethodFeedApi
      */
-    protected $methodFeedApi;
+    public $methodFeedApi;
 
     /**
      * @param SystemConfig $systemConfig

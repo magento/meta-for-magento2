@@ -56,42 +56,42 @@ class CreateRefund
     /**
      * @var CreditmemoFactory
      */
-    protected $creditMemoFactory;
+    public $creditMemoFactory;
 
     /**
      * @var OrderRepositoryInterface
      */
-    protected $orderRepository;
+    public $orderRepository;
 
     /**
      * @var CreateOrder
      */
-    protected $createOrder;
+    public $createOrder;
 
     /**
      * @var CreditmemoService
      */
-    protected $creditMemoService;
+    public $creditMemoService;
 
     /**
      * @var Invoice
      */
-    protected $invoice;
+    public $invoice;
 
     /**
      * @var InvoiceManagementInterface
      */
-    protected $invoiceManagement;
+    public $invoiceManagement;
 
     /**
      * @var TransactionFactory
      */
-    protected $transactionFactory;
+    public $transactionFactory;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    public $logger;
 
     /**
      * RefundProcessor constructor.

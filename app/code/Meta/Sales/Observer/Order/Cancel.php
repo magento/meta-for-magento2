@@ -81,7 +81,7 @@ class Cancel implements ObserverInterface
      *
      * @return string
      */
-    protected function getExceptionEvent()
+    public function getExceptionEvent()
     {
         return 'refund_observer_exception';
     }
@@ -92,7 +92,7 @@ class Cancel implements ObserverInterface
      * @param Observer $observer
      * @return string
      */
-    protected function getStoreId(Observer $observer)
+    public function getStoreId(Observer $observer)
     {
         return $observer->getEvent()->getOrder()->getStoreId();
     }
@@ -102,7 +102,7 @@ class Cancel implements ObserverInterface
      *
      * @return FBEHelper
      */
-    protected function getFBEHelper()
+    public function getFBEHelper()
     {
         return $this->fbeHelper;
     }
@@ -114,7 +114,7 @@ class Cancel implements ObserverInterface
      * @return void
      * @throws GuzzleException
      */
-    protected function executeImpl(Observer $observer)
+    public function executeImpl(Observer $observer)
     {
         /**
          * @var Order $order

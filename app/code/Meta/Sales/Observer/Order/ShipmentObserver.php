@@ -88,7 +88,7 @@ class ShipmentObserver implements ObserverInterface
      *
      * @return string
      */
-    protected function getExceptionEvent()
+    public function getExceptionEvent()
     {
         return 'shipment_observer_exception';
     }
@@ -98,7 +98,7 @@ class ShipmentObserver implements ObserverInterface
      *
      * @return FBEHelper
      */
-    protected function getFBEHelper()
+    public function getFBEHelper()
     {
         return $this->fbeHelper;
     }
@@ -109,7 +109,7 @@ class ShipmentObserver implements ObserverInterface
      * @param Observer $observer
      * @return string
      */
-    protected function getStoreId(Observer $observer)
+    public function getStoreId(Observer $observer)
     {
         return (string)$this->getShipment($observer)->getOrder()->getStoreId();
     }
@@ -120,7 +120,7 @@ class ShipmentObserver implements ObserverInterface
      * @param Observer $observer
      * @return Shipment|null
      */
-    protected function getShipment(Observer $observer)
+    public function getShipment(Observer $observer)
     {
         $event = $observer->getEvent()->getName();
         

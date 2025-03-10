@@ -53,13 +53,13 @@ class CreateCancellation
     /**
      * @var TransactionFactory
      */
-    protected $transactionFactory;
+    public $transactionFactory;
 
     /**
      * @var FBEHelper
      */
 
-    protected $fbeHelper;
+    public $fbeHelper;
 
     /**
      * @var LoggerInterface

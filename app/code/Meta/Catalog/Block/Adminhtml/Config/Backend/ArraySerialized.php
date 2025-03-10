@@ -19,7 +19,7 @@ class ArraySerialized extends ConfigValue
     /**
      * @var SerializerInterface
      */
-    protected $serializer;
+    public $serializer;
 
     /**
      * @var Logger

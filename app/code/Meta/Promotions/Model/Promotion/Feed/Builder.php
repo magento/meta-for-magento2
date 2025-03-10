@@ -70,7 +70,7 @@ class Builder
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    public $systemConfig;
 
     /**
      * @var int
@@ -90,7 +90,7 @@ class Builder
     /**
      * @var CollectionFactory
      */
-    protected $couponFactory;
+    public $couponFactory;
 
     /**
      * Constructor

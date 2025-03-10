@@ -37,7 +37,7 @@ class NavigationFeedApi
     /**
      * @var int
      */
-    protected int $storeId;
+    public int $storeId;
 
     /**
      * @var FBEHelper
@@ -46,12 +46,12 @@ class NavigationFeedApi
     /**
      * @var SystemConfig
      */
-    protected SystemConfig $systemConfig;
+    public SystemConfig $systemConfig;
 
     /**
      * @var Filesystem
      */
-    protected Filesystem $fileSystem;
+    public Filesystem $fileSystem;
     /**
      * @var CategoryUtilities
      */
@@ -88,7 +88,7 @@ class NavigationFeedApi
      * @return string
      * @throws NoSuchEntityException
      */
-    protected function getFeedFileName(): string
+    public function getFeedFileName(): string
     {
         $defaultStoreId = $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId();
         $storeCode = $this->systemConfig->getStoreManager()->getStore($this->storeId)->getCode();
@@ -106,7 +106,7 @@ class NavigationFeedApi
      * @throws FileSystemException
      * @throws NoSuchEntityException
      */
-    protected function generateNavigationFeed($jsTreeData): string
+    public function generateNavigationFeed($jsTreeData): string
     {
         $filePath = 'export/' . $this->getFeedFileName();
         $directory = $this->fileSystem->getDirectoryWrite(self::VAR_DIR);
