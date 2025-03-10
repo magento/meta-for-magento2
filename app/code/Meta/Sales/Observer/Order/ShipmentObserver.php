@@ -145,7 +145,7 @@ class ShipmentObserver implements ObserverInterface
      * @throws GuzzleException
      * @throws Exception
      */
-    protected function executeImpl(Observer $observer)
+    public function executeImpl(Observer $observer)
     {
         $shipment = $this->getShipment($observer);
         $storeId = $shipment->getOrder()->getStoreId();
