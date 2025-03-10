@@ -17,17 +17,20 @@
             ><?= $escaper->escapeHtml(__($store['name'])) ?></option>
         <?php endforeach; ?>
     </select>
+    
+    <?php
+        $scriptString = <<<script
+            require([
+                'jquery',
+            ], function ($) {
+                $('#store').on('change', function () {
+                    const url = new URL(location.href);
+                    url.searchParams.set('store_id', jQuery(this).val());
 
-    <script>
-        require([
-            'jquery',
-        ], function ($) {
-            $('#store').on('change', function () {
-                const url = new URL(location.href);
-                url.searchParams.set('store_id', jQuery(this).val());
-
-                location.assign(url.search);
+                    location.assign(url.search);
+                });
             });
-        });
-    </script>
+        script;
+    ?>
+    <?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
 <?php endif; ?>

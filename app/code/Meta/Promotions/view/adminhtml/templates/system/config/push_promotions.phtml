@@ -2,56 +2,60 @@
 /**
  * @var $block \Meta\Promotions\Block\Adminhtml\System\Config\PushPromotions
  * @var $escaper \Magento\Framework\Escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 ?>
 
-<script>
-    require([
-        'jquery',
-        'prototype'
-    ], function (jQuery) {
-        const resultBlock = jQuery('#fb_push_promotions_result');
-        const responseToggle = jQuery('#fb_push_promotions_result_response_toggle');
-        const responseTextBlock = jQuery('#fb_push_promotions_result_response');
+<?php
+    $scriptString = <<<script
+        require([
+            'jquery',
+            'prototype'
+        ], function (jQuery) {
+            const resultBlock = jQuery('#fb_push_promotions_result');
+            const responseToggle = jQuery('#fb_push_promotions_result_response_toggle');
+            const responseTextBlock = jQuery('#fb_push_promotions_result_response');
 
-        responseToggle.click(function () {
-            responseTextBlock.toggle();
-        });
-
-        jQuery('#fb_push_promotions_btn').click(function () {
-            const params = {};
-            new Ajax.Request('<?= $escaper->escapeUrl($block->getAjaxUrl()) ?>', {
-                parameters: params,
-                loaderArea: false,
-                asynchronous: true,
-                onCreate: function () {
-                    resultBlock.find('.fb-push-promotions-finished').hide();
-                    resultBlock.find('.fb-push-promotions-processing').show();
-                    jQuery('#fb_push_promotions_result_text').text('');
-                    responseToggle.hide();
-                    responseTextBlock.hide();
-                },
-                onSuccess: function (response) {
-                    resultBlock.find('.fb-push-promotions-processing').hide();
-
-                    let resultText = '';
-                    let resultResponse = '';
-                    if (response.status > 200) {
-                        resultText = response.statusText;
-                    } else {
-                        resultResponse = ' (' + response.responseText + ')';
-                        resultText = 'Finished';
-                        resultBlock.find('.fb-push-promotions-finished').show();
-                    }
-                    jQuery('#fb_push_promotions_result_text').text(resultText);
-                    jQuery('#fb_push_promotions_result_response').text(resultResponse);
-                    responseToggle.show();
-                }
+            responseToggle.click(function () {
+                responseTextBlock.toggle();
             });
-        });
 
-    });
-</script>
+            jQuery('#fb_push_promotions_btn').click(function () {
+                const params = {};
+                new Ajax.Request('{$escaper->escapeUrl($block->getAjaxUrl())}', {
+                    parameters: params,
+                    loaderArea: false,
+                    asynchronous: true,
+                    onCreate: function () {
+                        resultBlock.find('.fb-push-promotions-finished').hide();
+                        resultBlock.find('.fb-push-promotions-processing').show();
+                        jQuery('#fb_push_promotions_result_text').text('');
+                        responseToggle.hide();
+                        responseTextBlock.hide();
+                    },
+                    onSuccess: function (response) {
+                        resultBlock.find('.fb-push-promotions-processing').hide();
+
+                        let resultText = '';
+                        let resultResponse = '';
+                        if (response.status > 200) {
+                            resultText = response.statusText;
+                        } else {
+                            resultResponse = ' (' + response.responseText + ')';
+                            resultText = 'Finished';
+                            resultBlock.find('.fb-push-promotions-finished').show();
+                        }
+                        jQuery('#fb_push_promotions_result_text').text(resultText);
+                        jQuery('#fb_push_promotions_result_response').text(resultResponse);
+                        responseToggle.show();
+                    }
+                });
+            });
+
+        });
+    script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
 
 <?= $block->getButtonHtml() ?>
 <span id="fb_push_promotions_result">
