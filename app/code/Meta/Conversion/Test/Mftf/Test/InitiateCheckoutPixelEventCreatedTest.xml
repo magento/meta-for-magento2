@@ -9,6 +9,7 @@
             <title value="The page has an initiate checkout pixel event."/>
             <description value="The product page should contain a fbq call with an initiate checkout pixel event."/>
             <severity value="MAJOR"/>
+            <testCaseId value="META-2702202503"/>
             <group value="Pixel"/>
         </annotations>
         <before>
@@ -23,6 +24,11 @@
                         stepKey="enableFacebookBusinessExtension"/>
             <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataPixelId.scope}} --scope-code={{FacebookBusinessConfigDataPixelId.scope_code}} {{FacebookBusinessConfigDataPixelId.path}} 123456789123456"
                         stepKey="setFacebookBusinessExtensionPixelId"/>
+
+            <!-- Do reindex -->
+            <actionGroup ref="CliIndexerReindexActionGroup" stepKey="runCronIndex">
+                <argument name="indices" value=""/>
+            </actionGroup>
         </before>
         <after>
             <!-- Delete sample product -->
