@@ -2,61 +2,63 @@
 /**
  * @var $block \Meta\Sales\Block\Adminhtml\System\Config\PullOrders
  * @var $escaper \Magento\Framework\Escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 ?>
+<?php
+    $scriptString = <<<script
+        require([
+            'jquery',
+            'prototype'
+        ], function (jQuery) {
+            const resultBlock = jQuery('#fb_pull_orders_result');
+            const responseToggle = jQuery('#fb_pull_orders_result_response_toggle');
+            const responseTextBlock = jQuery('#fb_pull_orders_result_response');
 
-<script>
-    require([
-        'jquery',
-        'prototype'
-    ], function (jQuery) {
-        const resultBlock = jQuery('#fb_pull_orders_result');
-        const responseToggle = jQuery('#fb_pull_orders_result_response_toggle');
-        const responseTextBlock = jQuery('#fb_pull_orders_result_response');
+            responseToggle.click(function () {
+                responseTextBlock.toggle();
+            });
 
-        responseToggle.click(function () {
-            responseTextBlock.toggle();
-        });
+            jQuery('#fb_pull_orders_btn').click(function () {
+                const params = {};
+                new Ajax.Request('{$escaper->escapeUrl($block->getAjaxUrl())}', {
+                    parameters: params,
+                    loaderArea: false,
+                    asynchronous: true,
+                    onCreate: function () {
+                        resultBlock.find('.fb-pull-orders-finished').hide();
+                        resultBlock.find('.fb-pull-orders-processing').show();
+                        jQuery('#fb_pull_orders_result_text').text('');
+                        responseToggle.hide();
+                        responseTextBlock.hide();
+                    },
+                    onSuccess: function (response) {
+                        resultBlock.find('.fb-pull-orders-processing').hide();
 
-        jQuery('#fb_pull_orders_btn').click(function () {
-            const params = {};
-            new Ajax.Request('<?= $escaper->escapeUrl($block->getAjaxUrl()) ?>', {
-                parameters: params,
-                loaderArea: false,
-                asynchronous: true,
-                onCreate: function () {
-                    resultBlock.find('.fb-pull-orders-finished').hide();
-                    resultBlock.find('.fb-pull-orders-processing').show();
-                    jQuery('#fb_pull_orders_result_text').text('');
-                    responseToggle.hide();
-                    responseTextBlock.hide();
-                },
-                onSuccess: function (response) {
-                    resultBlock.find('.fb-pull-orders-processing').hide();
-
-                    let resultText = '';
-                    let resultResponse = '';
-                    if (response.status > 200) {
-                        resultText = response.statusText;
-                    } else {
-                        resultText = 'Finished';
-                        resultBlock.find('.fb-pull-orders-finished').show();
+                        let resultText = '';
+                        let resultResponse = '';
+                        if (response.status > 200) {
+                            resultText = response.statusText;
+                        } else {
+                            resultText = 'Finished';
+                            resultBlock.find('.fb-pull-orders-finished').show();
+                        }
+                        jQuery('#fb_pull_orders_result_text').text(resultText);
+                        let jsonObject = JSON.parse(response.responseText);
+                        let prettyJsonString = JSON.stringify(jsonObject, null, 2);
+                        jQuery('#fb_pull_orders_result_response').html(
+                            '<pre style="white-space: pre-wrap;">'
+                            + prettyJsonString +
+                            '</pre>'
+                        );
+                        responseToggle.show();
                     }
-                    jQuery('#fb_pull_orders_result_text').text(resultText);
-                    let jsonObject = JSON.parse(response.responseText);
-                    let prettyJsonString = JSON.stringify(jsonObject, null, 2);
-                    jQuery('#fb_pull_orders_result_response').html(
-                        '<pre style="white-space: pre-wrap;">'
-                        + prettyJsonString +
-                        '</pre>'
-                    );
-                    responseToggle.show();
-                }
+                });
             });
         });
-
-    });
-</script>
+    script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
 
 <?= /* @noEscape */
 $block->getButtonHtml() ?>

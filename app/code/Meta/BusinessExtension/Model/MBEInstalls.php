@@ -151,7 +151,7 @@ class MBEInstalls
         $this->savePages($data['pages'] ?? '', $storeId);
         $this->saveCatalogId($catalogId, $storeId);
         $this->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId);
-        $this->saveIsOnsiteEligible($onsite_eligible, $storeId);
+        $this->saveIsOnsiteEligible($onsite_eligible, (int)$storeId);
         $this->saveMerchantSettingsId($data['commerce_merchant_settings_id'] ?? '', $storeId);
         $this->saveInstalledFeatures($data['installed_features'] ?? '', $storeId);
         $this->setInstalledFlag($storeId);
