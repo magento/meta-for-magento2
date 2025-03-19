@@ -55,7 +55,7 @@ class GraphAPIAdapter
     /**
      * @var string
      */
-    private $graphAPIVersion = 'v20.0';
+    private $graphAPIVersion = 'v22.0';
 
     /**
      * @var Client
