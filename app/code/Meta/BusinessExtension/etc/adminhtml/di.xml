@@ -16,8 +16,6 @@
                 <item name="version_upgrade_notification" xsi:type="string">
                     Meta\BusinessExtension\Model\System\Message\VersionUpgradeNotification
                 </item>
-                <item name="notification" xsi:type="string">Meta\BusinessExtension\Model\System\Message\Notification
-                </item>
                 <item name="conflicting_module_notification" xsi:type="string">Meta\BusinessExtension\Model\System\Message\ConflictingModulesNotification
                 </item>
             </argument>

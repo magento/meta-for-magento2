@@ -10,12 +10,12 @@
         "magento/module-configurable-product": "*",
         "magento/module-checkout": "*",
         "magento/module-customer": "*",
-        "magento/module-directory": "*",
         "magento/module-grouped-product": "*",
         "magento/module-sales": "*",
         "magento/module-store": "*",
         "magento/module-quote": "*",
         "magento/module-contact": "*",
+        "magento/module-cookie": "*",
         "meta/module-business-extension": "*"
     },
     "license": "Apache-2.0",
