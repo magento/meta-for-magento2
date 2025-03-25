@@ -7,7 +7,6 @@ use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\ServerEventFactory;
 use Meta\Conversion\Helper\ServerSideHelper;
 use Meta\Conversion\Observer\Common as CommonObserver;
-use Magento\Customer\CustomerData\SectionPool;
 
 class CapiTracker
 {
@@ -16,8 +15,7 @@ class CapiTracker
         private readonly FBEHelper $fbeHelper,
         private readonly ServerSideHelper $serverSideHelper,
         private readonly ServerEventFactory $serverEventFactory,
-        private readonly CommonObserver $commonObserver,
-        private readonly SectionPool $sectionPool
+        private readonly CommonObserver $commonObserver
     ) { }
 
     public function execute(array $payload, string $eventName, string $eventType): void
