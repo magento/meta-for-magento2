@@ -1,7 +1,8 @@
 /* global fbq */
 define([
-    'jquery'
-], function ($) {
+    'jquery',
+    'Meta_Conversion/js/tracking'
+], function ($, cookies) {
     'use strict';
     function generateUUID() {
         if (crypto.randomUUID) {
@@ -35,22 +36,14 @@ define([
         fbq(track, event, pixelEventPayload, {
             eventID: eventId
         });
-        // trigger server-side CAPI event
-        $.ajax({
-            showLoader: true,
-            url: trackServerEventUrl,
-            type: 'POST',
-            data: serverEventPayload,
-            dataType: 'json',
-            global: false,
-            error: function (error) {
-                console.log(error);
-            }
-        });
     }
 
     return function (config) {
+      if (cookies.getCookie(config.payload.eventName)) {
+        config.payload.eventId = cookies.getCookie(config.payload.eventName);
+      }else {
         config.payload.eventId = generateUUID();
+      }
         config.browserEventData.payload.source = config.browserEventData.source;
         config.browserEventData.payload.pluginVersion = config.browserEventData.pluginVersion;
 
