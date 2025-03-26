@@ -152,9 +152,20 @@ class Other implements ProductRetrieverInterface
             ->order(new \Zend_Db_Expr('e.updated_at desc'))
             ->limit($limit, $offset);
 
+        $productData = $collection->getData();
+        $entityIds = [];
+        foreach ($productData as $item) {
+            if (isset($item['entity_id']) && ($item['entity_id'] != null || $item['entity_id'] != '')) {
+                $entityIds[] = $item['entity_id'];
+            }
+        }
+        if (empty($entityIds)) {
+            return [];
+        }
+
         $search = $this
             ->searchCriteriaBuilder
-            ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
+            ->addFilter('entity_id', $entityIds, 'in')
             ->addFilter('store_id', $storeId)
             ->create();
 

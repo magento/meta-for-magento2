@@ -140,12 +140,23 @@ class Configurable implements ProductRetrieverInterface
         $configurableCollection->getSelect()->limit($limit, $offset);
 
         if ($this->systemConfig->isAdditionalAttributesSyncDisabled()) {
-            $products = $configurableCollection->getItems();
+            $products = $configurableCollection->getData();
         } else {
+            $productData = $configurableCollection->getData();
+            $entityIds = [];
+            foreach ($productData as $item) {
+                if (isset($item['entity_id']) && ($item['entity_id'] != null || $item['entity_id'] != '')) {
+                    $entityIds[] = $item['entity_id'];
+                }
+            }
+            if (empty($entityIds)) {
+                return [];
+            }
+
             // in case of unsupported product we need complete data for products which is return by product repo api.
             $search = $this
                 ->searchCriteriaBuilder
-                ->addFilter('entity_id', array_keys($configurableCollection->getItems()), 'in')
+                ->addFilter('entity_id', $entityIds, 'in')
                 ->addFilter('store_id', $storeId)
                 ->create();
 
