@@ -139,12 +139,23 @@ class Simple implements ProductRetrieverInterface
             ->limit($limit, $offset);
 
         if ($this->systemConfig->isAdditionalAttributesSyncDisabled()) {
-            $products = $collection->getItems();
+            $products = $collection->getData();
         } else {
+            $productData = $collection->getData();
+            $entityIds = [];
+            foreach ($productData as $item) {
+                if (isset($item['entity_id']) && ($item['entity_id'] != null || $item['entity_id'] != '')) {
+                    $entityIds[] = $item['entity_id'];
+                }
+            }
+            if (empty($entityIds)) {
+                return [];
+            }
+
             // in case of unsupported product we need complete data for products which is return by product repo api.
             $search = $this
                 ->searchCriteriaBuilder
-                ->addFilter('entity_id', array_keys($collection->getItems()), 'in')
+                ->addFilter('entity_id', $entityIds, 'in')
                 ->addFilter('store_id', $storeId)
                 ->create();
 
