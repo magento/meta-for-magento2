@@ -113,14 +113,15 @@ class Purchase implements TrackerInterface
         try {
             $orderId = $params['lastOrder'];
             $order = $this->orderRepository->get($orderId);
+            $contentData = $this->prepareData($order);
             $customData = [
                 'currency'     => $this->magentoDataHelper->getCurrency(),
                 'value'        => $this->getOrderTotal($order),
                 'content_type' => 'product',
                 'num_items'    => $this->getNumItems($order),
-                'content_ids'  => $this->getOrderContentIds($order),
-                'contents'     => $this->getOrderContents($order),
-                'content_name' => $this->getContentName($order),
+                'content_ids'  => $contentData['content_ids'],
+                'contents'     => $contentData['contents'],
+                'content_name' => $contentData['content_name'] ?? null,
                 'order_id'     => (string)$this->getOrderId($order),
                 'userDataFromOrder' => $this->getUserDataFromOrder($order)
             ];
@@ -128,6 +129,29 @@ class Purchase implements TrackerInterface
             return [];
         }
         return $customData;
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @return array[]
+     */
+    private function prepareData(OrderInterface $order): array
+    {
+        $contents = [];
+        $contentIds = [];
+        $contentName = [];
+
+        $items = $order->getAllVisibleItems();
+        foreach ($items as $item) {
+            $contents[] = [
+                'product_id' => $item->getSku(),
+                'quantity' => (int)$item->getQtyOrdered(),
+                'item_price' => $item->getPrice()
+            ];
+            $contentIds[] = $item->getSku();
+            $contentName[] = $item->getName();
+        }
+        return ['contents' => $contents, 'content_ids' => $contentIds, 'content_name' => $contentName];
     }
 
     /**
@@ -199,51 +223,6 @@ class Purchase implements TrackerInterface
     }
 
     /**
-     * Return information about the last order items
-     *
-     * @param OrderInterface $order
-     * @link https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/custom-data/#contents
-     *
-     * @return array
-     */
-    private function getOrderContents(OrderInterface $order): array
-    {
-        if (!$order) {
-            return [];
-        }
-        $contents = [];
-        /** @var Item[] $items */
-        $items = $order->getAllVisibleItems();
-        foreach ($items as $item) {
-            $contents[] = [
-                'product_id' => $item->getSku(),
-                'quantity' => (int)$item->getQtyOrdered(),
-                'item_price' => $item->getPrice()
-            ];
-        }
-        return $contents;
-    }
-
-    /**
-     * Return the ids of the items by last order
-     *
-     * @param OrderInterface $order
-     * @return array
-     */
-    private function getOrderContentIds(OrderInterface $order): array
-    {
-        if (!$order) {
-            return [];
-        }
-        $contentIds = [];
-        $items = $order->getAllVisibleItems();
-        foreach ($items as $item) {
-            $contentIds[] = $item->getSku();
-        }
-        return $contentIds;
-    }
-
-    /**
      * Return the last order total value
      *
      * @param OrderInterface $order
@@ -274,24 +253,5 @@ class Purchase implements TrackerInterface
             return null;
         }
         return $order->getTotalQtyOrdered();
-    }
-
-    /**
-     * Get Product Name
-     *
-     * @param OrderInterface $order
-     * @return string
-     */
-    private function getContentName(OrderInterface $order)
-    {
-        $productName = [];
-        if ($order) {
-            $items = $order->getAllVisibleItems();
-            foreach ($items as $item) {
-                /** @var Product $item */
-                $productName[] = $item->getName();
-            }
-        }
-        return json_encode($productName);
     }
 }
