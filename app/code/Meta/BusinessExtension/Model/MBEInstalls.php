@@ -134,7 +134,7 @@ class MBEInstalls
         $data = $response[0];
         $catalogId = $data['catalog_id'] ?? '';
         $pixelId = $data['pixel_id'] ?? '';
-        $onsite_eligible = $data['onsite_eligible'] ?? false;
+        $onsite_eligible = filter_var($data['onsite_eligible'], FILTER_VALIDATE_BOOLEAN) ?? false;
         $commercePartnerIntegrationId = $data['commerce_partner_integration_id'] ?? '';
 
         // we will update catalog config if catalog has been updated in Meta
@@ -285,7 +285,7 @@ class MBEInstalls
      * @param int $storeId
      * @return $this
      */
-    public function saveIsOnsiteEligible(bool $onsite_eligible, int $storeId): MBEInstalls
+    public function saveIsOnsiteEligible($onsite_eligible, $storeId): MBEInstalls
     {
         if ($onsite_eligible) {
             $this->fbeHelper->log(
