@@ -40,22 +40,22 @@ class FeedApi
     /**
      * @var int
      */
-    protected $storeId;
+    public $storeId;
 
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    public $systemConfig;
 
     /**
      * @var GraphAPIAdapter
      */
-    protected $graphApiAdapter;
+    public $graphApiAdapter;
 
     /**
      * @var Filesystem
      */
-    protected $fileSystem;
+    public $fileSystem;
 
     /**
      * @var LoggerInterface
@@ -65,12 +65,12 @@ class FeedApi
     /**
      * @var Builder
      */
-    protected $builder;
+    public $builder;
 
     /**
      * @var PromotionRetriever
      */
-    protected $promotionRetriever;
+    public $promotionRetriever;
 
     /**
      * @param SystemConfig $systemConfig
@@ -103,7 +103,7 @@ class FeedApi
      * @throws FileSystemException
      * @throws Exception
      */
-    protected function writeFile(WriteInterface $fileStream)
+    public function writeFile(WriteInterface $fileStream)
     {
         $fileStream->writeCsv($this->builder->getHeaderFields(), "\t");
 
@@ -130,7 +130,7 @@ class FeedApi
      * @return string
      * @throws NoSuchEntityException
      */
-    protected function getFeedFileName()
+    public function getFeedFileName()
     {
         $defaultStoreId = $this->systemConfig->getStoreManager()->getDefaultStoreView()->getId();
         $storeCode = $this->systemConfig->getStoreManager()->getStore($this->storeId)->getCode();
@@ -147,7 +147,7 @@ class FeedApi
      * @throws FileSystemException
      * @throws NoSuchEntityException
      */
-    protected function generatePromoFeed()
+    public function generatePromoFeed()
     {
         $file = 'export/' . $this->getFeedFileName();
         $directory = $this->fileSystem->getDirectoryWrite(self::VAR_DIR);

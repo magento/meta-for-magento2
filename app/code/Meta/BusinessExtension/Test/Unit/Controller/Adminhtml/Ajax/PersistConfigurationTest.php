@@ -28,37 +28,37 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
     /**
      * @var MockObject
      */
-    protected $fbeHelper;
+    public $fbeHelper;
 
     /**
      * @var MockObject
      */
-    protected $systemConfig;
+    public $systemConfig;
 
     /**
      * @var MockObject
      */
-    protected $context;
+    public $context;
 
     /**
      * @var MockObject
      */
-    protected $resultJsonFactory;
+    public $resultJsonFactory;
 
     /**
      * @var \Meta\BusinessExtension\Controller\Adminhtml\Ajax\PersistConfiguration
      */
-    protected $fbFeedPush;
+    public $fbFeedPush;
 
     /**
      * @var MockObject
      */
-    protected $request;
+    public $request;
 
     /**
      * @var MockObject
      */
-    protected $graphApiAdapter;
+    public $graphApiAdapter;
 
     /**
      * Used to reset or change values after running a test

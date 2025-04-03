@@ -103,7 +103,7 @@ class CreateOrderApi implements CreateOrderApiInterface
     /**
      * @var CheckoutSession
      */
-    protected CheckoutSession $checkoutSession;
+    public CheckoutSession $checkoutSession;
 
     /**
      * @var RemoteAddress|mixed

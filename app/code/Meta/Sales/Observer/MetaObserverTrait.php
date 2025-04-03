@@ -57,14 +57,14 @@ trait MetaObserverTrait
      * @param  Observer $observer
      * @return void
      */
-    abstract protected function executeImpl(Observer $observer);
+    abstract public function executeImpl(Observer $observer);
 
     /**
      * Get Facebook Event Helper
      *
      * @return FBEHelper
      */
-    abstract protected function getFBEHelper();
+    abstract public function getFBEHelper();
 
     /**
      * Get Store ID
@@ -72,12 +72,12 @@ trait MetaObserverTrait
      * @param  Observer $observer
      * @return string
      */
-    abstract protected function getStoreId(Observer $observer);
+    abstract public function getStoreId(Observer $observer);
 
     /**
      * Get Exception Event
      *
      * @return string
      */
-    abstract protected function getExceptionEvent();
+    abstract public function getExceptionEvent();
 }
