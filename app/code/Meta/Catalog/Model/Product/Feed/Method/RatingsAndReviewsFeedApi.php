@@ -40,7 +40,7 @@ class RatingsAndReviewsFeedApi
     /**
      * @var int
      */
-    protected int $storeId;
+    public int $storeId;
 
     /**
      * @var FBEHelper
@@ -50,7 +50,7 @@ class RatingsAndReviewsFeedApi
     /**
      * @var SystemConfig
      */
-    protected SystemConfig $systemConfig;
+    public SystemConfig $systemConfig;
 
     /**
      * @var BuilderTools
@@ -65,7 +65,7 @@ class RatingsAndReviewsFeedApi
     /**
      * @var Filesystem
      */
-    protected Filesystem $fileSystem;
+    public Filesystem $fileSystem;
 
     /**
      * @var ReviewCollectionFactory

@@ -33,7 +33,7 @@ class ProcessCategoryAfterSaveEventObserverTest extends TestCase
     /**
      * @var ProcessCategoryAfterSaveEventObserver
      */
-    protected $processCategoryAfterSaveEventObserver;
+    public $processCategoryAfterSaveEventObserver;
 
     /**
      * @var MockObject

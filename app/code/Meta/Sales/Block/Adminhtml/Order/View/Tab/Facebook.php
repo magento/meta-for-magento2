@@ -38,7 +38,7 @@ class Facebook extends Template implements TabInterface
     /**
      * @var SystemConfig
      */
-    protected $systemConfig;
+    public $systemConfig;
 
     /**
      * @var Admin

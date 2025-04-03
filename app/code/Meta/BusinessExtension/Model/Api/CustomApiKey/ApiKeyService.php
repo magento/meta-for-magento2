@@ -33,22 +33,22 @@ class ApiKeyService
     /**
      * @var KeyGenerator
      */
-    protected $apiKeyGenerator;
+    public $apiKeyGenerator;
 
     /**
      * @var WriterInterface
      */
-    protected $configWriter;
+    public $configWriter;
 
     /**
      * @var ScopeConfigInterface
      */
-    protected $scopeConfig;
+    public $scopeConfig;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    public $logger;
 
     /**
      * @param KeyGenerator         $apiKeyGenerator

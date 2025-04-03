@@ -31,7 +31,7 @@ class Authenticator
     /**
      * @var ScopeConfigInterface
      */
-    protected $scopeConfig;
+    public $scopeConfig;
 
     /**
      * @var Http
