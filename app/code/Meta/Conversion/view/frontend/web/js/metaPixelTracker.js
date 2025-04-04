@@ -1,8 +1,8 @@
 /* global fbq */
 define([
     'jquery',
-    'Meta_Conversion/js/tracking'
-], function ($, cookies) {
+    'Magento_Customer/js/customer-data'
+], function ($, customerData) {
     'use strict';
     function generateUUID() {
         if (crypto.randomUUID) {
@@ -28,9 +28,7 @@ define([
             track = config.browserEventData.track,
             event = config.browserEventData.event,
             pixelEventPayload = config.browserEventData.payload,
-            eventId = config.payload.eventId,
-            trackServerEventUrl = config.url,
-            serverEventPayload = config.payload;
+            eventId = config.payload.eventId;
 
         fbq('set', 'agent', agent, pixelId);
         fbq(track, event, pixelEventPayload, {
@@ -39,11 +37,18 @@ define([
     }
 
     return function (config) {
-      if (cookies.getCookie(config.payload.eventName)) {
-        config.payload.eventId = cookies.getCookie(config.payload.eventName);
-      }else {
-        config.payload.eventId = generateUUID();
-      }
+        if (!config.payload.eventId) {
+          console.log('we dont have event id in payload');
+          let eventIdsFromSection = customerData.get('capi-event-ids')();
+          if (eventIdsFromSection['eventIds'][config.payload.eventName]) {
+            console.log('event if for '+config.payload.eventName+' is '+eventIdsFromSection['eventIds'][config.payload.eventName]);
+            config.payload.eventId = eventIdsFromSection['eventIds'][config.payload.eventName];
+          }
+        }
+        if (!config.payload.eventId) {
+          console.log('still no event id in payload, generating randomnly');
+          config.payload.eventId = generateUUID();
+        }
         config.browserEventData.payload.source = config.browserEventData.source;
         config.browserEventData.payload.pluginVersion = config.browserEventData.pluginVersion;
 
