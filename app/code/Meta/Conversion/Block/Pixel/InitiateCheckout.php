@@ -28,6 +28,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\Quote;
+use Magento\Customer\Model\Session as CustomerSession;
 
 /**
  * @api
@@ -54,6 +55,8 @@ class InitiateCheckout extends Common
      */
     private $checkoutSession;
 
+    private $customerSession;
+
     /**
      * Constructor
      *
@@ -64,6 +67,7 @@ class InitiateCheckout extends Common
      * @param Escaper $escaper
      * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
+     * @param CustomerSession $customerSession
      * @param array $data
      */
     public function __construct(
@@ -74,6 +78,7 @@ class InitiateCheckout extends Common
         Escaper $escaper,
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
+        CustomerSession $customerSession,
         array $data = []
     ) {
         parent::__construct(
@@ -88,6 +93,7 @@ class InitiateCheckout extends Common
         $this->pricingHelper = $pricingHelper;
         $this->magentoDataHelper = $magentoDataHelper;
         $this->checkoutSession = $checkoutSession;
+        $this->customerSession = $customerSession;
     }
 
     /**
@@ -196,5 +202,15 @@ class InitiateCheckout extends Common
     public function getContentTypeQuote(): string
     {
         return 'product';
+    }
+
+    public function getEventId(): ?string
+    {
+        $eventIds = $this->customerSession->getEventIds();
+        if (is_array($eventIds) && array_key_exists($this->getEventToObserveName(), $eventIds)) {
+            return $eventIds[$this->getEventToObserveName()];
+        }
+
+        return null;
     }
 }

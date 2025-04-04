@@ -28,6 +28,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\Escaper;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Customer\Model\Session as CustomerSession;
 
 /**
  * @api
@@ -43,6 +44,9 @@ class Purchase extends Common
      * @var FBEHelper
      */
     private $fbeHelper;
+
+    private $customerSession;
+
 
     /**
      * Purchase constructor
@@ -62,6 +66,7 @@ class Purchase extends Common
         SystemConfig $systemConfig,
         Escaper $escaper,
         CheckoutSession $checkoutSession,
+        CustomerSession $customerSession,
         array $data = []
     ) {
         parent::__construct(
@@ -75,6 +80,7 @@ class Purchase extends Common
         );
         $this->fbeHelper = $fbeHelper;
         $this->checkoutSession = $checkoutSession;
+        $this->customerSession = $customerSession;
     }
 
     /**
@@ -193,5 +199,18 @@ class Purchase extends Common
     public function getLastOrderRealOrderEntityId()
     {
         return $this->checkoutSession->getLastRealOrder()->getEntityId();
+    }
+
+    public function getEventId(): ?string
+    {
+        $eventIds = $this->customerSession->getEventIds();
+
+        if (is_array($eventIds) && array_key_exists('eventIds', $eventIds) &&
+            is_array($eventIds['eventIds']) && array_key_exists($this->getEventToObserveName(), $eventIds['eventIds'])) {
+
+            return (string) $eventIds['eventIds'][$this->getEventToObserveName()];
+        }
+
+        return null;
     }
 }
