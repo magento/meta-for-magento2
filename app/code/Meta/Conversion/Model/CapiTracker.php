@@ -6,7 +6,7 @@ namespace Meta\Conversion\Model;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Conversion\Helper\ServerEventFactory;
 use Meta\Conversion\Helper\ServerSideHelper;
-use Meta\Conversion\Observer\Common as CommonObserver;
+use Magento\Customer\Model\Session as CustomerSession;
 
 class CapiTracker
 {
@@ -15,7 +15,7 @@ class CapiTracker
         private readonly FBEHelper $fbeHelper,
         private readonly ServerSideHelper $serverSideHelper,
         private readonly ServerEventFactory $serverEventFactory,
-        private readonly CommonObserver $commonObserver
+        private readonly CustomerSession $customerSession
     ) { }
 
     public function execute(array $payload, string $eventName, string $eventType): void
@@ -48,8 +48,10 @@ class CapiTracker
         return $eventId;
     }
 
-    private function saveEventId($eventName, $eventId)
+    private function saveEventId($eventName, $eventId): void
     {
-        $this->commonObserver->setCookieForMetaPixel($eventName, $eventId);
+        $eventData = $this->customerSession->getEventIds() ?? [];
+        $eventData[$eventName] = $eventId;
+        $this->customerSession->setEventIds($eventData);
     }
 }
