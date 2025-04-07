@@ -9,10 +9,6 @@
         <observer name="trigger_customer_registration_success_capi_event" instance="Meta\Conversion\Observer\Tracker\CustomerRegistrationSuccess" />
     </event>
 
-    <event name="controller_front_send_response_before">
-        <observer name="trigger_page_view_capi_event" instance="Meta\Conversion\Observer\Tracker\PageView" />
-    </event>
-
     <event name="checkout_cart_add_product_complete">
         <observer name="trigger_add_to_cart_capi_event" instance="Meta\Conversion\Observer\Tracker\AddToCart" />
     </event>
