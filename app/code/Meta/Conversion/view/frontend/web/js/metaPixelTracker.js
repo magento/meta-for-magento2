@@ -4,6 +4,15 @@ define([
     'Magento_Customer/js/customer-data'
 ], function ($, customerData) {
     'use strict';
+
+    const capiEvents = [
+        'facebook_businessextension_ssapi_add_to_cart',
+        'facebook_businessextension_ssapi_initiate_checkout',
+        'facebook_businessextension_ssapi_add_payment_info',
+        'facebook_businessextension_ssapi_purchase',
+        'facebook_businessextension_ssapi_customer_registration_success',
+        'facebook_businessextension_ssapi_add_to_wishlist'
+    ];
     function generateUUID() {
         if (crypto.randomUUID) {
             return crypto.randomUUID();
@@ -38,17 +47,27 @@ define([
 
     return function (config) {
         if (!config.payload.eventId) {
-          console.log('we dont have event id in payload');
-          let eventIdsFromSection = customerData.get('capi-event-ids')();
-          if (eventIdsFromSection['eventIds'][config.payload.eventName]) {
-            console.log('event if for '+config.payload.eventName+' is '+eventIdsFromSection['eventIds'][config.payload.eventName]);
-            config.payload.eventId = eventIdsFromSection['eventIds'][config.payload.eventName];
-          }
+            if (capiEvents.includes(config.payload.eventName)) {
+                customerData.reload(['capi-event-ids']).done(function () {
+                    let eventIdsFromSection = customerData.get('capi-event-ids')();
+                    if (eventIdsFromSection['eventIds'][config.payload.eventName]) {
+                        config.payload.eventId = eventIdsFromSection['eventIds'][config.payload.eventName];
+                    }
+                    if (!config.payload.eventId) {
+                        config.payload.eventId = generateUUID();
+                    }
+                    finalizeAndTrackEvent(config);
+                });
+            } else {
+                config.payload.eventId = generateUUID();
+                finalizeAndTrackEvent(config);
+            }
+        } else {
+            finalizeAndTrackEvent(config);
         }
-        if (!config.payload.eventId) {
-          console.log('still no event id in payload, generating randomnly');
-          config.payload.eventId = generateUUID();
-        }
+    };
+
+    function finalizeAndTrackEvent(config) {
         config.browserEventData.payload.source = config.browserEventData.source;
         config.browserEventData.payload.pluginVersion = config.browserEventData.pluginVersion;
 
