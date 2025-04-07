@@ -204,11 +204,8 @@ class Purchase extends Common
     public function getEventId(): ?string
     {
         $eventIds = $this->customerSession->getEventIds();
-
-        if (is_array($eventIds) && array_key_exists('eventIds', $eventIds) &&
-            is_array($eventIds['eventIds']) && array_key_exists($this->getEventToObserveName(), $eventIds['eventIds'])) {
-
-            return (string) $eventIds['eventIds'][$this->getEventToObserveName()];
+        if (is_array($eventIds) && array_key_exists($this->getEventToObserveName(), $eventIds)) {
+            return $eventIds[$this->getEventToObserveName()];
         }
 
         return null;
