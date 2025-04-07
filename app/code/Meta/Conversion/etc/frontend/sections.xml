@@ -5,4 +5,16 @@
     <action name="checkout/cart/add">
         <section name="capi-event-ids"/>
     </action>
+    <action name="rest/*/V1/carts/*/payment-information">
+        <section name="capi-event-ids"/>
+    </action>
+    <action name="rest/*/V1/guest-carts/*/payment-information">
+        <section name="capi-event-ids"/>
+    </action>
+    <action name="rest/*/V1/guest-carts/*/set-payment-information">
+        <section name="capi-event-ids"/>
+    </action>
+    <action name="rest/*/V1/carts/mine/set-payment-information">
+        <section name="capi-event-ids"/>
+    </action>
 </config>
