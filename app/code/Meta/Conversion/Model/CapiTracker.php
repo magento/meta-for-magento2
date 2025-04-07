@@ -50,7 +50,7 @@ class CapiTracker
 
     private function saveEventId($eventName, $eventId): void
     {
-        $eventData = $this->customerSession->getEventIds() ?? [];
+        $eventData = [];
         $eventData[$eventName] = $eventId;
         $this->customerSession->setEventIds($eventData);
     }
