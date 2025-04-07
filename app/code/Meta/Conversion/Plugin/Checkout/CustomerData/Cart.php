@@ -72,43 +72,7 @@ class Cart
      */
     public function afterGetSectionData(\Magento\Checkout\CustomerData\Cart $subject, $result)
     {
-        $contentCategories = [];
-        $contents = [];
-        $categoryIds = [];
-        foreach ($this->getQuote()->getAllItems() as $item) {
-            $product = $item->getProduct();
-            $categoryIds[] = $product->getCategoryIds();
-            array_push($categoryIds, $product->getCategoryIds());
-            if (!in_array($item['product_type'], ['simple', 'grouped', 'bundle', 'virtual', 'downloadable'])) {
-                continue;
-            }
-            $contents[] = [
-                'id' => $item->getSku(),
-                'quantity' => (int) $item->getQty()
-            ];
-        }
-        $categoryIds = array_merge([], ...$categoryIds);
-        $contentCategoriesForItems = explode(
-            ",",
-            $this->magentoDataHelper->getCategoriesNameById($categoryIds)
-        );
-        foreach ($contentCategoriesForItems as $category) {
-            $contentCategories[] = $category;
-        }
-
-        $contentIds = array_unique(array_map(function ($elem) {
-            return $elem['id'];
-        },
-        $contents));
-        $contentCategories = array_unique($contentCategories);
-        $payload = [
-            'content_category' => implode(', ', $contentCategories),
-            'content_ids'      => $contentIds,
-            'contents'         => $contents,
-            'currency'         => $this->magentoDataHelper->getCurrency(),
-            'value'            => round((float) $result['subtotalAmount'], 2)
-        ];
-        $result['meta_payload'] = $payload;
+        $result['meta_payload'] = $this->magentoDataHelper->getCartPayload($this->getQuote());
         return $result;
     }
 }
