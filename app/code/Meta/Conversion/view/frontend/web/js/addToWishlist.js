@@ -27,9 +27,8 @@ define([
       metaPixelData.browserEventData.payload = payload;
       metaPixelData.browserEventData.payload.currency = currency;
 
-      metaPixelData.payload = payload;
+      metaPixelData.payload = {...metaPixelData.payload, ...payload};
       metaPixelData.payload.currency = currency;
-      metaPixelData.payload.eventName = eventName;
 
       metaPixelTracker(metaPixelData);
       cookies.delCookie(cookieName);
