@@ -143,6 +143,6 @@ class InitiateCheckout implements TrackerInterface
 
         }
 
-        return ['categoryIds' => $categoryIds, 'contentIds' => $contentIds, 'contents' => $contents];
+        return ['category_ids' => $categoryIds, 'content_ids' => $contentIds, 'contents' => $contents];
     }
 }
