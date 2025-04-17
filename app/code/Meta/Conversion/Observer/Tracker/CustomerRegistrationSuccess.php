@@ -25,7 +25,7 @@ class CustomerRegistrationSuccess implements ObserverInterface
         $customer = $observer->getEvent()->getCustomer();
         if ($initialPayload = $this->getInitialPayload($customer)) {
             $payload = $this->customerRegistrationSuccessTracker->getPayload($initialPayload);
-            $this->capiTracker->execute($payload, self::EVENT_NAME, $this->customerRegistrationSuccessTracker->getEventType());
+            $this->capiTracker->execute($payload, self::EVENT_NAME, $this->customerRegistrationSuccessTracker->getEventType(), true);
         }
     }
 

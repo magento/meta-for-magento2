@@ -20,6 +20,6 @@ class AddToCart implements ObserverInterface
     {
         $product = $observer->getEvent()->getProduct();
         $payload = $this->addToCartTracker->getPayload(['productId' => $product->getId()]);
-        $this->capiTracker->execute($payload, self::EVENT_NAME,  $this->addToCartTracker->getEventType());
+        $this->capiTracker->execute($payload, self::EVENT_NAME,  $this->addToCartTracker->getEventType(), true);
     }
 }

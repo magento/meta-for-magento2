@@ -89,7 +89,7 @@ class AddToWishlist implements ObserverInterface
         }
 
         $payload = $this->addToWishlistTracker->getPayload($payload);
-        $this->capiTracker->execute($payload, self::EVENT_NAME, $this->addToWishlistTracker->getEventType());
+        $this->capiTracker->execute($payload, self::EVENT_NAME, $this->addToWishlistTracker->getEventType(), true);
 
     }
 
