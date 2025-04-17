@@ -28,7 +28,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\Escaper;
 use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Customer\Model\Session as CustomerSession;
+use Meta\Conversion\Model\CapiEventIdHandler;
 
 /**
  * @api
@@ -45,7 +45,7 @@ class Purchase extends Common
      */
     private $fbeHelper;
 
-    private $customerSession;
+    private $capiEventIdHandler;
 
 
     /**
@@ -66,7 +66,7 @@ class Purchase extends Common
         SystemConfig $systemConfig,
         Escaper $escaper,
         CheckoutSession $checkoutSession,
-        CustomerSession $customerSession,
+        CapiEventIdHandler $capiEventIdHandler,
         array $data = []
     ) {
         parent::__construct(
@@ -80,7 +80,7 @@ class Purchase extends Common
         );
         $this->fbeHelper = $fbeHelper;
         $this->checkoutSession = $checkoutSession;
-        $this->customerSession = $customerSession;
+        $this->capiEventIdHandler = $capiEventIdHandler;
     }
 
     /**
@@ -203,11 +203,6 @@ class Purchase extends Common
 
     public function getEventId(): ?string
     {
-        $eventIds = $this->customerSession->getEventIds();
-        if (is_array($eventIds) && array_key_exists($this->getEventToObserveName(), $eventIds)) {
-            return $eventIds[$this->getEventToObserveName()];
-        }
-
-        return null;
+        return $this->capiEventIdHandler->getEventId($this->getEventToObserveName());
     }
 }
