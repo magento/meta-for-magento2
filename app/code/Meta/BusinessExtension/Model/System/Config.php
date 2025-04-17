@@ -49,9 +49,6 @@ class Config
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_ID = 'facebook/business_extension/pixel_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PIXEL_AAM_SETTINGS =
         'facebook/business_extension/pixel_aam_settings';
-
-    public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES = 'facebook/business_extension/profiles';
-
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PAGE_ID = 'facebook/business_extension/page_id';
     public const XML_PATH_FACEBOOK_BUSINESS_EXTENSION_CATALOG_ID = 'facebook/business_extension/catalog_id';
 
@@ -600,18 +597,6 @@ class Config
             $scopeId,
             $scope
         );
-    }
-
-    /**
-     * Get profiles
-     *
-     * @param int $scopeId
-     * @param int $scope
-     * @return mixed
-     */
-    public function getProfiles($scopeId = null, $scope = null)
-    {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES, $scopeId, $scope);
     }
 
     /**
