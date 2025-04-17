@@ -35,7 +35,7 @@ class AddGuestPaymentInfo
     ) {
         if ($result) {
             $payload = $this->addPaymentInfoTracker->getPayload($this->getInitialPayload($cartId));
-            $this->capiTracker->execute($payload, self::EVENT_NAME, $this->addPaymentInfoTracker->getEventType());
+            $this->capiTracker->execute($payload, self::EVENT_NAME, $this->addPaymentInfoTracker->getEventType(), true);
         }
         return $result;
     }
