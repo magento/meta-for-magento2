@@ -48,16 +48,17 @@ define([
     return function (config) {
         if (!config.payload.eventId) {
             if (capiEvents.includes(config.payload.eventName)) {
-                customerData.reload(['capi-event-ids']).done(function () {
+                var eventIds = customerData.get('capi-event-ids')
+                eventIds.subscribe(function (eventIds) {
                     let eventIdsFromSection = customerData.get('capi-event-ids')();
-                    if (eventIdsFromSection['eventIds'][config.payload.eventName]) {
-                        config.payload.eventId = eventIdsFromSection['eventIds'][config.payload.eventName];
-                    }
-                    if (!config.payload.eventId) {
-                        config.payload.eventId = generateUUID();
-                    }
-                    finalizeAndTrackEvent(config);
-                });
+                        if (eventIdsFromSection['eventIds'][config.payload.eventName]) {
+                            config.payload.eventId = eventIdsFromSection['eventIds'][config.payload.eventName];
+                        }
+                        if (!config.payload.eventId) {
+                            config.payload.eventId = generateUUID();
+                        }
+                        finalizeAndTrackEvent(config);
+                  })
             } else {
                 config.payload.eventId = generateUUID();
                 finalizeAndTrackEvent(config);
