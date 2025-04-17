@@ -15,6 +15,6 @@ class EventData implements SectionSourceInterface
 
     public function getSectionData()
     {
-        return ['eventIds' => $this->customerSession->getEventIds() ?: []];
+        return ['eventIds' => $this->customerSession->getMetaEventIds() ?: []];
     }
 }

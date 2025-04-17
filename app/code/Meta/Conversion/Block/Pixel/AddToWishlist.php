@@ -45,7 +45,7 @@ class AddToWishlist extends Common
 
     public function getEventId(): ?string
     {
-        $eventIds = $this->customerSession->getEventIds();
+        $eventIds = $this->customerSession->getMetaEventIds();
         if (is_array($eventIds) && array_key_exists($this->getEventToObserveName(), $eventIds)) {
             return $eventIds[$this->getEventToObserveName()];
         }

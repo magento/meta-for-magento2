@@ -17,7 +17,7 @@ class CapiEventIdHandler
      * @param string $eventId
      * @return void
      */
-    public function setEventId(string $eventName, string $eventId): void
+    public function setMetaEventId(string $eventName, string $eventId): void
     {
         $this->eventIds[$eventName] = $eventId;
     }
@@ -28,7 +28,7 @@ class CapiEventIdHandler
      * @param string $eventName
      * @return string|null
      */
-    public function getEventId(string $eventName): ?string
+    public function getMetaEventId(string $eventName): ?string
     {
         return $this->eventIds[$eventName] ?? null;
     }

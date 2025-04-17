@@ -52,9 +52,9 @@ class CapiTracker
         if ($useSessionForEventIds) {
             $eventData = [];
             $eventData[$eventName] = $eventId;
-            $this->customerSession->setEventIds($eventData);
+            $this->customerSession->setMetaEventIds($eventData);
         } else {
-            $this->capiEventIdHandler->setEventId($eventName, $eventId);
+            $this->capiEventIdHandler->setMetaEventId($eventName, $eventId);
         }
     }
 }

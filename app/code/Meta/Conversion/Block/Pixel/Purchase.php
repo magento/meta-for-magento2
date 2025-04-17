@@ -203,6 +203,6 @@ class Purchase extends Common
 
     public function getEventId(): ?string
     {
-        return $this->capiEventIdHandler->getEventId($this->getEventToObserveName());
+        return $this->capiEventIdHandler->getMetaEventId($this->getEventToObserveName());
     }
 }
