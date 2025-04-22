@@ -5,7 +5,7 @@ define([
 ], function ($, customerData) {
     'use strict';
 
-    const capiEvents = [
+    const nonCachedCapiEvents = [
         'facebook_businessextension_ssapi_add_to_cart',
         'facebook_businessextension_ssapi_initiate_checkout',
         'facebook_businessextension_ssapi_add_payment_info',
@@ -37,17 +37,33 @@ define([
             track = config.browserEventData.track,
             event = config.browserEventData.event,
             pixelEventPayload = config.browserEventData.payload,
-            eventId = config.payload.eventId;
+            eventId = config.payload.eventId,
+            trackServerEventUrl = config.url,
+            serverEventPayload = config.payload;
 
         fbq('set', 'agent', agent, pixelId);
         fbq(track, event, pixelEventPayload, {
             eventID: eventId
         });
+        // trigger server-side CAPI event for cached pages
+        if (!nonCachedCapiEvents.includes(config.payload.eventName)) {
+            $.ajax({
+                showLoader: true,
+                url: trackServerEventUrl,
+                type: 'POST',
+                data: serverEventPayload,
+                dataType: 'json',
+                global: false,
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
     }
 
     return function (config) {
         if (!config.payload.eventId) {
-            if (capiEvents.includes(config.payload.eventName)) {
+            if (nonCachedCapiEvents.includes(config.payload.eventName)) {
                 var eventIds = customerData.get('capi-event-ids')
                 eventIds.subscribe(function (eventIds) {
                     let eventIdsFromSection = customerData.get('capi-event-ids')();
