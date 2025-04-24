@@ -58,6 +58,70 @@ class CapiEventHandlerTest extends TestCase
             ->with($message)
             ->willReturn($payload);
 
+        $this->fbeHelperMock->expects($this->once())
+            ->method('getSource')
+            ->willReturn('adobe_commerce');
+
+        $this->fbeHelperMock->expects($this->once())
+            ->method('getPluginVersion')
+            ->willReturn('1.0.0');
+
+
+        $this->subject->process($message);
+    }
+
+    public function testProcessUsingCustomData()
+    {
+        $message = '{"event_id":"kjfabfkhba-afkbahb","event_type":"addtocart","event":"addtocart","sku":"test_sku","qty":1,"userDataFromOrder":"{"name":"john doe"}"}';
+        $payload = [
+            'event_id' => 'kjfabfkhba-afkbahb',
+            'event_type' => 'addtocart',
+            'sku' => 'test_sku',
+            'qty' => 1,
+            'event' => 'addtocart',
+            'userDataFromOrder' => ['name' => 'john doe']
+        ];
+
+        $this->jsonSerializerMock->expects($this->once())
+            ->method('unserialize')
+            ->with($message)
+            ->willReturn($payload);
+
+        $this->fbeHelperMock->expects($this->once())
+            ->method('getSource')
+            ->willReturn('adobe_commerce');
+
+        $this->fbeHelperMock->expects($this->once())
+            ->method('getPluginVersion')
+            ->willReturn('1.0.0');
+
+
+        $this->subject->process($message);
+    }
+
+    public function testProcessWithException()
+    {
+        $message = '{"event_type":"addtocart","event":"addtocart","sku":"test_sku","qty":1,"userDataFromOrder":"{"name":"john doe"}"}';
+        $payload = [
+            'event_type' => 'addtocart',
+            'sku' => 'test_sku',
+            'qty' => 1,
+            'event' => 'addtocart',
+            'userDataFromOrder' => ['name' => 'john doe']
+        ];
+
+        $this->jsonSerializerMock->expects($this->once())
+            ->method('unserialize')
+            ->with($message)
+            ->willReturn($payload);
+
+        $this->fbeHelperMock->expects($this->once())
+            ->method('logException')
+            ->with($this->callback(function ($exception) {
+                return $exception instanceof \Exception &&
+                    str_contains($exception->getMessage(), 'event_id');
+            }));
+
         $this->subject->process($message);
     }
 }

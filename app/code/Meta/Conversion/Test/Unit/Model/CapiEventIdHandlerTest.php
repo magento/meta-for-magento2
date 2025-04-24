@@ -17,16 +17,19 @@ class CapiEventIdHandlerTest extends TestCase
         $this->subject = $object->getObject(CapiEventIdHandler::class);
     }
 
-    public function testGetMetaEventId()
-    {
-        $eventName = 'test_event_name';
-        $this->subject->getMetaEventId($eventName);
-    }
-
-    public function testSetMetaEventId()
+    public function testMetaEventId()
     {
         $eventName = 'test_event_name';
         $eventId = 'test_event_id';
         $this->subject->setMetaEventId($eventName, $eventId);
+        $this->assertEquals($eventId, $this->subject->getMetaEventId($eventName));
+    }
+
+    public function testMissingEventId()
+    {
+        $eventName = 'test_event_name';
+        $eventId = 'test_event_id';
+        $this->subject->setMetaEventId($eventName, $eventId);
+        $this->assertNull($this->subject->getMetaEventId('new-event'));
     }
 }
