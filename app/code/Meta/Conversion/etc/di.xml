@@ -20,4 +20,12 @@
             </argument>
         </arguments>
     </type>
+
+    <!-- Plugin to trigger add payment info capi event   -->
+    <type name="Magento\Checkout\Model\PaymentInformationManagement">
+        <plugin name="trigger_add_payment_info_capi_event" type="Meta\Conversion\Plugin\Tracker\AddPaymentInfo" sortOrder="10" disabled="false"  />
+    </type>
+    <type name="Magento\Checkout\Model\GuestPaymentInformationManagement">
+        <plugin name="trigger_add_payment_info_capi_event" type="Meta\Conversion\Plugin\Tracker\AddGuestPaymentInfo" sortOrder="10" disabled="false"  />
+    </type>
 </config>
