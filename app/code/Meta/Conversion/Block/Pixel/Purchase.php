@@ -28,6 +28,7 @@ use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\Escaper;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Meta\Conversion\Model\CapiEventIdHandler;
 
 /**
  * @api
@@ -43,6 +44,9 @@ class Purchase extends Common
      * @var FBEHelper
      */
     private $fbeHelper;
+
+    private $capiEventIdHandler;
+
 
     /**
      * Purchase constructor
@@ -62,6 +66,7 @@ class Purchase extends Common
         SystemConfig $systemConfig,
         Escaper $escaper,
         CheckoutSession $checkoutSession,
+        CapiEventIdHandler $capiEventIdHandler,
         array $data = []
     ) {
         parent::__construct(
@@ -75,6 +80,7 @@ class Purchase extends Common
         );
         $this->fbeHelper = $fbeHelper;
         $this->checkoutSession = $checkoutSession;
+        $this->capiEventIdHandler = $capiEventIdHandler;
     }
 
     /**
@@ -193,5 +199,10 @@ class Purchase extends Common
     public function getLastOrderRealOrderEntityId()
     {
         return $this->checkoutSession->getLastRealOrder()->getEntityId();
+    }
+
+    public function getEventId(): ?string
+    {
+        return $this->capiEventIdHandler->getMetaEventId($this->getEventToObserveName());
     }
 }

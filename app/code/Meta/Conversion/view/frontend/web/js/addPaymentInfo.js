@@ -27,7 +27,7 @@ define([
     if (payload !== null) {
       // Triggers when any payment method selects
       placeOrderHooks.afterRequestListeners.push(function () {
-
+        metaPixelData.payload.eventId = null;
         // For multi payment active methods
         if ($('input[name=\'payment[method]\']').length > 1) {
           metaPixelTracker(metaPixelData);
