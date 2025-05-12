@@ -1,18 +1,8 @@
 /* global fbq */
 define([
-    'jquery',
-    'Magento_Customer/js/customer-data'
-], function ($, customerData) {
+    'jquery'
+], function ($) {
     'use strict';
-
-    const nonCachedCapiEvents = [
-        'facebook_businessextension_ssapi_add_to_cart',
-        'facebook_businessextension_ssapi_initiate_checkout',
-        'facebook_businessextension_ssapi_add_payment_info',
-        'facebook_businessextension_ssapi_purchase',
-        'facebook_businessextension_ssapi_customer_registration_success',
-        'facebook_businessextension_ssapi_add_to_wishlist'
-    ];
     function generateUUID() {
         if (crypto.randomUUID) {
             return crypto.randomUUID();
@@ -45,46 +35,22 @@ define([
         fbq(track, event, pixelEventPayload, {
             eventID: eventId
         });
-        // trigger server-side CAPI event for cached pages
-        if (!nonCachedCapiEvents.includes(config.payload.eventName)) {
-            $.ajax({
-                showLoader: true,
-                url: trackServerEventUrl,
-                type: 'POST',
-                data: serverEventPayload,
-                dataType: 'json',
-                global: false,
-                error: function (error) {
-                    console.log(error);
-                }
-            });
-        }
+        // trigger server-side CAPI event
+        $.ajax({
+            showLoader: true,
+            url: trackServerEventUrl,
+            type: 'POST',
+            data: serverEventPayload,
+            dataType: 'json',
+            global: false,
+            error: function (error) {
+                console.log(error);
+            }
+        });
     }
 
     return function (config) {
-        if (!config.payload.eventId) {
-            if (nonCachedCapiEvents.includes(config.payload.eventName)) {
-                var eventIds = customerData.get('capi-event-ids')
-                eventIds.subscribe(function (eventIds) {
-                    let eventIdsFromSection = customerData.get('capi-event-ids')();
-                        if (eventIdsFromSection['eventIds'][config.payload.eventName]) {
-                            config.payload.eventId = eventIdsFromSection['eventIds'][config.payload.eventName];
-                        }
-                        if (!config.payload.eventId) {
-                            config.payload.eventId = generateUUID();
-                        }
-                        finalizeAndTrackEvent(config);
-                  })
-            } else {
-                config.payload.eventId = generateUUID();
-                finalizeAndTrackEvent(config);
-            }
-        } else {
-            finalizeAndTrackEvent(config);
-        }
-    };
-
-    function finalizeAndTrackEvent(config) {
+        config.payload.eventId = generateUUID();
         config.browserEventData.payload.source = config.browserEventData.source;
         config.browserEventData.payload.pluginVersion = config.browserEventData.pluginVersion;
 

@@ -27,7 +27,7 @@ define([
     function prepareServerPayload()
     {
       //eventName vanish here. So again need to reassign eventName to server payload
-      metaPixelData.payload = {...metaPixelData.payload, ...metaPixelData.browserEventData.payload};
+      metaPixelData.payload = metaPixelData.browserEventData.payload;
       metaPixelData.payload.eventName = eventName;
       metaPixelData.payload.currency = currency;
     }

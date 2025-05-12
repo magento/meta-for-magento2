@@ -6,11 +6,11 @@ namespace Meta\Conversion\Controller\Pixel;
 
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
+use Meta\Conversion\Helper\ServerSideHelper;
+use Meta\Conversion\Helper\ServerEventFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
 
 class Tracker implements HttpPostActionInterface
 {
@@ -18,6 +18,11 @@ class Tracker implements HttpPostActionInterface
      * @var RequestInterface
      */
     private $request;
+
+    /**
+     * @var ServerSideHelper
+     */
+    private $serverSideHelper;
 
     /**
      * @var FBEHelper
@@ -35,36 +40,33 @@ class Tracker implements HttpPostActionInterface
     private $jsonFactory;
 
     /**
-     * @var PublisherInterface
+     * @var ServerEventFactory
      */
-    private $publisher;
+    private $serverEventFactory;
 
     /**
-     * @var JsonSerializer
-     */
-    private $jsonSerializer;
-
-    /**
+     * Constructor
+     *
      * @param RequestInterface $request
+     * @param ServerSideHelper $serverSideHelper
      * @param FBEHelper $fbeHelper
      * @param JsonFactory $jsonFactory
-     * @param PublisherInterface $publisher
-     * @param JsonSerializer $jsonSerializer
+     * @param ServerEventFactory $serverEventFactory
      * @param array $pixelEvents
      */
     public function __construct(
         RequestInterface $request,
+        ServerSideHelper $serverSideHelper,
         FBEHelper $fbeHelper,
         JsonFactory $jsonFactory,
-        PublisherInterface $publisher,
-        JsonSerializer $jsonSerializer,
+        ServerEventFactory $serverEventFactory,
         array $pixelEvents = []
     ) {
         $this->request = $request;
+        $this->serverSideHelper = $serverSideHelper;
         $this->fbeHelper = $fbeHelper;
         $this->jsonFactory = $jsonFactory;
-        $this->publisher = $publisher;
-        $this->jsonSerializer = $jsonSerializer;
+        $this->serverEventFactory = $serverEventFactory;
         $this->pixelEvents = $pixelEvents;
     }
 
@@ -79,13 +81,22 @@ class Tracker implements HttpPostActionInterface
         try {
             $params = $this->request->getParams();
             $eventName = $params['eventName'];
+            $eventId = $params['eventId'];
 
             if ($eventName) {
                 $payload = $this->pixelEvents[$eventName]->getPayload($params);
-                $payload['event_id'] = $params['eventId'];
-                $payload['event_type'] = $this->pixelEvents[$eventName]->getEventType();
                 if (isset($payload)) {
-                    $this->publisher->publish('send.conversion.event.to.meta', $this->jsonSerializer->serialize($payload));
+                    // Add source and pluginVersion in the payload as custom properties
+                    $payload['custom_properties'] = [];
+                    $payload['custom_properties']['source'] = $this->fbeHelper->getSource();
+                    $payload['custom_properties']['pluginVersion'] = $this->fbeHelper->getPluginVersion();
+                    $eventType = $this->pixelEvents[$eventName]->getEventType();
+                    $event = $this->serverEventFactory->createEvent($eventType, array_filter($payload), $eventId);
+                    if (isset($payload['userDataFromOrder'])) {
+                        $this->serverSideHelper->sendEvent($event, $payload['userDataFromOrder']);
+                    } else {
+                        $this->serverSideHelper->sendEvent($event);
+                    }
                     $response['success'] = true;
                 }
             }

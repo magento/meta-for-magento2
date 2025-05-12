@@ -274,7 +274,7 @@ class Common extends \Magento\Framework\View\Element\Template
      *
      * @return string
      */
-    public function getEventId(): ?string
+    public function getEventId(): string
     {
         return EventIdGenerator::guidv4();
     }

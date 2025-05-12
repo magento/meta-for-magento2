@@ -289,48 +289,5 @@ class MagentoDataHelper
         return hash('sha256', strtolower($string ?? ""));
     }
 
-    /**
-     * @param $quote
-     * @return array
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    public function getCartPayload($quote): array
-    {
-        foreach ($quote->getAllItems() as $item) {
-            $product = $item->getProduct();
-            $categoryIds[] = $product->getCategoryIds();
-            array_push($categoryIds, $product->getCategoryIds());
-            if (!in_array($item['product_type'], ['simple', 'grouped', 'bundle', 'virtual', 'downloadable'])) {
-                continue;
-            }
-            $contents[] = [
-                'id' => $item->getSku(),
-                'quantity' => (int) $item->getQty()
-            ];
-        }
-        $categoryIds = array_merge([], ...$categoryIds);
-        $contentCategoriesForItems = explode(
-            ",",
-            $this->getCategoriesNameById($categoryIds)
-        );
-        foreach ($contentCategoriesForItems as $category) {
-            $contentCategories[] = $category;
-        }
-
-        $contentIds = array_unique(array_map(function ($elem) {
-            return $elem['id'];
-        },
-            $contents));
-        $contentCategories = array_unique($contentCategories);
-        return [
-            'content_category' => implode(', ', $contentCategories),
-            'content_ids'      => $contentIds,
-            'contents'         => $contents,
-            'currency'         => $this->getCurrency(),
-            'value'            => round((float) $quote->getSubtotal(), 2)
-        ];
-    }
-
     // TODO Remaining user/custom data methods that can be obtained using Magento.
 }

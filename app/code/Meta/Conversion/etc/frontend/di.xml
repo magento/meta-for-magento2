@@ -25,13 +25,4 @@
     <type name="Magento\Contact\Controller\Index\Post">
         <plugin name="set_cookie_contact_for_meta_pixel" type="Meta\Conversion\Plugin\Contact\Controller\Index\Post" sortOrder="10" disabled="false"  />
     </type>
-
-    <!--Add new customer section-->
-    <type name="Magento\Customer\CustomerData\SectionPoolInterface">
-        <arguments>
-            <argument name="sectionSourceMap" xsi:type="array">
-                <item name="capi-event-ids" xsi:type="string">Meta\Conversion\CustomerData\EventData</item>
-            </argument>
-        </arguments>
-    </type>
 </config>
