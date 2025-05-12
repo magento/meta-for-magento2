@@ -66,4 +66,27 @@ class PromotionSyncCronTest extends TestCase
 
         $this->subject->execute();
     }
+
+    public function testExecuteException(): void
+    {
+        $storeId = 1;
+        $uploadResponse = ['Success' => true];
+
+        $storeMock = $this->getMockBuilder(StoreInterface::class)
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+
+        $this->systemConfigMock->expects($this->once())
+            ->method('getAllOnsiteFBEInstalledStores')
+            ->willReturn([$storeMock]);
+        $storeMock->expects($this->exactly(2))
+            ->method('getId')
+            ->willReturn($storeId);
+        $this->systemConfigMock->expects($this->once())
+            ->method('isPromotionsSyncEnabled')
+            ->with($storeId)
+            ->willThrowException(new \Exception('Unable to fetch data'));
+
+        $this->subject->execute();
+    }
 }

@@ -154,4 +154,45 @@ class PromotionFeedUploadTest extends TestCase
 
         $this->subject->executeForJson();
     }
+
+    public function testExecuteForJsonWithAccessTokenException()
+    {
+        $storeId = 1;
+        $storeName = 'Default Store';
+        $accessToken = 'akjfbkhab-afjhavfj-ahfhvgja';
+        $pushFeedResponse = ['Success' => true];
+
+        $this->fbeHelperMock->expects($this->exactly(2))
+            ->method('getStore')
+            ->willReturn($this->storeMock);
+        $this->storeMock->expects($this->once())
+            ->method('getId')
+            ->willReturn($storeId);
+        $this->storeMock->expects($this->exactly(2))
+            ->method('getName')
+            ->willReturn($storeName);
+        $this->requestMock->expects($this->once())
+            ->method('getParam')
+            ->with('store')
+            ->willReturn($storeId);
+        $this->systemConfigMock->expects($this->once())
+            ->method('getStoreManager')
+            ->willReturn($this->storeManagerMock);
+        $this->storeManagerMock->expects($this->once())
+            ->method('getStore')
+            ->with($storeId)
+            ->willReturn($this->storeMock);
+
+        $this->systemConfigMock->expects($this->once())
+            ->method('getAccessToken')
+            ->with($storeId)
+            ->willReturn($accessToken);
+
+        $this->uploaderMock->expects($this->once())
+            ->method('uploadPromotions')
+            ->with($storeId)
+            ->willThrowException(new \Exception('Unable to upload promotions.'));
+
+        $this->subject->executeForJson();
+    }
 }
