@@ -13,7 +13,8 @@ $trackerUrl = $block->getTrackerUrl();
                     "url" : "<?= $escaper->escapeUrl($trackerUrl); ?>",
                     "payload": <?= /* @noEscape */
                     json_encode([
-                    "eventName" => $block->getEventToObserveName()
+                        "eventName" => $block->getEventToObserveName(),
+                        "eventId" => $block->getEventId()
                     ]) ?>,
                     "browserEventData": <?= /* @noEscape */
                     json_encode([
