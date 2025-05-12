@@ -15,7 +15,6 @@ if ($block->getFacebookPixelID()) {
                     "payload": <?= /* @noEscape */
                     json_encode([
                     "eventName" => $block->getEventToObserveName(),
-                    "eventId" => $block->getEventId(),
                     "quoteId" => $block->getQuote()->getId()
                     ]) ?>,
                 "browserEventData": <?= /* @noEscape */
