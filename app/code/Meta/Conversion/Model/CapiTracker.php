@@ -3,33 +3,35 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Model;
 
+use Meta\BusinessExtension\Helper\FBEHelper;
+use Meta\Conversion\Helper\ServerEventFactory;
+use Meta\Conversion\Helper\ServerSideHelper;
 use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
-use Magento\Framework\MessageQueue\PublisherInterface;
 
 class CapiTracker
 {
 
-    /**
-     * @param CustomerSession $customerSession
-     * @param CapiEventIdHandler $capiEventIdHandler
-     * @param JsonSerializer $jsonSerializer
-     * @param PublisherInterface $publisher
-     */
     public function __construct(
+        private readonly FBEHelper $fbeHelper,
+        private readonly ServerSideHelper $serverSideHelper,
+        private readonly ServerEventFactory $serverEventFactory,
         private readonly CustomerSession $customerSession,
         private readonly CapiEventIdHandler $capiEventIdHandler,
-        private readonly JsonSerializer $jsonSerializer,
-        private readonly PublisherInterface $publisher
     ) { }
 
     public function execute(array $payload, string $eventName, string $eventType, bool $useSessionForEventIds = false): void
     {
         if (isset($payload)) {
+            $payload['custom_properties'] = [];
+            $payload['custom_properties']['source'] = $this->fbeHelper->getSource();
+            $payload['custom_properties']['pluginVersion'] = $this->fbeHelper->getPluginVersion();
             $eventId = $this->generateEventId($eventName, $useSessionForEventIds);
-            $payload['event_id'] = $eventId;
-            $payload['event_type'] = $eventType;
-            $this->publisher->publish('send.conversion.event.to.meta', $this->jsonSerializer->serialize($payload));
+            $event = $this->serverEventFactory->createEvent($eventType, array_filter($payload), $eventId);
+            if (isset($payload['userDataFromOrder'])) {
+                $this->serverSideHelper->sendEvent($event, $payload['userDataFromOrder']);
+            } else {
+                $this->serverSideHelper->sendEvent($event);
+            }
         }
     }
 
