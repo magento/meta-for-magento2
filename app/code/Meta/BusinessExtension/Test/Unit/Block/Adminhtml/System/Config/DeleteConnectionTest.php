@@ -43,6 +43,11 @@ class DeleteConnectionTest extends TestCase
     private $deleteConnectionMockObj;
 
     /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
      * Class setUp function
      * 
      * @return void
@@ -55,7 +60,7 @@ class DeleteConnectionTest extends TestCase
         $this->buttonBlockMock = $this->createMock(Button::class);
 
         $context = $this->createMock(Context::class);
-        $systemConfig = $this->createMock(SystemConfig::class);
+        $this->systemConfig = $this->createMock(SystemConfig::class);
         $context->expects($this->once())
             ->method('getUrlBuilder')
             ->willReturn($this->urlBuilderMock);
@@ -71,7 +76,7 @@ class DeleteConnectionTest extends TestCase
             DeleteConnection::class,
             [
                 'context' => $context,
-                'systemConfig' => $systemConfig,
+                'systemConfig' => $this->systemConfig,
                 'data' => []
             ]
         );
@@ -173,5 +178,45 @@ class DeleteConnectionTest extends TestCase
             ->willReturn($buttonHtml);
 
         $this->assertEquals($buttonHtml, $this->deleteConnectionMockObj->getButtonHtml());
+    }
+
+    /**
+     * Test getStoreId function
+     * 
+     * @return void
+     */
+    public function testGetStoreId(): void
+    {
+        $storeId = 123;
+        $this->requestMock->expects($this->once())
+            ->method('getParam')
+            ->with('store')
+            ->willReturn(null);
+
+        $this->systemConfig->expects($this->once())
+            ->method('isSingleStoreMode')
+            ->willReturn(true);
+
+        $this->systemConfig->expects($this->once())
+            ->method('getDefaultStoreId')
+            ->willReturn($storeId);
+
+        $this->assertEquals($this->deleteConnectionMockObj->getStoreId(), $storeId);
+    }
+
+    /**
+     * Test getStoreId function
+     * 
+     * @return void
+     */
+    public function testGetStoreIdWithStoreParameter(): void
+    {
+        $storeId = 123;
+        $this->requestMock->expects($this->once())
+            ->method('getParam')
+            ->with('store')
+            ->willReturn($storeId);
+
+        $this->assertEquals($this->deleteConnectionMockObj->getStoreId(), $storeId);
     }
 }
