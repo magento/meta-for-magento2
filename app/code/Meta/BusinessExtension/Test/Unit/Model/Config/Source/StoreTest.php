@@ -74,6 +74,42 @@ class StoreTest extends TestCase
     }
 
     /**
+     * Test toOptionArray method
+     * 
+     * @return void
+     */
+    public function testToOptionArray(): void
+    {
+        $storeMock = $this->getMockStore();
+        $websiteMock = $this->getMockWebsite();
+
+        $this->storeManager->method('getStores')->willReturn([$storeMock]);
+        $this->storeManager->method('getWebsite')->willReturn($websiteMock);
+
+        $result = $this->storeMockObj->toOptionArray();
+        $this->assertIsArray($result);
+    }
+
+    /**
+     * Test toOptionArray method
+     * 
+     * @return void
+     */
+    public function testToOptionArrayWithInActiveStore(): void
+    {
+        $websiteMock = $this->getMockWebsite();
+
+        $storeMock = $this->createMock(CoreStore::class);
+        $storeMock->method('isActive')->willReturn(false);
+
+        $this->storeManager->method('getStores')->willReturn([$storeMock]);
+        $this->storeManager->method('getWebsite')->willReturn($websiteMock);
+
+        $result = $this->storeMockObj->toOptionArray();
+        $this->assertIsArray($result);
+    }
+
+    /**
      * Returns the mock store
      * 
      * @return $storeMock

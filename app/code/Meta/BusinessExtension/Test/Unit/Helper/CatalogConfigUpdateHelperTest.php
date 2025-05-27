@@ -83,4 +83,55 @@ class CatalogConfigUpdateHelperTest extends TestCase
             $triggerFullSync
         );
     }
+
+    /**
+     * Test updateCatalogConfiguration function
+     * 
+     * @return void
+     */
+    public function testUpdateCatalogConfigurationException(): void
+    {
+        $storeId = 99;
+        $oldCatalogId = 1;
+        $catalogId = '10';
+        $pixelId = '234';
+        $triggerFullSync = false;
+        $commercePartnerIntegrationId = 'meta_id';
+
+        $this->systemConfig->expects($this->once())
+            ->method('getCatalogId')
+            ->with($this->equalTo($storeId))
+            ->willReturn($oldCatalogId);
+
+        $this->systemConfig->expects($this->exactly(3))
+            ->method('saveConfig');
+
+        $exception = new \Exception('Unable to clean cache');
+        $this->systemConfig->expects($this->once())
+            ->method('cleanCache')
+            ->willThrowException($exception);
+
+        $this->fbeHelper->expects($this->once())
+            ->method('logExceptionImmediatelyToMeta')
+            ->with(
+                $exception,
+                [
+                    'store_id' => $storeId,
+                    'event' => 'update_catalog_config',
+                    'event_type' => 'update_catalog_config',
+                    'catalog_id' => $catalogId,
+                    'old_catalog_id' => $oldCatalogId,
+                    'commerce_partner_integration_id' => $commercePartnerIntegrationId,
+                    'pixel_id' => $pixelId
+                ]
+            );
+
+        $this->catalogConfigUpdateHelperMockObj->updateCatalogConfiguration(
+            $storeId,
+            $catalogId,
+            $commercePartnerIntegrationId,
+            $pixelId,
+            $triggerFullSync
+        );
+    }
 }

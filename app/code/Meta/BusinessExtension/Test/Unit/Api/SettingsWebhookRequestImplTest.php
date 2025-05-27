@@ -7,6 +7,7 @@ namespace Meta\BusinessExtension\Test\Unit\Api;
 use PHPUnit\Framework\TestCase;
 use Meta\BusinessExtension\Model\Api\SettingsWebhookRequestImpl;
 use Meta\BusinessExtension\Api\Data\MetaIssueNotificationInterface;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 class SettingsWebhookRequestImplTest extends TestCase
 {
@@ -23,10 +24,10 @@ class SettingsWebhookRequestImplTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->settingsWebhookRequestImpl = $this->getMockBuilder(SettingsWebhookRequestImpl::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $objectManager = new ObjectManager($this);
+        $this->settingsWebhookRequestImpl =  $objectManager->getObject(
+            SettingsWebhookRequestImpl::class
+        );
     }
 
     /**
@@ -38,9 +39,6 @@ class SettingsWebhookRequestImplTest extends TestCase
     {
         $externalBusinessId = '12345';
         $this->settingsWebhookRequestImpl->setExternalBusinessId($externalBusinessId);
-
-        $this->settingsWebhookRequestImpl->method('getExternalBusinessId')
-            ->willReturn($externalBusinessId);
         
         $this->assertEquals($externalBusinessId, $this->settingsWebhookRequestImpl->getExternalBusinessId());
     }
@@ -58,13 +56,23 @@ class SettingsWebhookRequestImplTest extends TestCase
         $notification->setNotificationId('12345');
 
         $this->settingsWebhookRequestImpl->setNotification($notification);
-
-        $this->settingsWebhookRequestImpl->method('getNotification')
-            ->willReturn($notification);
         
         $this->assertEquals($notification, $this->settingsWebhookRequestImpl->getNotification());
         $this->assertSame($notification->getMessage(), $this->settingsWebhookRequestImpl->getNotification()->getMessage());
         $this->assertSame($notification->getSeverity(), $this->settingsWebhookRequestImpl->getNotification()->getSeverity());
         $this->assertSame($notification->getNotificationId(), $this->settingsWebhookRequestImpl->getNotification()->getNotificationId());
+    }
+
+    /**
+     * Validate if the graphql version is set correctly
+     * 
+     * @return void
+     */
+    public function testSetGraphAPIVersion(): void
+    {
+        $graphqlVersion = 'v22.0';
+        $this->settingsWebhookRequestImpl->setGraphAPIVersion($graphqlVersion);
+        
+        $this->assertEquals($graphqlVersion, $this->settingsWebhookRequestImpl->getGraphAPIVersion());
     }
 }

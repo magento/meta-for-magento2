@@ -22,6 +22,56 @@ use Magento\Store\Model\ScopeInterface;
 class SetupTest extends TestCase
 {
     /**
+     * @var FBEHelper
+     */
+    private $fbeHelper;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
+     * @var StoreRepositoryInterface
+     */
+    private $storeRepo;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var RequestInterface
+     */
+    private $requestInterface;
+
+    /**
+     * @var ApiKeyService
+     */
+    private $apiKeyService;
+
+    /**
+     * @var CommerceExtensionHelper
+     */
+    private $commerceExtensionHelper;
+
+    /**
+     * @var AdobeCloudConfigInterface
+     */
+    private $adobeCloudConfigInterface;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
+     * @var Setup
+     */
+    private $setupMockObj;
+
+    /**
      * Class setUp function
      * 
      * @return void

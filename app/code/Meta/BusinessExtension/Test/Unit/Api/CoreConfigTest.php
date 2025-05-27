@@ -6,6 +6,7 @@ namespace Meta\BusinessExtension\Test\Unit\Api;
 
 use PHPUnit\Framework\TestCase;
 use Meta\BusinessExtension\Model\Api\CoreConfig;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 class CoreConfigTest extends TestCase
 {
@@ -23,9 +24,13 @@ class CoreConfigTest extends TestCase
     {
         parent::setup();
 
-        $this->metaCoreConfig = $this->getMockBuilder(CoreConfig::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $objectManager = new ObjectManager($this);
+        $this->metaCoreConfig = $objectManager->getObject(
+            CoreConfig::class,
+            [
+                'data' => []
+            ]
+        );
     }
 
     /**
@@ -34,26 +39,10 @@ class CoreConfigTest extends TestCase
      * @return void
      */
     public function testGetExternalBusinessId(): void
-    {
-        $this->metaCoreConfig->method('getExternalBusinessId')
-            ->willReturn('');
-        
-        $this->assertEmpty($this->metaCoreConfig->getExternalBusinessId());
-    }
-
-    /**
-     * Validate if the external business ID is set
-     * 
-     * @return void
-     */
-    public function testSetExternalBusinessId(): void
-    {
+    {   
         $businessId = 'ZmJfaWRfMQ==';
         $this->metaCoreConfig->setExternalBusinessId($businessId);
-        $this->metaCoreConfig->method('getExternalBusinessId')
-            ->willReturn($businessId);
-        
-        $this->assertSame($businessId, $this->metaCoreConfig->getExternalBusinessId());
+        $this->assertEquals($businessId, $this->metaCoreConfig->getExternalBusinessId());
     }
 
     /**
@@ -65,9 +54,6 @@ class CoreConfigTest extends TestCase
     {
         $isOrderSyncEnabled = true;
         $this->metaCoreConfig->setIsOrderSyncEnabled($isOrderSyncEnabled);
-
-        $this->metaCoreConfig->method('isOrderSyncEnabled')
-            ->willReturn($isOrderSyncEnabled);
         
         $this->assertSame($isOrderSyncEnabled, $this->metaCoreConfig->isOrderSyncEnabled());
     }
@@ -81,9 +67,6 @@ class CoreConfigTest extends TestCase
     {
         $isCatalogSyncEnabled = true;
         $this->metaCoreConfig->setIsCatalogSyncEnabled($isCatalogSyncEnabled);
-
-        $this->metaCoreConfig->method('isCatalogSyncEnabled')
-            ->willReturn($isCatalogSyncEnabled);
         
         $this->assertSame($isCatalogSyncEnabled, $this->metaCoreConfig->isCatalogSyncEnabled());
     }
@@ -97,9 +80,6 @@ class CoreConfigTest extends TestCase
     {
         $isPromotionsSyncEnabled = true;
         $this->metaCoreConfig->setIsPromotionsSyncEnabled($isPromotionsSyncEnabled);
-
-        $this->metaCoreConfig->method('isPromotionsSyncEnabled')
-            ->willReturn($isPromotionsSyncEnabled);
         
         $this->assertSame($isPromotionsSyncEnabled, $this->metaCoreConfig->isPromotionsSyncEnabled());
     }
@@ -113,9 +93,6 @@ class CoreConfigTest extends TestCase
     {
         $isActiveExtension = true;
         $this->metaCoreConfig->setIsActiveExtension($isActiveExtension);
-
-        $this->metaCoreConfig->method('isActiveExtension')
-            ->willReturn($isActiveExtension);
         
         $this->assertSame($isActiveExtension, $this->metaCoreConfig->isActiveExtension());
     }
@@ -129,9 +106,6 @@ class CoreConfigTest extends TestCase
     {
         $productIdentifierAttr = 'sku';
         $this->metaCoreConfig->setProductIdentifierAttr($productIdentifierAttr);
-
-        $this->metaCoreConfig->method('getProductIdentifierAttr')
-            ->willReturn($productIdentifierAttr);
         
         $this->assertSame($productIdentifierAttr, $this->metaCoreConfig->getProductIdentifierAttr());
     }
@@ -145,9 +119,6 @@ class CoreConfigTest extends TestCase
     {
         $outOfStockThreshold = '10';
         $this->metaCoreConfig->setOutOfStockThreshold($outOfStockThreshold);
-
-        $this->metaCoreConfig->method('getOutOfStockThreshold')
-            ->willReturn($outOfStockThreshold);
         
         $this->assertSame($outOfStockThreshold, $this->metaCoreConfig->getOutOfStockThreshold());
     }
@@ -161,9 +132,6 @@ class CoreConfigTest extends TestCase
     {
         $feedId = 'feed-id';
         $this->metaCoreConfig->setFeedId($feedId);
-
-        $this->metaCoreConfig->method('getFeedId')
-            ->willReturn($feedId);
         
         $this->assertSame($feedId, $this->metaCoreConfig->getFeedId());
     }
@@ -177,9 +145,6 @@ class CoreConfigTest extends TestCase
     {
         $version = '1.0.0';
         $this->metaCoreConfig->setInstalledMetaExtensionVersion($version);
-
-        $this->metaCoreConfig->method('getInstalledMetaExtensionVersion')
-            ->willReturn($version);
         
         $this->assertSame($version, $this->metaCoreConfig->getInstalledMetaExtensionVersion());
     }
@@ -193,9 +158,6 @@ class CoreConfigTest extends TestCase
     {
         $graphApiVersion = 'v1.0';
         $this->metaCoreConfig->setGraphApiVersion($graphApiVersion);
-
-        $this->metaCoreConfig->method('getGraphApiVersion')
-            ->willReturn($graphApiVersion);
         
         $this->assertSame($graphApiVersion, $this->metaCoreConfig->getGraphApiVersion());
     }
@@ -209,9 +171,6 @@ class CoreConfigTest extends TestCase
     {
         $magentoVersion = '2.4.5';
         $this->metaCoreConfig->setMagentoVersion($magentoVersion);
-
-        $this->metaCoreConfig->method('getMagentoVersion')
-            ->willReturn($magentoVersion);
         
         $this->assertSame($magentoVersion, $this->metaCoreConfig->getMagentoVersion());
     }

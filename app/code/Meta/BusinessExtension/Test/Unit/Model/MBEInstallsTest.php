@@ -66,6 +66,45 @@ class MBEInstallsTest extends TestCase
      */
     public function testSave(): void
     {
+        $pixelId = '9876543210';
+        $catalogId = 'cat_121';
+        $onsiteEligible = false;
+        $commercePartnerIntegrationId = 'integration_id_1122';
+        $storeId = 909090;
+        $logContent = 'Log Data';
+
+        $response = [
+            0 => [
+                'pixel_id' => $pixelId,
+                'catalog_id' => $catalogId,
+                'onsite_eligible' => $onsiteEligible,
+                'commerce_partner_integration_id' => $commercePartnerIntegrationId
+            ]
+        ];
+
+        $this->catalogConfigUpdateHelper
+            ->expects($this->once())
+            ->method('updateCatalogConfiguration')
+            ->with(
+                $storeId,
+                $catalogId,
+                $commercePartnerIntegrationId,
+                $pixelId,
+                false
+            );
+        $this->systemConfig
+            ->method('saveConfig')
+            ->willReturn('');
+        $this->assertTrue($this->mbeIntallMockObj->save($response, $storeId));
+    }
+
+    /**
+     * Test save function
+     * 
+     * @return void
+     */
+    public function testSaveWithValidFBID(): void
+    {
         $pixelId = 'pixel_1';
         $catalogId = 'cat_121';
         $onsiteEligible = false;
@@ -95,6 +134,157 @@ class MBEInstallsTest extends TestCase
         $this->systemConfig
             ->method('saveConfig')
             ->willReturn('');
+        $this->assertTrue($this->mbeIntallMockObj->save($response, $storeId));
+    }
+
+    /**
+     * Test save function
+     * 
+     * @return void
+     */
+    public function testSaveWithProfile(): void
+    {
+        $pixelId = 'pixel_1';
+        $catalogId = 'cat_121';
+        $onsiteEligible = false;
+        $commercePartnerIntegrationId = 'integration_id_1122';
+        $storeId = 909090;
+        $logContent = 'Log Data';
+
+        $response = [
+            0 => [
+                'pixel_id' => $pixelId,
+                'profiles' => [
+                    'profile_1',
+                    'profile_2'
+                ],
+                'catalog_id' => $catalogId,
+                'onsite_eligible' => $onsiteEligible,
+                'commerce_partner_integration_id' => $commercePartnerIntegrationId
+            ]
+        ];
+
+        $this->catalogConfigUpdateHelper
+            ->expects($this->once())
+            ->method('updateCatalogConfiguration')
+            ->with(
+                $storeId,
+                $catalogId,
+                $commercePartnerIntegrationId,
+                $pixelId,
+                false
+            );
+        $this->systemConfig
+            ->method('saveConfig')
+            ->willReturn('');
+        $this->assertTrue($this->mbeIntallMockObj->save($response, $storeId));
+    }
+
+    /**
+     * Test save function
+     * 
+     * @return void
+     */
+    public function testSaveWithPages(): void
+    {
+        $pixelId = 'pixel_1';
+        $catalogId = 'cat_121';
+        $onsiteEligible = false;
+        $commercePartnerIntegrationId = 'integration_id_1122';
+        $storeId = 909090;
+        $logContent = 'Log Data';
+        $accessToken = '[[]][[****|||TESTTOKEN';
+
+        $response = [
+            0 => [
+                'pixel_id' => $pixelId,
+                'profiles' => [
+                    'profile_1',
+                    'profile_2'
+                ],
+                'pages' => [
+                    'page_1',
+                    'page_2'
+                ],
+                'catalog_id' => $catalogId,
+                'onsite_eligible' => $onsiteEligible,
+                'commerce_partner_integration_id' => $commercePartnerIntegrationId
+            ]
+        ];
+        $this->systemConfig
+            ->method('getAccessToken')
+            ->willReturn($accessToken);
+
+        $this->graphApiAdapter
+            ->method('getPageAccessToken')
+            ->with(
+                $this->equalTo($accessToken),
+                $this->equalTo('page_1')
+            )
+            ->willReturn($accessToken);
+
+        $this->catalogConfigUpdateHelper
+            ->expects($this->once())
+            ->method('updateCatalogConfiguration')
+            ->with(
+                $storeId,
+                $catalogId,
+                $commercePartnerIntegrationId,
+                $pixelId,
+                false
+            );
+        $this->systemConfig
+            ->method('saveConfig')
+            ->willReturn('');
+            
+        $this->assertTrue($this->mbeIntallMockObj->save($response, $storeId));
+    }
+
+    /**
+     * Test save function
+     * 
+     * @return void
+     */
+    public function testSaveWithPagesWithException(): void
+    {
+        $pixelId = 'pixel_1';
+        $catalogId = 'cat_121';
+        $onsiteEligible = false;
+        $commercePartnerIntegrationId = 'integration_id_1122';
+        $storeId = 909090;
+        $logContent = 'Log Data';
+
+        $response = [
+            0 => [
+                'pixel_id' => $pixelId,
+                'profiles' => [
+                    'profile_1',
+                    'profile_2'
+                ],
+                'pages' => [
+                    'page_1',
+                    'page_2'
+                ],
+                'catalog_id' => $catalogId,
+                'onsite_eligible' => $onsiteEligible,
+                'commerce_partner_integration_id' => $commercePartnerIntegrationId
+            ]
+        ];
+
+        $this->catalogConfigUpdateHelper
+            ->expects($this->once())
+            ->method('updateCatalogConfiguration')
+            ->with(
+                $storeId,
+                $catalogId,
+                $commercePartnerIntegrationId,
+                $pixelId,
+                false
+            );
+        $this->systemConfig
+            ->method('saveConfig')
+            ->willReturn('');
+         $this->expectException(LocalizedException::class);
         $this->assertTrue($this->mbeIntallMockObj->save($response, $storeId));
     }
 
