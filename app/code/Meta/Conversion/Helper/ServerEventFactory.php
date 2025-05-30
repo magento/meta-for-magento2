@@ -62,19 +62,24 @@ class ServerEventFactory
      * @param string|null $eventId
      * @return Event
      */
-    public function newEvent($eventName, $eventId = null)
+    public function newEvent($eventName, $additionalPayloadData, $eventId = null)
     {
         // Capture default user-data parameters passed down from the client browser.
+        
+        $userAgent = $this->getValueOrFallback('user_agent', $additionalPayloadData, [Util::class, 'getHttpUserAgent']);
+        $fbp = $this->getValueOrFallback('fbp', $additionalPayloadData, [Util::class, 'getFbp']);
+        $fbc = $this->getValueOrFallback('fbc', $additionalPayloadData, [Util::class, 'getFbc']);
         $userData = (new UserData())
                   ->setClientIpAddress($this->getIpAddress())
-                  ->setClientUserAgent(Util::getHttpUserAgent())
-                  ->setFbp(Util::getFbp())
-                  ->setFbc(Util::getFbc());
+                  ->setClientUserAgent($userAgent)
+                  ->setFbp($fbp)
+                  ->setFbc($fbc);
 
+        $requestUri = $this->getValueOrFallback('request_uri', $additionalPayloadData, [Util::class, 'getRequestUri']);
         $event = (new Event())
               ->setEventName($eventName)
               ->setEventTime(time())
-              ->setEventSourceUrl(Util::getRequestUri())
+              ->setEventSourceUrl($requestUri)
               ->setActionSource('website')
               ->setUserData($userData)
               ->setCustomData(new CustomData());
@@ -86,6 +91,11 @@ class ServerEventFactory
         }
 
         return $event;
+    }
+
+    function getValueOrFallback($key, $data, $fallbackCallback)
+    {
+        return (!empty($data[$key])) ? $data[$key] : $fallbackCallback();
     }
 
     /**
@@ -178,9 +188,9 @@ class ServerEventFactory
      * @param string|null $eventId
      * @return Event
      */
-    public function createEvent($eventName, $data, $eventId = null)
+    public function createEvent($eventName, $data, $additionalPayloadData, $eventId = null)
     {
-        $event = $this->newEvent($eventName, $eventId);
+        $event = $this->newEvent($eventName, $additionalPayloadData, $eventId);
 
         return $this->addCustomData($event, $data);
     }
