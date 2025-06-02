@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Meta\Conversion\Model;
 
+use FacebookAds\Object\ServerSide\Util;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
 use Magento\Framework\MessageQueue\PublisherInterface;
@@ -29,6 +30,10 @@ class CapiTracker
             $eventId = $this->generateEventId($eventName, $useSessionForEventIds);
             $payload['event_id'] = $eventId;
             $payload['event_type'] = $eventType;
+            $payload['request_uri'] = Util::getRequestUri();
+            $payload['user_agent'] = Util::getHttpUserAgent();
+            $payload['fbp'] = Util::getFbp();
+            $payload['fbc'] = Util::getFbc();
             $this->publisher->publish('send.conversion.event.to.meta', $this->jsonSerializer->serialize($payload));
         }
     }

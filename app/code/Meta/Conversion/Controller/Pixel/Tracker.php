@@ -11,6 +11,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
+use FacebookAds\Object\ServerSide\Util;
 
 class Tracker implements HttpPostActionInterface
 {
@@ -84,6 +85,10 @@ class Tracker implements HttpPostActionInterface
                 $payload = $this->pixelEvents[$eventName]->getPayload($params);
                 $payload['event_id'] = $params['eventId'];
                 $payload['event_type'] = $this->pixelEvents[$eventName]->getEventType();
+                $payload['request_uri'] = Util::getRequestUri();
+                $payload['user_agent'] = Util::getHttpUserAgent();
+                $payload['fbp'] = Util::getFbp();
+                $payload['fbc'] = Util::getFbc();
                 if (isset($payload)) {
                     $this->publisher->publish('send.conversion.event.to.meta', $this->jsonSerializer->serialize($payload));
                     $response['success'] = true;

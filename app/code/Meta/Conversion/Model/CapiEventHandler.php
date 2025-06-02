@@ -34,12 +34,15 @@ class CapiEventHandler
             unset($payload['event_id']);
             unset($payload['event_type']);
 
+            $additionalPayloadKeys = ['request_uri', 'user_agent', 'fbp', 'fbc'];
+            $additionalPayloadData = array_intersect_key($payload, array_flip($additionalPayloadKeys));
+            $payload = array_diff_key($payload, array_flip($additionalPayloadKeys));
+
             // Add source and pluginVersion in the payload as custom properties
             $payload['custom_properties'] = [];
             $payload['custom_properties']['source'] = $this->fbeHelper->getSource();
             $payload['custom_properties']['pluginVersion'] = $this->fbeHelper->getPluginVersion();
-
-            $event = $this->serverEventFactory->createEvent($eventType, array_filter($payload), $eventId);
+            $event = $this->serverEventFactory->createEvent($eventType, array_filter($payload), $additionalPayloadData, $eventId);
             if (isset($payload['userDataFromOrder'])) {
                 $this->serverSideHelper->sendEvent($event, $payload['userDataFromOrder']);
             } else {
