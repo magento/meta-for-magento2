@@ -93,7 +93,7 @@ class ServerEventFactory
         return $event;
     }
 
-    function getValueOrFallback($key, $data, $fallbackCallback)
+    private function getValueOrFallback($key, $data, $fallbackCallback)
     {
         return (!empty($data[$key])) ? $data[$key] : $fallbackCallback();
     }
