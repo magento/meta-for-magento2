@@ -18,7 +18,7 @@
     </event>
 
     <event name="controller_action_postdispatch_checkout_onepage_success">
-        <observer name="trigger_initiate_checkout_capi_event" instance="Meta\Conversion\Observer\Tracker\Purchase" />
+        <observer name="trigger_purchase_capi_event" instance="Meta\Conversion\Observer\Tracker\Purchase" />
     </event>
 
 </config>
