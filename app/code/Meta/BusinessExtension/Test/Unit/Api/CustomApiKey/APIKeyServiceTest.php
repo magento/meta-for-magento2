@@ -66,6 +66,27 @@ class APIKeyServiceTest extends TestCase
         $this->assertEquals($apiKey, $result);
     }
 
+    public function testGetCustomApiKeyWithNull()
+    {
+        $this->scopeConfig->method('getValue')
+            ->with('meta_extension/general/api_key')
+            ->willReturn(null);
+        $apiKeyService = new ApiKeyService(
+            $this->apiKeyGenerator,
+            $this->configWriter,
+            $this->scopeConfig,
+            $this->logger
+        );
+        $this->logger->expects($this->exactly(2))
+            ->method('info')
+            ->withConsecutive(['API key does not exist. Generating a new key.'],['API key has been generated and saved.'])
+            ->willReturnSelf();
+        $this->configWriter->expects($this->once())->method('save');
+        $result = $apiKeyService->getCustomApiKey();
+        
+        $this->assertIsString($result);
+    }
+
     public function testCustomApiKey()
     {
         $apiKey = 'generated-api-key';
