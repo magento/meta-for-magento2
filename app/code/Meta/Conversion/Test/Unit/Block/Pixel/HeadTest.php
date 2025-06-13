@@ -155,4 +155,19 @@ class HeadTest extends TestCase
         $expectedJsonString = json_encode($userDataArray, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT);
         $this->assertEquals($expectedJsonString, $jsonString);
     }
+
+    public function testGetEventToObserveName()
+    {
+        $this->assertEquals('facebook_businessextension_ssapi_page_view', $this->head->getEventToObserveName());
+    }
+
+    public function testGetDataProcessingOptionsImgTag()
+    {
+        $this->assertEquals('', $this->head->getDataProcessingOptionsImgTag());
+    }
+
+    public function testGetDataProcessingOptionsJSCode()
+    {
+        $this->assertEquals('', $this->head->getDataProcessingOptionsJSCode());
+    }
 }

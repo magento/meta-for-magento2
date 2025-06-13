@@ -2,56 +2,60 @@
 /**
  * @var Meta\Catalog\Block\Adminhtml\System\Config\CategoryFeed $block
  * @var $escaper \Magento\Framework\Escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 ?>
-<script>
-    require([
-        'jquery',
-        'prototype'
-    ], function (jQuery) {
-        const resultBlock = jQuery('#fb_category_upload_result');
-        const responseToggle = jQuery('#fb_category_upload_result_response_toggle');
-        const responseTextBlock = jQuery('#fb_category_upload_result_response');
 
-        responseToggle.click(function () {
-            responseTextBlock.toggle();
-        });
+<?php
+    $scriptString = <<<script
+        require([
+            'jquery',
+            'prototype'
+        ], function (jQuery) {
+            const resultBlock = jQuery('#fb_category_upload_result');
+            const responseToggle = jQuery('#fb_category_upload_result_response_toggle');
+            const responseTextBlock = jQuery('#fb_category_upload_result_response');
 
-        jQuery('#fb_category_upload_btn').click(function () {
-            const params = {};
-            new Ajax.Request('<?= $escaper->escapeUrl($block->getAjaxUrl()) ?>', {
-                parameters: params,
-                loaderArea: false,
-                asynchronous: true,
-                onCreate: function () {
-                    resultBlock.find('.fb-category-upload-finished').hide();
-                    resultBlock.find('.fb-category-upload-processing').show();
-                    jQuery('#fb_category_upload_result_text').text('');
-                    responseToggle.hide();
-                    responseTextBlock.hide();
-                },
-                onSuccess: function (response) {
-                    resultBlock.find('.fb-category-upload-processing').hide();
+            responseToggle.click(function () {
+                responseTextBlock.toggle();
+            });
 
-                    let resultText = '';
-                    let resultResponse = '';
-                    if (response.status > 200) {
-                        resultText = response.statusText;
-                    } else {
-                        resultResponse = ' (' + response.responseText + ')';
-                        resultText = 'Finished';
-                        resultBlock.find('.fb-category-upload-finished').show();
+            jQuery('#fb_category_upload_btn').click(function () {
+                const params = {};
+                new Ajax.Request('{$escaper->escapeUrl($block->getAjaxUrl())}', {
+                    parameters: params,
+                    loaderArea: false,
+                    asynchronous: true,
+                    onCreate: function () {
+                        resultBlock.find('.fb-category-upload-finished').hide();
+                        resultBlock.find('.fb-category-upload-processing').show();
+                        jQuery('#fb_category_upload_result_text').text('');
+                        responseToggle.hide();
+                        responseTextBlock.hide();
+                    },
+                    onSuccess: function (response) {
+                        resultBlock.find('.fb-category-upload-processing').hide();
+
+                        let resultText = '';
+                        let resultResponse = '';
+                        if (response.status > 200) {
+                            resultText = response.statusText;
+                        } else {
+                            resultResponse = ' (' + response.responseText + ')';
+                            resultText = 'Finished';
+                            resultBlock.find('.fb-category-upload-finished').show();
+                        }
+                        jQuery('#fb_category_upload_result_text').text(resultText);
+                        jQuery('#fb_category_upload_result_response').text(resultResponse);
+                        const json = response.responseJSON;
+                        responseToggle.show();
                     }
-                    jQuery('#fb_category_upload_result_text').text(resultText);
-                    jQuery('#fb_category_upload_result_response').text(resultResponse);
-                    const json = response.responseJSON;
-                    responseToggle.show();
-                }
+                });
             });
         });
-
-    });
-</script>
+    script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
 
 <?= $block->getButtonHtml() ?>
 <span id="fb_category_upload_result">

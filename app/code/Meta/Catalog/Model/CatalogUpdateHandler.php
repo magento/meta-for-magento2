@@ -28,6 +28,7 @@ use Meta\Catalog\Model\ResourceModel\FacebookCatalogUpdate\Collection;
 use Meta\BusinessExtension\Model\System\Config as SystemConfig;
 use Meta\BusinessExtension\Helper\GraphAPIAdapter;
 use Meta\Catalog\Model\Product\Feed\Method\BatchApi;
+use Magento\Catalog\Model\ProductRepository as MagentoProductRepository;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -70,6 +71,11 @@ class CatalogUpdateHandler
     private ProductIdentifier $productIdentifier;
 
     /**
+     * @var MagentoProductRepository
+     */
+    private MagentoProductRepository $magentoProductRepository;
+
+    /**
      * CatalogUpdateConsumer constructor
      *
      * @param FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel
@@ -79,6 +85,7 @@ class CatalogUpdateHandler
      * @param GraphAPIAdapter $graphAPIAdapter
      * @param BatchApi $batchApi
      * @param ProductIdentifier $productIdentifier
+     * @param MagentoProductRepository $magentoProductRepository
      */
     public function __construct(
         FBCatalogUpdateResourceModel $fbCatalogUpdateResourceModel,
@@ -87,7 +94,8 @@ class CatalogUpdateHandler
         ProductRepository            $productRepository,
         GraphAPIAdapter              $graphAPIAdapter,
         BatchApi                     $batchApi,
-        ProductIdentifier            $productIdentifier
+        ProductIdentifier            $productIdentifier,
+        MagentoProductRepository     $magentoProductRepository
     ) {
         $this->fbCatalogUpdateResourceModel = $fbCatalogUpdateResourceModel;
         $this->fbeHelper = $fbeHelper;
@@ -96,6 +104,7 @@ class CatalogUpdateHandler
         $this->graphApiAdapter = $graphAPIAdapter;
         $this->batchApi = $batchApi;
         $this->productIdentifier = $productIdentifier;
+        $this->magentoProductRepository = $magentoProductRepository;
     }
 
     /**
@@ -213,6 +222,21 @@ class CatalogUpdateHandler
                     $parentProduct = $parentProducts->getItemById($productLinks[$product->getId()]);
                     if ($parentProduct) {
                         $product = $this->productRepository->loadParentProductData($product, $parentProduct);
+                    } else {
+                        try {
+                            $parentProduct = $this->magentoProductRepository->getById($productLinks[$product->getId()]);
+                            $product = $this->productRepository->loadParentProductData($product, $parentProduct);
+                        } catch (\Exception $e) {
+                            $this->fbeHelper->logException(
+                                $e,
+                                [
+                                    'log_type' => 'error',
+                                    'error_description' => 'Exception occured during loading parent product data',
+                                    'product_id' => $product->getId(),
+                                    'parent_product_id' => $productLinks[$product->getId()]
+                                ]
+                            );
+                        }
                     }
                 }
 

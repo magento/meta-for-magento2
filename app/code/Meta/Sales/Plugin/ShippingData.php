@@ -184,7 +184,7 @@ class ShippingData
      * @param  string $selectedCondition
      * @return array
      */
-    protected function getShippingMethodsInfoForTableRates(string $selectedCondition): array
+    public function getShippingMethodsInfoForTableRates(string $selectedCondition): array
     {
         $shippingMethodsInfo = [];
         $collection = $this->tableRateCollection->create();

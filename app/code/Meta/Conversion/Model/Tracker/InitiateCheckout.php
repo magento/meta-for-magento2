@@ -54,78 +54,20 @@ class InitiateCheckout implements TrackerInterface
     }
 
     /**
-     * Return information about the cart items
+     * Get cart categories by categoryIds
      *
-     * @param CartInterface $quote
-     * @return array
-     */
-    private function getCartContents(CartInterface $quote): array
-    {
-        if (!$quote) {
-            return [];
-        }
-
-        $contents = [];
-        $items = $quote->getAllVisibleItems();
-
-        foreach ($items as $item) {
-            $product = $item->getProduct();
-            $contents[] = [
-                'product_id' => $this->magentoDataHelper->getContentId($product),
-                'quantity' => (int) $item->getQty(),
-                'item_price' => $item->getPrice(),
-            ];
-        }
-        return $contents;
-    }
-
-    /**
-     * Return the ids of the items added to the cart
-     *
-     * @param CartInterface $quote
-     * @return array
-     */
-    private function getCartContentIds(CartInterface $quote): array
-    {
-        if (!$quote) {
-            return [];
-        }
-        $contentIds = [];
-
-        $items = $quote->getAllVisibleItems();
-        foreach ($items as $item) {
-            $contentIds[] = $this->magentoDataHelper->getContentId($item->getProduct());
-        }
-        return $contentIds;
-    }
-
-    /**
-     * Get cart categories by quote
-     *
-     * @param CartInterface $quote
+     * @param array $categoryIds
      * @return string
      */
-    private function getCartCategories(CartInterface $quote): string
+    private function getCartCategories(array $categoryIds): string
     {
-        if (!$quote) {
-            return '';
-        }
 
-        $items = $quote->getAllVisibleItems();
-        $categoryIds = [];
-        foreach ($items as $item) {
-            $product = $item->getProduct();
-            if ($product->getCategoryIds()) {
-                $categoryIds[] = $product->getCategoryIds();
-            }
-        }
-        
         /** Handle products without categories assigned */
         if (empty($categoryIds)) {
             return '';
         }
         $categoryIds = array_merge(...$categoryIds);
-        
+
         $categoryNames = [];
         $categories = $this->categoryCollection->create()
             ->addAttributeToSelect('*')
@@ -133,7 +75,7 @@ class InitiateCheckout implements TrackerInterface
         foreach ($categories as $category) {
             $categoryNames[] = $category->getName();
         }
-        
+
         return implode(',', $categoryNames);
     }
 
@@ -160,18 +102,47 @@ class InitiateCheckout implements TrackerInterface
         try {
             $quoteId = $params['quoteId'];
             $quote = $this->cartRepository->get((int) $quoteId);
+            $cartData = $this->prepareData($quote);
             return [
                 'currency' => $this->magentoDataHelper->getCurrency(),
                 'value' => $this->magentoDataHelper->getCartTotal($quote),
-                'content_ids' => $this->getCartContentIds($quote),
+                'content_ids' => $cartData['content_ids'],
                 'num_items' => $this->magentoDataHelper->getCartNumItems($quote),
-                'contents' => $this->getCartContents($quote),
+                'contents' => $cartData['contents'],
                 'content_type' => $this->getContentTypeByQuote($quote),
-                'content_category' => $this->getCartCategories($quote)
+                'content_category' => $this->getCartCategories($cartData['category_ids'])
 
             ];
         } catch (NoSuchEntityException $e) {
             return [];
         }
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @return array[]
+     */
+    private function prepareData(CartInterface $quote): array
+    {
+        $categoryIds = [];
+        $contentIds = [];
+        $contents = [];
+
+        foreach ($quote->getAllVisibleItems() as $item) {
+
+            $product = $item->getProduct();
+            if ($product->getCategoryIds()) {
+                $categoryIds[] = $product->getCategoryIds();
+            }
+            $contentIds[] = $this->magentoDataHelper->getContentId($item->getProduct());
+            $contents[] = [
+                'product_id' => $this->magentoDataHelper->getContentId($product),
+                'quantity' => (int) $item->getQty(),
+                'item_price' => $item->getPrice()
+            ];
+
+        }
+
+        return ['category_ids' => $categoryIds, 'content_ids' => $contentIds, 'contents' => $contents];
     }
 }

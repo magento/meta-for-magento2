@@ -9,6 +9,7 @@
             <title value="The page has a purchase pixel event."/>
             <description value="The product page should contain a fbq call with a purchase pixel event."/>
             <severity value="MAJOR"/>
+            <testCaseId value="META-2702202504"/>
             <group value="Pixel"/>
         </annotations>
         <before>
@@ -18,11 +19,20 @@
                 <requiredEntity createDataKey="createCategory"/>
             </createData>
 
+            <!-- Do reindex -->
+            <actionGroup ref="CliIndexerReindexActionGroup" stepKey="runCronIndex">
+                <argument name="indices" value=""/>
+            </actionGroup>
+
             <!-- Add Pixel -->
             <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataEnabled.scope}} --scope-code={{FacebookBusinessConfigDataEnabled.scope_code}} {{FacebookBusinessConfigDataEnabled.path}} 1"
                         stepKey="enableFacebookBusinessExtension"/>
             <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataPixelId.scope}} --scope-code={{FacebookBusinessConfigDataPixelId.scope_code}} {{FacebookBusinessConfigDataPixelId.path}} 123456789123456"
                         stepKey="setFacebookBusinessExtensionPixelId"/>
+            
+            <!-- Enable Shipping and Payment Method -->
+            <magentoCLI command="config:set carriers/freeshipping/active 1" stepKey="enableShippingMethod"/>
+            <magentoCLI command="config:set payment/cashondelivery/active 1" stepKey="enablePaymentMethod"/>
         </before>
         <after>
             <!-- Delete sample product -->
@@ -34,6 +44,10 @@
                         stepKey="disableFacebookBusinessExtension"/>
             <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataPixelId.scope}} --scope-code={{FacebookBusinessConfigDataPixelId.scope_code}} {{FacebookBusinessConfigDataPixelId.path}} ''"
                         stepKey="unsetFacebookBusinessExtensionPixelId"/>
+
+            <!-- Disable Shipping and Payment Method -->
+            <magentoCLI command="config:set carriers/freeshipping/active 0" stepKey="disableShippingMethod"/>
+            <magentoCLI command="config:set payment/cashondelivery/active 0" stepKey="disablePaymentMethod"/>
         </after>
 
         <!-- Navigate to Home page -->
@@ -55,15 +69,25 @@
             <argument name="customer" value="_defaultMetaCustomer" />
         </actionGroup>
 
+        <!-- Select Shipping Method -->
+        <waitForPageLoad stepKey="waitForShippingMethodLoad" time="60" />
+        <click selector="input[value='freeshipping_freeshipping']" stepKey="selectShippingMethod"/>
+        <waitForPageLoad stepKey="waitForShippingMethodSelection" time="60" />
+
         <!-- Click on Next button -->
         <click selector="button.button.action.continue.primary" stepKey="clickNextButton"/>
         <waitForPageLoad stepKey="waitForConfirmationPage" time="60" />
 
+        <!-- Select Payment Method -->
+        <click selector="input[value='cashondelivery']" stepKey="selectPaymentMethod"/>
+
         <!-- Checking box for shipping address-->
+        <waitForPageLoad stepKey="waitForBillingAddressPage" time="60" />
         <checkOption selector="#billing-address-same-as-shipping-checkmo" stepKey="checkShippingAddressEqualToBilling" />
+        <waitForPageLoad stepKey="waitForBillingAddressSelect" time="60" />
 
         <!-- Click on place order -->
-        <click selector="button.action.primary.checkout" stepKey="clickPlaceOrder"/>
+        <click selector=".payment-method._active button.action.primary.checkout" stepKey="clickPlaceOrder"/>
 
         <!-- Wait for thank you page -->
         <waitForPageLoad stepKey="waitForThankYouPage" time="60" />

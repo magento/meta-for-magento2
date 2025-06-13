@@ -30,12 +30,12 @@ class PromotionRetriever
     /**
      * @var FBEHelper
      */
-    protected $fbeHelper;
+    public $fbeHelper;
 
     /**
      * @var RuleCollection
      */
-    protected $ruleCollection;
+    public $ruleCollection;
 
     /**
      * @param FBEHelper $fbeHelper

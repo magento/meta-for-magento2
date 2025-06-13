@@ -29,7 +29,7 @@ class CoreConfigFactory
      *
      * @var ObjectManagerInterface
      */
-    protected ObjectManagerInterface $objectManager;
+    public ObjectManagerInterface $objectManager;
 
     /**
      * @param ObjectManagerInterface $objectManager

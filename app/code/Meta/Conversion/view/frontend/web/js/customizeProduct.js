@@ -27,14 +27,16 @@ define([
         function _getPrice(element) {
             // For Swatch and Text Type - PLP page
             productId = $(element).parents('.product-item-details').find('.price-final_price').data('product-id');
-            price = $('#old-price-' + productId + '-widget-product-grid').data('price-amount');
-
             // for DropdownType, Swatch and Text Type - PDP page
-            if (!price) {
+            if (!productId) {
                 productId = $(element).parents('.product-info-main').find('.price-final_price').data('product-id');
-                price = $('#product-price-' + productId).data('price-amount');
             }
-            return price;
+            price = $('#product-price-' + productId).data('price-amount');
+            if(!price) {
+                // get product price based on the catalog price display type (including/excluding tax)
+                price = $('#price-excluding-tax-product-price-' + productId).data('price-amount');
+            }
+            return price.toFixed(2);
         }
 
         function _getProductName(element) {

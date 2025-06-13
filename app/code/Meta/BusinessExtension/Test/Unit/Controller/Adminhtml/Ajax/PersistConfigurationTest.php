@@ -28,37 +28,37 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
     /**
      * @var MockObject
      */
-    protected $fbeHelper;
+    public $fbeHelper;
 
     /**
      * @var MockObject
      */
-    protected $systemConfig;
+    public $systemConfig;
 
     /**
      * @var MockObject
      */
-    protected $context;
+    public $context;
 
     /**
      * @var MockObject
      */
-    protected $resultJsonFactory;
+    public $resultJsonFactory;
 
     /**
      * @var \Meta\BusinessExtension\Controller\Adminhtml\Ajax\PersistConfiguration
      */
-    protected $fbFeedPush;
+    public $fbFeedPush;
 
     /**
      * @var MockObject
      */
-    protected $request;
+    public $request;
 
     /**
      * @var MockObject
      */
-    protected $graphApiAdapter;
+    public $graphApiAdapter;
 
     /**
      * Used to reset or change values after running a test
@@ -103,6 +103,54 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
         $pageAccessToken = 'EAACxonUmtyIBABauSDrrahBhBg7D2QwZDZD';
         $this->request->method('getParam')->willReturn($storeId);
         $externalBusinessId = 'fbe_magento_1_63c34a23324';
+        $this->request->method('getParam')->willReturn($externalBusinessId);
+        $this->systemConfig->method('saveConfig')->willReturn($this->systemConfig);
+        $this->graphApiAdapter->method('getPageAccessToken')->willReturn($pageAccessToken);
+        $this->graphApiAdapter->method('getPageMerchantSettingsId')->willReturn($merchantSettingsId);
+
+        $result = $this->fbFeedPush->executeForJson();
+        $this->assertNotNull($result);
+        $this->assertTrue($result['success']);
+    }
+
+    /**
+     * @return void
+     */
+    public function testExecuteForJsonWithException()
+    {
+        $storeId = 1;
+        $merchantSettingsId = 15964;
+        $pageAccessToken = 'EAACxonUmtyIBABauSDrrahBhBg7D2QwZDZD';
+        $this->request->method('getParam')->willReturn($storeId);
+        $externalBusinessId = 'fbe_magento_1_63c34a23324';
+        $this->request->method('getParam')->willReturn($externalBusinessId);
+        $this->systemConfig->method('saveConfig')->willThrowException(new \Exception("Error Occured"));
+        $this->graphApiAdapter->method('getPageAccessToken')->willReturn($pageAccessToken);
+        $this->graphApiAdapter->method('getPageMerchantSettingsId')->willReturn($merchantSettingsId);
+        $this->fbeHelper->expects($this->once())
+            ->method('logExceptionImmediatelyToMeta')
+            ->with(
+                $this->isInstanceOf(\Exception::class),
+                [
+                    'store_id' => $storeId,
+                    'event' => 'persist_configuration',
+                    'event_type' => 'save_config'
+                ]
+                );
+        $result = $this->fbFeedPush->executeForJson();
+        $this->assertNotNull($result);
+        $this->assertFalse($result['success']);
+    }
+
+     /**
+     * @return void
+     */
+    public function testExecuteForJsonWithEmptyToken()
+    {
+        $storeId = 1;
+        $merchantSettingsId = 15964;
+        $pageAccessToken = '';
+        $externalBusinessId = null;
         $this->request->method('getParam')->willReturn($externalBusinessId);
         $this->systemConfig->method('saveConfig')->willReturn($this->systemConfig);
         $this->graphApiAdapter->method('getPageAccessToken')->willReturn($pageAccessToken);

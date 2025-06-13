@@ -38,12 +38,16 @@ class CustomizeProduct implements TrackerInterface
      */
     public function getPayload(array $params): array
     {
-        return [
+        $payload = [
             'content_type' => $params['content_type'],
             'content_name' => $params['content_name'],
             'content_ids' => $params['content_ids'],
-            'currency' => $this->magentoDataHelper->getCurrency(),
-            'value' => $params['value']
+            'currency' => $this->magentoDataHelper->getCurrency()
         ];
+        // include value only if it is present in the parameters as this is optional in the payload for CustomizeProduct event
+        if (isset($params['value'])) {
+            $payload['value'] = $params['value'];
+        }
+        return $payload;
     }
 }

@@ -120,7 +120,7 @@ class DeleteConnection extends Field
      *
      * @return mixed
      */
-    protected function getStoreId()
+    public function getStoreId()
     {
         $storeId = $this->getRequest()->getParam('store');
         if ($storeId === null && $this->systemConfig->isSingleStoreMode()) {
