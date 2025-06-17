@@ -71,7 +71,7 @@ class ReportClientErrorTest extends TestCase
                 $stackTrace,
                 [
                     'event' => 'js_exception',
-                    'event_type' => $message,
+                    'event_type' => 'error',
                     'extra_data' => [
                         'filename' => $filename,
                         'line_number' => $lineNumber,
