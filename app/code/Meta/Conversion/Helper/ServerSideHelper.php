@@ -124,7 +124,7 @@ class ServerSideHelper
                 }
             }
 
-            $this->fbeHelper->log('Sending event ' .$event->getEventName().' with ID'. $event->getEventId());
+            $this->fbeHelper->log('Sending event ' .$event->getEventName().' with ID : '. $event->getEventId());
 
             $request->execute()
                 ->then(
