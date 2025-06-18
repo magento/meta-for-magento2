@@ -1057,7 +1057,7 @@ class Config
      */
     public function isInstalledShopOnsiteEligible(int $storeId = null): bool
     {
-        return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE, $storeId);
+        return (bool) $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE, $storeId);
     }
 
     /**
