@@ -24,6 +24,8 @@ class Purchase implements ObserverInterface
 
     public function execute(Observer $observer): void
     {
+        // Purchase event is triggered twice sometimes, to prevent that check if event id is already stored for current request
+        // if it does prevent the message form being added to the message queue.
         if (!$this->capiEventIdHandler->getMetaEventId(self::EVENT_NAME)) {
             $lastOrderId = $this->checkoutSession->getLastRealOrder()->getEntityId();
             $payload = $this->purchaseTracker->getPayload(['lastOrder' => $lastOrderId]);
