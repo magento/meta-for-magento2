@@ -6,9 +6,7 @@ namespace Meta\Conversion\Observer\Tracker;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Meta\Conversion\Model\Tracker\Purchase as PurchaseTracker;
-use Magento\Checkout\Model\Session as CheckoutSession;
 use Meta\Conversion\Model\CapiTracker;
-use Meta\Conversion\Model\CapiEventIdHandler;
 
 class Purchase implements ObserverInterface
 {
@@ -17,17 +15,14 @@ class Purchase implements ObserverInterface
 
     public function __construct(
         private readonly PurchaseTracker $purchaseTracker,
-        private readonly CheckoutSession $checkoutSession,
-        private readonly CapiTracker $capiTracker,
-        private readonly CapiEventIdHandler $capiEventIdHandler
+        private readonly CapiTracker $capiTracker
     ) { }
 
     public function execute(Observer $observer): void
     {
-        // Purchase event is triggered twice sometimes, to prevent that check if event id is already stored for current request
-        // if it does prevent the message form being added to the message queue.
-        if (!$this->capiEventIdHandler->getMetaEventId(self::EVENT_NAME)) {
-            $lastOrderId = $this->checkoutSession->getLastRealOrder()->getEntityId();
+        $orderIds = $observer->getEvent()->getOrderIds();
+        $lastOrderId = !empty($orderIds) ? $orderIds[0] : null;
+        if ($lastOrderId) {
             $payload = $this->purchaseTracker->getPayload(['lastOrder' => $lastOrderId]);
             $this->capiTracker->execute($payload, self::EVENT_NAME, $this->purchaseTracker->getEventType());
         }
