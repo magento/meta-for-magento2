@@ -7,7 +7,6 @@ use FacebookAds\Object\ServerSide\Util;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
 use Magento\Framework\MessageQueue\PublisherInterface;
-use Meta\Conversion\Model\Tracker\Purchase;
 
 class CapiTracker
 {
@@ -28,11 +27,6 @@ class CapiTracker
     public function execute(array $payload, string $eventName, string $eventType, bool $useSessionForEventIds = false): void
     {
         if (isset($payload)) {
-            // Purchase event is triggered twice sometimes, to prevent that check if event id is already stored for current request
-            // if it does prevent the message form being added to the message queue.
-            if ((Purchase::EVENT_TYPE == $eventType) && $this->capiEventIdHandler->getMetaEventId($eventName)) {
-                return;
-            }
             $eventId = $this->generateEventId($eventName, $useSessionForEventIds);
             $payload['event_id'] = $eventId;
             $payload['event_type'] = $eventType;

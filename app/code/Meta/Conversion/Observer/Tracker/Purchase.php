@@ -8,6 +8,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Meta\Conversion\Model\Tracker\Purchase as PurchaseTracker;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Meta\Conversion\Model\CapiTracker;
+use Meta\Conversion\Model\CapiEventIdHandler;
 
 class Purchase implements ObserverInterface
 {
@@ -17,13 +18,16 @@ class Purchase implements ObserverInterface
     public function __construct(
         private readonly PurchaseTracker $purchaseTracker,
         private readonly CheckoutSession $checkoutSession,
-        private readonly CapiTracker $capiTracker
+        private readonly CapiTracker $capiTracker,
+        private readonly CapiEventIdHandler $capiEventIdHandler
     ) { }
 
     public function execute(Observer $observer): void
     {
-        $lastOrderId = $this->checkoutSession->getLastRealOrder()->getEntityId();
-        $payload = $this->purchaseTracker->getPayload(['lastOrder' => $lastOrderId]);
-        $this->capiTracker->execute($payload, self::EVENT_NAME, $this->purchaseTracker->getEventType());
+        if (!$this->capiEventIdHandler->getMetaEventId(self::EVENT_NAME)) {
+            $lastOrderId = $this->checkoutSession->getLastRealOrder()->getEntityId();
+            $payload = $this->purchaseTracker->getPayload(['lastOrder' => $lastOrderId]);
+            $this->capiTracker->execute($payload, self::EVENT_NAME, $this->purchaseTracker->getEventType());
+        }
     }
 }
