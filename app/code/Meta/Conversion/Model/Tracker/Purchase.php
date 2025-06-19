@@ -22,7 +22,7 @@ use Magento\Sales\Model\OrderRepository;
 
 class Purchase implements TrackerInterface
 {
-    private const EVENT_TYPE = "Purchase";
+    public const EVENT_TYPE = "Purchase";
     /**
      * @var FBEHelper
      */
