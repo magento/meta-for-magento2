@@ -27,6 +27,8 @@ use Meta\BusinessExtension\Controller\Adminhtml\Ajax\CleanCache;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\System\Config;
 use PHPUnit\Framework\TestCase;
+use Magento\Store\Model\Store as CoreStore;
+use Magento\Framework\Phrase;
 
 class CleanCacheTest extends TestCase
 {
@@ -104,5 +106,66 @@ class CleanCacheTest extends TestCase
         $this->assertNotNull($result);
         $this->assertTrue($result['success']);
         $this->assertEquals('Config cache successfully cleaned', $result['message']);
+    }
+
+    /**
+     * Test execute for json method
+     *
+     * @return void
+     */
+    public function testExecuteForJsonIsDebugMode(): void
+    {
+        $this->systemConfig->expects($this->once())
+            ->method('cleanCache');
+        $this->systemConfig->expects($this->once())
+            ->method('isDebugMode')
+            ->willReturn(true);
+        $this->fbeHelper->expects($this->once())
+            ->method('log')
+            ->with((new Phrase('Config cache successfully cleaned'))->render())
+            ->willReturnSelf();
+        $result = $this->controller->executeForJson();
+        $this->assertNotNull($result);
+        $this->assertTrue($result['success']);
+        $this->assertEquals('Config cache successfully cleaned', $result['message']);
+    }
+
+    /**
+     * Test execute for json method
+     *
+     * @return void
+     */
+    public function testExecuteForJsonForException(): void
+    {
+        $errorMessage = 'Failed to clean cache due to permission issues.';
+        $storeMock = $this->createMock(CoreStore::class);
+
+        $storeMock->method('isActive')->willReturn(true);
+        $storeMock->method('getWebsiteId')->willReturn(1);
+        $storeMock->method('getFrontendName')->willReturn('Website 1');
+        $storeMock->method('getId')->willReturn(1);
+        $storeMock->method('getCode')->willReturn('admin');
+
+        $this->systemConfig->expects($this->once())
+            ->method('cleanCache')
+            ->willThrowException(new \Exception($errorMessage));
+
+        $this->fbeHelper->expects($this->once())
+            ->method('getStore')
+            ->willReturn($storeMock);
+        $this->fbeHelper->expects($this->once())
+            ->method('logExceptionImmediatelyToMeta')
+            ->with(
+                $this->isInstanceOf(\Exception::class),
+                [
+                    'store_id' => 1,
+                    'event' => 'clean_cache',
+                    'event_type' => 'manual_clean'
+                ]
+            );
+
+        $result = $this->controller->executeForJson();
+        $this->assertIsArray($result);
+        $this->assertEquals($errorMessage, $result['message']);
     }
 }

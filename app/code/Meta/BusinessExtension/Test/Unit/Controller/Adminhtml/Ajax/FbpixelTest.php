@@ -79,7 +79,9 @@ class FbpixelTest extends TestCase
     {
         $this->context = $this->createMock(Context::class);
         $this->resultJsonFactory = $this->createMock(JsonFactory::class);
-        $this->fbeHelper = $this->createMock(FBEHelper::class);
+        /** The isValidFBID method is static and we cannot invoke it using the mock object, hence used object manager */
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();   
+        $this->fbeHelper = $objectManager->get(FBEHelper::class);
         $this->systemConfig = $this->createMock(Config::class);
         $this->request = $this->createMock(RequestInterface::class);
         $this->context->method('getRequest')->willReturn($this->request);
@@ -105,6 +107,24 @@ class FbpixelTest extends TestCase
         $result = $this->fbPixelTest->executeForJson();
         $this->assertNotNull($result);
         $this->assertFalse($result['success']);
+        $this->assertEquals($pixelId, $result['pixelId']);
+    }
+
+    /**
+     *
+     * @return void
+     */
+    public function testExecuteForJsonWithPixelAndInvalidFbId()
+    {
+        $pixelId = '9876543210';
+        $this->request->method('getParam')
+            ->willReturn($pixelId);
+        $this->systemConfig->method('getPixelId')
+            ->willReturn($pixelId);
+
+        $result = $this->fbPixelTest->executeForJson();
+        $this->assertNotNull($result);
+        $this->assertTrue($result['success']);
         $this->assertEquals($pixelId, $result['pixelId']);
     }
 }
