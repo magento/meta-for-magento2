@@ -2,78 +2,79 @@
 /**
  * @var Meta\BusinessExtension\Block\Adminhtml\Setup $block
  * @var $escaper Escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 
 use Magento\Framework\Escaper;
-
 ?>
+<?php
+    $scriptString = <<<script
+        const errorEventsBeforeInit = [];
+        const onEarlyError = (event) => {
+            errorEventsBeforeInit.push(event);
+        };
+        window.addEventListener('error', onEarlyError);
 
-<script>
-    const errorEventsBeforeInit = [];
-    const onEarlyError = (event) => {
-        errorEventsBeforeInit.push(event);
-    };
-    window.addEventListener('error', onEarlyError);
-
-    require(['Meta_BusinessExtension/js/error_logging'], (errorLogging) => {
-        window.removeEventListener('error', onEarlyError);
-
-        errorLogging.init(
-            '<?=$escaper->escapeJs($block->getReportClientErrorRoute())?>',
-            '<?=$escaper->escapeJs($block->getSelectedStoreId())?>',
-            errorEventsBeforeInit,
-        );
-    });
-</script>
+        require(['Meta_BusinessExtension/js/error_logging'], (errorLogging) => {
+            window.removeEventListener('error', onEarlyError);
+            errorLogging.init(
+                '{$escaper->escapeJs($block->getReportClientErrorRoute())}',
+                '{$escaper->escapeJs($block->getSelectedStoreId())}',
+                errorEventsBeforeInit,
+            );
+        });
+    script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
 
 <?php if ($block->getSelectedStoreId() === null): ?>
     Create a Store to continue with setup.
 <?php else: ?>
-    <script>
-        window.facebookBusinessExtensionConfig = {
-            accessClientToken: '<?= $escaper->escapeHtml($block->getAccessClientToken()) ?>',
-            appId: '<?= $escaper->escapeHtml($block->getAppId()) ?>',
-            adminUrl:'<?= $escaper->escapeHtml($block->removeKeyFromURL($this->getRequest()->getUriString())) ?>',
-            businessName: 'Magento',
-            businessVertical: 'ECOMMERCE',
-            channel: <?=$block->isCommerceExtensionEnabled() ? "'COMMERCE'" : "'COMMERCE_OFFSITE'"?>,
-            cleanConfigCacheUrl: '<?= $escaper->escapeHtml($block->getCleanCacheAjaxRoute()) ?>',
-            commerce_partner_seller_platform_type:
-                '<?= $escaper->escapeHtml($block->getCommercePartnerSellerPlatformType()) ?>',
-            currency: '<?= $escaper->escapeHtml($block->getCurrencyCode()) ?>',
-            repairRepairCommercePartnerIntegrationUrl: '<?=
-                $escaper->escapeHtml($block->getRepairRepairCommercePartnerIntegrationAjaxRoute())
-                ?>',
-            customApiKey: '<?= $escaper->escapeHtml($block->getCustomApiKey()) ?>',
-            debug: true,
-            deleteConfigKeys: '<?= $escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) ?>',
-            updateInstalledMBEConfig: '<?= $escaper->escapeHtml($block->getUpdateMBEConfigAjaxRoute()) ?>',
-            externalBusinessId: '<?=
-                $escaper->escapeHtml($block->getExternalBusinessId($block->getSelectedStoreId()))
-                ?>',
-            fbeInstallsConfigUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsConfigUrl()) ?>',
-            fbeInstallsSaveUrl: '<?= $escaper->escapeHtml($block->getFbeInstallsSaveUrl()) ?>',
-            fbeLoginUrl: '<?= $escaper->escapeHtml($block->getSplashPageURL()) ?>',
-            installed: '<?=
-                $escaper->escapeHtml($block->isFBEInstalled($block->getSelectedStoreId())) ? 'true' : 'false'
-                ?>',
-            isCommerceExtensionEnabled: <?=$block->isCommerceExtensionEnabled() ? 'true' : 'false'?>,
-            pixelId: '<?= $escaper->escapeHtml($block->fetchPixelId($block->getSelectedStoreId())) ?>',
-            popupOrigin: '<?= $escaper->escapeHtml($block->getPopupOrigin()) ?>',
-            postFBEOnboardingSync: '<?= $escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) ?>',
-            saveConfig: '<?= $escaper->escapeHtml($block->persistConfigurationAjaxRoute()) ?>',
-            setAAMSettings: '<?= $escaper->escapeHtml($block->getAAMSettingsRoute()) ?>',
-            setAccessToken: '<?= $escaper->escapeHtml($block->getAccessTokenAjaxRoute()) ?>',
-            setInstalledFeatures: '<?= $escaper->escapeHtml($block->getInstalledFeaturesAjaxRouteUrl()) ?>',
-            setPixelId: '<?= $escaper->escapeHtml($block->getPixelAjaxRoute()) ?>',
-            setProfilesData: '<?= $escaper->escapeHtml($block->getProfilesAjaxRoute()) ?>',
-            storeId: '<?= $escaper->escapeHtml($block->getSelectedStoreId()) ?>',
-            timeZone: '<?= $escaper->escapeHtml($block->getStoreTimezone()) ?>',
-            countryCode: '<?= $escaper->escapeHtml($block->getStoreCountryCode()) ?>',
-            shopDomain: '<?= $escaper->escapeHtml($block->getStoreBaseUrl()) ?>',
-            extensionVersion: '<?= $escaper->escapeHtml($block->getExtensionVersion()) ?>',
-        }
-    </script>
+    <?php
+        $channel = $block->isCommerceExtensionEnabled() ? "'COMMERCE'" : "'COMMERCE_OFFSITE'";
+        $isCommerceExtensionEnabled = $block->isCommerceExtensionEnabled() ? 'true' : 'false';
+        $isInstalled = $escaper->escapeHtml($block->isFBEInstalled($block->getSelectedStoreId())) ? 'true' : 'false';
+
+        $scriptString = <<<script
+            window.facebookBusinessExtensionConfig = {
+                accessClientToken: '{$escaper->escapeHtml($block->getAccessClientToken()) }',
+                appId: '{$escaper->escapeHtml($block->getAppId()) }',
+                adminUrl:'{$escaper->escapeHtml($block->removeKeyFromURL($this->getRequest()->getUriString())) }',
+                businessName: 'Magento',
+                businessVertical: 'ECOMMERCE',
+                channel: {$channel},
+                cleanConfigCacheUrl: '{$escaper->escapeHtml($block->getCleanCacheAjaxRoute()) }',
+                commerce_partner_seller_platform_type:'{$escaper->escapeHtml($block->getCommercePartnerSellerPlatformType()) }',
+                currency: '{$escaper->escapeHtml($block->getCurrencyCode()) }',
+                repairRepairCommercePartnerIntegrationUrl: '{$escaper->escapeHtml($block->getRepairRepairCommercePartnerIntegrationAjaxRoute())}',
+                customApiKey: '{$escaper->escapeHtml($block->getCustomApiKey()) }',
+                debug: true,
+                deleteConfigKeys: '{$escaper->escapeHtml($block->getDeleteAssetIdsAjaxRoute()) }',
+                updateInstalledMBEConfig: '{$escaper->escapeHtml($block->getUpdateMBEConfigAjaxRoute()) }',
+                externalBusinessId: '{$escaper->escapeHtml($block->getExternalBusinessId($block->getSelectedStoreId()))}',
+                fbeInstallsConfigUrl: '{$escaper->escapeHtml($block->getFbeInstallsConfigUrl()) }',
+                fbeInstallsSaveUrl: '{$escaper->escapeHtml($block->getFbeInstallsSaveUrl()) }',
+                fbeLoginUrl: '{$escaper->escapeHtml($block->getSplashPageURL()) }',
+                installed: '{$isInstalled}',
+                isCommerceExtensionEnabled: {$isCommerceExtensionEnabled},
+                pixelId: '{$escaper->escapeHtml($block->fetchPixelId($block->getSelectedStoreId())) }',
+                popupOrigin: '{$escaper->escapeHtml($block->getPopupOrigin()) }',
+                postFBEOnboardingSync: '{$escaper->escapeHtml($block->fetchPostFBEOnboardingSyncAjaxRoute()) }',
+                saveConfig: '{$escaper->escapeHtml($block->persistConfigurationAjaxRoute()) }',
+                setAAMSettings: '{$escaper->escapeHtml($block->getAAMSettingsRoute()) }',
+                setAccessToken: '{$escaper->escapeHtml($block->getAccessTokenAjaxRoute()) }',
+                setInstalledFeatures: '{$escaper->escapeHtml($block->getInstalledFeaturesAjaxRouteUrl()) }',
+                setPixelId: '{$escaper->escapeHtml($block->getPixelAjaxRoute()) }',
+                storeId: '{$escaper->escapeHtml($block->getSelectedStoreId()) }',
+                timeZone: '{$escaper->escapeHtml($block->getStoreTimezone()) }',
+                countryCode: '{$escaper->escapeHtml($block->getStoreCountryCode()) }',
+                shopDomain: '{$escaper->escapeHtml($block->getStoreBaseUrl()) }',
+                extensionVersion: '{$escaper->escapeHtml($block->getExtensionVersion()) }',
+            };
+        script;
+    ?>
+    <?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
+
     <?php if ($block->isCommerceExtensionEnabled() && $block->isFBEInstalled($block->getSelectedStoreId())): ?>
         <?php if ($block->hasCommerceExtensionIFramePermissionError($block->getSelectedStoreId())): ?>
             <div class="commerce-extension-error">
@@ -100,26 +101,29 @@ use Magento\Framework\Escaper;
                     scrolling="no"
                     style="border: 0; width: 100%; min-height:50vh;"></iframe>
         <?php endif ?>
-
-        <script>
-            require([
-                'Meta_BusinessExtension/js/commerce_extension'
-            ], function () {
-            });
-        </script>
+        <?php
+            $scriptString = <<<script
+                require(['Meta_BusinessExtension/js/commerce_extension'], function () {
+                });
+            script;
+        ?>
+        <?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
     <?php else: ?>
         <div>
             <div id="fbe-iframe-container">
             </div>
         </div>
-        <script>
-            require([
-                'jquery',
-                'Meta_BusinessExtension/js/fbe_allinone',
-                'Meta_BusinessExtension/js/fbe_installs'
-            ], function ($, fbeAllInOne, fbeInstalls) {
-                fbeInstalls.startFBEInstallsProcess();
-            });
-        </script>
+        <?php
+            $scriptString = <<<script
+                require([
+                    'jquery',
+                    'Meta_BusinessExtension/js/fbe_allinone',
+                    'Meta_BusinessExtension/js/fbe_installs'
+                ], function ($, fbeAllInOne, fbeInstalls) {
+                    fbeInstalls.startFBEInstallsProcess();
+                });
+            script;
+        ?>
+        <?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false); ?>
     <?php endif; ?>
 <?php endif; ?>

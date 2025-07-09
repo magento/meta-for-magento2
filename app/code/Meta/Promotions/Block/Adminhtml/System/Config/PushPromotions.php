@@ -106,7 +106,7 @@ class PushPromotions extends Field
      *
      * @return mixed
      */
-    protected function getStoreId()
+    public function getStoreId()
     {
         return $this->getRequest()->getParam('store');
     }

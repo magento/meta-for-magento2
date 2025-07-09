@@ -32,22 +32,22 @@ abstract class CommonTest extends TestCase
     /**
      * @var MockObject
      */
-    protected $magentoDataHelper;
+    public $magentoDataHelper;
 
     /**
      * @var MockObject
      */
-    protected $fbeHelper;
+    public $fbeHelper;
 
     /**
      * @var MockObject
      */
-    protected $systemConfig;
+    public $systemConfig;
 
     /**
      * @var ObjectManager
      */
-    protected $objectManager;
+    public $objectManager;
 
     /**
      * Used to reset or change values after running a test

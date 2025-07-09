@@ -9,6 +9,7 @@
             <title value="The page has a pixel search event."/>
             <description value="The page should contain a fbq call with a search pixel event."/>
             <severity value="MAJOR"/>
+            <testCaseId value="META-2702202505"/>
             <group value="Pixel"/>
         </annotations>
         <before>
@@ -17,6 +18,11 @@
             <createData entity="_defaultMetaProduct" stepKey="createProduct">
                 <requiredEntity createDataKey="createCategory"/>
             </createData>
+
+            <!-- Do reindex -->
+            <actionGroup ref="CliIndexerReindexActionGroup" stepKey="runCronIndex">
+                <argument name="indices" value=""/>
+            </actionGroup>
 
             <!-- Add Pixel -->
             <magentoCLI command="config:set --scope={{FacebookBusinessConfigDataEnabled.scope}} --scope-code={{FacebookBusinessConfigDataEnabled.scope_code}} {{FacebookBusinessConfigDataEnabled.path}} 1"

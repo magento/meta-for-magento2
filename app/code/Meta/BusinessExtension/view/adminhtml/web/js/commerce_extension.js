@@ -78,6 +78,13 @@ require(['jquery'], function (jQuery) {
                 if (data.success) {
                     msg = data.message;
                     console.log("Update success");
+                    if (triggerPostOnboarding) {
+                        // Store sync info before reload
+                        sessionStorage.setItem('mbe_pending_post_onboarding_sync', JSON.stringify({
+                            storeId: window.facebookBusinessExtensionConfig.storeId,
+                            timestamp: new Date().getTime()
+                        }));
+                    }
                 } else {
                     msg = data.error_message;
                 }
@@ -88,6 +95,42 @@ require(['jquery'], function (jQuery) {
             }
         });
     }
+
+    // Add function to handle post-onboarding sync
+    function handlePostReloadSync() {
+        const pendingSyncData = sessionStorage.getItem('mbe_pending_post_onboarding_sync');
+        if (pendingSyncData) {
+            sessionStorage.removeItem('mbe_pending_post_onboarding_sync');
+            try {
+                const {storeId, timestamp} = JSON.parse(pendingSyncData);
+                const SYNC_EXPIRY_MS = 30 * 60 * 1000; // 30 minutes
+                if (new Date().getTime() - timestamp < SYNC_EXPIRY_MS) {
+                    console.log('Starting initial sync in the background');
+                    // Use setTimeout to ensure page is fully loaded
+                    setTimeout(function () {
+                        jQuery.ajax({
+                            type: 'post',
+                            url: ajaxify(window.facebookBusinessExtensionConfig.postFBEOnboardingSync),
+                            data: ajaxParam({
+                                storeId: storeId
+                            }),
+                            success: function (response) {
+                                console.log('Background sync completed successfully');
+                            },
+                            error: function (error) {
+                                console.error('Background sync failed:', error);
+                            }
+                        });
+                    }, 0);
+                }
+            } catch (e) {
+                console.error('Error processing pending sync data:', e);
+            }
+        }
+    }
+
+    // Initialize post-reload sync handling
+    jQuery(document).ready(handlePostReloadSync);
 
     function cleanConfigCacheAndReloadPage()
     {

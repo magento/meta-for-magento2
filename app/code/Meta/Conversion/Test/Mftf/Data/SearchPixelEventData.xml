@@ -3,6 +3,6 @@
 <entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
     <entity name="_defaultSearch" type="SearchQuery">
-        <data key="query">book</data>
+        <data key="query">Console1</data>
     </entity>
 </entities>
