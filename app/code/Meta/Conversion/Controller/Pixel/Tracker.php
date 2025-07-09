@@ -6,11 +6,12 @@ namespace Meta\Conversion\Controller\Pixel;
 
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
-use Meta\Conversion\Helper\ServerSideHelper;
-use Meta\Conversion\Helper\ServerEventFactory;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\MessageQueue\PublisherInterface;
+use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
+use FacebookAds\Object\ServerSide\Util;
 
 class Tracker implements HttpPostActionInterface
 {
@@ -18,11 +19,6 @@ class Tracker implements HttpPostActionInterface
      * @var RequestInterface
      */
     private $request;
-
-    /**
-     * @var ServerSideHelper
-     */
-    private $serverSideHelper;
 
     /**
      * @var FBEHelper
@@ -40,33 +36,36 @@ class Tracker implements HttpPostActionInterface
     private $jsonFactory;
 
     /**
-     * @var ServerEventFactory
+     * @var PublisherInterface
      */
-    private $serverEventFactory;
+    private $publisher;
 
     /**
-     * Constructor
-     *
+     * @var JsonSerializer
+     */
+    private $jsonSerializer;
+
+    /**
      * @param RequestInterface $request
-     * @param ServerSideHelper $serverSideHelper
      * @param FBEHelper $fbeHelper
      * @param JsonFactory $jsonFactory
-     * @param ServerEventFactory $serverEventFactory
+     * @param PublisherInterface $publisher
+     * @param JsonSerializer $jsonSerializer
      * @param array $pixelEvents
      */
     public function __construct(
         RequestInterface $request,
-        ServerSideHelper $serverSideHelper,
         FBEHelper $fbeHelper,
         JsonFactory $jsonFactory,
-        ServerEventFactory $serverEventFactory,
+        PublisherInterface $publisher,
+        JsonSerializer $jsonSerializer,
         array $pixelEvents = []
     ) {
         $this->request = $request;
-        $this->serverSideHelper = $serverSideHelper;
         $this->fbeHelper = $fbeHelper;
         $this->jsonFactory = $jsonFactory;
-        $this->serverEventFactory = $serverEventFactory;
+        $this->publisher = $publisher;
+        $this->jsonSerializer = $jsonSerializer;
         $this->pixelEvents = $pixelEvents;
     }
 
@@ -81,22 +80,17 @@ class Tracker implements HttpPostActionInterface
         try {
             $params = $this->request->getParams();
             $eventName = $params['eventName'];
-            $eventId = $params['eventId'];
 
             if ($eventName) {
                 $payload = $this->pixelEvents[$eventName]->getPayload($params);
+                $payload['event_id'] = $params['eventId'];
+                $payload['event_type'] = $this->pixelEvents[$eventName]->getEventType();
+                $payload['request_uri'] = Util::getRequestUri();
+                $payload['user_agent'] = Util::getHttpUserAgent();
+                $payload['fbp'] = Util::getFbp();
+                $payload['fbc'] = Util::getFbc();
                 if (isset($payload)) {
-                    // Add source and pluginVersion in the payload as custom properties
-                    $payload['custom_properties'] = [];
-                    $payload['custom_properties']['source'] = $this->fbeHelper->getSource();
-                    $payload['custom_properties']['pluginVersion'] = $this->fbeHelper->getPluginVersion();
-                    $eventType = $this->pixelEvents[$eventName]->getEventType();
-                    $event = $this->serverEventFactory->createEvent($eventType, array_filter($payload), $eventId);
-                    if (isset($payload['userDataFromOrder'])) {
-                        $this->serverSideHelper->sendEvent($event, $payload['userDataFromOrder']);
-                    } else {
-                        $this->serverSideHelper->sendEvent($event);
-                    }
+                    $this->publisher->publish('send.conversion.event.to.meta', $this->jsonSerializer->serialize($payload));
                     $response['success'] = true;
                 }
             }

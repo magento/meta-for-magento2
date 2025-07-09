@@ -151,7 +151,7 @@ class Purchase implements TrackerInterface
             $contentIds[] = $item->getSku();
             $contentName[] = $item->getName();
         }
-        return ['contents' => $contents, 'content_ids' => $contentIds, 'content_name' => $contentName];
+        return ['contents' => $contents, 'content_ids' => $contentIds, 'content_name' => json_encode($contentName)];
     }
 
     /**

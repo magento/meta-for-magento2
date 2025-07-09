@@ -2,8 +2,23 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="wishlist_product_add_after">
         <observer name="set_cookie_for_meta_wishlist_from_cart" instance="Meta\Conversion\Observer\Cookie\SetCookieForWishlist" />
+        <observer name="trigger_add_to_wishlist_capi_event" instance="Meta\Conversion\Observer\Tracker\AddToWishlist" />
     </event>
     <event name="customer_register_success">
         <observer name="set_cookie_customer_registration_for_meta_pixel" instance="Meta\Conversion\Observer\CustomerRegistrationSuccess" />
+        <observer name="trigger_customer_registration_success_capi_event" instance="Meta\Conversion\Observer\Tracker\CustomerRegistrationSuccess" />
     </event>
+
+    <event name="checkout_cart_add_product_complete">
+        <observer name="trigger_add_to_cart_capi_event" instance="Meta\Conversion\Observer\Tracker\AddToCart" />
+    </event>
+
+    <event name="controller_action_postdispatch_checkout_index_index">
+        <observer name="trigger_initiate_checkout_capi_event" instance="Meta\Conversion\Observer\Tracker\InitiateCheckout" />
+    </event>
+
+    <event name="checkout_onepage_controller_success_action">
+        <observer name="trigger_purchase_capi_event" instance="Meta\Conversion\Observer\Tracker\Purchase" />
+    </event>
+
 </config>

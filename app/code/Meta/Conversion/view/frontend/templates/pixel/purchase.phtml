@@ -15,8 +15,9 @@ if ($block->getFacebookPixelID()) {
                     "url" : "<?= $escaper->escapeUrl($trackerUrl); ?>",
                     "payload": <?= /* @noEscape */
                     json_encode([
-                    "eventName" => $block->getEventToObserveName(),
-                    "lastOrder" => $block->getLastOrderRealOrderEntityId()
+                        "eventName" => $block->getEventToObserveName(),
+                        "lastOrder" => $block->getLastOrderRealOrderEntityId(),
+                        "eventId" => $block->getEventId(),
                     ]) ?>,
                "browserEventData": <?= /* @noEscape */
                 json_encode([
