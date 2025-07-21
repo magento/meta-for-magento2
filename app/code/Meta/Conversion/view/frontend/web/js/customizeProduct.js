@@ -36,7 +36,7 @@ define([
                 // get product price based on the catalog price display type (including/excluding tax)
                 price = $('#price-excluding-tax-product-price-' + productId).data('price-amount');
             }
-            return price.toFixed(2);
+            return price;
         }
 
         function _getProductName(element) {

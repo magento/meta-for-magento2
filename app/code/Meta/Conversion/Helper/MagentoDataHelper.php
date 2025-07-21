@@ -297,6 +297,10 @@ class MagentoDataHelper
      */
     public function getCartPayload($quote): array
     {
+        $categoryIds = [];
+        $contents = [];
+        $contentCategories = [];
+
         foreach ($quote->getAllItems() as $item) {
             $product = $item->getProduct();
             $categoryIds[] = $product->getCategoryIds();
