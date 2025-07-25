@@ -147,7 +147,6 @@ class MBEInstalls
         );
 
         $this->savePixelId($pixelId, $storeId);
-        $this->saveProfiles($data['profiles'] ?? '', $storeId);
         $this->savePages($data['pages'] ?? '', $storeId);
         $this->saveCatalogId($catalogId, $storeId);
         $this->saveCommercePartnerIntegrationId($commercePartnerIntegrationId, $storeId);
@@ -183,25 +182,6 @@ class MBEInstalls
                 '',
                 $storeId
             );
-        }
-    }
-
-    /**
-     * Save profiles
-     *
-     * @param array $profiles
-     * @param int   $storeId
-     */
-    private function saveProfiles($profiles, $storeId)
-    {
-        if ($profiles) {
-            $profiles = json_encode($profiles);
-            $this->systemConfig->saveConfig(
-                SystemConfig::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_PROFILES,
-                $profiles,
-                $storeId
-            );
-            $this->fbeHelper->log("Saved fbe_installs profiles --- {$profiles} for storeID: {$storeId}");
         }
     }
 

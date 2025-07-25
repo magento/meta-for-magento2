@@ -175,16 +175,6 @@ class Setup extends Template
     }
 
     /**
-     * Get profiles ajax route
-     *
-     * @return mixed
-     */
-    public function getProfilesAjaxRoute()
-    {
-        return $this->fbeHelper->getUrl('fbeadmin/ajax/fbprofiles');
-    }
-
-    /**
      * Get aam settings route
      *
      * @return mixed

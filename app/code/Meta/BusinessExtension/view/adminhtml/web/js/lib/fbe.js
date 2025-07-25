@@ -97,23 +97,24 @@ jQuery(document).ready(function () {
                 if (success) {
                     const accessToken = message.access_token;
                     const pixelId = message.pixel_id;
-                    const profiles = message.profiles;
                     const catalogId = message.catalog_id;
                     const commercePartnerIntegrationId = message.commerce_partner_integration_id;
                     const isOnsiteEligible = message.onsite_eligible;
                     const pageId = message.page_id;
                     const installedFeatures = message.installed_features;
-
-                    _this.savePixelId(pixelId);
+                    
                     _this.saveAccessToken(accessToken);
-                    _this.saveProfilesData(profiles);
-                    _this.saveAAMSettings(pixelId);
                     _this.saveConfig(accessToken, catalogId, pageId, commercePartnerIntegrationId, isOnsiteEligible);
                     _this.saveInstalledFeatures(installedFeatures);
+                    _this.savePixelId(pixelId);
+                    _this.saveAAMSettings(pixelId);
                     _this.cleanConfigCache();
-                    _this.postFBEOnboardingSync();
-
+                    // Store sync info before reload
                     if (window.facebookBusinessExtensionConfig.isCommerceExtensionEnabled) {
+                        sessionStorage.setItem('mbe_pending_post_onboarding_sync', JSON.stringify({
+                            storeId: window.facebookBusinessExtensionConfig.storeId,
+                            timestamp: new Date().getTime()
+                        }));
                         window.location.reload();
                     } else {
                         _this.setState({installed: 'true'});
@@ -177,29 +178,6 @@ jQuery(document).ready(function () {
                 },
                 error: function () {
                     console.error('There was an error saving access token');
-                }
-            });
-        },
-        saveProfilesData: function saveProfilesData(profiles)
-        {
-            const _this = this;
-            if (!profiles) {
-                console.error('Meta Business Extension Error: got no profiles data');
-                return;
-            }
-            jQuery.ajax({
-                type: 'post',
-                url: ajaxify(window.facebookBusinessExtensionConfig.setProfilesData),
-                async: false,
-                data: ajaxParam({
-                    profiles: JSON.stringify(profiles),
-                }),
-                success: function onSuccess(data, _textStatus, _jqXHR)
-                {
-                    _this.consoleLog('set profiles data ' + data.profiles);
-                },
-                error: function () {
-                    console.error('There was problem saving profiles data', profiles);
                 }
             });
         },
@@ -296,27 +274,6 @@ jQuery(document).ready(function () {
                 },
                 error: function () {
                     console.error('There was a problem saving config');
-                }
-            });
-        },
-        postFBEOnboardingSync: function postFBEOnboardingSync()
-        {
-            const _this = this;
-            jQuery.ajax({
-                type: 'post',
-                url: ajaxify(window.facebookBusinessExtensionConfig.postFBEOnboardingSync),
-                async: true,
-                data: ajaxParam({
-                    storeId: window.facebookBusinessExtensionConfig.storeId,
-                }),
-                success: function onSuccess(data, _textStatus, _jqXHR)
-                {
-                    if (data.success) {
-                        _this.consoleLog('Post FBE Onboarding sync completed');
-                    }
-                },
-                error: function () {
-                    console.error('There was a problem with Post FBE onboarding sync');
                 }
             });
         },
