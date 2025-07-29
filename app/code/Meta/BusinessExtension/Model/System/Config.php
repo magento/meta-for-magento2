@@ -155,7 +155,7 @@ class Config
      *
      * @var string|null
      */
-    private ?string $version = '1.5.1';
+    private ?string $version = '1.5.2-dev';
 
     /**
      * Config class constructor
