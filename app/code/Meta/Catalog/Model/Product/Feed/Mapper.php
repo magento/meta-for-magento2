@@ -146,7 +146,7 @@ class Mapper
      * @param string|null $link_type
      * @return array
      */
-    public function mapProductLinks(array $product_links, string $link_type = null): array
+    public function mapProductLinks(array $product_links, ?string $link_type = null): array
     {
         if ($link_type != null) {
             $product_links = array_filter($product_links, function ($product_link) use ($link_type) {

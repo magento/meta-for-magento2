@@ -168,7 +168,7 @@ class Diagnostics extends Template
      * @param int|null $store
      * @return string
      */
-    public function getAdminUrl(ProductInterface $product, int $store = null)
+    public function getAdminUrl(ProductInterface $product, ?int $store = null)
     {
         $params = ['id' => $product->getId()];
         if ($store) {

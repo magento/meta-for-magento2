@@ -60,8 +60,8 @@ class Catalog extends Value
         TypeListInterface $cacheTypeList,
         SystemConfig $systemConfig,
         Request $request,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);

@@ -44,8 +44,8 @@ class ArraySerialized extends ConfigValue
         ScopeConfigInterface $config,
         TypeListInterface $cacheTypeList,
         Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->serializer = $serializer;

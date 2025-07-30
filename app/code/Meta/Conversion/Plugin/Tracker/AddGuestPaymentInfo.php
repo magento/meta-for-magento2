@@ -31,7 +31,7 @@ class AddGuestPaymentInfo
         $cartId,
         $email,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         if ($result) {
             $payload = $this->addPaymentInfoTracker->getPayload($this->getInitialPayload($cartId));
