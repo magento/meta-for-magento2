@@ -144,7 +144,7 @@ class Tools
                 $baseCurrency->getCode()
             );
             // workaround for 2.4.3
-            $price = trim($price, $currencySymbol ?? '');
+            $price = ltrim($price, $currencySymbol ?? '');
             return $price;
         } catch (Exception $e) {
             return '';

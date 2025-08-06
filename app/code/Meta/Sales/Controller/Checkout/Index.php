@@ -23,10 +23,8 @@ namespace Meta\Sales\Controller\Checkout;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Request\Http;
-use Magento\Framework\Controller\Result\Redirect;
-use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartItemInterfaceFactory;
 use Magento\Quote\Model\GuestCart\GuestCartItemRepository;
@@ -40,15 +38,18 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Quote\Api\Data\ProductOptionInterfaceFactory;
 use Magento\ConfigurableProduct\Api\Data\ConfigurableItemOptionValueInterfaceFactory;
-use Meta\BusinessExtension\Model\Api\CustomApiKey\Authenticator;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\Sales\Helper\OrderHelper;
 use Exception;
 
 /**
+ * Handles the Meta Checkout URL endpoint.
+ * Creates a quote, adds products, applies coupons, and redirects to checkout.
+ *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.TooManyFields)
  */
 class Index implements HttpGetActionInterface
 {
@@ -71,7 +72,6 @@ class Index implements HttpGetActionInterface
      * @var CartRepositoryInterface
      */
     private CartRepositoryInterface $quoteRepository;
-
     /**
      * @var GuestCartItemRepository
      */
@@ -98,9 +98,9 @@ class Index implements HttpGetActionInterface
     private Http $httpRequest;
 
     /**
-     * @var RedirectFactory
+     * @var PageFactory
      */
-    private RedirectFactory $resultRedirectFactory;
+    private PageFactory $resultPageFactory;
 
     /**
      * @var FBEHelper
@@ -133,40 +133,40 @@ class Index implements HttpGetActionInterface
     private ConfigurableItemOptionValueInterfaceFactory $configurableItemOptionValueFactory;
 
     /**
-     * @param QuoteFactory $quoteFactory
-     * @param QuoteIdMaskFactory $quoteIdMaskFactory
-     * @param AddressFactory $quoteAddressFactory
-     * @param CartRepositoryInterface $quoteRepository
-     * @param GuestCartItemRepository $guestCartItemRepository
-     * @param CartItemInterfaceFactory $cartItemInterfaceFactory
-     * @param GuestCouponManagement $guestCouponManagement
-     * @param CheckoutSession $checkoutSession
-     * @param Http $httpRequest
-     * @param RedirectFactory $resultRedirectFactory
-     * @param Authenticator $authenticator
-     * @param FBEHelper $fbeHelper
-     * @param OrderHelper $orderHelper
-     * @param ProductRepositoryInterface $productRepository
-     * @param ConfigurableType $configurableType
-     * @param ProductOptionInterfaceFactory $productOptionInterfaceFactory
+     * Constructor
+     *
+     * @param QuoteFactory                                $quoteFactory
+     * @param QuoteIdMaskFactory                          $quoteIdMaskFactory
+     * @param AddressFactory                              $quoteAddressFactory
+     * @param CartRepositoryInterface                     $quoteRepository
+     * @param GuestCartItemRepository                     $guestCartItemRepository
+     * @param CartItemInterfaceFactory                    $cartItemInterfaceFactory
+     * @param GuestCouponManagement                       $guestCouponManagement
+     * @param CheckoutSession                             $checkoutSession
+     * @param Http                                        $httpRequest
+     * @param PageFactory                                 $resultPageFactory
+     * @param FBEHelper                                   $fbeHelper
+     * @param OrderHelper                                 $orderHelper
+     * @param ProductRepositoryInterface                  $productRepository
+     * @param ConfigurableType                            $configurableType
+     * @param ProductOptionInterfaceFactory               $productOptionInterfaceFactory
      * @param ConfigurableItemOptionValueInterfaceFactory $configurableItemOptionValueFactory
      */
     public function __construct(
-        QuoteFactory             $quoteFactory,
-        QuoteIdMaskFactory       $quoteIdMaskFactory,
-        AddressFactory           $quoteAddressFactory,
-        CartRepositoryInterface  $quoteRepository,
-        GuestCartItemRepository  $guestCartItemRepository,
+        QuoteFactory $quoteFactory,
+        QuoteIdMaskFactory $quoteIdMaskFactory,
+        AddressFactory $quoteAddressFactory,
+        CartRepositoryInterface $quoteRepository,
+        GuestCartItemRepository $guestCartItemRepository,
         CartItemInterfaceFactory $cartItemInterfaceFactory,
-        GuestCouponManagement    $guestCouponManagement,
-        CheckoutSession          $checkoutSession,
-        Http                     $httpRequest,
-        RedirectFactory          $resultRedirectFactory,
-        Authenticator            $authenticator,
-        FBEHelper                $fbeHelper,
-        OrderHelper              $orderHelper,
+        GuestCouponManagement $guestCouponManagement,
+        CheckoutSession $checkoutSession,
+        Http $httpRequest,
+        PageFactory $resultPageFactory,
+        FBEHelper $fbeHelper,
+        OrderHelper $orderHelper,
         ProductRepositoryInterface $productRepository,
-        ConfigurableType         $configurableType,
+        ConfigurableType $configurableType,
         ProductOptionInterfaceFactory $productOptionInterfaceFactory,
         ConfigurableItemOptionValueInterfaceFactory $configurableItemOptionValueFactory
     ) {
@@ -179,7 +179,7 @@ class Index implements HttpGetActionInterface
         $this->guestCouponManagement = $guestCouponManagement;
         $this->checkoutSession = $checkoutSession;
         $this->httpRequest = $httpRequest;
-        $this->resultRedirectFactory = $resultRedirectFactory;
+        $this->resultPageFactory = $resultPageFactory;
         $this->fbeHelper = $fbeHelper;
         $this->orderHelper = $orderHelper;
         $this->productRepository = $productRepository;
@@ -189,18 +189,18 @@ class Index implements HttpGetActionInterface
     }
 
     /**
-     * Execute action based on request.
+     * Execute action based on request and return result
      *
-     * @return Redirect
-     * @throws LocalizedException
+     * Processes incoming request to create cart with specified products and coupon.
+     *
+     * @return \Magento\Framework\Controller\ResultInterface|\Magento\Framework\View\Result\Page
+     * @throws CouldNotSaveException If quote cannot be created.
      */
     public function execute()
     {
         $ebid = $this->httpRequest->getParam('ebid');
         $productsParam = $this->httpRequest->getParam('products');
         $coupon = $this->httpRequest->getParam('coupon');
-        $redirectPath = $this->httpRequest->getParam('redirect');
-
         $storeId = (int)$this->orderHelper->getStoreIdByExternalBusinessId($ebid);
         $products = explode(',', $productsParam);
 
@@ -216,15 +216,19 @@ class Index implements HttpGetActionInterface
         }
 
         $this->checkoutSession->replaceQuote($quote);
-        return $this->redirectToPath($redirectPath);
+
+        $resultPage = $this->resultPageFactory->create();
+        $resultPage->addHandle('checkout_index_index');
+        return $resultPage;
     }
 
     /**
-     * Create a new quote.
+     * Create a new guest quote for the specified store.
      *
-     * @param int $storeId
-     * @return Quote
-     * @throws CouldNotSaveException
+     * @param int $storeId The store ID for the quote.
+     *
+     * @return Quote The created quote object.
+     * @throws CouldNotSaveException If the quote cannot be saved.
      */
     private function createQuote(int $storeId): Quote
     {
@@ -244,10 +248,11 @@ class Index implements HttpGetActionInterface
     }
 
     /**
-     * Get masked cart ID.
+     * Get the masked (hashed) ID for a given quote.
      *
-     * @param Quote $quote
-     * @return string
+     * @param Quote $quote The quote object.
+     *
+     * @return string The masked quote ID.
      */
     private function getMaskedCartId(Quote $quote): string
     {
@@ -257,25 +262,32 @@ class Index implements HttpGetActionInterface
     }
 
     /**
-     * Add product to cart.
+     * Add a product item to the guest cart.
      *
-     * @param string $productItem
-     * @param string $cartId
-     * @param int $storeId
+     * Handles simple and configurable products.
+     *
+     * @param string $productItem The product string in "sku:qty" format.
+     * @param string $cartId      The masked cart ID.
+     * @param int    $storeId     The store ID.
+     *
      * @return void
      */
     private function addProductToCart(string $productItem, string $cartId, int $storeId): void
     {
         try {
-            [$sku, $quantity] = explode(':', $productItem);
+            [$sku_or_id, $quantity] = explode(':', $productItem);
             $quantity = (int)$quantity;
+            try {
+                $product = $this->productRepository->get($sku_or_id, false, $storeId, true);
+            } catch (Exception $e) {
+                $product = $this->productRepository->getById($sku_or_id);
+            }
 
-            $product = $this->productRepository->get($sku, false, $storeId, true);
-
-            [$parentSku, $configurableOptions] = $this->getConfigurableOptions($product, $storeId);
+            [$parentSku, $configurableOptions]
+                = $this->getConfigurableOptions($product, $storeId);
 
             $cartItem = $this->cartItemInterfaceFactory->create();
-            $cartItem->setSku($sku);
+            $cartItem->setSku($product->getSku());
             $cartItem->setQty($quantity);
             $cartItem->setQuoteId($cartId);
 
@@ -290,20 +302,27 @@ class Index implements HttpGetActionInterface
 
             $this->guestCartItemRepository->save($cartItem);
         } catch (Exception $e) {
-            $this->logExceptionToMeta($e, $storeId, 'error_adding_item', [
-                'cart_id' => $cartId,
-                'sku' => $sku,
-                'quantity' => $quantity,
-            ]);
+            $this->logExceptionToMeta(
+                $e,
+                $storeId,
+                'error_adding_item',
+                [
+                    'cart_id' => $cartId,
+                    // can't always rely on sku_or_id being present, as it resides in the catch block
+                    'sku' => $productItem,
+                    'quantity' => $quantity,
+                ]
+            );
         }
     }
 
     /**
-     * Apply coupon to cart.
+     * Apply a coupon code to the guest cart.
      *
-     * @param string $coupon
-     * @param string $cartId
-     * @param int $storeId
+     * @param string $coupon  The coupon code.
+     * @param string $cartId  The masked cart ID.
+     * @param int    $storeId The store ID.
+     *
      * @return void
      */
     private function applyCouponToCart(string $coupon, string $cartId, int $storeId): void
@@ -311,32 +330,25 @@ class Index implements HttpGetActionInterface
         try {
             $this->guestCouponManagement->set($cartId, $coupon);
         } catch (Exception $e) {
-            $this->logExceptionToMeta($e, $storeId, 'error_adding_coupon', [
-                'cart_id' => $cartId,
-                'coupon' => $coupon,
-            ]);
+            $this->logExceptionToMeta(
+                $e,
+                $storeId,
+                'error_adding_coupon',
+                [
+                    'cart_id' => $cartId,
+                    'coupon' => $coupon,
+                ]
+            );
         }
     }
 
     /**
-     * Redirect to path.
+     * Get configurable product options if the product is a child of a configurable product.
      *
-     * @param string|null $redirectPath
-     * @return Redirect
-     */
-    private function redirectToPath(?string $redirectPath): Redirect
-    {
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath($redirectPath ?: 'checkout');
-        return $resultRedirect;
-    }
-
-    /**
-     * Get configurable options for a product.
+     * @param ProductInterface $product The product object.
+     * @param int              $storeId The store ID.
      *
-     * @param ProductInterface $product
-     * @param int $storeId
-     * @return array
+     * @return array The parent SKU (if applicable) and configurable options.
      */
     private function getConfigurableOptions(ProductInterface $product, int $storeId): array
     {
@@ -369,12 +381,13 @@ class Index implements HttpGetActionInterface
     }
 
     /**
-     * Log exception to Meta.
+     * Log an exception to Meta using the FBEHelper.
      *
-     * @param Exception $e
-     * @param int $storeId
-     * @param string $eventType
-     * @param array $extraData
+     * @param Exception $e         The exception to log.
+     * @param int       $storeId   The store ID associated with the exception.
+     * @param string    $eventType Where the exception occurred.
+     * @param array     $extraData Additional data to include in the log entry.
+     *
      * @return void
      */
     private function logExceptionToMeta(Exception $e, int $storeId, string $eventType, array $extraData = []): void
