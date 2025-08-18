@@ -160,21 +160,21 @@ class CreateOrderApi implements CreateOrderApiInterface
      * @param RemoteAddress|null $remoteAddress
      */
     public function __construct(
-        EventManagerInterface         $eventManager,
-        QuoteManagement               $quoteManagement,
-        CartRepositoryInterface       $quoteRepository,
-        SystemConfig                  $systemConfig,
-        FacebookOrderInterfaceFactory $facebookOrderFactory,
-        InvoiceManagementInterface    $invoiceManagement,
-        TransactionFactory            $transactionFactory,
-        CheckoutSession               $checkoutSession,
-        OrderHelper                   $orderHelper,
-        Authenticator                 $authenticator,
-        FBEHelper                     $fbeHelper,
-        CommerceHelper                $commerceHelper,
-        QuoteIdMaskFactory            $quoteIdMaskFactory,
-        RequestInterface              $request = null,
-        RemoteAddress                 $remoteAddress = null
+        EventManagerInterface          $eventManager,
+        QuoteManagement                $quoteManagement,
+        CartRepositoryInterface        $quoteRepository,
+        SystemConfig                   $systemConfig,
+        FacebookOrderInterfaceFactory  $facebookOrderFactory,
+        InvoiceManagementInterface     $invoiceManagement,
+        TransactionFactory             $transactionFactory,
+        CheckoutSession                $checkoutSession,
+        OrderHelper                    $orderHelper,
+        Authenticator                  $authenticator,
+        FBEHelper                      $fbeHelper,
+        CommerceHelper                 $commerceHelper,
+        QuoteIdMaskFactory             $quoteIdMaskFactory,
+        ?RequestInterface              $request = null,
+        ?RemoteAddress                 $remoteAddress = null
     ) {
         $this->eventManager = $eventManager;
         $this->quoteManagement = $quoteManagement;

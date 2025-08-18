@@ -27,7 +27,7 @@ class AddPaymentInfo
         bool $result,
         $cartId,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         if ($result) {
             $payload = $this->addPaymentInfoTracker->getPayload($this->getInitialPayload($cartId));

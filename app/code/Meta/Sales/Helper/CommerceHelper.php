@@ -267,10 +267,10 @@ class CommerceHelper
      * @throws Exception
      */
     public function cancelOrder(
-        int    $storeId,
-        string $fbOrderId,
-        array  $items = null,
-        bool   $isOutOfStockCancellation = false
+        int     $storeId,
+        string  $fbOrderId,
+        ?array  $items = null,
+        bool    $isOutOfStockCancellation = false
     ) {
         $this->graphAPIAdapter
             ->setDebugMode($this->systemConfig->isDebugMode($storeId))

@@ -881,7 +881,7 @@ class Config
      * @param string|null $scope
      * @return bool
      */
-    public function isServerTestModeEnabled(int $scopeId = null, string $scope = null): bool
+    public function isServerTestModeEnabled(?int $scopeId = null, ?string $scope = null): bool
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_ENABLE_SERVER_TEST,
@@ -897,7 +897,7 @@ class Config
      * @param string|null $scope
      * @return string|null
      */
-    public function getServerTestCode(int $scopeId = null, string $scope = null): ?string
+    public function getServerTestCode(?int $scopeId = null, ?string $scope = null): ?string
     {
         return $this->getConfig(
             self::XML_PATH_FACEBOOK_CONVERSION_MANAGEMENT_SERVER_TEST_CODE,
@@ -913,7 +913,7 @@ class Config
      * @param string|null $scope
      * @return mixed
      */
-    public function getWeightUnit(int $scopeId = null, string $scope = null)
+    public function getWeightUnit(?int $scopeId = null, ?string $scope = null)
     {
         return $this->getConfig('general/locale/weight_unit', $scopeId, $scope);
     }
@@ -925,7 +925,7 @@ class Config
      * @param string|null $scope
      * @return bool
      */
-    public function isAdditionalAttributesSyncDisabled(int $scopeId = null, string $scope = null): bool
+    public function isAdditionalAttributesSyncDisabled(?int $scopeId = null, ?string $scope = null): bool
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_DISABLE_ADDITIONAL_ATTRIBUTES_SYNC,
@@ -941,7 +941,7 @@ class Config
      * @param string|null $scope
      * @return bool
      */
-    public function isUnsupportedProductsDisabled(int $scopeId = null, string $scope = null): bool
+    public function isUnsupportedProductsDisabled(?int $scopeId = null, ?string $scope = null): bool
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_DISABLE_UNSUPPORTED_PRODUCTS,
@@ -958,7 +958,7 @@ class Config
      * @param string|null $scope
      * @return int
      */
-    public function getProductsFetchBatchSize(int $default = 200, int $scopeId = null, string $scope = null): int
+    public function getProductsFetchBatchSize(int $default = 200, ?int $scopeId = null, ?string $scope = null): int
     {
         $batch_size = (int)$this->getConfig(
             self::XML_PATH_FACEBOOK_PRODUCTS_FETCH_BATCH_SIZE,
@@ -978,7 +978,7 @@ class Config
      * @param string|null $scope
      * @return bool
      */
-    public function isMemoryProfilingEnabled(int $scopeId = null, string $scope = null): bool
+    public function isMemoryProfilingEnabled(?int $scopeId = null, ?string $scope = null): bool
     {
         return (bool)$this->getConfig(
             self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_ENABLE_MEMORY_PROFILING,
@@ -1042,7 +1042,7 @@ class Config
      * @param int|null $storeId
      * @return bool
      */
-    public function isFBEShopInstalled(int $storeId = null): bool
+    public function isFBEShopInstalled(?int $storeId = null): bool
     {
         return $this->isFeatureInstalled('fb_shop', $storeId) ||
             $this->isFeatureInstalled('ig_shopping', $storeId) ||
@@ -1055,7 +1055,7 @@ class Config
      * @param int|null $storeId
      * @return bool
      */
-    public function isInstalledShopOnsiteEligible(int $storeId = null): bool
+    public function isInstalledShopOnsiteEligible(?int $storeId = null): bool
     {
         return $this->getConfig(self::XML_PATH_FACEBOOK_BUSINESS_EXTENSION_IS_ONSITE_ELIGIBLE, $storeId);
     }
