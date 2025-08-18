@@ -315,34 +315,23 @@ class CategoryCollection
                 if (!$isVisibleOnMeta && !$isAllCategoriesSyncEnabled) {
                     continue;
                 }
-
-                $setId = $category->getData(SystemConfig::META_PRODUCT_SET_ID);
+                
                 $products = $this->categoryUtilities->getCategoryProducts($category, $storeId);
-                if ($setId) {
-                    $requests[] = $this->updateCategoryWithFBRequestJson(
-                        $category,
-                        $products,
-                        $setId,
-                        $storeId,
-                        $isVisibleOnMeta
-                    );
-                } else {
-                    if ($products->getSize() === 0) {
-                        $this->fbeHelper->log(sprintf(
-                            "Category update: Empty CATEGORY %s and store %s, product set creation skipped",
-                            $category->getName(),
-                            $storeId
-                        ));
-                        continue;
-                    }
-                    $requests[] = $this->pushCategoryWithFBRequestJson(
-                        $category,
-                        $products,
-                        $catalogId,
-                        $storeId,
-                        $isVisibleOnMeta
-                    );
+                if ($products->getSize() === 0) {
+                    $this->fbeHelper->log(sprintf(
+                        "Category update: Empty CATEGORY %s and store %s, product set creation skipped",
+                        $category->getName(),
+                        $storeId
+                    ));
+                    continue;
                 }
+                $requests[] = $this->pushCategoryWithFBRequestJson(
+                    $category,
+                    $products,
+                    $catalogId,
+                    $storeId,
+                    $isVisibleOnMeta
+                );
                 $updatedCategories[] = $category;
                 if (count($requests) === self::BATCH_MAX) {
                     $batchResponse = $this->flushCategoryBatchRequest(
