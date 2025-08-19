@@ -51,6 +51,7 @@
                 <item name="applink" xsi:type="string">App link</item>
                 <item name="disabled_capabilities" xsi:type="string">Disabled Capabilities</item>
                 <item name="commerce_tax_category" xsi:type="string">Commerce Tax Category</item>
+                <item name="sale_price" xsi:type="string">Sale Price</item>
             </argument>
         </arguments>
     </type>
