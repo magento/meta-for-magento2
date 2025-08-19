@@ -768,7 +768,7 @@ class Builder
             self::ATTR_PRODUCT_TYPE => $this->getProductType($product),
             self::ATTR_CONDITION => $this->getCondition($product),
             self::ATTR_PRICE => $this->builderTools->getProductPrice($product),
-            self::ATTR_SALE_PRICE => $this->builderTools->getProductSalePrice($product),
+            self::ATTR_SALE_PRICE => $this->getSalePrice($product),
             self::ATTR_SALE_PRICE_EFFECTIVE_DATE => $this->builderTools->getProductSalePriceEffectiveDate($product),
             self::ATTR_COLOR => $this->getColor($product),
             self::ATTR_SIZE => $this->getSize($product),
@@ -817,6 +817,23 @@ class Builder
         }
 
         return $entry;
+    }
+
+    /**
+     * Get product sale price
+     *
+     * @param Product $product
+     * @return mixed|null
+     */
+    private function getSalePrice(Product $product)
+    {
+        $salePrice = isset($this->attrMap[self::ATTR_SALE_PRICE])
+            ? $product->getData($this->attrMap[self::ATTR_SALE_PRICE]) : null;
+        if (!$salePrice) {
+            $this->builderTools->getProductSalePrice($product);
+        }
+
+        return $salePrice;
     }
 
     /**
