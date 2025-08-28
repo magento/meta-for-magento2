@@ -21,9 +21,35 @@ declare(strict_types=1);
 namespace Meta\BusinessExtension\Model\Api;
 
 use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
+use Magento\Framework\Filesystem\DirectoryList;
 
 class AdobeCloudConfig implements AdobeCloudConfigInterface
 {
+    /**
+     * List of files and directories unique to an Adobe Commerce Cloud deployment.
+     * Their presence indicates the site is running on the cloud infrastructure.
+     */
+    public const CLOUD_FILES = [
+        '.magento.app.yaml',
+        '/vendor/magento/ece-tools/composer.json'
+    ];
+
+    /**
+     * @var DirectoryList
+     */
+    private $directoryList;
+
+    /**
+     * Class constructor
+     *
+     * @param DirectoryList $directoryList
+     */
+    public function __construct(
+        DirectoryList $directoryList
+    ) {
+        $this->directoryList = $directoryList;
+    }
+
     /**
      * Detect if the current seller's service is on hosted Adobe Cloud
      *
@@ -31,9 +57,15 @@ class AdobeCloudConfig implements AdobeCloudConfigInterface
      */
     public function isSellerOnAdobeCloud(): bool
     {
-        // Need to grab the env var in someway, and getenv() function also generates linter error
-        // phpcs:ignore
-        return isset($_ENV['MAGENTO_CLOUD_ENVIRONMENT']);
+        $rootPath = $this->directoryList->getRoot();
+
+        foreach (self::CLOUD_FILES as $file) {
+            if (file_exists($rootPath . '/' . $file)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
