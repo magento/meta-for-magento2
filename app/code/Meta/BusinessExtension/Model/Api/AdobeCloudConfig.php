@@ -22,6 +22,7 @@ namespace Meta\BusinessExtension\Model\Api;
 
 use Meta\BusinessExtension\Api\AdobeCloudConfigInterface;
 use Magento\Framework\Filesystem\DirectoryList;
+use  Magento\Framework\Filesystem\Driver\File;
 
 class AdobeCloudConfig implements AdobeCloudConfigInterface
 {
@@ -40,14 +41,22 @@ class AdobeCloudConfig implements AdobeCloudConfigInterface
     private $directoryList;
 
     /**
+     * @var File
+     */
+    private $file;
+
+    /**
      * Class constructor
      *
      * @param DirectoryList $directoryList
+     * @param File $file
      */
     public function __construct(
-        DirectoryList $directoryList
+        DirectoryList $directoryList,
+        File $file
     ) {
         $this->directoryList = $directoryList;
+        $this->file = $file;
     }
 
     /**
@@ -60,8 +69,11 @@ class AdobeCloudConfig implements AdobeCloudConfigInterface
         $rootPath = $this->directoryList->getRoot();
 
         foreach (self::CLOUD_FILES as $file) {
-            if (file_exists($rootPath . '/' . $file)) {
-                return true;
+            try {
+                if ($this->file->isExists($rootPath . '/' . $file)) {
+                    return true;
+                }
+            } catch (\Exception $ex) {
             }
         }
 
