@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Meta\BusinessExtension\Test\Unit\Api;
+
 use Meta\BusinessExtension\Model\Api\CoreConfigFactory;
 use Meta\BusinessExtension\Model\Api\CoreConfig;
 use PHPUnit\Framework\TestCase;
