@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Meta\BusinessExtension\Test\Unit\Controller\Adminhtml\Ajax;
+
 use Meta\BusinessExtension\Controller\Adminhtml\Ajax\MbeUpdateInstalledConfig;
 use Meta\BusinessExtension\Helper\FBEHelper;
 use Meta\BusinessExtension\Model\MBEInstalls;
