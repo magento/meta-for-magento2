@@ -136,15 +136,15 @@ class PersistConfigurationTest extends \PHPUnit\Framework\TestCase
                     'event' => 'persist_configuration',
                     'event_type' => 'save_config'
                 ]
-                );
+            );
         $result = $this->fbFeedPush->executeForJson();
         $this->assertNotNull($result);
         $this->assertFalse($result['success']);
     }
 
      /**
-     * @return void
-     */
+      * @return void
+      */
     public function testExecuteForJsonWithEmptyToken()
     {
         $storeId = 1;

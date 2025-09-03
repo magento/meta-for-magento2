@@ -35,7 +35,7 @@ class GraphAPIConfigTest extends TestCase
 
     /**
      * Test getGraphBaseURL function
-     * 
+     *
      * @return void
      */
     public function testGetGraphBaseURL(): void
@@ -45,7 +45,7 @@ class GraphAPIConfigTest extends TestCase
 
     /**
      * Test getGraphBaseURL function
-     * 
+     *
      * @return void
      */
     public function testGetGraphBaseURLWithOverride(): void

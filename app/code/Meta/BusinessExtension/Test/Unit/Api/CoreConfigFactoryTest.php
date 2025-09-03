@@ -36,7 +36,7 @@ class CoreConfigFactoryTest extends TestCase
 
     /**
      * Test create method
-     * 
+     *
      * @return void
      */
     public function testCreate(): void
@@ -57,7 +57,7 @@ class CoreConfigFactoryTest extends TestCase
 
     /**
      * Get data for testing
-     * 
+     *
      * @return array
      */
     private function getData()

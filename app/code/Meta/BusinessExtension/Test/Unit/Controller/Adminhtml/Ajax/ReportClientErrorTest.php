@@ -18,7 +18,7 @@ class ReportClientErrorTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void

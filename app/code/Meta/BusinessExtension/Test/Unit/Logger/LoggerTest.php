@@ -30,7 +30,7 @@ class LoggerTest extends TestCase
 
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -54,7 +54,6 @@ class LoggerTest extends TestCase
                 'publisher' => $this->publisherMock
             ]
         );
-
     }
 
     public function testConstructorInitializesHandlerAndSetsPublisher()

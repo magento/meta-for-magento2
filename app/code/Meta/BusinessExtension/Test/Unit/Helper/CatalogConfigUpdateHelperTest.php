@@ -30,7 +30,7 @@ class CatalogConfigUpdateHelperTest extends TestCase
 
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -52,7 +52,7 @@ class CatalogConfigUpdateHelperTest extends TestCase
 
     /**
      * Test updateCatalogConfiguration function
-     * 
+     *
      * @return void
      */
     public function testUpdateCatalogConfiguration(): void
@@ -86,7 +86,7 @@ class CatalogConfigUpdateHelperTest extends TestCase
 
     /**
      * Test updateCatalogConfiguration function
-     * 
+     *
      * @return void
      */
     public function testUpdateCatalogConfigurationException(): void

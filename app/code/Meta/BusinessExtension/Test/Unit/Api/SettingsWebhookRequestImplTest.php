@@ -18,7 +18,7 @@ class SettingsWebhookRequestImplTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -32,7 +32,7 @@ class SettingsWebhookRequestImplTest extends TestCase
 
     /**
      * Validate if the settings external business ID is working
-     * 
+     *
      * @return void
      */
     public function testSetExternalBusinessId(): void
@@ -45,7 +45,7 @@ class SettingsWebhookRequestImplTest extends TestCase
 
     /**
      * Validate if the settings notification is working
-     * 
+     *
      * @return void
      */
     public function testSetNotification(): void
@@ -65,7 +65,7 @@ class SettingsWebhookRequestImplTest extends TestCase
 
     /**
      * Validate if the graphql version is set correctly
-     * 
+     *
      * @return void
      */
     public function testSetGraphAPIVersion(): void

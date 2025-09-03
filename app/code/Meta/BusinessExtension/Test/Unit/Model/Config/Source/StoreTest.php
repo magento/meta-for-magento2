@@ -26,7 +26,7 @@ class StoreTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setup(): void
@@ -39,7 +39,7 @@ class StoreTest extends TestCase
 
     /**
      * Get Store Validation
-     * 
+     *
      * @return void
      */
     public function testGetStores(): void
@@ -75,7 +75,7 @@ class StoreTest extends TestCase
 
     /**
      * Test toOptionArray method
-     * 
+     *
      * @return void
      */
     public function testToOptionArray(): void
@@ -92,7 +92,7 @@ class StoreTest extends TestCase
 
     /**
      * Test toOptionArray method
-     * 
+     *
      * @return void
      */
     public function testToOptionArrayWithInActiveStore(): void
@@ -111,7 +111,7 @@ class StoreTest extends TestCase
 
     /**
      * Returns the mock store
-     * 
+     *
      * @return $storeMock
      */
     private function getMockStore(): CoreStore
@@ -128,7 +128,7 @@ class StoreTest extends TestCase
 
     /**
      * Returns the mock website
-     * 
+     *
      * @return $websiteMock
      */
     private function getMockWebsite(): WebsiteInterface
@@ -137,6 +137,5 @@ class StoreTest extends TestCase
         $websiteMock->method('getName')->willReturn('Meta Website');
 
         return $websiteMock;
-
     }
 }

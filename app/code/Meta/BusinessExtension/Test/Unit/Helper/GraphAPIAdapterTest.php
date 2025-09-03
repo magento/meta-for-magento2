@@ -27,7 +27,7 @@ class GraphAPIAdapterTest extends TestCase
     private $userToken = 'meta_user';
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -53,7 +53,8 @@ class GraphAPIAdapterTest extends TestCase
             ]
         );
 
-        $this->client = $this->createMock(Client::class,
+        $this->client = $this->createMock(
+            Client::class,
             [
                 'base_uri' => "https://business.facebook.com/v20.2/",
                 'timeout' => 60,
@@ -62,8 +63,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test setAccessToken function 
-     * 
+     * Test setAccessToken function
+     *
      * @return void
      */
     public function testSetAccessToken(): void
@@ -74,8 +75,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test setDebugMode function 
-     * 
+     * Test setDebugMode function
+     *
      * @return void
      */
     public function testSetDebugMode(): void
@@ -85,8 +86,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getPageTokenFromUserToken function 
-     * 
+     * Test getPageTokenFromUserToken function
+     *
      * @return void
      */
     public function testGetPageTokenFromUserToken(): void
@@ -111,8 +112,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getPageTokenFromUserToken function 
-     * 
+     * Test getPageTokenFromUserToken function
+     *
      * @return void
      */
     public function testGetPageTokenFromUserTokenValidateNullResponse(): void
@@ -137,8 +138,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getPageIdFromUserToken function 
-     * 
+     * Test getPageIdFromUserToken function
+     *
      * @return void
      */
     public function testGetPageIdFromUserTokenWithNull(): void
@@ -163,8 +164,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getPageIdFromUserToken function 
-     * 
+     * Test getPageIdFromUserToken function
+     *
      * @return void
      */
     public function testGetPageIdFromUserToken(): void
@@ -189,8 +190,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getPageAccessToken function 
-     * 
+     * Test getPageAccessToken function
+     *
      * @return void
      */
     public function testGetPageAccessToken(): void
@@ -217,8 +218,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getPageAccessToken function 
-     * 
+     * Test getPageAccessToken function
+     *
      * @return void
      */
     public function testGetPageAccessTokenWithNullResponse(): void
@@ -245,8 +246,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getCommerceExtensionIFrameURL function 
-     * 
+     * Test getCommerceExtensionIFrameURL function
+     *
      * @return void
      */
     public function testGetCommerceExtensionIFrameURL(): void
@@ -280,8 +281,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getCommerceExtensionIFrameURL function 
-     * 
+     * Test getCommerceExtensionIFrameURL function
+     *
      * @return void
      */
     public function testGetCommerceExtensionIFrameURLWithoutAdminConfiguredUrl(): void
@@ -315,8 +316,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getCommerceAccountData function 
-     * 
+     * Test getCommerceAccountData function
+     *
      * @return void
      */
     public function testGetCommerceAccountData(): void
@@ -348,8 +349,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test associateMerchantSettingsWithApp function 
-     * 
+     * Test associateMerchantSettingsWithApp function
+     *
      * @return void
      */
     public function testAssociateMerchantSettingsWithApp(): void
@@ -376,8 +377,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getCatalogFeeds function 
-     * 
+     * Test getCatalogFeeds function
+     *
      * @return void
      */
     public function testGetCatalogFeeds(): void
@@ -403,8 +404,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getFeed function 
-     * 
+     * Test getFeed function
+     *
      * @return void
      */
     public function testGetFeed(): void
@@ -430,8 +431,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test createEmptyFeed function 
-     * 
+     * Test createEmptyFeed function
+     *
      * @return void
      */
     public function testCreateEmptyFeed(): void
@@ -459,8 +460,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test catalogBatchRequest function 
-     * 
+     * Test catalogBatchRequest function
+     *
      * @return void
      */
     public function testCatalogBatchRequest(): void
@@ -487,8 +488,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test graphAPIBatchRequest function 
-     * 
+     * Test graphAPIBatchRequest function
+     *
      * @return void
      */
     public function testGraphAPIBatchRequest(): void
@@ -513,8 +514,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getOrderDetails function 
-     * 
+     * Test getOrderDetails function
+     *
      * @return void
      */
     public function testGetOrderDetails(): void
@@ -539,8 +540,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getOrders function 
-     * 
+     * Test getOrders function
+     *
      * @return void
      */
     public function testGetOrders(): void
@@ -565,8 +566,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getRefunds function 
-     * 
+     * Test getRefunds function
+     *
      * @return void
      */
     public function testGetRefunds(): void
@@ -591,8 +592,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getCancellations function 
-     * 
+     * Test getCancellations function
+     *
      * @return void
      */
     public function testGetCancellations(): void
@@ -617,8 +618,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getOrderItems function 
-     * 
+     * Test getOrderItems function
+     *
      * @return void
      */
     public function testGetOrderItems(): void
@@ -643,8 +644,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getOrderItems function 
-     * 
+     * Test getOrderItems function
+     *
      * @return void
      */
     public function testAcknowledgeOrders(): void
@@ -670,8 +671,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getProductInfo function 
-     * 
+     * Test getProductInfo function
+     *
      * @return void
      */
     public function testGetProductInfo(): void
@@ -696,8 +697,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getProductByRetailerId function 
-     * 
+     * Test getProductByRetailerId function
+     *
      * @return void
      */
     public function testGetProductByRetailerId(): void
@@ -723,8 +724,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getProductsByFacebookProductIds function 
-     * 
+     * Test getProductsByFacebookProductIds function
+     *
      * @return void
      */
     public function testGetProductsByFacebookProductIds(): void
@@ -750,8 +751,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getProductErrors function 
-     * 
+     * Test getProductErrors function
+     *
      * @return void
      */
     public function testGetProductErrors(): void
@@ -776,8 +777,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getCatalogDiagnostics function 
-     * 
+     * Test getCatalogDiagnostics function
+     *
      * @return void
      */
     public function testGetCatalogDiagnostics(): void
@@ -802,8 +803,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getFBEInstalls function 
-     * 
+     * Test getFBEInstalls function
+     *
      * @return void
      */
     public function testGetFBEInstalls(): void
@@ -829,8 +830,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test deleteFBEInstalls function 
-     * 
+     * Test deleteFBEInstalls function
+     *
      * @return void
      */
     public function testDeleteFBEInstalls(): void
@@ -856,8 +857,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test persistLogToMeta function 
-     * 
+     * Test persistLogToMeta function
+     *
      * @return void
      */
     public function testPersistLogToMeta(): void
@@ -905,8 +906,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getGraphApiVersion function 
-     * 
+     * Test getGraphApiVersion function
+     *
      * @return void
      */
     public function testGetGraphApiVersion(): void
@@ -919,8 +920,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test getGraphApiVersion function 
-     * 
+     * Test getGraphApiVersion function
+     *
      * @return void
      */
     public function testGetGraphApiVersionWithEmpty(): void
@@ -933,8 +934,8 @@ class GraphAPIAdapterTest extends TestCase
     }
 
     /**
-     * Test repairCommercePartnerIntegration function 
-     * 
+     * Test repairCommercePartnerIntegration function
+     *
      * @return void
      */
     public function testRepairCommercePartnerIntegration(): void

@@ -45,7 +45,7 @@ class UpdateMBESettingsTest extends TestCase
 
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -76,7 +76,7 @@ class UpdateMBESettingsTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecute(): void
@@ -124,7 +124,7 @@ class UpdateMBESettingsTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithException(): void
@@ -171,7 +171,8 @@ class UpdateMBESettingsTest extends TestCase
 
         $this->fbeHelper->expects($this->once())
             ->method('logExceptionImmediatelyToMeta')
-            ->with($exception,
+            ->with(
+                $exception,
                 [
                     'store_id' => 2,
                     'event' => 'update_mbe_settings_cron',
@@ -183,7 +184,7 @@ class UpdateMBESettingsTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithUpdateMBESettingsException(): void
@@ -224,7 +225,8 @@ class UpdateMBESettingsTest extends TestCase
 
         $this->fbeHelper->expects($this->exactly(count($expectedItems)))
             ->method('logExceptionImmediatelyToMeta')
-            ->withConsecutive([
+            ->withConsecutive(
+                [
                 $exception,
                     [
                         'store_id' => 10,
@@ -252,7 +254,7 @@ class UpdateMBESettingsTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithRepairCommercePartnerIntegrationException(): void
@@ -298,7 +300,8 @@ class UpdateMBESettingsTest extends TestCase
 
         $this->fbeHelper->expects($this->exactly(count($expectedItems)))
             ->method('logExceptionImmediatelyToMeta')
-            ->withConsecutive([
+            ->withConsecutive(
+                [
                 $exception,
                     [
                         'store_id' => 10,

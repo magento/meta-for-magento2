@@ -14,7 +14,6 @@ use Magento\Framework\UrlInterface;
 use Magento\Framework\View\LayoutInterface;
 use Magento\Backend\Block\Widget\Button;
 
-
 class DeleteConnectionTest extends TestCase
 {
     /**
@@ -49,7 +48,7 @@ class DeleteConnectionTest extends TestCase
 
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -84,7 +83,7 @@ class DeleteConnectionTest extends TestCase
 
     /**
      * Test getAjaxUrl function
-     * 
+     *
      * @return void
      */
     public function testGetAjaxUrl(): void
@@ -107,7 +106,7 @@ class DeleteConnectionTest extends TestCase
 
     /**
      * Test getAjaxUrl function
-     * 
+     *
      * @return void
      */
     public function testGetAjaxUrlWithNullStoreId(): void
@@ -130,7 +129,7 @@ class DeleteConnectionTest extends TestCase
 
     /**
      * Test getCleanCacheAjaxUrl function
-     * 
+     *
      * @return void
      */
     public function testGetCleanCacheAjaxUrl(): void
@@ -148,7 +147,7 @@ class DeleteConnectionTest extends TestCase
 
     /**
      * Test getButtonHtml function
-     * 
+     *
      * @return void
      */
     public function testGetButtonHtml(): void
@@ -182,7 +181,7 @@ class DeleteConnectionTest extends TestCase
 
     /**
      * Test getStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetStoreId(): void
@@ -206,7 +205,7 @@ class DeleteConnectionTest extends TestCase
 
     /**
      * Test getStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetStoreIdWithStoreParameter(): void

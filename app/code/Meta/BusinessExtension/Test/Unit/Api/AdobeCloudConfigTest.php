@@ -18,7 +18,7 @@ class AdobeCloudConfigTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -33,7 +33,7 @@ class AdobeCloudConfigTest extends TestCase
 
     /**
      * Validate if seller is on Cloud
-     * 
+     *
      * @return void
      */
     public function testIsSellerOnAdobeCloudReturnsTrueWhenEnvVarIsSet(): void
@@ -47,7 +47,7 @@ class AdobeCloudConfigTest extends TestCase
 
     /**
      * Validate if seller is on-premise
-     * 
+     *
      * @return void
      */
     public function testIsSellerOnAdobeCloudReturnsFalseWhenEnvVarIsNotSet(): void
@@ -60,7 +60,7 @@ class AdobeCloudConfigTest extends TestCase
 
     /**
      * Validate if seller is on-premise
-     * 
+     *
      * @return void
      */
     public function testGetCommercePartnerSellerPlatformType(): void
@@ -73,7 +73,7 @@ class AdobeCloudConfigTest extends TestCase
 
     /**
      * Validate if seller is on-premise
-     * 
+     *
      * @return void
      */
     public function testGetCommercePartnerSellerPlatformTypeIsNotOnCloud(): void

@@ -21,7 +21,7 @@ class DeleteLegacyDataTest extends TestCase
 
     /**
      * Class setUp method
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -36,7 +36,7 @@ class DeleteLegacyDataTest extends TestCase
 
     /**
      * Test getAliases function
-     * 
+     *
      * @return void
      */
     public function testGetAliases(): void
@@ -46,7 +46,7 @@ class DeleteLegacyDataTest extends TestCase
 
     /**
      * Test getDependencies function
-     * 
+     *
      * @return void
      */
     public function testGetDependencies(): void
@@ -56,7 +56,7 @@ class DeleteLegacyDataTest extends TestCase
 
     /**
      * Test apply function
-     * 
+     *
      * @return void
      */
     public function testApply(): void

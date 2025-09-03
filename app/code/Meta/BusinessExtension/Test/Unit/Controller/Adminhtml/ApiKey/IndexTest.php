@@ -53,7 +53,7 @@ class IndexTest extends TestCase
 
     /**
      * Test the execute method of the Index controller
-     * 
+     *
      * @return void
      */
     public function testExecute(): void
@@ -81,7 +81,7 @@ class IndexTest extends TestCase
 
     /**
      * Test the execute method of the Index controller
-     * 
+     *
      * @return void
      */
     public function testExecuteWithoutAuthorization(): void

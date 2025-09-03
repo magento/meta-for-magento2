@@ -17,7 +17,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setup(): void
@@ -35,11 +35,11 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the external business ID is empty
-     * 
+     *
      * @return void
      */
     public function testGetExternalBusinessId(): void
-    {   
+    {
         $businessId = 'ZmJfaWRfMQ==';
         $this->metaCoreConfig->setExternalBusinessId($businessId);
         $this->assertEquals($businessId, $this->metaCoreConfig->getExternalBusinessId());
@@ -47,7 +47,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the order sync is enabled
-     * 
+     *
      * @return void
      */
     public function testSetIsOrderSyncEnabled(): void
@@ -60,7 +60,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the catalog sync is enabled
-     * 
+     *
      * @return void
      */
     public function testSetIsCatalogSyncEnabled(): void
@@ -73,7 +73,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the Promotion sync is enabled
-     * 
+     *
      * @return void
      */
     public function testSetIsPromotionsSyncEnabled(): void
@@ -86,7 +86,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the extension is active
-     * 
+     *
      * @return void
      */
     public function testSetIsActiveExtension(): void
@@ -99,7 +99,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the product identifier attribute is set
-     * 
+     *
      * @return void
      */
     public function testSetProductIdentifierAttr(): void
@@ -112,7 +112,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the product stock threashold is set
-     * 
+     *
      * @return void
      */
     public function testSetOutOfStockThreshold(): void
@@ -125,7 +125,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the feed ID is set
-     * 
+     *
      * @return void
      */
     public function testSetFeedId(): void
@@ -138,7 +138,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the installed meta extension version is set
-     * 
+     *
      * @return void
      */
     public function testSetInstalledMetaExtensionVersion(): void
@@ -151,7 +151,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the Graph API version is set
-     * 
+     *
      * @return void
      */
     public function testSetGraphApiVersion(): void
@@ -164,7 +164,7 @@ class CoreConfigTest extends TestCase
 
     /**
      * Validate if the Graph API version is set
-     * 
+     *
      * @return void
      */
     public function testSetMagentoVersion(): void

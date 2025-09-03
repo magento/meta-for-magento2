@@ -26,7 +26,7 @@ class MBEInstallsTest extends TestCase
 {
     /**
      * Class Setup
-     * 
+     *
      * @return void
      */
     public function setUp(): void
@@ -36,14 +36,14 @@ class MBEInstallsTest extends TestCase
         $object = new ObjectManager($this);
         $this->fbHelper = $object->getObject(FBEHelper::class);
 
-        $this->fbHelperMock = $this->createMock(FBEHelper::class);              
-        $this->systemConfig = $this->createMock(SystemConfig::class);       
-        $this->graphApiAdapter = $this->createMock(GraphAPIAdapter::class);          
-        $this->facebookInstalledFeature = $this->createMock(FacebookInstalledFeature::class); 
+        $this->fbHelperMock = $this->createMock(FBEHelper::class);
+        $this->systemConfig = $this->createMock(SystemConfig::class);
+        $this->graphApiAdapter = $this->createMock(GraphAPIAdapter::class);
+        $this->facebookInstalledFeature = $this->createMock(FacebookInstalledFeature::class);
         $this->catalogConfigUpdateHelper = $this->createMock(CatalogConfigUpdateHelper::class);
-        $this->apiKeyService = $this->createMock(ApiKeyService::class);            
-        $this->storeManagerInterface = $this->createMock(StoreManagerInterface::class);    
-        $this->logger = $this->createMock(LoggerInterface::class);          
+        $this->apiKeyService = $this->createMock(ApiKeyService::class);
+        $this->storeManagerInterface = $this->createMock(StoreManagerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->adobeCloudConfig = $this->createMock(AdobeCloudConfigInterface::class);
 
         $this->mbeIntallMockObj = new MBEInstalls(
@@ -61,7 +61,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test save function
-     * 
+     *
      * @return void
      */
     public function testSave(): void
@@ -100,7 +100,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test save function
-     * 
+     *
      * @return void
      */
     public function testSaveWithValidFBID(): void
@@ -139,7 +139,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test save function
-     * 
+     *
      * @return void
      */
     public function testSaveWithProfile(): void
@@ -182,7 +182,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test save function
-     * 
+     *
      * @return void
      */
     public function testSaveWithPages(): void
@@ -242,7 +242,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test save function
-     * 
+     *
      * @return void
      */
     public function testSaveWithPagesWithException(): void
@@ -290,7 +290,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test save function
-     * 
+     *
      * @return void
      */
     public function testSaveEmptyData(): void
@@ -303,7 +303,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test saveCommercePartnerIntegrationId function
-     * 
+     *
      * @return void
      */
     public function testSaveCommercePartnerIntegrationId(): void
@@ -326,7 +326,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test saveIsOnsiteEligible function
-     * 
+     *
      * @return void
      */
     public function testSaveIsOnsiteEligibleWithOnSiteEligibleTrue(): void
@@ -349,7 +349,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test saveIsOnsiteEligible function
-     * 
+     *
      * @return void
      */
     public function testSaveIsOnsiteEligibleWithOnSiteEligibleFalse(): void
@@ -372,7 +372,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test setInstalledFlag function
-     * 
+     *
      * @return void
      */
     public function testSetInstalledFlag(): void
@@ -393,7 +393,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test updateMBESettings function
-     * 
+     *
      * @return void
      */
     public function testUpdateMBESettings(): void
@@ -430,7 +430,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test updateMBESettings function
-     * 
+     *
      * @return void
      */
     public function testUpdateMBESettingsWhenBusinessIdIsNUll(): void
@@ -467,7 +467,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test updateMBESettings function
-     * 
+     *
      * @return void
      */
     public function testUpdateMBESettingsWhenAccessTokenIsNUll(): void
@@ -504,7 +504,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test deleteMBESettings function
-     * 
+     *
      * @return void
      */
     public function testDeleteMBESettings(): void
@@ -541,7 +541,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test repairCommercePartnerIntegration function
-     * 
+     *
      * @return void
      */
     public function testRepairCommercePartnerIntegration(): void
@@ -611,7 +611,7 @@ class MBEInstallsTest extends TestCase
 
     /**
      * Test repairCommercePartnerIntegration function
-     * 
+     *
      * @return void
      */
     public function testRepairCommercePartnerIntegrationWithFalseResponseFromGraphql(): void

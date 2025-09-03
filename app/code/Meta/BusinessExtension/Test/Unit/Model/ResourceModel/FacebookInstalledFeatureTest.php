@@ -15,7 +15,7 @@ class FacebookInstalledFeatureTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     public function setUp(): void
@@ -51,8 +51,8 @@ class FacebookInstalledFeatureTest extends TestCase
     }
 
     /**
-     * Test doesFeatureTypeExist function 
-     * 
+     * Test doesFeatureTypeExist function
+     *
      * @return void
      */
     public function testDoesFeatureTypeExist(): void
@@ -123,7 +123,7 @@ class FacebookInstalledFeatureTest extends TestCase
 
     /**
      * Test deleteAll function
-     * 
+     *
      * @return void
      */
     public function testDeleteAll(): void
@@ -139,7 +139,7 @@ class FacebookInstalledFeatureTest extends TestCase
 
     /**
      * Test saveResponseData function
-     * 
+     *
      * @return void
      */
     public function testSaveResponseData(): void
@@ -174,7 +174,7 @@ class FacebookInstalledFeatureTest extends TestCase
 
     /**
      * Test saveResponseData function
-     * 
+     *
      * @return void
      */
     public function testSaveResponseDataWithEmptyAdditionalInfo(): void

@@ -79,7 +79,7 @@ class APIKeyServiceTest extends TestCase
         );
         $this->logger->expects($this->exactly(2))
             ->method('info')
-            ->withConsecutive(['API key does not exist. Generating a new key.'],['API key has been generated and saved.'])
+            ->withConsecutive(['API key does not exist. Generating a new key.'], ['API key has been generated and saved.'])
             ->willReturnSelf();
         $this->configWriter->expects($this->once())->method('save');
         $result = $apiKeyService->getCustomApiKey();

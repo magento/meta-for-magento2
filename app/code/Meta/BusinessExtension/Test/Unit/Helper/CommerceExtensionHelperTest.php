@@ -28,7 +28,7 @@ class CommerceExtensionHelperTest extends TestCase
     
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -48,7 +48,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test getSplashPageURL function
-     * 
+     *
      * @return void
      */
     public function testGetSplashPageURL(): void
@@ -64,7 +64,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test getSplashPageURL function
-     * 
+     *
      * @return void
      */
     public function testGetSplashPageURLWithIsActiveExtensionTrue(): void
@@ -84,7 +84,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test getSplashPageURL function
-     * 
+     *
      * @return void
      */
     public function testGetPopupOrigin(): void
@@ -104,7 +104,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test getPopupOrigin function
-     * 
+     *
      * @return void
      */
     public function testGetPopupOriginWithIsActiveExtensionFalse(): void
@@ -120,7 +120,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test isCommerceExtensionEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsCommerceExtensionEnabled(): void
@@ -140,7 +140,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test isCommerceExtensionEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsCommerceExtensionEnabledReturnFalse(): void
@@ -160,7 +160,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test hasCommerceExtensionPermissionError function
-     * 
+     *
      * @return void
      */
     public function testHasCommerceExtensionPermissionError(): void
@@ -182,7 +182,7 @@ class CommerceExtensionHelperTest extends TestCase
 
         $this->graphAPIAdapter->expects($this->once())
             ->method('getCommerceExtensionIFrameURL')
-            ->with($businessId,$accessToken)
+            ->with($businessId, $accessToken)
             ->willReturn($url);
 
         $this->assertFalse($this->commerceExtensionHelperMockObj->hasCommerceExtensionPermissionError($storeId));
@@ -190,7 +190,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test getCommerceExtensionIFrameURL function
-     * 
+     *
      * @return void
      */
     public function testGetCommerceExtensionIFrameURL(): void
@@ -212,7 +212,7 @@ class CommerceExtensionHelperTest extends TestCase
 
         $this->graphAPIAdapter->expects($this->once())
             ->method('getCommerceExtensionIFrameURL')
-            ->with($businessId,$accessToken)
+            ->with($businessId, $accessToken)
             ->willReturn($url);
 
         $this->assertSame($url, $this->commerceExtensionHelperMockObj->getCommerceExtensionIFrameURL($storeId));
@@ -220,7 +220,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test getCommerceExtensionIFrameURL function
-     * 
+     *
      * @return void
      */
     public function testGetCommerceExtensionIFrameURLExceptionWith400(): void
@@ -249,7 +249,7 @@ class CommerceExtensionHelperTest extends TestCase
         );
         $this->graphAPIAdapter->expects($this->once())
             ->method('getCommerceExtensionIFrameURL')
-            ->with($businessId,$accessToken)
+            ->with($businessId, $accessToken)
             ->willThrowException($guzzleException);
 
         $this->assertNull($this->commerceExtensionHelperMockObj->getCommerceExtensionIFrameURL($storeId));
@@ -257,7 +257,7 @@ class CommerceExtensionHelperTest extends TestCase
 
     /**
      * Test getCommerceExtensionIFrameURL function
-     * 
+     *
      * @return void
      */
     public function testGetCommerceExtensionIFrameURLExceptionWith500(): void
@@ -286,7 +286,7 @@ class CommerceExtensionHelperTest extends TestCase
         );
         $this->graphAPIAdapter->expects($this->once())
             ->method('getCommerceExtensionIFrameURL')
-            ->with($businessId,$accessToken)
+            ->with($businessId, $accessToken)
             ->willThrowException($guzzleException);
         $this->expectException(RequestException::class);
         $this->assertSame($url, $this->commerceExtensionHelperMockObj->getCommerceExtensionIFrameURL($storeId));

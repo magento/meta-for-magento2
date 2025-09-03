@@ -16,7 +16,7 @@ class AccessTokenTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     public function setup(): void
@@ -30,7 +30,7 @@ class AccessTokenTest extends TestCase
 
     /**
      * Test the getCommentText function return content
-     * 
+     *
      * @return void
      */
     public function testGetCommentText(): void
@@ -46,7 +46,7 @@ class AccessTokenTest extends TestCase
 
     /**
      * Test the getCommentText function return content with empty param
-     * 
+     *
      * @return void
      */
     public function testGetCommentTextEmpty(): void
@@ -62,7 +62,7 @@ class AccessTokenTest extends TestCase
 
     /**
      * Returns the string
-     * 
+     *
      * @param string $elementValue
      * @return string
      */

@@ -110,7 +110,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getGraphAPIAdapter function
-     * 
+     *
      * @return void
      */
     public function testGetGraphAPIAdapter(): void
@@ -120,7 +120,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getGraphBaseURL function
-     * 
+     *
      * @return void
      */
     public function testGetGraphBaseURL(): void
@@ -133,7 +133,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getUrl function
-     * 
+     *
      * @return void
      */
     public function testGetUrl(): void
@@ -152,7 +152,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test checkAdminEndpointPermission function
-     * 
+     *
      * @return void
      */
     public function testCheckAdminEndpointPermission(): void
@@ -172,7 +172,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test checkAdminEndpointPermission function
-     * 
+     *
      * @return void
      */
     public function testCheckAdminEndpointPermissionWithException(): void
@@ -195,57 +195,57 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test genUniqueTraceID function
-     * 
+     *
      * @return void
      */
     public function testGenUniqueTraceIDAssertString(): void
-    {   
+    {
         $this->assertIsString($this->fbeHelper->genUniqueTraceID());
     }
 
     /**
      * Test genUniqueTraceID function
-     * 
+     *
      * @return void
      */
     public function testGenUniqueTraceIDAssertStartWithString(): void
-    {   
+    {
         $this->assertStringStartsWith('magento_', $this->fbeHelper->genUniqueTraceID());
     }
 
     /**
      * Test getCurrentTimeInMS function
-     * 
+     *
      * @return void
      */
     public function testGetCurrentTimeInMS(): void
-    {   
+    {
         $this->assertIsInt($this->fbeHelper->getCurrentTimeInMS());
     }
 
     /**
      * Test fetchAndSaveAAMSettings function
-     * 
+     *
      * @return void
      */
     public function testFetchAndSaveAAMSettings(): void
-    {   
+    {
         $this->assertNull($this->fbeHelper->fetchAndSaveAAMSettings('1', 1));
     }
 
     /**
      * Test getAAMSettings function
-     * 
+     *
      * @return void
      */
     public function testGetAAMSettingsWithNull(): void
-    {   
+    {
         $this->assertNull($this->fbeHelper->getAAMSettings('1', 1));
     }
 
     /**
      * Test getStore function
-     * 
+     *
      * @return void
      */
     public function testGetStore(): void
@@ -267,7 +267,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getStore function
-     * 
+     *
      * @return void
      */
     public function testGetStoreWithDefaultStore(): void
@@ -293,7 +293,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getBaseUrl function
-     * 
+     *
      * @return void
      */
     public function testGetBaseUrl(): void
@@ -316,7 +316,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getFBEExternalBusinessId function
-     * 
+     *
      * @return void
      */
     public function testGetFBEExternalBusinessId(): void
@@ -332,7 +332,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getFBEExternalBusinessId function
-     * 
+     *
      * @return void
      */
     public function testGetFBEExternalBusinessIdWithNullSystemBusinessId(): void
@@ -364,7 +364,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test log function
-     * 
+     *
      * @return void
      */
     public function testLog(): void
@@ -380,7 +380,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test log function
-     * 
+     *
      * @return void
      */
     public function testLogWithLogType(): void
@@ -406,7 +406,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logCritical function
-     * 
+     *
      * @return void
      */
     public function testLogCritical(): void
@@ -423,7 +423,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logException function
-     * 
+     *
      * @return void
      */
     public function testLogException(): void
@@ -441,7 +441,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logException function
-     * 
+     *
      * @return void
      */
     public function testLogExceptionWithStoreId(): void
@@ -459,7 +459,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logException function
-     * 
+     *
      * @return void
      */
     public function testLogExceptionWithoutLogType(): void
@@ -475,7 +475,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logExceptionImmediatelyToMeta function
-     * 
+     *
      * @return void
      */
     public function testLogExceptionImmediatelyToMeta(): void
@@ -494,7 +494,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logExceptionDetailsImmediatelyToMeta function
-     * 
+     *
      * @return void
      */
     public function testLogExceptionDetailsImmediatelyToMeta(): void
@@ -513,7 +513,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logTelemetryToMeta function
-     * 
+     *
      * @return void
      */
     public function testLogTelemetryToMeta(): void
@@ -532,7 +532,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test logPixelEvent function
-     * 
+     *
      * @return void
      */
     public function testLogPixelEvent(): void
@@ -547,7 +547,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getStoreCurrencyCode function
-     * 
+     *
      * @return void
      */
     public function testGetStoreCurrencyCodeWithDefaultStore(): void
@@ -573,7 +573,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getStoreCurrencyCode function
-     * 
+     *
      * @return void
      */
     public function testGetStoreCurrencyCode(): void
@@ -595,11 +595,11 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test getAAMSettings function
-     * 
+     *
      * @return void
      */
     public function testGetAAMSettings(): void
-    {   
+    {
         $settingsAsString = '{"pixelId": 12345, "enableAutomaticMatching": true, "enabledAutomaticMatchingFields": ["email", "firstName"]}';
         $this->systemConfig->expects($this->once())
             ->method('getPixelAamSettings')
@@ -611,7 +611,7 @@ class FBEHelperTest extends TestCase
 
     /**
      * Test saveAAMSettings function
-     * 
+     *
      * @return void
      */
     public function testSaveAAMSettings(): void

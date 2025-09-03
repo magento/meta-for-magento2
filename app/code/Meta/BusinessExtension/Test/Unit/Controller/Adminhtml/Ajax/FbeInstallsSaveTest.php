@@ -18,7 +18,7 @@ class FbeInstallsSaveTest extends TestCase
 {
     /**
      * Setup function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -42,7 +42,7 @@ class FbeInstallsSaveTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecute(): void
@@ -79,7 +79,7 @@ class FbeInstallsSaveTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithEmptyStore(): void
@@ -115,7 +115,7 @@ class FbeInstallsSaveTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithException(): void

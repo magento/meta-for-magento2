@@ -18,7 +18,7 @@ class ModuleInfoTest extends TestCase
 {
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -45,7 +45,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getModuleVersion function
-     * 
+     *
      * @return void
      */
     public function testGetModuleVersion(): void
@@ -59,7 +59,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetStoreId(): void
@@ -80,7 +80,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetStoreIdWillReturnDefaultStoreId(): void
@@ -105,7 +105,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getPixelId function
-     * 
+     *
      * @return void
      */
     public function testGetPixelId(): void
@@ -133,7 +133,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getAutomaticMatchingStatus function
-     * 
+     *
      * @return void
      */
     public function testGetAutomaticMatchingStatus(): void
@@ -161,7 +161,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getAutomaticMatchingStatus function
-     * 
+     *
      * @return void
      */
     public function testGetAutomaticMatchingStatusWillReturnString(): void
@@ -188,7 +188,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getAutomaticMatchingHelpCenterArticleLink function
-     * 
+     *
      * @return void
      */
     public function testGetAutomaticMatchingHelpCenterArticleLink(): void
@@ -198,7 +198,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getCommerceAccountId function
-     * 
+     *
      * @return void
      */
     public function testGetCommerceAccountId(): void
@@ -226,7 +226,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getPageId function
-     * 
+     *
      * @return void
      */
     public function testGetPageId(): void
@@ -254,7 +254,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getCatalogId function
-     * 
+     *
      * @return void
      */
     public function testGetCatalogId(): void
@@ -282,7 +282,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getCommerceManagerUrl function
-     * 
+     *
      * @return void
      */
     public function testGetCommerceManagerUrl(): void
@@ -310,7 +310,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getCatalogManagerUrl function
-     * 
+     *
      * @return void
      */
     public function testGetCatalogManagerUrl(): void
@@ -338,7 +338,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getSupportUrl function
-     * 
+     *
      * @return void
      */
     public function testGetSupportUrl(): void
@@ -366,7 +366,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getAPIToken function
-     * 
+     *
      * @return void
      */
     public function testGetAPIToken(): void
@@ -383,7 +383,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test isFBEInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBEInstalledWithFalse(): void
@@ -411,7 +411,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test isFBEInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBEInstalledWithTrue(): void
@@ -439,7 +439,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test isDebugMode function
-     * 
+     *
      * @return void
      */
     public function testIsDebugModeTrue(): void
@@ -455,7 +455,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test isDebugMode function
-     * 
+     *
      * @return void
      */
     public function testIsDebugModeFalse(): void
@@ -471,7 +471,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getCommercePartnerIntegrationId function
-     * 
+     *
      * @return void
      */
     public function testGetCommercePartnerIntegrationId(): void
@@ -499,7 +499,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test getExternalBusinessID function
-     * 
+     *
      * @return void
      */
     public function testGetExternalBusinessID(): void
@@ -527,7 +527,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test shouldShowStoreLevelConfig function
-     * 
+     *
      * @return void
      */
     public function testShouldShowStoreLevelConfig(): void
@@ -541,7 +541,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test shouldShowStoreLevelConfig function
-     * 
+     *
      * @return void
      */
     public function testShouldShowStoreLevelConfigNotSingleStoreMode(): void
@@ -560,7 +560,7 @@ class ModuleInfoTest extends TestCase
 
     /**
      * Test shouldShowStoreLevelConfig function
-     * 
+     *
      * @return void
      */
     public function testShouldShowStoreLevelConfigNotSingleStoreModeWithStoreParam(): void

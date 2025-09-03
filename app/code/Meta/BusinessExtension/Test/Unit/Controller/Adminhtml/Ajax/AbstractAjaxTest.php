@@ -77,7 +77,7 @@ class AbstractAjaxTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWhenAdminIsNotLoggedIn(): void
@@ -92,7 +92,7 @@ class AbstractAjaxTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWhenAdminIsLoggedInAndExecutionIsSuccessful(): void
@@ -117,7 +117,7 @@ class AbstractAjaxTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWhenAdminIsLoggedInAndExecutionThrowsException(): void

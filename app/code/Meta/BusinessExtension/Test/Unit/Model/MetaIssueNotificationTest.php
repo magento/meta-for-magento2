@@ -16,7 +16,7 @@ class MetaIssueNotificationTest extends TestCase
 {
     /**
      * Class Setup
-     * 
+     *
      * @return void
      */
     public function setUp(): void
@@ -43,7 +43,7 @@ class MetaIssueNotificationTest extends TestCase
 
     /**
      * Test setSeverity function
-     * 
+     *
      * @return void
      */
     public function testSetSeverity(): void
@@ -55,7 +55,7 @@ class MetaIssueNotificationTest extends TestCase
 
     /**
      * Test setMessage function
-     * 
+     *
      * @return void
      */
     public function testSetMessage(): void
@@ -67,7 +67,7 @@ class MetaIssueNotificationTest extends TestCase
 
     /**
      * Test getMessage function
-     * 
+     *
      * @return void
      */
     public function testGetMessage(): void
@@ -77,7 +77,7 @@ class MetaIssueNotificationTest extends TestCase
 
     /**
      * Test getNotificationId function
-     * 
+     *
      * @return void
      */
     public function testGetNotificationId(): void
@@ -87,7 +87,7 @@ class MetaIssueNotificationTest extends TestCase
 
     /**
      * Test setNotificationId function
-     * 
+     *
      * @return void
      */
     public function testSetNotificationId(): void
@@ -99,7 +99,7 @@ class MetaIssueNotificationTest extends TestCase
 
     /**
      * Test setNotificationId function
-     * 
+     *
      * @return void
      */
     public function testSetNotificationIdReturnObject(): void

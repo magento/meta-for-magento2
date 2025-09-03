@@ -46,7 +46,7 @@ class MbeUpdateInstalledConfigTest extends TestCase
 
     /**
      * Test executeForJson function
-     * 
+     *
      * @return void
      */
     public function testExecuteForJson(): void
@@ -82,7 +82,7 @@ class MbeUpdateInstalledConfigTest extends TestCase
 
     /**
      * Test executeForJson function
-     * 
+     *
      * @return void
      */
     public function testExecuteForJsonWithNullStoreId(): void
@@ -104,7 +104,7 @@ class MbeUpdateInstalledConfigTest extends TestCase
 
     /**
      * Test executeForJson function
-     * 
+     *
      * @return void
      */
     public function testExecuteForJsonWithException(): void
@@ -134,7 +134,7 @@ class MbeUpdateInstalledConfigTest extends TestCase
                     'event' => 'update_mbe_config',
                     'event_type' => 'update_mbe_config'
                 ]
-                );
+            );
         $result = $this->mbeUpdateInstalledConfigMockObj->executeForJson();
 
         $this->assertIsArray($result);

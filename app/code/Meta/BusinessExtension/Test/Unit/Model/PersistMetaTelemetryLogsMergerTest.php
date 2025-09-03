@@ -11,7 +11,7 @@ class PersistMetaTelemetryLogsMergerTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     public function setUp(): void
@@ -21,7 +21,7 @@ class PersistMetaTelemetryLogsMergerTest extends TestCase
 
     /**
      * Test merge function
-     * 
+     *
      * @return void
      */
     public function testMerge(): void
@@ -43,7 +43,7 @@ class PersistMetaTelemetryLogsMergerTest extends TestCase
 
     /**
      * Test merge function
-     * 
+     *
      * @return void
      */
     public function testMergeWithKeyIsNotPresent(): void

@@ -13,7 +13,7 @@ class PersistMetaLogImmediatelyHandlerTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     public function setUp(): void
@@ -29,7 +29,7 @@ class PersistMetaLogImmediatelyHandlerTest extends TestCase
 
     /**
      * Test persistMetaLogImmediately function
-     * 
+     *
      * @return void
      */
     public function testPersistMetaLogImmediately(): void

@@ -80,7 +80,7 @@ class FbpixelTest extends TestCase
         $this->context = $this->createMock(Context::class);
         $this->resultJsonFactory = $this->createMock(JsonFactory::class);
         /** The isValidFBID method is static and we cannot invoke it using the mock object, hence used object manager */
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();   
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->fbeHelper = $objectManager->get(FBEHelper::class);
         $this->systemConfig = $this->createMock(Config::class);
         $this->request = $this->createMock(RequestInterface::class);

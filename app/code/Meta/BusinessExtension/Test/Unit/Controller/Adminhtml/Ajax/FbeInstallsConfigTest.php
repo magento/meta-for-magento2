@@ -18,7 +18,7 @@ class FbeInstallsConfigTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -44,7 +44,7 @@ class FbeInstallsConfigTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecute(): void
@@ -91,7 +91,7 @@ class FbeInstallsConfigTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithEmptyEndPoint(): void
@@ -120,7 +120,7 @@ class FbeInstallsConfigTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWillThrowException(): void
