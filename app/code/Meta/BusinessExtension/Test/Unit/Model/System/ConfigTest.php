@@ -15,7 +15,6 @@ use Meta\BusinessExtension\Model\System\Config;
 use Meta\BusinessExtension\Model\ResourceModel\FacebookInstalledFeature;
 use Magento\Store\Model\Store as CoreStore;
 
-
 class ConfigTest extends TestCase
 {
     private const APP_ID = '195311308289826';
@@ -43,7 +42,7 @@ class ConfigTest extends TestCase
 
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -81,7 +80,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getAppId
-     * 
+     *
      * @return void
      */
     public function testGetAppId(): void
@@ -91,7 +90,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getModuleVersion
-     * 
+     *
      * @return void
      */
     public function testGetModuleVersion(): void
@@ -108,7 +107,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getCommerceManagerUrl
-     * 
+     *
      * @return void
      */
     public function testGetCommerceManagerUrl(): void
@@ -125,7 +124,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getCatalogManagerUrl
-     * 
+     *
      * @return void
      */
     public function testGetCatalogManagerUrl(): void
@@ -142,7 +141,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getSupportUrl
-     * 
+     *
      * @return void
      */
     public function testGetSupportUrl(): void
@@ -158,10 +157,10 @@ class ConfigTest extends TestCase
     }
 
      /**
-     * Test getPromotionsUrl
-     * 
-     * @return void
-     */
+      * Test getPromotionsUrl
+      *
+      * @return void
+      */
     public function testGetPromotionsUrl(): void
     {
         $expectedData = 'https://www.facebook.com/commerce/' . self::PROMOTION_URL_ID . '/promotions/discounts/';
@@ -176,7 +175,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isActiveExtension
-     * 
+     *
      * @return void
      */
     public function testIsActiveExtension(): void
@@ -190,7 +189,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isFBEInstalled
-     * 
+     *
      * @return void
      */
     public function testIsFBEInstalled(): void
@@ -204,7 +203,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getFulfillmentAddress
-     * 
+     *
      * @return void
      */
     public function testGetFulfillmentAddress(): void
@@ -221,7 +220,7 @@ class ConfigTest extends TestCase
 
     /**
      * Set the default value
-     * 
+     *
      * @return void
      */
     public function setDbReturnData(): void
@@ -236,7 +235,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getCommerceExtensionBaseURL function
-     * 
+     *
      * @return void
      */
     public function testGetCommerceExtensionBaseURL(): void
@@ -253,7 +252,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getStoreManager function
-     * 
+     *
      * @return void
      */
     public function testGetStoreManager(): void
@@ -264,7 +263,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getDefaultStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetDefaultStoreId(): void
@@ -279,7 +278,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getDefaultStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetDefaultStoreIdWithNull(): void
@@ -292,7 +291,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getOutOfStockThreshold function
-     * 
+     *
      * @return void
      */
     public function testGetOutOfStockThreshold(): void
@@ -309,7 +308,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getOutOfStockThreshold function
-     * 
+     *
      * @return void
      */
     public function testIsOrderSyncEnabled(): void
@@ -324,7 +323,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getDefaultOrderStatus function
-     * 
+     *
      * @return void
      */
     public function testGetDefaultOrderStatus(): void
@@ -341,7 +340,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test shouldUseDefaultFulfillmentAddress function
-     * 
+     *
      * @return void
      */
     public function testShouldUseDefaultFulfillmentAddress(): void
@@ -356,7 +355,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isAutoNewsletterSubscriptionOn function
-     * 
+     *
      * @return void
      */
     public function testIsAutoNewsletterSubscriptionOn(): void
@@ -371,7 +370,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test saveConfig function
-     * 
+     *
      * @return void
      */
     public function testSaveConfig(): void
@@ -386,7 +385,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test saveConfig function
-     * 
+     *
      * @return void
      */
     public function testSaveConfigWithoutStoreId(): void
@@ -401,7 +400,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test deleteConfig function
-     * 
+     *
      * @return void
      */
     public function testDeleteConfig(): void
@@ -416,7 +415,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test deleteConfig function
-     * 
+     *
      * @return void
      */
     public function testDeleteConfigWithoutStoreId(): void
@@ -431,7 +430,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getAccessToken function
-     * 
+     *
      * @return void
      */
     public function testGetAccessToken(): void
@@ -447,7 +446,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getClientAccessToken function
-     * 
+     *
      * @return void
      */
     public function testGetClientAccessToken(): void
@@ -463,7 +462,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getExternalBusinessId function
-     * 
+     *
      * @return void
      */
     public function testGetExternalBusinessId(): void
@@ -479,7 +478,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getPixelId function
-     * 
+     *
      * @return void
      */
     public function testGetPixelId(): void
@@ -495,7 +494,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getPixelAamSettings function
-     * 
+     *
      * @return void
      */
     public function testGetPixelAamSettings(): void
@@ -511,7 +510,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getProfiles function
-     * 
+     *
      * @return void
      */
     public function testGetProfiles(): void
@@ -527,7 +526,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getPageId function
-     * 
+     *
      * @return void
      */
     public function testGetPageId(): void
@@ -543,7 +542,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getGraphAPIVersion function
-     * 
+     *
      * @return void
      */
     public function testGetGraphAPIVersion(): void
@@ -559,7 +558,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getCommercePartnerIntegrationId function
-     * 
+     *
      * @return void
      */
     public function testGetCommercePartnerIntegrationId(): void
@@ -575,7 +574,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isDebugMode function
-     * 
+     *
      * @return void
      */
     public function testIsDebugMode(): void
@@ -590,7 +589,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getApiVersion function
-     * 
+     *
      * @return void
      */
     public function testGetApiVersion(): void
@@ -606,7 +605,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getApiVersionLastUpdate function
-     * 
+     *
      * @return void
      */
     public function testGetApiVersionLastUpdate(): void
@@ -622,7 +621,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getShippingMethodsMap function
-     * 
+     *
      * @return void
      */
     public function testGetShippingMethodsMap(): void
@@ -648,7 +647,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getShippingMethodsLabelMap function
-     * 
+     *
      * @return void
      */
     public function testGetShippingMethodsLabelMap(): void
@@ -674,7 +673,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isCatalogSyncEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsCatalogSyncEnabled(): void
@@ -689,7 +688,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isPromotionsSyncEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsPromotionsSyncEnabled(): void
@@ -704,7 +703,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getAllFBEInstalledStores function
-     * 
+     *
      * @return void
      */
     public function testGetAllFBEInstalledStores(): void
@@ -723,7 +722,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getAllOnsiteFBEInstalledStores function
-     * 
+     *
      * @return void
      */
     public function testGetAllOnsiteFBEInstalledStores(): void
@@ -742,7 +741,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getFeedId function
-     * 
+     *
      * @return void
      */
     public function testGetFeedId(): void
@@ -758,7 +757,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getOffersFeedId function
-     * 
+     *
      * @return void
      */
     public function testGetOffersFeedId(): void
@@ -774,7 +773,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getProductIdentifierAttr function
-     * 
+     *
      * @return void
      */
     public function testGetProductIdentifierAttr(): void
@@ -790,7 +789,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isAllCategoriesSyncEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsAllCategoriesSyncEnabled(): void
@@ -806,7 +805,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isPriceInclTax function
-     * 
+     *
      * @return void
      */
     public function testIsPriceInclTax(): void
@@ -822,7 +821,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isServerTestModeEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsServerTestModeEnabled(): void
@@ -838,7 +837,7 @@ class ConfigTest extends TestCase
     
     /**
      * Test getServerTestCode function
-     * 
+     *
      * @return void
      */
     public function testGetServerTestCode(): void
@@ -854,7 +853,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getWeightUnit function
-     * 
+     *
      * @return void
      */
     public function testGetWeightUnit(): void
@@ -870,7 +869,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isAdditionalAttributesSyncDisabled function
-     * 
+     *
      * @return void
      */
     public function testIsAdditionalAttributesSyncDisabled(): void
@@ -886,7 +885,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isUnsupportedProductsDisabled function
-     * 
+     *
      * @return void
      */
     public function testIsUnsupportedProductsDisabled(): void
@@ -902,7 +901,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getProductsFetchBatchSize function
-     * 
+     *
      * @return void
      */
     public function testGetProductsFetchBatchSize(): void
@@ -918,7 +917,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test getProductsFetchBatchSize function
-     * 
+     *
      * @return void
      */
     public function testGetProductsFetchBatchSizeWithDefault(): void
@@ -934,7 +933,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isMemoryProfilingEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsMemoryProfilingEnabled(): void
@@ -950,7 +949,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isFBECatalogInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBECatalogInstalledWithFalse(): void
@@ -970,7 +969,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isFBECatalogInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBECatalogInstalledWithTrue(): void
@@ -994,7 +993,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isFBEPixelInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBEPixelInstalledWithTrue(): void
@@ -1018,7 +1017,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isFBEAdsInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBEAdsInstalledWithTrue(): void
@@ -1042,7 +1041,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isFBEShopInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBEShopInstalled(): void
@@ -1059,7 +1058,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test isInstalledShopOnsiteEligible function
-     * 
+     *
      * @return void
      */
     public function testIsInstalledShopOnsiteEligible(): void
@@ -1076,7 +1075,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test castStoreIdAsInt function
-     * 
+     *
      * @return void
      */
     public function testCastStoreIdAsInt(): void
@@ -1089,7 +1088,7 @@ class ConfigTest extends TestCase
 
     /**
      * Test castStoreIdAsInt function
-     * 
+     *
      * @return void
      */
     public function testCastStoreIdAsIntWithInt(): void

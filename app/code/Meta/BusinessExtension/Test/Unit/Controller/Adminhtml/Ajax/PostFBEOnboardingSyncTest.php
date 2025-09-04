@@ -21,7 +21,7 @@ class PostFBEOnboardingSyncTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -46,12 +46,12 @@ class PostFBEOnboardingSyncTest extends TestCase
                 'systemConfig' => $this->systemConfig,
                 'eventManager' => $this->eventManager,
             ]
-            );
+        );
     }
 
     /**
      * Test executeForJson function
-     * 
+     *
      * @return void
      */
     public function testExecuteForJson(): void
@@ -96,7 +96,7 @@ class PostFBEOnboardingSyncTest extends TestCase
 
     /**
      * Test executeForJson function
-     * 
+     *
      * @return void
      */
     public function testExecuteForJsonWithEmptyStoreId(): void
@@ -121,7 +121,7 @@ class PostFBEOnboardingSyncTest extends TestCase
 
     /**
      * Test executeForJson function
-     * 
+     *
      * @return void
      */
     public function testExecuteForJsonWithEmptyAccessToken(): void
@@ -162,7 +162,7 @@ class PostFBEOnboardingSyncTest extends TestCase
 
     /**
      * Test executeForJson function
-     * 
+     *
      * @return void
      */
     public function testExecuteForJsonWithException(): void

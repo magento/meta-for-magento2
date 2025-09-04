@@ -17,7 +17,7 @@ class RepairCommercePartnerIntegrationTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp():void
@@ -36,12 +36,12 @@ class RepairCommercePartnerIntegrationTest extends TestCase
                 'mbeInstalls' => $this->mbeInstalls,
                 'request' => $this->request,
             ]
-            );
+        );
     }
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecute():void
@@ -65,7 +65,7 @@ class RepairCommercePartnerIntegrationTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithEmptyStoreId():void
@@ -85,7 +85,7 @@ class RepairCommercePartnerIntegrationTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithException():void
@@ -114,7 +114,7 @@ class RepairCommercePartnerIntegrationTest extends TestCase
                     'event' => 'repair_cpi_fail',
                     'event_type' => 'save_config'
                 ]
-                );
+            );
         $this->expectException(LocalizedException::class);
         $result = $this->repairCommercePartnerIntegration->execute();
     }

@@ -37,7 +37,7 @@ class EnabledModuleLoggingTest extends TestCase
     
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -61,7 +61,7 @@ class EnabledModuleLoggingTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecute(): void
@@ -103,7 +103,7 @@ class EnabledModuleLoggingTest extends TestCase
         $this->graphAPIAdapter->expects($this->once())
             ->method('persistLogToMeta')
             ->with(
-            [
+                [
                 'event' => 'commerce_plugin_and_extension_logging',
                 'event_type' => 'enabled_modules',
                 'seller_platform_app_version' => $moduleVersion,
@@ -112,8 +112,8 @@ class EnabledModuleLoggingTest extends TestCase
                     'extension_version' => $moduleVersion,
                     'cms_ids' => json_encode([$cmsId])
                 ]
-            ]
-        )->willReturn('');
+                ]
+            )->willReturn('');
 
         $this->enabledModuleLoggingMockObj->execute();
     }

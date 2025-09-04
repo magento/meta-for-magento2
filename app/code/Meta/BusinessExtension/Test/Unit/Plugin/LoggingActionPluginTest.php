@@ -37,7 +37,7 @@ class LoggingActionPluginTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -61,7 +61,7 @@ class LoggingActionPluginTest extends TestCase
 
     /**
      * Validate if the logging plugin base is instantiated correctly
-     * 
+     *
      * @return void
      */
     public function testLoggingPluginBaseInstantiation(): void

@@ -47,7 +47,7 @@ class HandlerTest extends TestCase
 
     /**
      * Test write function
-     * 
+     *
      * @return void
      */
     public function testWriteWithMetaLogImmediately(): void
@@ -78,7 +78,7 @@ class HandlerTest extends TestCase
 
     /**
      * Test write function
-     * 
+     *
      * @return void
      */
     public function testWriteWithMetaLogTelemetry(): void

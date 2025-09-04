@@ -73,7 +73,7 @@ class SettingsWebhookListenerImplTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -107,7 +107,7 @@ class SettingsWebhookListenerImplTest extends TestCase
 
     /**
      * Validate if the settings webhook listener is working as expected
-     * 
+     *
      * @return void
      */
     public function testGetCoreConfig(): void

@@ -14,7 +14,7 @@ class ManualDataSyncEmptyTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -35,7 +35,7 @@ class ManualDataSyncEmptyTest extends TestCase
 
     /**
      * Test getStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetStoreId(): void

@@ -83,7 +83,7 @@ class VersionUpgradeNotificationEmptyDataTest extends TestCase
 
     /**
      * Test isDisplayed method
-     * 
+     *
      * @return void
      */
     public function testIsDisplayed(): void
@@ -94,7 +94,7 @@ class VersionUpgradeNotificationEmptyDataTest extends TestCase
 
     /**
      * Test getText method
-     * 
+     *
      * @return void
      */
     public function testGetText(): void
@@ -106,7 +106,7 @@ class VersionUpgradeNotificationEmptyDataTest extends TestCase
 
     /**
      * Test getSeverity
-     * 
+     *
      * @return void
      */
     public function testGetSeverity(): void
@@ -118,7 +118,7 @@ class VersionUpgradeNotificationEmptyDataTest extends TestCase
 
     /**
      * Initialize the Nofication Return Data
-     * 
+     *
      * @return void
      */
     private function initializeLoadVersionNotificationReturn($notificationData): void

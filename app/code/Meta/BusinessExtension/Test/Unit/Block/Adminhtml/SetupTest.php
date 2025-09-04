@@ -73,7 +73,7 @@ class SetupTest extends TestCase
 
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -141,7 +141,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getApiKey function
-     * 
+     *
      * @return void
      */
     public function testGetApiKey(): void
@@ -154,7 +154,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getSelectedStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetSelectedStoreIdWithOnlyAdminStore(): void
@@ -177,7 +177,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getSelectedStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetSelectedStoreIdWithFrontendStore(): void
@@ -223,7 +223,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getSelectedStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetSelectedStoreIdWithFrontendStoreWithNullRequestParam(): void
@@ -263,7 +263,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getSelectedStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetSelectedStoreIdWithFrontendStoreWillThrowException(): void
@@ -328,7 +328,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getPixelAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testGetPixelAjaxRoute(): void
@@ -348,7 +348,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getAccessTokenAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testGetAccessTokenAjaxRoute(): void
@@ -368,7 +368,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getProfilesAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testGetProfilesAjaxRoute(): void
@@ -388,7 +388,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getAAMSettingsRoute function
-     * 
+     *
      * @return void
      */
     public function testGetAAMSettingsRoute(): void
@@ -408,7 +408,7 @@ class SetupTest extends TestCase
 
     /**
      * Test fetchPixelId function
-     * 
+     *
      * @return void
      */
     public function testFetchPixelId(): void
@@ -431,7 +431,7 @@ class SetupTest extends TestCase
 
     /**
      * Test isCommerceExtensionEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsCommerceExtensionEnabled(): void
@@ -482,7 +482,7 @@ class SetupTest extends TestCase
 
     /**
      * Test isCommerceExtensionEnabled function
-     * 
+     *
      * @return void
      */
     public function testIsCommerceExtensionEnabledAssertFalse(): void
@@ -533,7 +533,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getPopupOrigin function
-     * 
+     *
      * @return void
      */
     public function testGetPopupOrigin(): void
@@ -552,7 +552,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getSplashPageURL function
-     * 
+     *
      * @return void
      */
     public function testGetSplashPageURL(): void
@@ -571,7 +571,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getExternalBusinessId function
-     * 
+     *
      * @return void
      */
     public function testGetExternalBusinessId(): void
@@ -593,7 +593,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getExternalBusinessId function
-     * 
+     *
      * @return void
      */
     public function testGetExternalBusinessIdWithStoreIdNullInFunctionParam(): void
@@ -659,7 +659,7 @@ class SetupTest extends TestCase
 
     /**
      * Test persistConfigurationAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testPersistConfigurationAjaxRoute(): void
@@ -679,7 +679,7 @@ class SetupTest extends TestCase
 
     /**
      * Test fetchPostFBEOnboardingSyncAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testFetchPostFBEOnboardingSyncAjaxRoute(): void
@@ -699,7 +699,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getCleanCacheAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testGetCleanCacheAjaxRoute(): void
@@ -719,7 +719,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getReportClientErrorRoute function
-     * 
+     *
      * @return void
      */
     public function testGetReportClientErrorRoute(): void
@@ -739,7 +739,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getDeleteAssetIdsAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testGetDeleteAssetIdsAjaxRoute(): void
@@ -759,7 +759,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getCurrencyCode function
-     * 
+     *
      * @return void
      */
     public function testGetCurrencyCode(): void
@@ -778,7 +778,7 @@ class SetupTest extends TestCase
 
     /**
      * Test isFBEInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBEInstalled(): void
@@ -797,7 +797,7 @@ class SetupTest extends TestCase
 
     /**
      * Test isFBEInstalled function
-     * 
+     *
      * @return void
      */
     public function testIsFBEInstalledAssertFalse(): void
@@ -816,7 +816,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getCommerceExtensionIFrameURL function
-     * 
+     *
      * @return void
      */
     public function testGetCommerceExtensionIFrameURL(): void
@@ -838,7 +838,7 @@ class SetupTest extends TestCase
 
     /**
      * Test hasCommerceExtensionIFramePermissionError function
-     * 
+     *
      * @return void
      */
     public function testHasCommerceExtensionIFramePermissionError(): void
@@ -857,7 +857,7 @@ class SetupTest extends TestCase
 
     /**
      * Test hasCommerceExtensionIFramePermissionError function
-     * 
+     *
      * @return void
      */
     public function testHasCommerceExtensionIFramePermissionErrorAssertFalse(): void
@@ -876,7 +876,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getAppId function
-     * 
+     *
      * @return void
      */
     public function testGetAppId(): void
@@ -895,7 +895,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getClientToken function
-     * 
+     *
      * @return void
      */
     public function testGetClientToken(): void
@@ -905,7 +905,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getAccessClientToken function
-     * 
+     *
      * @return void
      */
     public function testGetAccessClientToken(): void
@@ -924,7 +924,7 @@ class SetupTest extends TestCase
 
     /**
      * Test removeKeyFromURL function
-     * 
+     *
      * @dataProvider urlDataProvider
      * @return void
      */
@@ -966,7 +966,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getSelectableStores function
-     * 
+     *
      * @return void
      */
     public function testGetSelectableStores(): void
@@ -991,7 +991,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getSelectableStores function
-     * 
+     *
      * @return void
      */
     public function testGetSelectableStoresEqual(): void
@@ -1016,7 +1016,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getFbeInstallsConfigUrl function
-     * 
+     *
      * @return void
      */
     public function testGetFbeInstallsConfigUrl(): void
@@ -1036,7 +1036,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getFbeInstallsSaveUrl function
-     * 
+     *
      * @return void
      */
     public function testGetFbeInstallsSaveUrl(): void
@@ -1056,7 +1056,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getStoreId function
-     * 
+     *
      * @return void
      */
     public function testGetStoreId(): void
@@ -1076,7 +1076,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getInstalledFeaturesAjaxRouteUrl function
-     * 
+     *
      * @return void
      */
     public function testGetInstalledFeaturesAjaxRouteUrl(): void
@@ -1096,7 +1096,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getWebsiteId function
-     * 
+     *
      * @return void
      */
     public function testGetWebsiteId(): void
@@ -1116,7 +1116,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getDefaultStoreViewId function
-     * 
+     *
      * @return void
      */
     public function testGetDefaultStoreViewId(): void
@@ -1143,7 +1143,7 @@ class SetupTest extends TestCase
 
     /**
      * Test upsertApiKey function
-     * 
+     *
      * @return void
      */
     public function testUpsertApiKey(): void
@@ -1156,7 +1156,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getCommercePartnerSellerPlatformType function
-     * 
+     *
      * @return void
      */
     public function testGetCommercePartnerSellerPlatformType(): void
@@ -1175,7 +1175,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getCustomApiKey function
-     * 
+     *
      * @return void
      */
     public function testGetCustomApiKey(): void
@@ -1188,7 +1188,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getRepairRepairCommercePartnerIntegrationAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testGetRepairRepairCommercePartnerIntegrationAjaxRoute(): void
@@ -1211,7 +1211,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getUpdateMBEConfigAjaxRoute function
-     * 
+     *
      * @return void
      */
     public function testGetUpdateMBEConfigAjaxRoute(): void
@@ -1234,7 +1234,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getStoreTimezone function
-     * 
+     *
      * @return void
      */
     public function testGetStoreTimezone(): void
@@ -1254,7 +1254,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getStoreCountryCode function
-     * 
+     *
      * @return void
      */
     public function testGetStoreCountryCode(): void
@@ -1274,7 +1274,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getStoreBaseUrl function
-     * 
+     *
      * @return void
      */
     public function testGetStoreBaseUrl(): void
@@ -1302,7 +1302,7 @@ class SetupTest extends TestCase
 
     /**
      * Test getExtensionVersion function
-     * 
+     *
      * @return void
      */
     public function testGetExtensionVersion(): void

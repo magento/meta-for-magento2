@@ -84,7 +84,7 @@ class VersionUpgradeNotificationTest extends TestCase
 
     /**
      * Test isDisplayed method
-     * 
+     *
      * @return void
      */
     public function testIsDisplayed(): void
@@ -95,7 +95,7 @@ class VersionUpgradeNotificationTest extends TestCase
 
     /**
      * Test getText method
-     * 
+     *
      * @return void
      */
     public function testGetText(): void
@@ -111,7 +111,7 @@ class VersionUpgradeNotificationTest extends TestCase
 
     /**
      * Test getSeverity
-     * 
+     *
      * @return void
      */
     public function testGetSeverity(): void
@@ -123,7 +123,7 @@ class VersionUpgradeNotificationTest extends TestCase
 
     /**
      * Get getText
-     * 
+     *
      * @return Phrase
      */
     private function getNotificationExpectedText(): Phrase
@@ -140,7 +140,7 @@ class VersionUpgradeNotificationTest extends TestCase
 
     /**
      * Initialize the Nofication Return Data
-     * 
+     *
      * @return void
      */
     private function initializeLoadVersionNotificationReturn($notificationData): void

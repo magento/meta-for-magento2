@@ -13,7 +13,7 @@ class PersistMetaTelemetryLogsHandlerTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     public function setUp(): void
@@ -29,7 +29,7 @@ class PersistMetaTelemetryLogsHandlerTest extends TestCase
 
     /**
      * Test persistMetaTelemetryLogs function
-     * 
+     *
      * @return void
      */
     public function testPersistMetaTelemetryLogs(): void
@@ -63,7 +63,7 @@ class PersistMetaTelemetryLogsHandlerTest extends TestCase
 
     /**
      * Test persistMetaTelemetryLogs function
-     * 
+     *
      * @return void
      */
     public function testPersistMetaTelemetryLogsWithNullAccessToken(): void

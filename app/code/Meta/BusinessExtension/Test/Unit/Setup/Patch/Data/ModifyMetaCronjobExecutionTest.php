@@ -29,7 +29,7 @@ class ModifyMetaCronjobExecutionTest extends TestCase
 
     /**
      * Class setUp method
-     * 
+     *
      * return void
      */
     protected function setUp(): void
@@ -48,7 +48,7 @@ class ModifyMetaCronjobExecutionTest extends TestCase
 
     /**
      * Test getDependencies function
-     * 
+     *
      * @return void
      */
     public function testGetDependencies(): void
@@ -58,7 +58,7 @@ class ModifyMetaCronjobExecutionTest extends TestCase
 
     /**
      * Test getAliases function
-     * 
+     *
      * @return void
      */
     public function testGetAliases(): void
@@ -68,7 +68,7 @@ class ModifyMetaCronjobExecutionTest extends TestCase
 
     /**
      * Test apply function
-     * 
+     *
      * @return void
      */
     public function testApply(): void
@@ -88,7 +88,7 @@ class ModifyMetaCronjobExecutionTest extends TestCase
 
     /**
      * Test revert function
-     * 
+     *
      * @return void
      */
     public function testRevert(): void

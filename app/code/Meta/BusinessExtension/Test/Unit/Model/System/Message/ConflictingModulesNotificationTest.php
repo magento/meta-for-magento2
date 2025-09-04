@@ -24,7 +24,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Class setup function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -45,7 +45,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Test the getIdentity method
-     * 
+     *
      * @return void
      */
     public function testGetIdentity(): void
@@ -61,7 +61,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Test the getIdentity method when no notification ID is found
-     * 
+     *
      * @return void
      */
     public function testGetIdentityReturnsEmpty(): void
@@ -77,7 +77,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Test the isDisplayed method when the conflicting module is enabled
-     * 
+     *
      * @return void
      */
     public function testIsDisplayedReturnTrue(): void
@@ -98,7 +98,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Test the isDisplayed method when the conflicting module is not enabled
-     * 
+     *
      * @return void
      */
     public function testIsDisplayedReturnFalse(): void
@@ -119,7 +119,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Test the getText method
-     * 
+     *
      * @return void
      */
     public function testGetText(): void
@@ -144,7 +144,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Modify the conflictingModules property in the parent class
-     * 
+     *
      * @return void
      */
     private function modifyParentClassPrivatePropertyAccess($variable, $setValue): void
@@ -157,7 +157,7 @@ class ConflictingModulesNotificationTest extends TestCase
 
     /**
      * Get the message text
-     * 
+     *
      * @param string $conflictingModuleFound
      * @return string
      */

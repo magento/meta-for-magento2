@@ -17,7 +17,7 @@ class FbinstalledFeaturesTest extends TestCase
 {
     /**
      * Class setUp function
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -41,7 +41,7 @@ class FbinstalledFeaturesTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecute(): void
@@ -84,7 +84,7 @@ class FbinstalledFeaturesTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithWrongInstalledData(): void
@@ -120,7 +120,7 @@ class FbinstalledFeaturesTest extends TestCase
 
     /**
      * Test execute function
-     * 
+     *
      * @return void
      */
     public function testExecuteWithException(): void
@@ -147,7 +147,7 @@ class FbinstalledFeaturesTest extends TestCase
                     'event' => 'fbe_installs',
                     'event_type' => 'save_installed_features'
                 ]
-                );
+            );
         $json->expects($this->once())
             ->method('setData')
             ->willThrowException(new \Exception("Exception Occured"));

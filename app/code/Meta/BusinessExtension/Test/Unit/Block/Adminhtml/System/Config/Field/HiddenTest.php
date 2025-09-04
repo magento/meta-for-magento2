@@ -35,7 +35,7 @@ class HiddenTest extends TestCase
 
     /**
      * Function setUp
-     * 
+     *
      * @return void
      */
     protected function setUp(): void
@@ -58,7 +58,7 @@ class HiddenTest extends TestCase
 
     /**
      * Test _decorateRowHtml function
-     * 
+     *
      * @return void
      */
     public function testDecorateRowHtml(): void
